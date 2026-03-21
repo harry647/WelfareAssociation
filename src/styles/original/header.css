@@ -78,11 +78,28 @@ header {
         align-items: center;
         gap: 20px;
     }
+    /* Mobile dropdown styles */
+    .dropdown-content {
+        display: none;
+        position: static;
+        background-color: #444;
+        width: 100%;
+        text-align: center;
+    }
+    .dropdown.active .dropdown-content {
+        display: block;
+    }
     .hamburger-icon {
         display: block;
         order: 2;
         cursor: pointer;
         padding: 5px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
     }
     .hamburger-icon::before {
         content: '\2630';

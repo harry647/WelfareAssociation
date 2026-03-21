@@ -58,16 +58,25 @@ class Application {
      * Initialize navigation
      */
     initNavigation() {
-        // Mobile menu toggle
-        const hamburgerBtn = document.querySelector('.hmburger-button');
-        if (hamburgerBtn) {
-            hamburgerBtn.addEventListener('click', () => {
+        // Mobile menu toggle - using event delegation to support dynamically loaded content
+        // This works with W3.js includeHTML which loads content asynchronously
+        document.addEventListener('click', (e) => {
+            const hamburgerBtn = e.target.closest('#hamburger-icon');
+            if (hamburgerBtn) {
                 const navLinks = document.querySelector('.links-wrpper');
                 if (navLinks) {
                     navLinks.classList.toggle('active');
                 }
-            });
-        }
+                hamburgerBtn.classList.toggle('active');
+            }
+            
+            // Handle dropdown clicks on mobile
+            const dropdown = e.target.closest('.dropdown');
+            if (dropdown && window.innerWidth <= 900) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
 
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

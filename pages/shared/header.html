@@ -2,7 +2,7 @@
 <!-- Include this in all public pages -->
 <header class="header-section">
     <img src="/images/Welfarelogo.webp" alt="SWA Logo - Student Welfare Association" class="img-logo">
-    <div class="hamburger-icon" onclick="toggleMenu()"></div>
+    <div id="hamburger-icon" class="hamburger-icon" onclick="document.getElementById('nav-menu').classList.toggle('active'); this.classList.toggle('active');"></div>
     <div class="links-wrpper" id="nav-menu">
         <ul class="nav-links">
             <li><a href="/index.html"><i class="fas fa-home"></i> Home</a></li>
@@ -34,20 +34,26 @@
 </header>
 
 <script>
-function toggleMenu() {
+// Mobile menu toggle - exposed globally for onclick handler
+window.toggleMenu = function() {
     var menu = document.getElementById('nav-menu');
     var hamburger = document.querySelector('.hamburger-icon');
-    menu.classList.toggle('active');
-    hamburger.classList.toggle('active');
-}
+    if (menu) menu.classList.toggle('active');
+    if (hamburger) hamburger.classList.toggle('active');
+};
 
-// Handle dropdown clicks on mobile
-document.querySelectorAll('.dropdown').forEach(function(dropdown) {
-    dropdown.addEventListener('click', function(e) {
-        if (window.innerWidth <= 900) {
-            e.preventDefault();
-            this.classList.toggle('active');
-        }
-    });
+// Also use event delegation as backup
+document.addEventListener('click', function(e) {
+    // Toggle hamburger menu
+    if (e.target.closest('.hamburger-icon')) {
+        window.toggleMenu();
+    }
+    
+    // Handle dropdown clicks on mobile
+    var dropdown = e.target.closest('.dropdown');
+    if (dropdown && window.innerWidth <= 900) {
+        e.preventDefault();
+        dropdown.classList.toggle('active');
+    }
 });
 </script>
