@@ -1,0 +1,284 @@
+/* Enhanced Footer Styles */
+footer {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: white;
+    padding: 60px 20px 30px;
+}
+
+.main-footer-div {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: space-between;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sub-footer-div {
+    flex: 1;
+    min-width: 250px;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sub-footer-div h4 {
+    font-size: 1.4rem;
+    color: #2d7c5b;
+    margin-bottom: 10px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.sub-footer-div h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: #f77b7b;
+    border-radius: 2px;
+}
+
+.sub-footer-div > p {
+    color: #aaa;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.portals-a ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.portals-a ul li {
+    list-style: none;
+    margin-bottom: 12px;
+}
+
+.portals-a a, .portals-a ul li a {
+    color: #ddd;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    display: inline-block;
+    position: relative;
+    padding-left: 20px;
+}
+
+.portals-a a::before, .portals-a ul li a::before {
+    content: '\f054';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    font-size: 0.7rem;
+    color: #2d7c5b;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s;
+}
+
+.portals-a a:hover, .portals-a ul li a:hover {
+    color: #f77b7b;
+    transform: translateX(5px);
+}
+
+.portals-a a:hover::before {
+    color: #f77b7b;
+}
+
+/* Newsletter Section */
+.eml-swaTeam {
+    text-align: center;
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.eml-swaTeam p {
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.eml-swaTeam form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+}
+
+form#newsletter-form #emails,
+.eml-swaTeam #emails {
+    padding: 16px 24px;
+    min-width: 300px;
+    font-size: 1rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50px;
+    background: rgba(255,255,255,0.15) !important;
+    color: white !important;
+    transition: all 0.3s;
+    flex: 1;
+    max-width: 400px;
+}
+
+#emails::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+#emails:focus {
+    outline: none;
+    border-color: #2d7c5b;
+    background: rgba(255,255,255,0.15);
+    box-shadow: 0 0 0 4px rgba(45, 124, 91, 0.2);
+}
+
+form#newsletter-form button#footer-button,
+.eml-swaTeam button#footer-button {
+    padding: 16px 40px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #2d7c5b 0%, #1a5c3d 100%) !important;
+    color: white !important;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#footer-button:hover {
+    background: linear-gradient(135deg, #f77b7b 0%, #e55a5a 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(247, 123, 123, 0.4);
+}
+
+/* Rules/Links Section */
+.rules-set {
+    text-align: center;
+    padding: 25px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.rules-set a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.rules-set a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #f77b7b;
+    transition: width 0.3s;
+}
+
+.rules-set a:hover {
+    color: white;
+}
+
+.rules-set a:hover::after {
+    width: 100%;
+}
+
+/* Copyright Section */
+.copy-right {
+    color: #888;
+    text-align: center;
+    padding: 25px 0 0;
+    margin-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.9rem;
+}
+
+.copy-right p {
+    margin: 10px 0;
+    color: #aaa;
+}
+
+.copy-right strong {
+    color: #2d7c5b;
+}
+
+.copy-right button {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 15px;
+}
+
+.copy-right button:hover {
+    background: #2d7c5b;
+    transform: translateY(-5px);
+}
+
+.copy-right button a {
+    color: white;
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-footer-div {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .sub-footer-div {
+        width: 100%;
+        text-align: center;
+        max-width: 100%;
+    }
+    
+    .sub-footer-div h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .portals-a a, .portals-a ul li a {
+        padding-left: 0;
+    }
+    
+    .portals-a a::before, .portals-a ul li a::before {
+        display: none;
+    }
+    
+    .portals-a a:hover, .portals-a ul li a:hover {
+        transform: none;
+    }
+    
+    .eml-swaTeam {
+        padding: 30px 15px;
+    }
+    
+    #emails {
+        min-width: 100%;
+    }
+    
+    .rules-set {
+        flex-direction: column;
+        gap: 15px;
+    }
+}

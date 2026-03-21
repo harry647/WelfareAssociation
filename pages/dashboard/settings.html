@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Settings - Admin Panel">
+  <title>Settings - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content-section active">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-cog"></i> Settings</h1>
+          <p>Configure system preferences</p>
+        </div>
+
+        <!-- General Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-sliders-h"></i> General Settings</h2>
+          <div style="max-width: 600px;">
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Organization Name</label>
+              <input type="text" value="Student Welfare Association" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Institution</label>
+              <input type="text" value="Jaramogi Oginga Odinga University of Science and Technology" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Academic Year</label>
+              <input type="text" value="2024/2025" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+            </div>
+            <button class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+          </div>
+        </section>
+
+        <!-- Contribution Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-money-bill-wave"></i> Contribution Settings</h2>
+          <div style="max-width: 600px;">
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Monthly Contribution Amount (Ksh)</label>
+              <input type="number" value="500" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Payment Deadline (Day of Month)</label>
+              <input type="number" value="25" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 20px;">
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" checked style="width: 18px; height: 18px;">
+                <span>Allow Late Payments</span>
+              </label>
+            </div>
+            <button class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+          </div>
+        </section>
+
+        <!-- Notification Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-bell"></i> Notification Settings</h2>
+          <div style="max-width: 600px;">
+            <div style="margin-bottom: 15px;">
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" checked style="width: 18px; height: 18px;">
+                <span>Email notifications for new registrations</span>
+              </label>
+            </div>
+            <div style="margin-bottom: 15px;">
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" checked style="width: 18px; height: 18px;">
+                <span>Email notifications for payment reminders</span>
+              </label>
+            </div>
+            <div style="margin-bottom: 15px;">
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" checked style="width: 18px; height: 18px;">
+                <span>Email notifications for loan requests</span>
+              </label>
+            </div>
+            <button class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

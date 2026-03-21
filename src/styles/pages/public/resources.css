@@ -1,0 +1,482 @@
+/* Resources Page Styles - Modern Design */
+
+/* CSS Variables */
+:root {
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #3b82f6;
+    --secondary-color: #0f172a;
+    --accent-color: #0891b2;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+    --background-light: #f8fafc;
+    --background-white: #ffffff;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 9999px;
+    --transition-fast: 150ms ease-in-out;
+    --transition-normal: 250ms ease-in-out;
+}
+
+/* Header */
+.resources-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 4rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.resources-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.resources-header h1 {
+    margin: 0 0 0.75rem 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    position: relative;
+}
+
+.resources-header p {
+    margin: 0;
+    font-size: 1.125rem;
+    opacity: 0.95;
+    position: relative;
+}
+
+.resources-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+/* Resources Introduction */
+.resources-intro {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--background-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.resources-intro h2 {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.resources-intro p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Section Headers */
+.university-links h2,
+.government-links h2,
+.academic-resources h2,
+.support-services h2,
+.career-resources h2,
+.financial-aid h2,
+.mental-health h2,
+.swa-services h2 {
+    color: var(--text-primary);
+    font-size: 1.375rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.university-links h2 i,
+.government-links h2 i,
+.academic-resources h2 i,
+.support-services h2 i,
+.career-resources h2 i,
+.financial-aid h2 i,
+.mental-health h2 i,
+.swa-services h2 i {
+    color: var(--primary-color);
+}
+
+.university-links,
+.government-links,
+.academic-resources,
+.support-services,
+.career-resources,
+.financial-aid,
+.mental-health,
+.swa-services {
+    margin-bottom: 3rem;
+}
+
+/* Links Grid */
+.links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.resource-card {
+    background: var(--background-white);
+    padding: 1.75rem;
+    border-radius: var(--radius-xl);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.resource-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-light);
+}
+
+.resource-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.resource-card h3 {
+    color: var(--text-primary);
+    margin: 0 0 0.75rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.resource-card p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+/* Support Grid */
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.support-card {
+    background: var(--background-white);
+    padding: 1.75rem;
+    border-radius: var(--radius-xl);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-normal);
+}
+
+.support-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.support-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.support-card h3 {
+    color: var(--text-primary);
+    margin: 0 0 0.75rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.support-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.9375rem;
+}
+
+.support-card a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    transition: color var(--transition-fast);
+}
+
+.support-card a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Career List */
+.career-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.career-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: var(--background-white);
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-normal);
+}
+
+.career-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.career-item i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    min-width: 2.5rem;
+    text-align: center;
+}
+
+.career-item h3 {
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+}
+
+.career-item p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.view-btn {
+    margin-left: auto;
+    padding: 0.625rem 1.25rem;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.view-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Financial Aid */
+.financial-aid {
+    padding: 2rem;
+    background: var(--background-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.aid-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.aid-list li {
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.aid-list li:last-child {
+    border-bottom: none;
+}
+
+.aid-list li::before {
+    content: '🎓';
+    font-size: 1.125rem;
+}
+
+.aid-list a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.aid-list a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Mental Health */
+.mental-health {
+    padding: 2rem;
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    border-radius: var(--radius-xl);
+    color: white;
+}
+
+.mental-health h2 {
+    color: white;
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.mental-health h2 i {
+    color: white;
+}
+
+.mental-health > p {
+    margin-bottom: 1.5rem;
+    opacity: 0.95;
+}
+
+.mental-health-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+}
+
+.mental-health-list li {
+    padding: 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    opacity: 0.95;
+}
+
+.mental-health-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.mental-health .cta-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.875rem 1.75rem;
+    background: white;
+    color: #ec4899;
+    text-decoration: none;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    transition: all var(--transition-normal);
+}
+
+.mental-health .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* SWA Services */
+.swa-services {
+    padding: 2rem;
+    background: var(--background-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.swa-service-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.swa-service-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.swa-service-list li i {
+    color: #10b981;
+}
+
+.swa-services .cta-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.875rem 1.75rem;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    transition: all var(--transition-normal);
+}
+
+.swa-services .cta-button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .resources-header {
+        padding: 3rem 1rem;
+    }
+
+    .resources-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .resources-header p {
+        font-size: 1rem;
+    }
+
+    .resources-container {
+        padding: 2rem 1rem;
+    }
+
+    .career-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .career-item i {
+        margin: 0 auto;
+    }
+
+    .view-btn {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        width: 100%;
+        text-align: center;
+    }
+
+    .swa-service-list {
+        grid-template-columns: 1fr;
+    }
+}

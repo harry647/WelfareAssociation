@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Withdrawals Management - Admin Panel">
+  <title>Withdrawals Management - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content-section active">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-wallet"></i> Withdrawals Management</h1>
+          <p>Manage member withdrawal requests</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="cards">
+          <div class="card">
+            <h3><i class="fas fa-money-bill-wave"></i> Total Withdrawn</h3>
+            <p class="stat-number">Ksh 45,000</p>
+            <p class="stat-label">This Month</p>
+          </div>
+          <div class="card">
+            <h class="card">
+            <h3><i class="fas fa-clock"></i> Pending</h3>
+            <p class="stat-number">3</p>
+            <p class="stat-label">Requests</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-check"></i> Approved</h3>
+            <p class="stat-number">12</p>
+            <p class="stat-label">This Month</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-times-circle"></i> Rejected</h3>
+            <p class="stat-number">1</p>
+            <p class="stat-label">This Month</p>
+          </div>
+        </div>
+
+        <!-- Pending Withdrawals -->
+        <section class="data-section">
+          <h2><i class="fas fa-hourglass-half"></i> Pending Withdrawal Requests</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Member Name</th>
+                  <th>Student ID</th>
+                  <th>Amount</th>
+                  <th>Request Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>WTH/001</td>
+                  <td>Lavenda Achieng</td>
+                  <td>JOO/2024/001</td>
+                  <td>Ksh 5,000</td>
+                  <td>2025-09-10</td>
+                  <td><span style="background: rgba(245,158,11,0.12); color: #f59e0b; padding: 3px 10px; border-radius: 20px; font-size: 11.5px;">Pending</span></td>
+                  <td>
+                    <button class="btn approve">✓ Approve</button>
+                    <button class="btn btn-reject">✗ Reject</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>WTH/002</td>
+                  <td>Mary Odundo</td>
+                  <td>JOO/2024/002</td>
+                  <td>Ksh 3,000</td>
+                  <td>2025-09-11</td>
+                  <td><span style="background: rgba(245,158,11,0.12); color: #f59e0b; padding: 3px 10px; border-radius: 20px; font-size: 11.5px;">Pending</span></td>
+                  <td>
+                    <button class="btn approve">✓ Approve</button>
+                    <button class="btn btn-reject">✗ Reject</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>WTH/003</td>
+                  <td>Francis Opiyo</td>
+                  <td>JOO/2024/003</td>
+                  <td>Ksh 2,500</td>
+                  <td>2025-09-12</td>
+                  <td><span style="background: rgba(245,158,11,0.12); color: #f59e0b; padding: 3px 10px; border-radius: 20px; font-size: 11.5px;">Pending</span></td>
+                  <td>
+                    <button class="btn approve">✓ Approve</button>
+                    <button class="btn btn-reject">✗ Reject</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Withdrawal History -->
+        <section class="data-section">
+          <h2><i class="fas fa-history"></i> Withdrawal History</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Member Name</th>
+                  <th>Student ID</th>
+                  <th>Amount</th>
+                  <th>Processed Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>WTH/004</td>
+                  <td>Vincent Otieno</td>
+                  <td>JOO/2024/004</td>
+                  <td>Ksh 4,000</td>
+                  <td>2025-09-08</td>
+                  <td><span class="status received">Approved</span></td>
+                </tr>
+                <tr>
+                  <td>WTH/005</td>
+                  <td>Sarah Kemunto</td>
+                  <td>JOO/2024/006</td>
+                  <td>Ksh 2,000</td>
+                  <td>2025-09-05</td>
+                  <td><span class="status received">Approved</span></td>
+                </tr>
+                <tr>
+                  <td>WTH/006</td>
+                  <td>John Doe</td>
+                  <td>JOO/2024/008</td>
+                  <td>Ksh 1,500</td>
+                  <td>2025-09-03</td>
+                  <td><span style="background: rgba(220,38,38,0.12); color: #dc3545; padding: 3px 10px; border-radius: 20px; font-size: 11.5px;">Rejected</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

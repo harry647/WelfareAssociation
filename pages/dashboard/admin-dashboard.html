@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Admin Dashboard - Manage members, contributions, loans, and reports">
+  <title>Admin Dashboard - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <a href="../../index.html" class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="content-section active" id="section-dashboard">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+          <p>Welcome to the Student Welfare Association Admin Portal</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="cards">
+          <div class="card">
+            <h3><i class="fas fa-users"></i> Total Members</h3>
+            <p class="stat-number">22</p>
+            <p class="stat-label">Active Members</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
+            <p class="stat-number">Ksh 7,000</p>
+            <p class="stat-label">This Month</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-wallet"></i> Available Balance</h3>
+            <p class="stat-number">Ksh 3,000</p>
+            <p class="stat-label">Current Funds</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-exclamation-circle"></i> Pending Debts</h3>
+            <p class="stat-number">Ksh 4,000</p>
+            <p class="stat-label">Outstanding</p>
+          </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="summary-stats">
+          <h2><i class="fas fa-chart-pie"></i> Overview Statistics</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-user-graduate"></i></span>
+              <span class="stat-value">50+</span>
+              <span class="stat-desc">Total Registered</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-hand-holding-heart"></i></span>
+              <span class="stat-value">45</span>
+              <span class="stat-desc">Welfare Packages</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-calendar-check"></i></span>
+              <span class="stat-value">10+</span>
+              <span class="stat-desc">Events Held</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-star"></i></span>
+              <span class="stat-value">25+</span>
+              <span class="stat-desc">Scholarships</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Contributions -->
+        <section class="data-section">
+          <h2><i class="fas fa-history"></i> Recent Contributions</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Student ID</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Payment Method</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lavenda Achieng</td>
+                  <td>JOO/2024/001</td>
+                  <td>2025-09-01</td>
+                  <td>Ksh 800</td>
+                  <td>M-Pesa</td>
+                  <td><span class="status received">✓ Received</span></td>
+                </tr>
+                <tr>
+                  <td>Mary Odundo</td>
+                  <td>JOO/2024/002</td>
+                  <td>2025-09-02</td>
+                  <td>Ksh 1,000</td>
+                  <td>Bank Transfer</td>
+                  <td><span class="status received">✓ Received</span></td>
+                </tr>
+                <tr>
+                  <td>Francis Opiyo</td>
+                  <td>JOO/2024/003</td>
+                  <td>2025-09-03</td>
+                  <td>Ksh 500</td>
+                  <td>M-Pesa</td>
+                  <td><span class="status received">✓ Received</span></td>
+                </tr>
+                <tr>
+                  <td>Vincent Otieno</td>
+                  <td>JOO/2024/004</td>
+                  <td>2025-09-04</td>
+                  <td>Ksh 1,200</td>
+                  <td>Cash</td>
+                  <td><span class="status received">✓ Received</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Pending Debts -->
+        <section class="data-section">
+          <h2><i class="fas fa-exclamation-triangle"></i> Pending Debts</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Student ID</th>
+                  <th>Due Date</th>
+                  <th>Amount Owed</th>
+                  <th>Days Overdue</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mary Atieno</td>
+                  <td>JOO/2024/005</td>
+                  <td>2025-09-05</td>
+                  <td>Ksh 2,000</td>
+                  <td><span style="color: var(--amber); font-weight:500;">5 days</span></td>
+                  <td><button class="btn">Send Reminder</button></td>
+                </tr>
+                <tr>
+                  <td>Francis Opiyo</td>
+                  <td>JOO/2024/003</td>
+                  <td>2025-09-05</td>
+                  <td>Ksh 3,000</td>
+                  <td><span style="color: var(--red); font-weight:500;">3 days</span></td>
+                  <td><button class="btn">Send Reminder</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Loan Requests -->
+        <section class="data-section">
+          <h2><i class="fas fa-hand-holding-usd"></i> Loan Requests</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Student ID</th>
+                  <th>Requested Amount</th>
+                  <th>Purpose</th>
+                  <th>Date Requested</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Yvonne Achieng</td>
+                  <td>JOO/2024/006</td>
+                  <td>Ksh 1,000</td>
+                  <td>Academic Fees</td>
+                  <td>2025-09-03</td>
+                  <td>
+                    <button class="btn approve">✓ Approve</button>
+                    <button class="btn btn-reject">✗ Reject</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Jeff Juma</td>
+                  <td>JOO/2024/007</td>
+                  <td>Ksh 2,500</td>
+                  <td>Emergency</td>
+                  <td>2025-09-04</td>
+                  <td>
+                    <button class="btn approve">✓ Approve</button>
+                    <button class="btn btn-reject">✗ Reject</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="../auth/registration-form.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Member</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Generate Report</a>
+            <a href="notices.html" class="action-btn"><i class="fas fa-bullhorn"></i> Send Notice</a>
+            <a href="../public/events.html" class="action-btn"><i class="fas fa-calendar-plus"></i> Create Event</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Email</a>
+            <a href="settings.html" class="action-btn"><i class="fas fa-cog"></i> Settings</a>
+          </div>
+        </section>
+
+        <!-- Recent Activity Log -->
+        <section class="activity-log">
+          <h2><i class="fas fa-history"></i> Recent Activity Log</h2>
+          <ul class="activity-list">
+            <li>
+              <span class="activity-time">Today, 10:30 AM</span>
+              New member registration: Sarah Kemunto
+            </li>
+            <li>
+              <span class="activity-time">Today, 09:15 AM</span>
+              Contribution received: Ksh 800 from Lavenda Achieng
+            </li>
+            <li>
+              <span class="activity-time">Yesterday, 4:45 PM</span>
+              Loan approved: Ksh 1,000 for Yvonne Achieng
+            </li>
+            <li>
+              <span class="activity-time">Yesterday, 2:30 PM</span>
+              Event created: Wellness Workshop — September 15
+            </li>
+            <li>
+              <span class="activity-time">Sep 3, 2025</span>
+              Payment reminder sent to Mary Atieno
+            </li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Placeholder Sections -->
+    <div class="content-section" id="section-members">
+      <div class="page-body">
+        <div class="page-header"><h1><i class="fas fa-users"></i> Members</h1></div>
+        <div class="section-placeholder"><i class="fas fa-users"></i><h2>Members</h2><p>This section is under construction.</p></div>
+      </div>
+    </div>
+
+    <div class="content-section" id="section-contributions">
+      <div class="page-body">
+        <div class="page-header"><h1><i class="fas fa-money-bill-wave"></i> Contributions</h1></div>
+        <div class="section-placeholder"><i class="fas fa-money-bill-wave"></i><h2>Contributions</h2><p>This section is under construction.</p></div>
+      </div>
+    </div>
+
+    <div class="content-section" id="section-debts">
+      <div class="page-body">
+        <div class="page-header"><h1><i class="fas fa-exclamation-triangle"></i> Debts</h1></div>
+        <div class="section-placeholder"><i class="fas fa-exclamation-triangle"></i><h2>Debts</h2><p>This section is under construction.</p></div>
+      </div>
+    </div>
+
+    <div class="content-section" id="section-loans">
+      <div class="page-body">
+        <div class="page-header"><h1><i class="fas fa-hand-holding-usd"></i> Loans</h1></div>
+        <div class="section-placeholder"><i class="fas fa-hand-holding-usd"></i><h2>Loans</h2><p>This section is under construction.</p></div>
+      </div>
+    </div>
+
+    <div class="content-section" id="section-reports">
+      <div class="page-body">
+        <div class="page-header"><h1><i class="fas fa-chart-bar"></i> Reports</h1></div>
+        <div class="section-placeholder"><i class="fas fa-chart-bar"></i><h2>Reports</h2><p>This section is under construction.</p></div>
+      </div>
+    </div>
+
+    <!-- Generic placeholder for other sections -->
+    <div class="content-section" id="section-withdrawals">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-wallet"></i><h2>Withdrawals</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-settings">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-cog"></i><h2>Settings</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-registered">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-user-plus"></i><h2>Registered Members</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-active-members">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-user-check"></i><h2>Active Members</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-fines">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-file-invoice-dollar"></i><h2>Fines Collection</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-savings">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-piggy-bank"></i><h2>Members Savings</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-executive">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-users-cog"></i><h2>Executive Team</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-docs">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-folder-open"></i><h2>Documentation</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-notices">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-bullhorn"></i><h2>Notices</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-analytics">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-chart-line"></i><h2>Analytics</h2><p>Coming soon.</p></div></div>
+    </div>
+    <div class="content-section" id="section-security">
+      <div class="page-body"><div class="section-placeholder"><i class="fas fa-shield-alt"></i><h2>Security Settings</h2><p>Coming soon.</p></div></div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

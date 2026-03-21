@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SWA Portals - Access different portals for students, members, and administrators">
+    <meta name="keywords" content="SWA portals, student portal, member portal, admin portal, JOOUST">
+    <title>Portals - Student Welfare Association | JOOUST</title>
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Portals Page Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/public/portals.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <!-- Shared Header -->
+    <div w3-include-html="../shared/header.html"></div>
+
+    <header class="portals-header">
+        <h1>SWA Portals</h1>
+        <p>Access your dedicated portal based on your role</p>
+    </header>
+
+    <main class="portals-container">
+        <!-- Introduction -->
+        <section class="portal-section">
+            <h2>Choose Your Portal</h2>
+            <p class="portal-intro">Select the portal that best describes your role in the Student Welfare Association. Each portal provides access to different features and services tailored to your needs.</p>
+            
+            <div class="portals-grid">
+                <article class="portal-card student-portal">
+                    <div class="portal-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3>Student Portal</h3>
+                    <p>For current students who want to join the welfare association and access basic resources.</p>
+                    <ul class="portal-features">
+                        <li><i class="fas fa-user-plus"></i> New Member Registration</li>
+                        <li><i class="fas fa-calendar-alt"></i> View Event Calendar</li>
+                        <li><i class="fas fa-book"></i> Access Resources</li>
+                        <li><i class="fas fa-envelope"></i> Contact Support</li>
+                        <li><i class="fas fa-file-alt"></i> View Policies</li>
+                        <li><i class="fas fa-newspaper"></i> Latest News</li>
+                    </ul>
+                    <a href="student-portal.html" class="portal-btn">Access Student Portal</a>
+                </article>
+
+                <article class="portal-card member-portal">
+                    <div class="portal-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Members Portal</h3>
+                    <p>For active members to manage contributions, view statements, and access member-only content.</p>
+                    <ul class="portal-features">
+                        <li><i class="fas fa-money-bill-wave"></i> Contribution Management</li>
+                        <li><i class="fas fa-hand-holding-usd"></i> Loan Applications</li>
+                        <li><i class="fas fa-history"></i> Contribution History</li>
+                        <li><i class="fas fa-address-book"></i> Member Directory</li>
+                        <li><i class="fas fa-bell"></i> Notifications</li>
+                        <li><i class="fas fa-file-invoice-dollar"></i> Financial Statements</li>
+                    </ul>
+                    <a href="member-portal.html" class="portal-btn">Access Members Portal</a>
+                </article>
+
+                <article class="portal-card admin-portal">
+                    <div class="portal-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Admin Portal</h3>
+                    <p>For executive committee members and administrators to manage the association.</p>
+                    <ul class="portal-features">
+                        <li><i class="fas fa-users-cog"></i> Member Management</li>
+                        <li><i class="fas fa-chart-bar"></i> Financial Reports</li>
+                        <li><i class="fas fa-calendar-plus"></i> Event Management</li>
+                        <li><i class="fas fa-cog"></i> System Settings</li>
+                        <li><i class="fas fa-file-export"></i> Data Export</li>
+                        <li><i class="fas fa-bullhorn"></i> Announcements</li>
+                    </ul>
+                    <a href="admin-dashboard.html" class="portal-btn">Access Admin Portal</a>
+                </article>
+
+                <article class="portal-card public-portal">
+                    <div class="portal-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Public Portal</h3>
+                    <p>For visitors and the general public to learn about the association.</p>
+                    <ul class="portal-features">
+                        <li><i class="fas fa-info-circle"></i> About SWA</li>
+                        <li><i class="fas fa-graduation-cap"></i> Programs & Services</li>
+                        <li><i class="fas fa-envelope"></i> Contact Information</li>
+                        <li><i class="fas fa-newspaper"></i> News & Updates</li>
+                        <li><i class="fas fa-calendar-alt"></i> Upcoming Events</li>
+                        <li><i class="fas fa-question-circle"></i> FAQs</li>
+                    </ul>
+                    <a href="../index.html" class="portal-btn">Visit Public Portal</a>
+                </article>
+            </div>
+        </section>
+
+        <!-- Quick Access Links -->
+        <section class="quick-links">
+            <h2><i class="fas fa-link"></i> Quick Links</h2>
+            <div class="links-grid">
+                <a href="policies.html" class="quick-link">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Policies</span>
+                    <p>View our policies and guidelines</p>
+                </a>
+                <a href="events.html" class="quick-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                    <p>Browse upcoming events</p>
+                </a>
+                <a href="contact-information.html" class="quick-link">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact Us</span>
+                    <p>Get in touch with us</p>
+                </a>
+                <a href="our-team.html" class="quick-link">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Our Team</span>
+                    <p>Meet the executives</p>
+                </a>
+                <a href="registration-form.html" class="quick-link">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register</span>
+                    <p>Join SWA today</p>
+                </a>
+                <a href="donations.html" class="quick-link">
+                    <i class="fas fa-donate"></i>
+                    <span>Donate</span>
+                    <p>Support our mission</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Portal Comparison -->
+        <section class="portal-comparison">
+            <h2>Portal Features Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Student</th>
+                        <th>Member</th>
+                        <th>Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Register as Member</td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>View Events</td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Make Contributions</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Apply for Loans</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Manage Members</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>View Reports</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Need Help -->
+        <section class="need-help">
+            <h2><i class="fas fa-life-ring"></i> Need Help?</h2>
+            <p>Having trouble accessing a portal? Contact our support team for assistance.</p>
+            <div class="help-options">
+                <div class="help-card">
+                    <i class="fas fa-phone"></i>
+                    <h4>Call Us</h4>
+                    <p>+254 123 439 040</p>
+                    <span>Mon-Fri: 8AM-5PM</span>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-envelope"></i>
+                    <h4>Email</h4>
+                    <p>swateam@gmail.com</p>
+                    <span>24/7 Support</span>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-comments"></i>
+                    <h4>Live Chat</h4>
+                    <p>Available</p>
+                    <span>9AM - 5PM</span>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Visit Office</h4>
+                    <p>SWA Office</p>
+                    <span>JOOUST Campus</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Information -->
+        <section class="login-info">
+            <h2>Portal Login Information</h2>
+            <div class="login-cards">
+                <div class="login-card">
+                    <h3>Student Portal</h3>
+                    <p>New students can register for free using their JOOUST student email.</p>
+                    <a href="student-portal.html" class="cta-button">Go to Student Portal</a>
+                </div>
+                <div class="login-card">
+                    <h3>Members Portal</h3>
+                    <p>Active members can log in with their registered email and password.</p>
+                    <a href="member-portal.html" class="cta-button">Go to Members Portal</a>
+                </div>
+                <div class="login-card">
+                    <h3>Admin Portal</h3>
+                    <p>Executive committee members have unique credentials provided upon election.</p>
+                    <a href="admin-dashboard.html" class="cta-button">Go to Admin Portal</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Password Reset -->
+        <section class="password-reset">
+            <h3><i class="fas fa-key"></i> Forgot Password?</h3>
+            <p>If you've forgotten your password, please contact the administrator or visit the SWA office for assistance.</p>
+            <p><strong>Note:</strong> For security reasons, password resets must be done in person with valid identification.</p>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+    <div w3-include-html="../shared/footer.html"></div>
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+</body>
+</html>

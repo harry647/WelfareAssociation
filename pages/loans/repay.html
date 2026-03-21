@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Repay your SWA loan - Easy and secure loan repayment options">
+    <meta name="keywords" content="SWA, Student Welfare Association, JOOUST, loan, repay, payment">
+    <title>Repay Loan - Student Welfare Association | JOOUST</title>
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Loan Repayment Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/loans/repay.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <!-- Page Header -->
+    <header class="repay-header">
+        <h1><i class="fas fa-money-bill-alt"></i> Repay Your Loan</h1>
+        <p>Easy and secure repayment options</p>
+    </header>
+
+    <main class="repay-container">
+        <!-- Loan Summary Card -->
+        <section class="loan-summary">
+            <h2><i class="fas fa-wallet"></i> Your Loan Summary</h2>
+            
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span class="summary-label">Loan ID:</span>
+                    <span class="summary-value" id="loanId">LN/2025/001</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Original Amount:</span>
+                    <span class="summary-value">Ksh 5,000</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Interest (5%):</span>
+                    <span class="summary-value">Ksh 250</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total Due:</span>
+                    <span class="summary-value highlight">Ksh 5,250</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Amount Paid:</span>
+                    <span class="summary-value">Ksh 2,000</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Remaining Balance:</span>
+                    <span class="summary-value danger">Ksh 3,250</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Due Date:</span>
+                    <span class="summary-value">March 25, 2025</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Status:</span>
+                    <span class="summary-value"><span class="status-badge pending">In Progress</span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Options -->
+        <section class="payment-options">
+            <h2><i class="fas fa-credit-card"></i> Select Payment Method</h2>
+            
+            <div class="payment-methods">
+                <label class="payment-method">
+                    <input type="radio" name="paymentMethod" value="mpesa" checked>
+                    <div class="method-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>M-Pesa</h3>
+                        <p>Pay via M-Pesa STK Push</p>
+                    </div>
+                </label>
+                
+                <label class="payment-method">
+                    <input type="radio" name="paymentMethod" value="bank">
+                    <div class="method-card">
+                        <i class="fas fa-university"></i>
+                        <h3>Bank Transfer</h3>
+                        <p>Direct bank transfer</p>
+                    </div>
+                </label>
+                
+                <label class="payment-method">
+                    <input type="radio" name="paymentMethod" value="cash">
+                    <div class="method-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <h3>Cash</h3>
+                        <p>Pay at SWA office</p>
+                    </div>
+                </label>
+            </div>
+        </section>
+
+        <!-- Payment Form -->
+        <section class="payment-form-section">
+            <h2><i class="fas fa-file-invoice-dollar"></i> Payment Details</h2>
+            
+            <form id="repaymentForm" class="repayment-form">
+                <div class="form-group">
+                    <label for="paymentAmount">Amount to Pay (Ksh) <span class="required">*</span></label>
+                    <input type="number" id="paymentAmount" name="paymentAmount" required 
+                           min="100" max="3250" step="100" 
+                           placeholder="Enter amount">
+                    <small>Remaining balance: Ksh 3,250</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentDate">Payment Date <span class="required">*</span></label>
+                    <input type="date" id="paymentDate" name="paymentDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionId">Transaction ID (for M-Pesa/Bank)</label>
+                    <input type="text" id="transactionId" name="transactionId" 
+                           placeholder="e.g., MPO123456789">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentNote">Additional Notes</label>
+                    <textarea id="paymentNote" name="paymentNote" rows="3" 
+                              placeholder="Any additional information..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Submit Payment
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Payment History -->
+        <section class="payment-history">
+            <h2><i class="fas fa-history"></i> Payment History</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Transaction ID</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Feb 15, 2025</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td>MPO123456789</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>Feb 28, 2025</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td>MPO987654321</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Quick Payment Amounts -->
+        <section class="quick-amounts">
+            <h2><i class="fas fa-bolt"></i> Quick Pay</h2>
+            <div class="amount-buttons">
+                <button class="quick-amount-btn" data-amount="1000">Ksh 1,000</button>
+                <button class="quick-amount-btn" data-amount="2000">Ksh 2,000</button>
+                <button class="quick-amount-btn" data-amount="3250">Full Balance</button>
+            </div>
+        </section>
+
+        <!-- Contact Support -->
+        <section class="support-info">
+            <h2><i class="fas fa-headset"></i> Need Help?</h2>
+            <p>Contact the finance team for assistance with your loan repayment:</p>
+            <div class="contact-methods">
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+254 712 345 678</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>finance@swa-joust.ac.ke</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>SWA Office, Student Center</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+    <!-- Loan Repayment Script -->
+    <script type="module" src="../../src/scripts/pages/loans/repay.js"></script>
+</body>
+</html>

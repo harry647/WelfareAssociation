@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Apply for a loan from Student Welfare Association - Quick and easy loan applications for JOOUST students">
+    <meta name="keywords" content="SWA, Student Welfare Association, JOOUST, loan, apply, borrow, financial aid">
+    <title>Apply for Loan - Student Welfare Association | JOOUST</title>
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Loan Application Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/loans/apply.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <!-- Page Header -->
+    <header class="loan-header">
+        <h1><i class="fas fa-hand-holding-usd"></i> Apply for a Loan</h1>
+        <p>Financial support when you need it most</p>
+    </header>
+
+    <main class="loan-container">
+        <!-- Loan Information Section -->
+        <section class="loan-info">
+            <h2><i class="fas fa-info-circle"></i> Loan Information</h2>
+            <div class="info-cards">
+                <div class="info-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>Maximum Amount</h3>
+                    <p>Ksh 10,000</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-percent"></i>
+                    <h3>Interest Rate</h3>
+                    <p>5% per month</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Repayment Period</h3>
+                    <p>up to 3 months</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Processing Time</h3>
+                    <p>24-48 hours</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loan Application Form -->
+        <section class="loan-form-section">
+            <h2><i class="fas fa-file-alt"></i> Loan Application Form</h2>
+            <form id="loanApplicationForm" class="loan-form">
+                <!-- Personal Information -->
+                <fieldset>
+                    <legend><i class="fas fa-user"></i> Personal Information</legend>
+                    
+                    <div class="form-group">
+                        <label for="fullName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="fullName" name="fullName" required 
+                               placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentId">Student ID <span class="required">*</span></label>
+                        <input type="text" id="studentId" name="studentId" required 
+                               placeholder="e.g., JOO/2024/001">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" required 
+                               placeholder="e.g., 0712 345 678">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="your.email@student.joust.ac.ke">
+                    </div>
+                </fieldset>
+
+                <!-- Loan Details -->
+                <fieldset>
+                    <legend><i class="fas fa-money-check"></i> Loan Details</legend>
+                    
+                    <div class="form-group">
+                        <label for="loanAmount">Amount Requested (Ksh) <span class="required">*</span></label>
+                        <input type="number" id="loanAmount" name="loanAmount" required 
+                               min="100" max="10000" step="100" 
+                               placeholder="Enter amount between 100 - 10,000">
+                        <small>Minimum: Ksh 100 | Maximum: Ksh 10,000</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loanPurpose">Purpose of Loan <span class="required">*</span></label>
+                        <select id="loanPurpose" name="loanPurpose" required>
+                            <option value="">Select purpose</option>
+                            <option value="fees">Academic Fees</option>
+                            <option value="accommodation">Accommodation</option>
+                            <option value="books">Books & Supplies</option>
+                            <option value="emergency">Emergency</option>
+                            <option value="transport">Transport</option>
+                            <option value="personal">Personal Expenses</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loanPurposeOther">Specify Other Purpose</label>
+                        <input type="text" id="loanPurposeOther" name="loanPurposeOther" 
+                               placeholder="Please specify" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="repaymentPeriod">Preferred Repayment Period <span class="required">*</span></label>
+                        <select id="repaymentPeriod" name="repaymentPeriod" required>
+                            <option value="">Select period</option>
+                            <option value="1">1 Month</option>
+                            <option value="2">2 Months</option>
+                            <option value="3">3 Months</option>
+                        </select>
+                    </div>
+                </fieldset>
+
+                <!-- Guarantor Information -->
+                <fieldset>
+                    <legend><i class="fas fa-user-shield"></i> Guarantor Information</legend>
+                    <p class="fieldset-note">You must provide a guarantor who is a member of SWA</p>
+                    
+                    <div class="form-group">
+                        <label for="guarantorName">Guarantor Name <span class="required">*</span></label>
+                        <input type="text" id="guarantorName" name="guarantorName" required 
+                               placeholder="Enter guarantor's full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="guarantorId">Guarantor Student ID <span class="required">*</span></label>
+                        <input type="text" id="guarantorId" name="guarantorId" required 
+                               placeholder="e.g., JOO/2024/001">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="guarantorPhone">Guarantor Phone <span class="required">*</span></label>
+                        <input type="tel" id="guarantorPhone" name="guarantorPhone" required 
+                               placeholder="e.g., 0712 345 678">
+                    </div>
+                </fieldset>
+
+                <!-- Agreement -->
+                <fieldset>
+                    <legend><i class="fas fa-handshake"></i> Terms & Agreement</legend>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="termsAgree" name="termsAgree" required>
+                            <span>I agree to the <a href="../public/terms&conditions.html" target="_blank">Terms and Conditions</a> of the loan program <span class="required">*</span></span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="repaymentAgree" name="repaymentAgree" required>
+                            <span>I understand that I must repay the loan within the agreed period <span class="required">*</span></span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Submit Application
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Eligibility Criteria -->
+        <section class="eligibility">
+            <h2><i class="fas fa-check-circle"></i> Eligibility Criteria</h2>
+            <ul>
+                <li><i class="fas fa-check"></i> Must be a registered member of SWA</li>
+                <li><i class="fas fa-check"></i> Must have been a member for at least 3 months</li>
+                <li><i class="fas fa-check"></i> Must have a clean repayment history (if previous borrower)</li>
+                <li><i class="fas fa-check"></i> Must provide a valid guarantor who is a SWA member</li>
+                <li><i class="fas fa-check"></i> Must have a valid student ID</li>
+            </ul>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq">
+            <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+            <details>
+                <summary>How long does it take to process a loan?</summary>
+                <p>Loan applications are typically processed within 24-48 hours. Once approved, funds are disbursed directly to your M-Pesa or bank account.</p>
+            </details>
+            <details>
+                <summary>What happens if I can't repay on time?</summary>
+                <p>If you're unable to repay on time, please contact the finance team immediately. Late payments may incur additional interest and affect your future borrowing eligibility.</p>
+            </details>
+            <details>
+                <summary>Can I apply for a second loan while repaying the first?</summary>
+                <p>Yes, but you must have repaid at least 50% of your current loan and have a good repayment history.</p>
+            </details>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+    <!-- Loan Application Script -->
+    <script type="module" src="../../src/scripts/pages/loans/apply.js"></script>
+</body>
+
+</html>

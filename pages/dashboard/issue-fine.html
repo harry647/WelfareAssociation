@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Issue New Fine - SWA Admin Panel">
+  <title>Issue New Fine - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <a href="../../index.html" class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content-section active">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-plus-circle"></i> Issue New Fine</h1>
+          <p>Create and issue a new fine to a member</p>
+        </div>
+
+        <!-- Issue Fine Form -->
+        <section class="data-section">
+          <h2><i class="fas fa-file-invoice-dollar"></i> Fine Details</h2>
+          <div class="form-container">
+            <form id="issueFineForm">
+              <div class="form-group">
+                <label for="memberSelect">Select Member</label>
+                <select id="memberSelect" required>
+                  <option value="">-- Select Member --</option>
+                  <option value="JOO/2024/001">Lavenda Achieng (JOO/2024/001)</option>
+                  <option value="JOO/2024/002">Mary Odundo (JOO/2024/002)</option>
+                  <option value="JOO/2024/003">Francis Opiyo (JOO/2024/003)</option>
+                  <option value="JOO/2024/004">Vincent Otieno (JOO/2024/004)</option>
+                  <option value="JOO/2024/005">Mary Atieno (JOO/2024/005)</option>
+                  <option value="JOO/2024/006">Sarah Kemunto (JOO/2024/006)</option>
+                  <option value="JOO/2024/007">Jeff Juma (JOO/2024/007)</option>
+                  <option value="JOO/2024/008">John Ochieng (JOO/2024/008)</option>
+                  <option value="JOO/2024/009">Yvonne Achieng (JOO/2024/009)</option>
+                  <option value="JOO/2024/010">Emily Akinyi (JOO/2024/010)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="fineType">Fine Type</label>
+                <select id="fineType" required>
+                  <option value="">-- Select Fine Type --</option>
+                  <option value="late-payment">Late Payment - Ksh 500</option>
+                  <option value="missing-event">Missing Event - Ksh 1,000</option>
+                  <option value="missing-report">Missing Report - Ksh 750</option>
+                  <option value="policy-violation">Policy Violation - Ksh 2,000</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="fineAmount">Fine Amount (Ksh)</label>
+                <input type="number" id="fineAmount" placeholder="Enter amount" min="0" required>
+              </div>
+
+              <div class="form-group">
+                <label for="dueDate">Due Date</label>
+                <input type="date" id="dueDate" required>
+              </div>
+
+              <div class="form-group">
+                <label for="fineReason">Reason / Description</label>
+                <textarea id="fineReason" rows="4" placeholder="Provide details about the fine..."></textarea>
+              </div>
+
+              <div class="form-actions">
+                <a href="fines-collection.html" class="btn">Cancel</a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Issue Fine</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

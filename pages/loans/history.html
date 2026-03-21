@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Loans - Admin Panel">
+  <title>Loans - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  <link rel="stylesheet" href="../../src/styles/pages/loans/history.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="../dashboard/admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="../dashboard/members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="../dashboard/withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="../dashboard/debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="../dashboard/settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="../dashboard/registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="../dashboard/active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="../dashboard/fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="../dashboard/members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="../dashboard/executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="../dashboard/documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="../dashboard/notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="../dashboard/analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="../dashboard/security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content-section active">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-history"></i> Loan History</h1>
+          <p>Track and manage all loan applications and repayments</p>
+        </div>
+        <!-- Statistics Summary -->
+        <section class="loan-stats">
+            <h2><i class="fas fa-chart-pie"></i> Loan Statistics</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-file-invoice"></i>
+                    <div class="stat-info">
+                        <h3>Total Loans</h3>
+                        <p class="stat-number">3</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="stat-info">
+                        <h3>Fully Repaid</h3>
+                        <p class="stat-number">2</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-spinner"></i>
+                    <div class="stat-info">
+                        <h3>Active Loans</h3>
+                        <p class="stat-number">1</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <div class="stat-info">
+                        <h3>Total Borrowed</h3>
+                        <p class="stat-number">Ksh 12,000</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Loans -->
+        <section class="active-loans">
+            <h2><i class="fas fa-wallet"></i> Active Loans</h2>
+            
+            <div class="loan-cards">
+                <div class="loan-card active">
+                    <div class="loan-card-header">
+                        <span class="loan-id">LN/2025/001</span>
+                        <span class="status-badge pending">In Progress</span>
+                    </div>
+                    <div class="loan-card-body">
+                        <div class="loan-detail">
+                            <span class="label">Amount:</span>
+                            <span class="value">Ksh 5,000</span>
+                        </div>
+                        <div class="loan-detail">
+                            <span class="label">Interest:</span>
+                            <span class="value">Ksh 250</span>
+                        </div>
+                        <div class="loan-detail">
+                            <span class="label">Total Due:</span>
+                            <span class="value">Ksh 5,250</span>
+                        </div>
+                        <div class="loan-detail">
+                            <span class="label">Paid:</span>
+                            <span class="value">Ksh 2,000</span>
+                        </div>
+                        <div class="loan-detail">
+                            <span class="label">Balance:</span>
+                            <span class="value">Ksh 3,250</span>
+                        </div>
+                        <div class="loan-detail">
+                            <span class="label">Due Date:</span>
+                            <span class="value">March 25, 2025</span>
+                        </div>
+                    </div>
+                    <div class="loan-card-footer">
+                        <a href="repay.html" class="btn btn-primary">
+                            <i class="fas fa-money-bill-alt"></i> Make Payment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loan History Table -->
+        <section class="loan-history-table">
+            <h2><i class="fas fa-list"></i> All Loan Records</h2>
+            
+            <div class="table-filters">
+                <label>
+                    <span>Filter by Status:</span>
+                    <select id="statusFilter">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="repaid">Repaid</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Filter by Year:</span>
+                    <select id="yearFilter">
+                        <option value="all">All Years</option>
+                        <option value="2025" selected>2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </label>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>Date Applied</th>
+                        <th>Amount</th>
+                        <th>Purpose</th>
+                        <th>Repayment Period</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LN/2025/001</td>
+                        <td>Jan 15, 2025</td>
+                        <td>Ksh 5,000</td>
+                        <td>Academic Fees</td>
+                        <td>3 months</td>
+                        <td><span class="status-badge pending">In Progress</span></td>
+                        <td>
+                            <a href="repay.html" class="action-link">Repay</a>
+                            <a href="#" class="action-link">Details</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>LN/2024/015</td>
+                        <td>Nov 10, 2024</td>
+                        <td>Ksh 3,000</td>
+                        <td>Books & Supplies</td>
+                        <td>2 months</td>
+                        <td><span class="status-badge success">Fully Repaid</span></td>
+                        <td>
+                            <a href="#" class="action-link">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>LN/2024/008</td>
+                        <td>Aug 05, 2024</td>
+                        <td>Ksh 4,000</td>
+                        <td>Accommodation</td>
+                        <td>3 months</td>
+                        <td><span class="status-badge success">Fully Repaid</span></td>
+                        <td>
+                            <a href="#" class="action-link">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Payment Records -->
+        <section class="payment-records">
+            <h2><i class="fas fa-receipt"></i> Payment Records</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Date</th>
+                        <th>Loan ID</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Transaction ID</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PMT/2025/001</td>
+                        <td>Feb 28, 2025</td>
+                        <td>LN/2025/001</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td>MPO987654321</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>PMT/2025/002</td>
+                        <td>Feb 15, 2025</td>
+                        <td>LN/2025/001</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td>MPO123456789</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>PMT/2024/045</td>
+                        <td>Dec 20, 2024</td>
+                        <td>LN/2024/015</td>
+                        <td>Ksh 3,000</td>
+                        <td>Bank Transfer</td>
+                        <td>BKO123456789</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>PMT/2024/030</td>
+                        <td>Sep 15, 2024</td>
+                        <td>LN/2024/008</td>
+                        <td>Ksh 2,000</td>
+                        <td>M-Pesa</td>
+                        <td>MPO456789123</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>PMT/2024/035</td>
+                        <td>Oct 10, 2024</td>
+                        <td>LN/2024/008</td>
+                        <td>Ksh 2,000</td>
+                        <td>M-Pesa</td>
+                        <td>MPO789123456</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="apply.html" class="action-btn"><i class="fas fa-plus"></i> New Loan</a>
+            <a href="../reports/loans-report.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Reminders</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Notices - Manage announcements">
+  <title>Notices - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Notices Section -->
+    <div class="content-section active" id="section-notices">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-bullhorn"></i> Notices & Announcements</h1>
+          <p>Create, manage, and broadcast announcements to members</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="cards">
+          <div class="card">
+            <h3><i class="fas fa-newspaper"></i> Total Notices</h3>
+            <p class="stat-number">45</p>
+            <p class="stat-label">Published</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-paper-plane"></i> Sent This Month</h3>
+            <p class="stat-number">8</p>
+            <p class="stat-label">Announcements</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-envelope-open-text"></i> Read Rate</h3>
+            <p class="stat-number">78%</p>
+            <p class="stat-label">Average</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-drafting-compass"></i> Drafts</h3>
+            <p class="stat-number">3</p>
+            <p class="stat-label">Pending</p>
+          </div>
+        </div>
+
+        <!-- Notice Categories -->
+        <div class="summary-stats">
+          <h2><i class="fas fa-tags"></i> Notice Categories</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-calendar-alt"></i></span>
+              <span class="stat-value">15</span>
+              <span class="stat-desc">Events</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-money-bill-wave"></i></span>
+              <span class="stat-value">10</span>
+              <span class="stat-desc">Financial</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-exclamation-circle"></i></span>
+              <span class="stat-value">8</span>
+              <span class="stat-desc">Urgent</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-info-circle"></i></span>
+              <span class="stat-value">12</span>
+              <span class="stat-desc">General</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Published Notices -->
+        <section class="data-section">
+          <h2><i class="fas fa-paper-plane"></i> Published Notices</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Published Date</th>
+                  <th>Expiry Date</th>
+                  <th>Views</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Monthly General Meeting - September 2025</td>
+                  <td>Events</td>
+                  <td>2025-09-01</td>
+                  <td>2025-09-30</td>
+                  <td>45</td>
+                  <td><span style="color: red;">High</span></td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Contribution Deadline Reminder</td>
+                  <td>Financial</td>
+                  <td>2025-09-05</td>
+                  <td>2025-09-20</td>
+                  <td>38</td>
+                  <td><span style="color: orange;">Medium</span></td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Wellness Workshop Registration Open</td>
+                  <td>Events</td>
+                  <td>2025-09-03</td>
+                  <td>2025-09-15</td>
+                  <td>52</td>
+                  <td><span style="color: green;">Normal</span></td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Emergency: System Maintenance Notice</td>
+                  <td>Urgent</td>
+                  <td>2025-09-10</td>
+                  <td>2025-09-12</td>
+                  <td>28</td>
+                  <td><span style="color: red;">Urgent</span></td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>New Member Orientation Schedule</td>
+                  <td>General</td>
+                  <td>2025-08-28</td>
+                  <td>2025-10-01</td>
+                  <td>67</td>
+                  <td><span style="color: green;">Normal</span></td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Scheduled Notices -->
+        <section class="data-section">
+          <h2><i class="fas fa-clock"></i> Scheduled Notices</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Scheduled Date</th>
+                  <th>Target Audience</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>October Contribution Due Notice</td>
+                  <td>Financial</td>
+                  <td>2025-10-01</td>
+                  <td>All Members</td>
+                  <td><span style="color: orange;">Medium</span></td>
+                  <td><span class="status pending">Scheduled</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-reject">Cancel</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Annual General Meeting Notice</td>
+                  <td>Events</td>
+                  <td>2025-10-15</td>
+                  <td>All Members</td>
+                  <td><span style="color: red;">High</span></td>
+                  <td><span class="status pending">Scheduled</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-reject">Cancel</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Draft Notices -->
+        <section class="data-section">
+          <h2><i class="fas fa-file-alt"></i> Draft Notices</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Last Edited</th>
+                  <th>Edited By</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Scholarship Application Open</td>
+                  <td>General</td>
+                  <td>2025-09-09</td>
+                  <td>Secretary</td>
+                  <td><span style="color: green;">Normal</span></td>
+                  <td><span class="status pending">Draft</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn approve">Publish</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Holiday Savings Program</td>
+                  <td>Financial</td>
+                  <td>2025-09-08</td>
+                  <td>Treasurer</td>
+                  <td><span style="color: orange;">Medium</span></td>
+                  <td><span class="status pending">Draft</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn approve">Publish</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Notice Delivery Status -->
+        <section class="data-section">
+          <h2><i class="fas fa-chart-line"></i> Notice Delivery Statistics</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Notice Title</th>
+                  <th>Delivery Method</th>
+                  <th>Sent To</th>
+                  <th>Delivered</th>
+                  <th>Opened</th>
+                  <th>Click Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Monthly General Meeting</td>
+                  <td>Email + SMS</td>
+                  <td>22</td>
+                  <td>22 (100%)</td>
+                  <td>18 (82%)</td>
+                  <td>45%</td>
+                </tr>
+                <tr>
+                  <td>Contribution Deadline</td>
+                  <td>Email + SMS + App</td>
+                  <td>22</td>
+                  <td>21 (95%)</td>
+                  <td>16 (76%)</td>
+                  <td>38%</td>
+                </tr>
+                <tr>
+                  <td>Wellness Workshop</td>
+                  <td>Email + Social</td>
+                  <td>22</td>
+                  <td>20 (91%)</td>
+                  <td>15 (68%)</td>
+                  <td>52%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="create-notice.html" class="action-btn"><i class="fas fa-plus-circle"></i> Create Notice</a>
+            <a href="send-announcement.html" class="action-btn"><i class="fas fa-paper-plane"></i> Send Announcement</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Email All Members</a>
+            <a href="send-sms.html" class="action-btn"><i class="fas fa-sms"></i> Send SMS</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
+            <a href="analytics.html" class="action-btn"><i class="fas fa-chart-bar"></i> View Analytics</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

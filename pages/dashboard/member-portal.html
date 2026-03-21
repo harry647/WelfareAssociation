@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Member Portal - Manage contributions, loans, and member services">
+  <title>Member Portal - Student Welfare Association | JOOUST</title>
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="../../src/styles/main.css">
+  <link rel="stylesheet" href="../../src/styles/original/header.css">
+  <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+  <link rel="stylesheet" href="../../src/styles/original/footer.css">
+  <!-- Member Portal Styles -->
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/member-portal.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+  <header class="member-header">
+    <h1 id="welcome-message"><i class="fas fa-user-circle"></i> Welcome, Member</h1>
+    <p>Manage your SWA account, contributions, and loans</p>
+  </header>
+
+  <!-- Dashboard Summary -->
+  <div class="dashboard">
+    <div class="card">
+      <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
+      <p class="stat">Ksh 3,000</p>
+      <p class="label">Lifetime</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-exclamation-circle"></i> Outstanding Debt</h3>
+      <p class="stat">Ksh 500</p>
+      <p class="label">Due: March 25</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-hand-holding-usd"></i> Loan Status</h3>
+      <p class="stat">None</p>
+      <p class="label">No active loans</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-wallet"></i> Balance</h3>
+      <p class="stat">Ksh 2,500</p>
+      <p class="label">Available</p>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <section class="notifications-section">
+    <h2><i class="fas fa-bell"></i> Notifications</h2>
+    <div class="notification-cards">
+      <div class="notification-card meeting">
+        <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="card-content">
+          <h3>Next Meeting</h3>
+          <p>General meeting on April 5th, 2025 at 2 PM</p>
+          <span class="time">2 days ago</span>
+        </div>
+      </div>
+      <div class="notification-card reminder">
+        <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="card-content">
+          <h3>Contribution Reminder</h3>
+          <p>March contribution due by 25th</p>
+          <span class="time">5 days ago</span>
+        </div>
+      </div>
+      <div class="notification-card event">
+        <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+        <div class="card-content">
+          <h3>New Event</h3>
+          <p>Wellness Workshop scheduled for September 15</p>
+          <span class="time">1 week ago</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Grid -->
+  <main class="portal-main">
+    <!-- Contribution History -->
+    <section class="contribution-section">
+      <h2><i class="fas fa-history"></i> My Contributions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-09-01</td>
+            <td>Ksh 500</td>
+            <td>M-Pesa</td>
+            <td><span class="status received">✓ Received</span></td>
+          </tr>
+          <tr>
+            <td>2025-08-15</td>
+            <td>Ksh 1,000</td>
+            <td>Bank</td>
+            <td><span class="status received">✓ Received</span></td>
+          </tr>
+          <tr>
+            <td>2025-07-20</td>
+            <td>Ksh 500</td>
+            <td>Cash</td>
+            <td><span class="status received">✓ Received</span></td>
+          </tr>
+          <tr>
+            <td>2025-06-10</td>
+            <td>Ksh 1,000</td>
+            <td>M-Pesa</td>
+            <td><span class="status received">✓ Received</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <a href="../contributions/history.html" class="view-all">View All Contributions</a>
+    </section>
+
+    <!-- Make Contribution -->
+    <section class="make-contribution">
+      <h2><i class="fas fa-money-bill-wave"></i> Make Contribution</h2>
+      <p>Make your monthly contribution easily through our secure payment system.</p>
+      <a href="../contributions/pay.html" class="btn submit-btn">
+        <i class="fas fa-credit-card"></i> Go to Payment Page
+      </a>
+    </section>
+
+    <!-- Loan Request -->
+    <section class="loan-section">
+      <h2><i class="fas fa-hand-holding-usd"></i> Loan Request</h2>
+      <div class="eligibility">
+        <h3>Your Eligibility</h3>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Active member: 4 months ✓</li>
+          <li><i class="fas fa-check-circle"></i> Contribution history: Good ✓</li>
+          <li><i class="fas fa-check-circle"></i> Max loan amount: Ksh 9,000</li>
+        </ul>
+      </div>
+      <a href="../loans/apply.html" class="btn submit-btn">
+        <i class="fas fa-paper-plane"></i> Apply for Loan
+      </a>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="quick-links-section">
+      <h2><i class="fas fa-link"></i> Quick Links</h2>
+      <div class="quick-links">
+        <a href="../public/policies.html" class="quick-link">
+          <i class="fas fa-file-alt"></i> View Policies
+        </a>
+        <a href="../public/events.html" class="quick-link">
+          <i class="fas fa-calendar-alt"></i> Upcoming Events
+        </a>
+        <a href="../public/news.html" class="quick-link">
+          <i class="fas fa-newspaper"></i> Latest News
+        </a>
+        <a href="../public/contact-information.html" class="quick-link">
+          <i class="fas fa-envelope"></i> Contact Support
+        </a>
+        <a href="../public/our-team.html" class="quick-link">
+          <i class="fas fa-users"></i> Executive Team
+        </a>
+        <a href="../public/faqs.html" class="quick-link">
+          <i class="fas fa-question-circle"></i> FAQs
+        </a>
+      </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="profile-section">
+      <h2><i class="fas fa-user-cog"></i> My Profile</h2>
+      <div class="profile-info">
+        <p><strong>Name:</strong> Member Name</p>
+        <p><strong>Student ID:</strong> JOO/2024/XXX</p>
+        <p><strong>Email:</strong> member@student.joust.ac.ke</p>
+        <p><strong>Phone:</strong> +254 XXX XXX XXX</p>
+        <p><strong>Member Since:</strong> January 2025</p>
+        <p><strong>Status:</strong> <span class="status active">Active</span></p>
+      </div>
+      <a href="../auth/profile.html" class="btn">
+        <i class="fas fa-edit"></i> Edit Profile
+      </a>
+    </section>
+  </main>
+
+  <!-- Logout -->
+  <div class="logout-section">
+    <a href="../../index.html" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+  </div>
+
+  <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+    
+    <!-- Dynamic Member Welcome Script -->
+    <script>
+        (function() {
+            // Try to get member data from localStorage
+            const profileKey = 'swa_member_profile';
+            const registrationKey = 'swa_registration';
+            
+            let memberData = null;
+            
+            // Try profile data first
+            const profileData = localStorage.getItem(profileKey);
+            if (profileData) {
+                memberData = JSON.parse(profileData);
+            }
+            
+            // Try registration data as fallback
+            if (!memberData) {
+                const registrationData = localStorage.getItem(registrationKey);
+                if (registrationData) {
+                    memberData = JSON.parse(registrationData);
+                }
+            }
+            
+            // Update welcome message if member data exists
+            if (memberData) {
+                const welcomeElement = document.getElementById('welcome-message');
+                if (welcomeElement) {
+                    const firstName = memberData.firstName || memberData.first_name || '';
+                    const lastName = memberData.lastName || memberData.last_name || '';
+                    const fullName = (firstName + ' ' + lastName).trim();
+                    
+                    if (fullName) {
+                        welcomeElement.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + fullName;
+                    }
+                }
+                
+                // Also update profile section if it exists
+                const displayName = document.getElementById('display-name');
+                if (displayName) {
+                    const firstName = memberData.firstName || memberData.first_name || '';
+                    const lastName = memberData.lastName || memberData.last_name || '';
+                    displayName.textContent = (firstName + ' ' + lastName).trim() || 'Member';
+                }
+                
+                const displayStudentId = document.getElementById('display-student-id');
+                if (displayStudentId) {
+                    displayStudentId.textContent = memberData.studentId || memberData.student_id || '-';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

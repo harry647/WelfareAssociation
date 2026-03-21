@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Make a contribution to SWA - Support the Student Welfare Association">
+    <meta name="keywords" content="SWA, Student Welfare Association, JOOUST, contribution, payment, donate">
+    <title>Make Contribution - Student Welfare Association | JOOUST</title>
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Contribution Payment Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/contributions/pay.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <!-- Page Header -->
+    <header class="contribution-header">
+        <h1><i class="fas fa-hand-holding-heart"></i> Make a Contribution</h1>
+        <p>Support your fellow students and build a stronger community</p>
+    </header>
+
+    <main class="contribution-container">
+        <!-- Contribution Types -->
+        <section class="contribution-types">
+            <h2><i class="fas fa-th-large"></i> Select Contribution Type</h2>
+            
+            <div class="type-cards">
+                <label class="type-card">
+                    <input type="radio" name="contributionType" value="monthly" checked>
+                    <div class="card-content">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Monthly Contribution</h3>
+                        <p>Regular monthly welfare support</p>
+                        <span class="recommended">Recommended</span>
+                    </div>
+                </label>
+                
+                <label class="type-card">
+                    <input type="radio" name="contributionType" value="welfare">
+                    <div class="card-content">
+                        <i class="fas fa-heart"></i>
+                        <h3>Welfare Package</h3>
+                        <p>Support students in need</p>
+                    </div>
+                </label>
+                
+                <label class="type-card">
+                    <input type="radio" name="contributionType" value="emergency">
+                    <div class="card-content">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Emergency Fund</h3>
+                        <p>Help with urgent needs</p>
+                    </div>
+                </label>
+                
+                <label class="type-card">
+                    <input type="radio" name="contributionType" value="event">
+                    <div class="card-content">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3>Event Support</h3>
+                        <p>Fund student activities</p>
+                    </div>
+                </label>
+            </div>
+        </section>
+
+        <!-- Payment Form -->
+        <section class="payment-section">
+            <h2><i class="fas fa-credit-card"></i> Payment Details</h2>
+            
+            <form id="contributionForm" class="contribution-form">
+                <!-- Member Information -->
+                <fieldset>
+                    <legend><i class="fas fa-user"></i> Member Information</legend>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName">Full Name <span class="required">*</span></label>
+                            <input type="text" id="fullName" name="fullName" required 
+                                   placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="studentId">Student ID <span class="required">*</span></label>
+                            <input type="text" id="studentId" name="studentId" required 
+                                   placeholder="e.g., JOO/2024/001">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" required 
+                                   placeholder="e.g., 0712 345 678">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required 
+                                   placeholder="your.email@student.joust.ac.ke">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Contribution Details -->
+                <fieldset>
+                    <legend><i class="fas fa-donate"></i> Contribution Details</legend>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Amount (Ksh) <span class="required">*</span></label>
+                            <input type="number" id="amount" name="amount" required 
+                                   min="100" step="100" placeholder="Enter amount">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paymentMonth">Contribution Month</label>
+                            <input type="month" id="paymentMonth" name="paymentMonth">
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Amount Buttons -->
+                    <div class="quick-amounts">
+                        <label>Quick Select:</label>
+                        <div class="amount-buttons">
+                            <button type="button" class="amount-btn" data-amount="500">Ksh 500</button>
+                            <button type="button" class="amount-btn" data-amount="1000">Ksh 1,000</button>
+                            <button type="button" class="amount-btn" data-amount="2000">Ksh 2,000</button>
+                            <button type="button" class="amount-btn" data-amount="5000">Ksh 5,000</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method <span class="required">*</span></label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="">Select payment method</option>
+                            <option value="mpesa">M-Pesa</option>
+                            <option value="bank">Bank Transfer</option>
+                            <option value="cash">Cash</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transactionId">Transaction ID</label>
+                        <input type="text" id="transactionId" name="transactionId" 
+                               placeholder="Enter M-Pesa or Bank transaction ID">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="note">Additional Note</label>
+                        <textarea id="note" name="note" rows="3" 
+                                  placeholder="Any additional information..."></textarea>
+                    </div>
+                </fieldset>
+
+                <!-- Anonymous Option -->
+                <fieldset>
+                    <legend><i class="fas fa-user-secret"></i> Privacy</legend>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="anonymous" name="anonymous">
+                            <span>Make this contribution anonymous</span>
+                        </label>
+                        <small>When checked, your name will not be displayed in the contributions list</small>
+                    </div>
+                </fieldset>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Submit Contribution
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Impact Section -->
+        <section class="impact-section">
+            <h2><i class="fas fa-chart-line"></i> Your Impact</h2>
+            
+            <div class="impact-cards">
+                <div class="impact-card">
+                    <i class="fas fa-book"></i>
+                    <h3>Academic Support</h3>
+                    <p>Ksh 500 provides study materials for one student</p>
+                </div>
+                <div class="impact-card">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Meal Support</h3>
+                    <p>Ksh 1,000 feeds a student for a week</p>
+                </div>
+                <div class="impact-card">
+                    <i class="fas fa-bed"></i>
+                    <h3>Accommodation</h3>
+                    <p>Ksh 5,000 helps with emergency housing</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Contributors -->
+        <section class="recent-contributors">
+            <h2><i class="fas fa-users"></i> Recent Contributors</h2>
+            
+            <div class="contributors-list">
+                <div class="contributor">
+                    <div class="contributor-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contributor-info">
+                        <h4>Lavenda Achieng</h4>
+                        <p>Ksh 1,000 - Monthly Contribution</p>
+                        <span class="contribution-date">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="contributor">
+                    <div class="contributor-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contributor-info">
+                        <h4>Mary Odundo</h4>
+                        <p>Ksh 2,000 - Welfare Package</p>
+                        <span class="contribution-date">Yesterday</span>
+                    </div>
+                </div>
+                <div class="contributor">
+                    <div class="contributor-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contributor-info">
+                        <h4>Anonymous</h4>
+                        <p>Ksh 500 - Emergency Fund</p>
+                        <span class="contribution-date">2 days ago</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+    <!-- Contribution Payment Script -->
+    <script type="module" src="../../src/scripts/pages/contributions/pay.js"></script>
+</body>
+
+</html>

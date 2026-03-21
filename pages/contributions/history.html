@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Contributions - Admin Panel">
+  <title>Contributions - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  <link rel="stylesheet" href="../../src/styles/pages/contributions/history.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="../dashboard/admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="../dashboard/members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="../dashboard/withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="../dashboard/debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="../dashboard/settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="../dashboard/registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="../dashboard/active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="../dashboard/fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="../dashboard/members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="../dashboard/executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="../dashboard/documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="../dashboard/notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="../dashboard/analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="../dashboard/security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content-section active">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-history"></i> Contribution History</h1>
+          <p>Track and manage all contributions to SWA</p>
+        </div>
+        <!-- Summary Statistics -->
+        <section class="contribution-summary">
+            <h2><i class="fas fa-chart-pie"></i> Contribution Summary</h2>
+            
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <div class="summary-info">
+                        <h3>Total Contributions</h3>
+                        <p class="stat-number">15</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <div class="summary-info">
+                        <h3>Total Amount</h3>
+                        <p class="stat-number">Ksh 12,500</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="summary-info">
+                        <h3>This Month</h3>
+                        <p class="stat-number">Ksh 1,000</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-trophy"></i>
+                    <div class="summary-info">
+                        <h3>Member Since</h3>
+                        <p class="stat-number">Jan 2024</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contribution Breakdown -->
+        <section class="breakdown-section">
+            <h2><i class="fas fa-chart-bar"></i> Contribution Breakdown</h2>
+            
+            <div class="breakdown-cards">
+                <div class="breakdown-card">
+                    <div class="breakdown-header">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Monthly Contributions</h3>
+                    </div>
+                    <div class="breakdown-amount">Ksh 8,000</div>
+                    <div class="breakdown-count">12 contributions</div>
+                    <div class="breakdown-bar">
+                        <div class="bar-fill" style="width: 64%"></div>
+                    </div>
+                </div>
+                
+                <div class="breakdown-card">
+                    <div class="breakdown-header">
+                        <i class="fas fa-heart"></i>
+                        <h3>Welfare Packages</h3>
+                    </div>
+                    <div class="breakdown-amount">Ksh 3,000</div>
+                    <div class="breakdown-count">2 contributions</div>
+                    <div class="breakdown-bar">
+                        <div class="bar-fill" style="width: 24%"></div>
+                    </div>
+                </div>
+                
+                <div class="breakdown-card">
+                    <div class="breakdown-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Emergency Fund</h3>
+                    </div>
+                    <div class="breakdown-amount">Ksh 1,500</div>
+                    <div class="breakdown-count">1 contribution</div>
+                    <div class="breakdown-bar">
+                        <div class="bar-fill" style="width: 12%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Options -->
+        <section class="filter-section">
+            <h2><i class="fas fa-filter"></i> Filter Contributions</h2>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="typeFilter">Type:</label>
+                    <select id="typeFilter">
+                        <option value="all">All Types</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="welfare">Welfare</option>
+                        <option value="emergency">Emergency</option>
+                        <option value="event">Event</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="yearFilter">Year:</label>
+                    <select id="yearFilter">
+                        <option value="all">All Years</option>
+                        <option value="2025" selected>2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
+                    <select id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="verified">Verified</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contribution History Table -->
+        <section class="history-table-section">
+            <h2><i class="fas fa-list"></i> All Contributions</h2>
+            
+            <table class="contributions-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Receipt No.</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mar 15, 2025</td>
+                        <td>RCPT/2025/015</td>
+                        <td>Monthly</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                        <td><a href="#" class="action-link">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>Feb 20, 2025</td>
+                        <td>RCPT/2025/012</td>
+                        <td>Welfare</td>
+                        <td>Ksh 2,000</td>
+                        <td>Bank</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                        <td><a href="#" class="action-link">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>Feb 15, 2025</td>
+                        <td>RCPT/2025/011</td>
+                        <td>Monthly</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                        <td><a href="#" class="action-link">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>Jan 25, 2025</td>
+                        <td>RCPT/2025/008</td>
+                        <td>Emergency</td>
+                        <td>Ksh 1,500</td>
+                        <td>M-Pesa</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                        <td><a href="#" class="action-link">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>Jan 15, 2025</td>
+                        <td>RCPT/2025/005</td>
+                        <td>Monthly</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                        <td><a href="#" class="action-link">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>Dec 15, 2024</td>
+                        <td>RCPT/2024/045</td>
+                        <td>Monthly</td>
+                        <td>Ksh 1,000</td>
+                        <td>M-Pesa</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                        <td><a href="#" class="action-link">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>Nov 20, 2024</td>
+                        <td>RCPT/2024/038</td>
+                        <td>Welfare</td>
+                        <td>Ksh 1,000</td>
+                        <td>Cash</td>
+                        <td><span class="status-badge success">Verified</span></td>
+                        <td><a href="#" class="action-link">View</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Monthly Trend -->
+        <section class="trend-section">
+            <h2><i class="fas fa-chart-line"></i> Monthly Trend</h2>
+            
+            <div class="trend-chart">
+                <div class="trend-bar" data-month="Jul" data-amount="500">
+                    <div class="bar" style="height: 25%"></div>
+                    <span class="month">Jul</span>
+                </div>
+                <div class="trend-bar" data-month="Aug" data-amount="1000">
+                    <div class="bar" style="height: 50%"></div>
+                    <span class="month">Aug</span>
+                </div>
+                <div class="trend-bar" data-month="Sep" data-amount="1000">
+                    <div class="bar" style="height: 50%"></div>
+                    <span class="month">Sep</span>
+                </div>
+                <div class="trend-bar" data-month="Oct" data-amount="1000">
+                    <div class="bar" style="height: 50%"></div>
+                    <span class="month">Oct</span>
+                </div>
+                <div class="trend-bar" data-month="Nov" data-amount="2000">
+                    <div class="bar" style="height: 100%"></div>
+                    <span class="month">Nov</span>
+                </div>
+                <div class="trend-bar" data-month="Dec" data-amount="1000">
+                    <div class="bar" style="height: 50%"></div>
+                    <span class="month">Dec</span>
+                </div>
+                <div class="trend-bar" data-month="Jan" data-amount="2500">
+                    <div class="bar" style="height: 100%"></div>
+                    <span class="month">Jan</span>
+                </div>
+                <div class="trend-bar" data-month="Feb" data-amount="3000">
+                    <div class="bar" style="height: 100%"></div>
+                    <span class="month">Feb</span>
+                </div>
+                <div class="trend-bar" data-month="Mar" data-amount="1000">
+                    <div class="bar" style="height: 50%"></div>
+                    <span class="month">Mar</span>
+                </div>
+            </div>
+            <div class="trend-legend">
+                <span>Ksh 0</span>
+                <span>Ksh 1,000</span>
+                <span>Ksh 2,000</span>
+                <span>Ksh 3,000+</span>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="pay.html" class="action-btn"><i class="fas fa-plus"></i> New Contribution</a>
+            <a href="../reports/contributions-report.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Reminders</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

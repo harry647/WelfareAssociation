@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Members Savings - Track and manage member savings">
+  <title>Members Savings - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Members Savings Section -->
+    <div class="content-section active" id="section-savings">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-piggy-bank"></i> Members Savings</h1>
+          <p>Track and manage member savings and deposits</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="cards">
+          <div class="card">
+            <h3><i class="fas fa-users"></i> Total Members</h3>
+            <p class="stat-number">22</p>
+            <p class="stat-label">With Savings</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-money-bill-wave"></i> Total Savings</h3>
+            <p class="stat-number">Ksh 245,000</p>
+            <p class="stat-label">Current Balance</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-arrow-up"></i> Deposits</h3>
+            <p class="stat-number">Ksh 45,000</p>
+            <p class="stat-label">This Month</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-arrow-down"></i> Withdrawals</h3>
+            <p class="stat-number">Ksh 12,000</p>
+            <p class="stat-label">This Month</p>
+          </div>
+        </div>
+
+        <!-- Savings Summary -->
+        <div class="summary-stats">
+          <h2><i class="fas fa-chart-pie"></i> Savings Overview</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
+              <span class="stat-value">+18%</span>
+              <span class="stat-desc">Growth Rate</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-percentage"></i></span>
+              <span class="stat-value">5%</span>
+              <span class="stat-desc">Interest Rate</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-hand-holding-usd"></i></span>
+              <span class="stat-value">Ksh 5,000</span>
+              <span class="stat-desc">Avg. Savings</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-trophy"></i></span>
+              <span class="stat-value">Ksh 25,000</span>
+              <span class="stat-desc">Top Saver</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Individual Savings Accounts -->
+        <section class="data-section">
+          <h2><i class="fas fa-user-graduate"></i> Individual Savings Accounts</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Student ID</th>
+                  <th>Opening Date</th>
+                  <th>Deposits</th>
+                  <th>Withdrawals</th>
+                  <th>Interest Earned</th>
+                  <th>Current Balance</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lavenda Achieng</td>
+                  <td>JOO/2024/001</td>
+                  <td>2024-01-15</td>
+                  <td>Ksh 15,000</td>
+                  <td>Ksh 3,000</td>
+                  <td>Ksh 600</td>
+                  <td><strong>Ksh 12,600</strong></td>
+                  <td><button class="btn">View</button></td>
+                </tr>
+                <tr>
+                  <td>Mary Odundo</td>
+                  <td>JOO/2024/002</td>
+                  <td>2024-02-20</td>
+                  <td>Ksh 20,000</td>
+                  <td>Ksh 5,000</td>
+                  <td>Ksh 750</td>
+                  <td><strong>Ksh 15,750</strong></td>
+                  <td><button class="btn">View</button></td>
+                </tr>
+                <tr>
+                  <td>Francis Opiyo</td>
+                  <td>JOO/2024/003</td>
+                  <td>2024-03-10</td>
+                  <td>Ksh 12,000</td>
+                  <td>Ksh 2,000</td>
+                  <td>Ksh 500</td>
+                  <td><strong>Ksh 10,500</strong></td>
+                  <td><button class="btn">View</button></td>
+                </tr>
+                <tr>
+                  <td>Vincent Otieno</td>
+                  <td>JOO/2024/004</td>
+                  <td>2024-01-05</td>
+                  <td>Ksh 25,000</td>
+                  <td>Ksh 8,000</td>
+                  <td>Ksh 850</td>
+                  <td><strong>Ksh 17,850</strong></td>
+                  <td><button class="btn">View</button></td>
+                </tr>
+                <tr>
+                  <td>Yvonne Achieng</td>
+                  <td>JOO/2024/006</td>
+                  <td>2024-04-15</td>
+                  <td>Ksh 10,000</td>
+                  <td>Ksh 1,500</td>
+                  <td>Ksh 425</td>
+                  <td><strong>Ksh 8,925</strong></td>
+                  <td><button class="btn">View</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Recent Transactions -->
+        <section class="data-section">
+          <h2><i class="fas fa-exchange-alt"></i> Recent Transactions</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Member Name</th>
+                  <th>Transaction Type</th>
+                  <th>Amount</th>
+                  <th>Balance After</th>
+                  <th>Processed By</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2025-09-10</td>
+                  <td>Sarah Kemunto</td>
+                  <td>Deposit</td>
+                  <td>+Ksh 2,000</td>
+                  <td>Ksh 7,500</td>
+                  <td>Admin</td>
+                  <td><span class="status received">✓ Complete</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-09</td>
+                  <td>Jeff Juma</td>
+                  <td>Withdrawal</td>
+                  <td>-Ksh 3,000</td>
+                  <td>Ksh 4,200</td>
+                  <td>Admin</td>
+                  <td><span class="status received">✓ Complete</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-08</td>
+                  <td>Emily Akinyi</td>
+                  <td>Deposit</td>
+                  <td>+Ksh 1,500</td>
+                  <td>Ksh 9,800</td>
+                  <td>Admin</td>
+                  <td><span class="status received">✓ Complete</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-07</td>
+                  <td>John Ochieng</td>
+                  <td>Deposit</td>
+                  <td>+Ksh 3,000</td>
+                  <td>Ksh 11,200</td>
+                  <td>Admin</td>
+                  <td><span class="status received">✓ Complete</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Savings Goals -->
+        <section class="data-section">
+          <h2><i class="fas fa-bullseye"></i> Members Savings Goals</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Goal Name</th>
+                  <th>Target Amount</th>
+                  <th>Current Savings</th>
+                  <th>Progress</th>
+                  <th>Target Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lavenda Achieng</td>
+                  <td>Emergency Fund</td>
+                  <td>Ksh 20,000</td>
+                  <td>Ksh 12,600</td>
+                  <td>
+                    <div style="background: var(--light-gray); border-radius: 10px; height: 20px; width: 100px; overflow: hidden;">
+                      <div style="background: var(--primary); height: 100%; width: 63%;"></div>
+                    </div>
+                    <small>63%</small>
+                  </td>
+                  <td>2025-12-31</td>
+                  <td><span class="status pending">In Progress</span></td>
+                </tr>
+                <tr>
+                  <td>Mary Odundo</td>
+                  <td>Education Fund</td>
+                  <td>Ksh 30,000</td>
+                  <td>Ksh 15,750</td>
+                  <td>
+                    <div style="background: var(--light-gray); border-radius: 10px; height: 20px; width: 100px; overflow: hidden;">
+                      <div style="background: var(--primary); height: 100%; width: 52%;"></div>
+                    </div>
+                    <small>52%</small>
+                  </td>
+                  <td>2026-06-30</td>
+                  <td><span class="status pending">In Progress</span></td>
+                </tr>
+                <tr>
+                  <td>Vincent Otieno</td>
+                  <td>Business Fund</td>
+                  <td>Ksh 50,000</td>
+                  <td>Ksh 17,850</td>
+                  <td>
+                    <div style="background: var(--light-gray); border-radius: 10px; height: 20px; width: 100px; overflow: hidden;">
+                      <div style="background: var(--amber); height: 100%; width: 36%;"></div>
+                    </div>
+                    <small>36%</small>
+                  </td>
+                  <td>2026-12-31</td>
+                  <td><span class="status pending">In Progress</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="../contributions/pay.html" class="action-btn"><i class="fas fa-plus-circle"></i> Add Deposit</a>
+            <a href="withdrawals.html" class="action-btn"><i class="fas fa-minus-circle"></i> Process Withdrawal</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-calculator"></i> Calculate Interest</a>
+            <a href="savings-goal.html" class="action-btn"><i class="fas fa-bullseye"></i> Set Savings Goal</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Statement</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

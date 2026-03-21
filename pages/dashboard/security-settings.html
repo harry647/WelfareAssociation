@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Security Settings - Manage system security">
+  <title>Security Settings - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Security Settings Section -->
+    <div class="content-section active" id="section-security">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-shield-alt"></i> Security Settings</h1>
+          <p>Manage system security, access controls, and privacy settings</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="cards">
+          <div class="card">
+            <h3><i class="fas fa-user-shield"></i> Active Users</h3>
+            <p class="stat-number">8</p>
+            <p class="stat-label">Logged In</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-key"></i> 2FA Enabled</h3>
+            <p class="stat-number">5</p>
+            <p class="stat-label">Users</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-exclamation-triangle"></i> Failed Logins</h3>
+            <p class="stat-number">3</p>
+            <p class="stat-label">Today</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-lock"></i> Last Audit</h3>
+            <p class="stat-number">2</p>
+            <p class="stat-label">Days Ago</p>
+          </div>
+        </div>
+
+        <!-- Security Overview -->
+        <div class="summary-stats">
+          <h2><i class="fas fa-shield-virus"></i> Security Status</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-check-circle" style="color: green;"></i></span>
+              <span class="stat-value">Secure</span>
+              <span class="stat-desc">Firewall Status</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-check-circle" style="color: green;"></i></span>
+              <span class="stat-value">Active</span>
+              <span class="stat-desc">SSL Certificate</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-check-circle" style="color: green;"></i></span>
+              <span class="stat-value">Enabled</span>
+              <span class="stat-desc">Backup System</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-exclamation-circle" style="color: orange;"></i></span>
+              <span class="stat-value">Review</span>
+              <span class="stat-desc">Password Policy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Login Security Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-sign-in-alt"></i> Login Security</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Current Value</th>
+                  <th>Status</th>
+                  <th>Last Modified</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Minimum Password Length</td>
+                  <td>8 characters</td>
+                  <td><span class="status active">Enabled</span></td>
+                  <td>2025-01-15</td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Password Complexity</td>
+                  <td>Required</td>
+                  <td><span class="status active">Enabled</span></td>
+                  <td>2025-01-15</td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Two-Factor Authentication</td>
+                  <td>Optional</td>
+                  <td><span class="status pending">Not Enforced</span></td>
+                  <td>2025-03-20</td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Login Attempts Limit</td>
+                  <td>5 attempts</td>
+                  <td><span class="status active">Enabled</span></td>
+                  <td>2025-02-10</td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Session Timeout</td>
+                  <td>30 minutes</td>
+                  <td><span class="status active">Enabled</span></td>
+                  <td>2025-02-10</td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Password Expiry</td>
+                  <td>90 days</td>
+                  <td><span class="status active">Enabled</span></td>
+                  <td>2025-01-15</td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- User Access Management -->
+        <section class="data-section">
+          <h2><i class="fas fa-users-cog"></i> User Access Management</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Last Login</th>
+                  <th>IP Address</th>
+                  <th>2FA Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Vincent Otieno</td>
+                  <td>Super Admin</td>
+                  <td>Today, 10:30 AM</td>
+                  <td>192.168.1.100</td>
+                  <td><span class="status active"><i class="fas fa-check"></i> Enabled</span></td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Mary Odundo</td>
+                  <td>Treasurer</td>
+                  <td>Today, 09:15 AM</td>
+                  <td>192.168.1.105</td>
+                  <td><span class="status active"><i class="fas fa-check"></i> Enabled</span></td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Lavenda Achieng</td>
+                  <td>Secretary</td>
+                  <td>Yesterday, 4:45 PM</td>
+                  <td>192.168.1.110</td>
+                  <td><span class="status pending"><i class="fas fa-times"></i> Disabled</span></td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Francis Opiyo</td>
+                  <td>Committee Head</td>
+                  <td>Sep 10, 2025</td>
+                  <td>192.168.1.115</td>
+                  <td><span class="status pending"><i class="fas fa-times"></i> Disabled</span></td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Audit Log -->
+        <section class="data-section">
+          <h2><i class="fas fa-clipboard-list"></i> Recent Security Events</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Event</th>
+                  <th>User</th>
+                  <th>IP Address</th>
+                  <th>Details</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2025-09-12 10:30:45</td>
+                  <td>Login Successful</td>
+                  <td>Vincent Otieno</td>
+                  <td>192.168.1.100</td>
+                  <td>Dashboard Access</td>
+                  <td><span class="status active">Success</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-12 10:15:22</td>
+                  <td>Failed Login</td>
+                  <td>Unknown</td>
+                  <td>192.168.1.200</td>
+                  <td>Invalid Password</td>
+                  <td><span class="status overdue">Failed</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-12 09:45:10</td>
+                  <td>Password Changed</td>
+                  <td>Mary Odundo</td>
+                  <td>192.168.1.105</td>
+                  <td>Password Updated</td>
+                  <td><span class="status active">Success</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-11 16:30:00</td>
+                  <td>Permission Changed</td>
+                  <td>Vincent Otieno</td>
+                  <td>192.168.1.100</td>
+                  <td>Role Updated</td>
+                  <td><span class="status active">Success</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-11 14:20:15</td>
+                  <td>Suspicious Activity</td>
+                  <td>Unknown</td>
+                  <td>203.45.67.89</td>
+                  <td>Multiple Failed Attempts</td>
+                  <td><span class="status pending">Alert</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Privacy Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-user-secret"></i> Privacy Settings</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Description</th>
+                  <th>Current Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Profile Visibility</td>
+                  <td>Members can view other members</td>
+                  <td><span class="status active">Public</span></td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Contact Information</td>
+                  <td>Phone/Email visible to members</td>
+                  <td><span class="status active">Members Only</span></td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Contribution History</td>
+                  <td>Contribution amounts visible to others</td>
+                  <td><span class="status pending">Private</span></td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Activity Logs</td>
+                  <td>Track member activities</td>
+                  <td><span class="status active">Enabled</span></td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Data Export</td>
+                  <td>Allow data export requests</td>
+                  <td><span class="status pending">Restricted</span></td>
+                  <td><button class="btn"><i class="fas fa-edit"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Backup & Recovery -->
+        <section class="data-section">
+          <h2><i class="fas fa-database"></i> Backup & Recovery</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Backup Type</th>
+                  <th>Schedule</th>
+                  <th>Last Backup</th>
+                  <th>Size</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Full Database</td>
+                  <td>Weekly (Sunday)</td>
+                  <td>2025-09-07 02:00 AM</td>
+                  <td>2.4 GB</td>
+                  <td><span class="status active">Success</span></td>
+                  <td><button class="btn"><i class="fas fa-download"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Incremental</td>
+                  <td>Daily</td>
+                  <td>2025-09-12 02:00 AM</td>
+                  <td>150 MB</td>
+                  <td><span class="status active">Success</span></td>
+                  <td><button class="btn"><i class="fas fa-download"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Config Files</td>
+                  <td>On Change</td>
+                  <td>2025-09-10 11:30 AM</td>
+                  <td>5 MB</td>
+                  <td><span class="status active">Success</span></td>
+                  <td><button class="btn"><i class="fas fa-download"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="add-officer.html" class="action-btn"><i class="fas fa-plus-circle"></i> Add User</a>
+            <a href="settings.html" class="action-btn" onclick="alert('Password reset feature is available in user profile settings'); return false;"><i class="fas fa-key"></i> Reset Password</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export Audit Log</a>
+            <a href="#" class="action-btn" onclick="alert('Backup feature is scheduled to run automatically'); return false;"><i class="fas fa-sync"></i> Run Backup</a>
+            <a href="#" onclick="alert('Security scan is running in the background'); return false;" class="action-btn"><i class="fas fa-shield-virus"></i> Security Scan</a>
+            <a href="settings.html" class="action-btn"><i class="fas fa-bell"></i> Alert Settings</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

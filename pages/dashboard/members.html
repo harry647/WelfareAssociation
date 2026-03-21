@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Members Management - Admin Panel">
+  <title>Members Management - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content-section active">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-users"></i> Members Management</h1>
+          <p>Manage all SWA members</p>
+        </div>
+
+        <!-- Members Table -->
+        <section class="data-section">
+          <h2><i class="fas fa-list"></i> All Members</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Join Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>JOO/2024/001</td>
+                  <td>Lavenda Achieng</td>
+                  <td>lavenda@student.jou.ac.ke</td>
+                  <td>+254 712 345 678</td>
+                  <td>2024-01-15</td>
+                  <td><span class="status received">Active</span></td>
+                  <td>
+                    <button class="btn">View</button>
+                    <button class="btn">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>JOO/2024/002</td>
+                  <td>Mary Odundo</td>
+                  <td>mary@student.jou.ac.ke</td>
+                  <td>+254 723 456 789</td>
+                  <td>2024-02-20</td>
+                  <td><span class="status received">Active</span></td>
+                  <td>
+                    <button class="btn">View</button>
+                    <button class="btn">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>JOO/2024/003</td>
+                  <td>Francis Opiyo</td>
+                  <td>francis@student.jou.ac.ke</td>
+                  <td>+254 734 567 890</td>
+                  <td>2024-03-10</td>
+                  <td><span class="status received">Active</span></td>
+                  <td>
+                    <button class="btn">View</button>
+                    <button class="btn">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>JOO/2024/004</td>
+                  <td>Vincent Otieno</td>
+                  <td>vincent@student.jou.ac.ke</td>
+                  <td>+254 745 678 901</td>
+                  <td>2024-01-05</td>
+                  <td><span class="status received">Active</span></td>
+                  <td>
+                    <button class="btn">View</button>
+                    <button class="btn">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>JOO/2024/005</td>
+                  <td>Sarah Kemunto</td>
+                  <td>sarah@student.jou.ac.ke</td>
+                  <td>+254 756 789 012</td>
+                  <td>2024-04-12</td>
+                  <td><span class="status" style="background: rgba(245,158,11,0.12); color: #f59e0b;">Pending</span></td>
+                  <td>
+                    <button class="btn">View</button>
+                    <button class="btn">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="../auth/registration-form.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Member</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export List</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Email</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

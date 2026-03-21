@@ -1,0 +1,816 @@
+/* ==========================================================================
+   Contribution Payment Page Styles
+   Modern, visually appealing design with BEM methodology
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties (Design Tokens)
+   -------------------------------------------------------------------------- */
+:root {
+    /* Primary Colors - Warm coral/orange theme */
+    --pay-color-primary: #e17055;
+    --pay-color-primary-dark: #d63031;
+    --pay-color-primary-light: #fab1a0;
+    --pay-color-primary-bg: #fff0ed;
+
+    /* Secondary Colors */
+    --pay-color-secondary: #00b894;
+    --pay-color-secondary-dark: #00a185;
+    --pay-color-accent: #fdcb6e;
+    --pay-color-purple: #6c5ce7;
+
+    /* Neutral Colors */
+    --pay-color-bg: #f8f9fc;
+    --pay-color-surface: #ffffff;
+    --pay-color-text: #2d3436;
+    --pay-color-text-muted: #636e72;
+    --pay-color-border: #dfe6e9;
+
+    /* Status Colors */
+    --pay-color-success: #00b894;
+    --pay-color-success-bg: #e6faf4;
+    --pay-color-warning: #fdcb6e;
+    --pay-color-warning-bg: #fff9e6;
+    --pay-color-danger: #e17055;
+    --pay-color-danger-bg: #ffeaea;
+
+    /* Shadows */
+    --pay-shadow-sm: 0 2px 8px rgba(225, 112, 85, 0.08);
+    --pay-shadow-md: 0 4px 20px rgba(225, 112, 85, 0.12);
+    --pay-shadow-lg: 0 8px 40px rgba(225, 112, 85, 0.16);
+    --pay-shadow-hover: 0 12px 48px rgba(225, 112, 85, 0.2);
+
+    /* Transitions */
+    --pay-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --pay-transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --pay-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Border Radius */
+    --pay-radius-sm: 6px;
+    --pay-radius-md: 12px;
+    --pay-radius-lg: 20px;
+    --pay-radius-full: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   Page Header
+   -------------------------------------------------------------------------- */
+.contribution-header {
+    background: linear-gradient(135deg, #e17055 0%, #d63031 50%, #c0392b 100%);
+    color: white;
+    padding: 80px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.contribution-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    animation: headerShine 12s infinite linear;
+}
+
+@keyframes headerShine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.contribution-header__content {
+    position: relative;
+    z-index: 1;
+}
+
+.contribution-header h1 {
+    font-size: 2.75rem;
+    margin-bottom: 12px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.contribution-header h1 i {
+    font-size: 2.25rem;
+    animation: heartBeat 1.5s infinite ease-in-out;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.15); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.15); }
+    70% { transform: scale(1); }
+}
+
+.contribution-header p {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    font-weight: 400;
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Main Container
+   -------------------------------------------------------------------------- */
+.contribution-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px;
+    background: var(--pay-color-bg);
+    min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   Section Base Styles
+   -------------------------------------------------------------------------- */
+.contribution-section {
+    margin-bottom: 40px;
+}
+
+.contribution-section__title {
+    color: var(--pay-color-primary);
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.contribution-section__title i {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pay-color-primary-bg);
+    border-radius: var(--pay-radius-sm);
+    font-size: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Contribution Types
+   -------------------------------------------------------------------------- */
+.contribution-types {
+    margin-bottom: 48px;
+}
+
+.type-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.type-card {
+    cursor: pointer;
+    position: relative;
+}
+
+.type-card input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.card-content {
+    background: var(--pay-color-surface);
+    padding: 32px 24px;
+    border-radius: var(--pay-radius-md);
+    box-shadow: var(--pay-shadow-sm);
+    text-align: center;
+    transition: all var(--pay-transition-normal);
+    border: 2px solid transparent;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.type-card input:checked + .card-content {
+    border-color: var(--pay-color-primary);
+    background: var(--pay-color-primary-bg);
+    box-shadow: var(--pay-shadow-lg);
+    transform: translateY(-8px);
+}
+
+.card-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--pay-radius-md);
+    background: linear-gradient(135deg, var(--pay-color-primary-bg) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity var(--pay-transition-normal);
+}
+
+.type-card input:checked + .card-content::before {
+    opacity: 1;
+}
+
+.card-content i {
+    font-size: 2.75rem;
+    color: var(--pay-color-primary);
+    margin-bottom: 18px;
+    transition: all var(--pay-transition-normal);
+}
+
+.type-card:hover .card-content i {
+    transform: scale(1.1) rotate(5deg);
+    color: var(--pay-color-primary-dark);
+}
+
+.type-card input:checked + .card-content i {
+    animation: iconPop 0.4s ease-out;
+}
+
+@keyframes iconPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.card-content h3 {
+    color: var(--pay-color-text);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-content p {
+    color: var(--pay-color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.card-content__badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, var(--pay-color-success) 0%, var(--pay-color-secondary) 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: var(--pay-radius-full);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 184, 148, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Payment Section
+   -------------------------------------------------------------------------- */
+.payment-section {
+    background: var(--pay-color-surface);
+    padding: 40px;
+    border-radius: var(--pay-radius-lg);
+    box-shadow: var(--pay-shadow-md);
+    margin-bottom: 48px;
+    border: 1px solid var(--pay-color-border);
+}
+
+.contribution-form fieldset {
+    border: 2px solid var(--pay-color-border);
+    border-radius: var(--pay-radius-md);
+    padding: 28px;
+    margin-bottom: 28px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f8f9fc 100%);
+    transition: all var(--pay-transition-normal);
+}
+
+.contribution-form fieldset:hover {
+    border-color: var(--pay-color-primary-light);
+    box-shadow: var(--pay-shadow-sm);
+}
+
+.contribution-form legend {
+    color: var(--pay-color-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contribution-form legend i {
+    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pay-color-primary-bg);
+    border-radius: var(--pay-radius-sm);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+    color: var(--pay-color-text);
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.form-group__required {
+    color: var(--pay-color-danger);
+    margin-left: 4px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--pay-color-border);
+    border-radius: var(--pay-radius-sm);
+    font-size: 1rem;
+    transition: all var(--pay-transition-fast);
+    background: var(--pay-color-surface);
+    color: var(--pay-color-text);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #b2bec3;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    border-color: var(--pay-color-primary-light);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--pay-color-primary);
+    box-shadow: 0 0 0 4px rgba(225, 112, 85, 0.15);
+    transform: translateY(-2px);
+}
+
+.form-group small {
+    display: block;
+    color: var(--pay-color-text-muted);
+    margin-top: 8px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Quick Amounts */
+.quick-amounts {
+    margin: 24px 0;
+}
+
+.quick-amounts > label {
+    display: block;
+    color: var(--pay-color-text);
+    font-weight: 600;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+}
+
+.amount-buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.amount-btn {
+    padding: 14px 28px;
+    background: var(--pay-color-surface);
+    border: 2px solid var(--pay-color-border);
+    border-radius: var(--pay-radius-sm);
+    color: var(--pay-color-text);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--pay-transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.amount-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--pay-color-primary) 0%, var(--pay-color-primary-dark) 100%);
+    opacity: 0;
+    transition: opacity var(--pay-transition-fast);
+}
+
+.amount-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+.amount-btn:hover {
+    border-color: var(--pay-color-primary);
+    color: var(--pay-color-primary);
+    transform: translateY(-3px);
+    box-shadow: var(--pay-shadow-sm);
+}
+
+.amount-btn.active {
+    background: linear-gradient(135deg, var(--pay-color-primary) 0%, var(--pay-color-primary-dark) 100%);
+    border-color: var(--pay-color-primary);
+    color: white;
+    box-shadow: var(--pay-shadow-md);
+}
+
+.amount-btn.active::before {
+    opacity: 1;
+}
+
+/* Checkbox Label */
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 16px 20px;
+    background: var(--pay-color-surface);
+    border: 2px solid var(--pay-color-border);
+    border-radius: var(--pay-radius-sm);
+    transition: all var(--pay-transition-fast);
+}
+
+.checkbox-label:hover {
+    border-color: var(--pay-color-primary-light);
+    background: var(--pay-color-primary-bg);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--pay-color-primary);
+    cursor: pointer;
+}
+
+.checkbox-label span {
+    font-weight: 500;
+    color: var(--pay-color-text);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--pay-color-border);
+}
+
+.btn {
+    padding: 16px 40px;
+    border: none;
+    border-radius: var(--pay-radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--pay-transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn--primary {
+    background: linear-gradient(135deg, var(--pay-color-primary) 0%, var(--pay-color-primary-dark) 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(225, 112, 85, 0.3);
+}
+
+.btn--primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn--primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(225, 112, 85, 0.4);
+}
+
+.btn--primary:hover::before {
+    left: 100%;
+}
+
+.btn--primary:active {
+    transform: translateY(-1px);
+}
+
+.btn--secondary {
+    background: var(--pay-color-surface);
+    color: var(--pay-color-text-muted);
+    border: 2px solid var(--pay-color-border);
+}
+
+.btn--secondary:hover {
+    background: #f8f9fa;
+    border-color: var(--pay-color-text-muted);
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   Impact Section
+   -------------------------------------------------------------------------- */
+.impact-section {
+    background: var(--pay-color-surface);
+    padding: 36px;
+    border-radius: var(--pay-radius-lg);
+    box-shadow: var(--pay-shadow-sm);
+    margin-bottom: 48px;
+    border: 1px solid var(--pay-color-border);
+}
+
+.impact-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.impact-card {
+    padding: 32px 24px;
+    background: linear-gradient(135deg, #fafbfc 0%, #fff 100%);
+    border-radius: var(--pay-radius-md);
+    text-align: center;
+    transition: all var(--pay-transition-normal);
+    border: 1px solid var(--pay-color-border);
+    position: relative;
+    overflow: hidden;
+}
+
+.impact-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--pay-color-primary), var(--pay-color-accent));
+    transform: scaleX(0);
+    transition: transform var(--pay-transition-normal);
+}
+
+.impact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--pay-shadow-lg);
+    border-color: var(--pay-color-primary-light);
+}
+
+.impact-card:hover::before {
+    transform: scaleX(1);
+}
+
+.impact-card__icon {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pay-color-primary-bg);
+    border-radius: var(--pay-radius-full);
+    margin: 0 auto 20px;
+    font-size: 1.75rem;
+    color: var(--pay-color-primary);
+    transition: all var(--pay-transition-normal);
+}
+
+.impact-card:hover .impact-card__icon {
+    background: var(--pay-color-primary);
+    color: white;
+    transform: scale(1.1) rotate(10deg);
+}
+
+.impact-card h3 {
+    color: var(--pay-color-text);
+    margin-bottom: 12px;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.impact-card p {
+    color: var(--pay-color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   Recent Contributors
+   -------------------------------------------------------------------------- */
+.recent-contributors {
+    background: var(--pay-color-surface);
+    padding: 36px;
+    border-radius: var(--pay-radius-lg);
+    box-shadow: var(--pay-shadow-sm);
+    border: 1px solid var(--pay-color-border);
+}
+
+.contributors-list {
+    display: grid;
+    gap: 16px;
+}
+
+.contributor {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px;
+    background: linear-gradient(135deg, #fafbfc 0%, #fff 100%);
+    border-radius: var(--pay-radius-md);
+    transition: all var(--pay-transition-fast);
+    border: 1px solid transparent;
+}
+
+.contributor:hover {
+    background: var(--pay-color-primary-bg);
+    border-color: var(--pay-color-primary-light);
+    transform: translateX(8px);
+}
+
+.contributor__avatar {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--pay-color-primary) 0%, var(--pay-color-primary-dark) 100%);
+    border-radius: var(--pay-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(225, 112, 85, 0.3);
+}
+
+.contributor__info {
+    flex: 1;
+}
+
+.contributor__info h4 {
+    color: var(--pay-color-text);
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.contributor__info p {
+    color: var(--pay-color-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.contributor__date {
+    color: var(--pay-color-text-muted);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.contributor__date i {
+    font-size: 0.7rem;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Design
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .type-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .impact-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .contribution-header {
+        padding: 60px 20px;
+    }
+
+    .contribution-header h1 {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .contribution-header p {
+        font-size: 1rem;
+    }
+
+    .contribution-container {
+        padding: 32px 16px;
+    }
+
+    .type-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .card-content {
+        padding: 28px 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-section {
+        padding: 28px 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .amount-buttons {
+        justify-content: center;
+    }
+
+    .impact-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .contributor {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .contributor__avatar {
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .contribution-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .contribution-form fieldset {
+        padding: 16px;
+    }
+
+    .type-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-grid,
+    .breakdown-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

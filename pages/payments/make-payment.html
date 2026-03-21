@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Make a payment to SWA - Secure payment options">
+    <meta name="keywords" content="SWA, Student Welfare Association, JOOUST, payment, make payment">
+    <title>Make Payment - Student Welfare Association | JOOUST</title>
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Payment Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/payments/make-payment.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <!-- Page Header -->
+    <header class="payment-header">
+        <h1><i class="fas fa-credit-card"></i> Make a Payment</h1>
+        <p>Secure and convenient payment options</p>
+    </header>
+
+    <main class="payment-container">
+        <!-- Payment Categories -->
+        <section class="payment-categories">
+            <h2><i class="fas fa-th-large"></i> Select Payment Type</h2>
+            
+            <div class="category-grid">
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="contribution" checked>
+                    <div class="card-content">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h3>Contribution</h3>
+                        <p>Monthly/Welfare payments</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="loan">
+                    <div class="card-content">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <h3>Loan Repayment</h3>
+                        <p>Pay off your loan</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="event">
+                    <div class="card-content">
+                        <i class="fas fa-ticket-alt"></i>
+                        <h3>Event Fee</h3>
+                        <p>Event registration</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="other">
+                    <div class="card-content">
+                        <i class="fas fa-ellipsis-h"></i>
+                        <h3>Other</h3>
+                        <p>Miscellaneous payments</p>
+                    </div>
+                </label>
+            </div>
+        </section>
+
+        <!-- Payment Form -->
+        <section class="payment-form-section">
+            <h2><i class="fas fa-file-invoice"></i> Payment Details</h2>
+            
+            <form id="paymentForm" class="payment-form">
+                <div class="form-group">
+                    <label for="fullName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" name="fullName" required 
+                           placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentId">Student ID <span class="required">*</span></label>
+                    <input type="text" id="studentId" name="studentId" required 
+                           placeholder="e.g., JOO/2024/001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount (Ksh) <span class="required">*</span></label>
+                    <input type="number" id="amount" name="amount" required 
+                           min="100" placeholder="Enter amount">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method <span class="required">*</span></label>
+                    <select id="paymentMethod" name="paymentMethod" required>
+                        <option value="">Select method</option>
+                        <option value="mpesa">M-Pesa</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="cash">Cash</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionId">Transaction ID</label>
+                    <input type="text" id="transactionId" name="transactionId" 
+                           placeholder="Enter transaction ID">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Submit Payment
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Payment Instructions -->
+        <section class="payment-instructions">
+            <h2><i class="fas fa-info-circle"></i> Payment Instructions</h2>
+            
+            <div class="instructions-card">
+                <h3>M-Pesa Payment</h3>
+                <ol>
+                    <li>Go to M-Pesa on your phone</li>
+                    <li>Select "Pay Bill"</li>
+                    <li>Enter Business Number: <strong>123456</strong></li>
+                    <li>Enter Account Number: <strong>Your Student ID</strong></li>
+                    <li>Enter amount and confirm</li>
+                </ol>
+            </div>
+            
+            <div class="instructions-card">
+                <h3>Bank Transfer</h3>
+                <ol>
+                    <li>Bank: <strong>Kenya Commercial Bank</strong></li>
+                    <li>Account Name: <strong>SWA JOOUST</strong></li>
+                    <li>Account Number: <strong>1234567890</strong></li>
+                    <li>Use your Student ID as reference</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+    <!-- Payment Script -->
+    <script type="module" src="../../src/scripts/pages/payments/make-payment.js"></script>
+</body>
+
+</html>

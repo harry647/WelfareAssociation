@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Executive Team - Manage SWA leadership">
+  <title>Executive Team - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Executive Team Section -->
+    <div class="content-section active" id="section-executive">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-users-cog"></i> Executive Team</h1>
+          <p>Manage Student Welfare Association leadership and roles</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="cards">
+          <div class="card">
+            <h3><i class="fas fa-users"></i> Total Officers</h3>
+            <p class="stat-number">8</p>
+            <p class="stat-label">Team Members</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-user-tie"></i> Executives</h3>
+            <p class="stat-number">5</p>
+            <p class="stat-label">Core Team</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-user-friends"></i> Committee Heads</h3>
+            <p class="stat-number">3</p>
+            <p class="stat-label">Active</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-calendar-check"></i> Term Ends</h3>
+            <p class="stat-number">2026</p>
+            <p class="stat-label">Current Term</p>
+          </div>
+        </div>
+
+        <!-- Executive Members -->
+        <section class="data-section">
+          <h2><i class="fas fa-crown"></i> Executive Officers</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Position</th>
+                  <th>Name</th>
+                  <th>Student ID</th>
+                  <th>Contact</th>
+                  <th>Email</th>
+                  <th>Term Start</th>
+                  <th>Term End</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Chairman</strong></td>
+                  <td>Vincent Otieno</td>
+                  <td>JOO/2024/004</td>
+                  <td>+254 712 345 678</td>
+                  <td>vincent.otieno@students.jous.ac.ke</td>
+                  <td>2025-01-01</td>
+                  <td>2026-12-31</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn"><i class="fas fa-envelope"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Vice Chairman</strong></td>
+                  <td>Mary Odundo</td>
+                  <td>JOO/2024/002</td>
+                  <td>+254 723 456 789</td>
+                  <td>mary.odundo@students.jous.ac.ke</td>
+                  <td>2025-01-01</td>
+                  <td>2026-12-31</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn"><i class="fas fa-envelope"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Secretary General</strong></td>
+                  <td>Lavenda Achieng</td>
+                  <td>JOO/2024/001</td>
+                  <td>+254 734 567 890</td>
+                  <td>lavenda.achieng@students.jous.ac.ke</td>
+                  <td>2025-01-01</td>
+                  <td>2026-12-31</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn"><i class="fas fa-envelope"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Treasurer</strong></td>
+                  <td>Francis Opiyo</td>
+                  <td>JOO/2024/003</td>
+                  <td>+254 745 678 901</td>
+                  <td>francis.opiyo@students.jous.ac.ke</td>
+                  <td>2025-01-01</td>
+                  <td>2026-12-31</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn"><i class="fas fa-envelope"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Public Relations Officer</strong></td>
+                  <td>Yvonne Achieng</td>
+                  <td>JOO/2024/006</td>
+                  <td>+254 756 789 012</td>
+                  <td>yvonne.achieng@students.jous.ac.ke</td>
+                  <td>2025-01-01</td>
+                  <td>2026-12-31</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                    <button class="btn"><i class="fas fa-envelope"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Committee Heads -->
+        <section class="data-section">
+          <h2><i class="fas fa-user-friends"></i> Committee Heads</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Committee</th>
+                  <th>Chairperson</th>
+                  <th>Student ID</th>
+                  <th>Members</th>
+                  <th>Contact</th>
+                  <th>Meeting Day</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Finance Committee</td>
+                  <td>Jeff Juma</td>
+                  <td>JOO/2024/007</td>
+                  <td>4</td>
+                  <td>+254 767 890 123</td>
+                  <td>Monday</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Events Committee</td>
+                  <td>Sarah Kemunto</td>
+                  <td>JOO/2024/008</td>
+                  <td>6</td>
+                  <td>+254 778 901 234</td>
+                  <td>Wednesday</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Welfare Committee</td>
+                  <td>Emily Akinyi</td>
+                  <td>JOO/2024/010</td>
+                  <td>5</td>
+                  <td>+254 789 012 345</td>
+                  <td>Friday</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-edit"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Roles & Permissions -->
+        <section class="data-section">
+          <h2><i class="fas fa-shield-alt"></i> Roles & Permissions</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Role</th>
+                  <th>Dashboard Access</th>
+                  <th>Manage Members</th>
+                  <th>Financial Access</th>
+                  <th>Reports</th>
+                  <th>Settings</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Super Admin</strong></td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+                <tr>
+                  <td><strong>Treasurer</strong></td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> View</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-times-circle" style="color: red;"></i> None</td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+                <tr>
+                  <td><strong>Secretary</strong></td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-minus-circle" style="color: orange;"></i> View Only</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
+                  <td><i class="fas fa-minus-circle" style="color: orange;"></i> Limited</td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+                <tr>
+                  <td><strong>Committee Head</strong></td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Partial</td>
+                  <td><i class="fas fa-minus-circle" style="color: orange;"></i> View</td>
+                  <td><i class="fas fa-times-circle" style="color: red;"></i> None</td>
+                  <td><i class="fas fa-check-circle" style="color: green;"></i> Partial</td>
+                  <td><i class="fas fa-times-circle" style="color: red;"></i> None</td>
+                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Meeting Schedule -->
+        <section class="data-section">
+          <h2><i class="fas fa-calendar-alt"></i> Executive Meeting Schedule</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Meeting Type</th>
+                  <th>Frequency</th>
+                  <th>Day</th>
+                  <th>Time</th>
+                  <th>Location</th>
+                  <th>Next Meeting</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Executive Meeting</td>
+                  <td>Weekly</td>
+                  <td>Monday</td>
+                  <td>4:00 PM</td>
+                  <td>Student Center</td>
+                  <td>2025-09-15</td>
+                  <td><button class="btn"><i class="fas fa-calendar-plus"></i></button></td>
+                </tr>
+                <tr>
+                  <td>General Assembly</td>
+                  <td>Monthly</td>
+                  <td>Last Friday</td>
+                  <td>2:00 PM</td>
+                  <td>Main Hall</td>
+                  <td>2025-09-27</td>
+                  <td><button class="btn"><i class="fas fa-calendar-plus"></i></button></td>
+                </tr>
+                <tr>
+                  <td>Finance Review</td>
+                  <td>Bi-weekly</td>
+                  <td>Wednesday</td>
+                  <td>3:00 PM</td>
+                  <td>Finance Office</td>
+                  <td>2025-09-18</td>
+                  <td><button class="btn"><i class="fas fa-calendar-plus"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="add-officer.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Officer</a>
+            <a href="security-settings.html" class="action-btn"><i class="fas fa-user-edit"></i> Update Role</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Message</a>
+            <a href="../public/events.html" class="action-btn"><i class="fas fa-calendar-plus"></i> Schedule Meeting</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export List</a>
+            <a href="security-settings.html" class="action-btn"><i class="fas fa-shield-alt"></i> Manage Permissions</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

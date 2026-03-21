@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Documentation - SWA policies and guides">
+  <title>Documentation - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Documentation Section -->
+    <div class="content-section active" id="section-docs">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-folder-open"></i> Documentation</h1>
+          <p>Access policies, guides, and important documents</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="cards">
+          <div class="card">
+            <h3><i class="fas fa-file-alt"></i> Total Documents</h3>
+            <p class="stat-number">24</p>
+            <p class="stat-label">Available</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-book"></i> Policies</h3>
+            <p class="stat-number">8</p>
+            <p class="stat-label">Active</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-file-pdf"></i> Guides</h3>
+            <p class="stat-number">10</p>
+            <p class="stat-label">Available</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-download"></i> Downloads</h3>
+            <p class="stat-number">156</p>
+            <p class="stat-label">This Month</p>
+          </div>
+        </div>
+
+        <!-- Document Categories -->
+        <div class="summary-stats">
+          <h2><i class="fas fa-tags"></i> Document Categories</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-gavel"></i></span>
+              <span class="stat-value">8</span>
+              <span class="stat-desc">Constitution & By-laws</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-hand-holding-usd"></i></span>
+              <span class="stat-value">5</span>
+              <span class="stat-desc">Financial Guidelines</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-user-graduate"></i></span>
+              <span class="stat-value">6</span>
+              <span class="stat-desc">Member Guidelines</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon"><i class="fas fa-clipboard-check"></i></span>
+              <span class="stat-value">5</span>
+              <span class="stat-desc">Procedures</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents List -->
+        <section class="data-section">
+          <h2><i class="fas fa-file-alt"></i> All Documents</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Document Name</th>
+                  <th>Category</th>
+                  <th>Type</th>
+                  <th>Size</th>
+                  <th>Last Updated</th>
+                  <th>Version</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><i class="fas fa-file-pdf" style="color: red;"></i> SWA Constitution 2025</td>
+                  <td>Constitution</td>
+                  <td>PDF</td>
+                  <td>2.4 MB</td>
+                  <td>2025-01-15</td>
+                  <td>v3.2</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-download"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Member Handbook</td>
+                  <td>Guidelines</td>
+                  <td>PDF</td>
+                  <td>1.8 MB</td>
+                  <td>2025-03-20</td>
+                  <td>v2.1</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-download"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><i class="fas fa-file-excel" style="color: green;"></i> Financial Procedures</td>
+                  <td>Finance</td>
+                  <td>XLSX</td>
+                  <td>450 KB</td>
+                  <td>2025-06-10</td>
+                  <td>v1.5</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-download"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><i class="fas fa-file-word" style="color: blue;"></i> Meeting Minutes Template</td>
+                  <td>Procedures</td>
+                  <td>DOCX</td>
+                  <td>120 KB</td>
+                  <td>2025-02-28</td>
+                  <td>v1.0</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-download"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Code of Conduct</td>
+                  <td>Policies</td>
+                  <td>PDF</td>
+                  <td>890 KB</td>
+                  <td>2025-04-05</td>
+                  <td>v2.0</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-download"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Loan Policy Guidelines</td>
+                  <td>Finance</td>
+                  <td>PDF</td>
+                  <td>1.2 MB</td>
+                  <td>2025-05-12</td>
+                  <td>v1.3</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-download"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><i class="fas fa-file-powerpoint" style="color: orange;"></i> Orientation Presentation</td>
+                  <td>Guidelines</td>
+                  <td>PPTX</td>
+                  <td>5.6 MB</td>
+                  <td>2025-08-01</td>
+                  <td>v1.0</td>
+                  <td><span class="status active">Active</span></td>
+                  <td>
+                    <button class="btn"><i class="fas fa-eye"></i></button>
+                    <button class="btn"><i class="fas fa-download"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Recent Updates -->
+        <section class="data-section">
+          <h2><i class="fas fa-history"></i> Recent Document Updates</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Document</th>
+                  <th>Change Type</th>
+                  <th>Updated By</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2025-09-10</td>
+                  <td>Member Handbook</td>
+                  <td><span style="color: orange;">Revision</span></td>
+                  <td>Secretary</td>
+                  <td>Updated contact information</td>
+                </tr>
+                <tr>
+                  <td>2025-09-05</td>
+                  <td>Loan Policy Guidelines</td>
+                  <td><span style="color: blue;">Addition</span></td>
+                  <td>Treasurer</td>
+                  <td>Added new interest rates section</td>
+                </tr>
+                <tr>
+                  <td>2025-08-28</td>
+                  <td>SWA Constitution 2025</td>
+                  <td><span style="color: green;">Amendment</span></td>
+                  <td>Chairman</td>
+                  <td>Approved by general assembly</td>
+                </tr>
+                <tr>
+                  <td>2025-08-15</td>
+                  <td>Code of Conduct</td>
+                  <td><span style="color: orange;">Revision</span></td>
+                  <td>PRO</td>
+                  <td>Added social media guidelines</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Document Requests -->
+        <section class="data-section">
+          <h2><i class="fas fa-request"></i> Document Access Requests</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Document Requested</th>
+                  <th>Request Date</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Jeff Juma</td>
+                  <td>Financial Procedures</td>
+                  <td>2025-09-08</td>
+                  <td>Committee Work</td>
+                  <td><span class="status pending">Pending</span></td>
+                  <td>
+                    <button class="btn approve">✓ Approve</button>
+                    <button class="btn btn-reject">✗ Deny</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Sarah Kemunto</td>
+                  <td>Meeting Minutes Template</td>
+                  <td>2025-09-09</td>
+                  <td>Event Planning</td>
+                  <td><span class="status received">Approved</span></td>
+                  <td><button class="btn"><i class="fas fa-envelope"></i> Send</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+          <div class="action-buttons">
+            <a href="upload-document.html" class="action-btn"><i class="fas fa-plus-circle"></i> Upload Document</a>
+            <a href="create-folder.html" class="action-btn"><i class="fas fa-folder-plus"></i> Create Folder</a>
+            <a href="edit-document.html" class="action-btn"><i class="fas fa-edit"></i> Edit Document</a>
+            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-share-alt"></i> Share Document</a>
+            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export List</a>
+            <a href="archive-docs.html" class="action-btn"><i class="fas fa-archive"></i> Archive Old Docs</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+</body>
+</html>

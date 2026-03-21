@@ -1,0 +1,114 @@
+/* Header Styles */
+header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #333;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.links-wrpper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+.links-wrpper ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+.links-wrpper ul li{
+    list-style: none;
+    position: relative;
+}
+.links-wrpper ul li a {
+    color: #f77b7b;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    display: block;
+}
+.links-wrpper ul ul {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    top: 100%;
+    left: 0;
+}
+.links-wrpper ul ul li {
+    margin-bottom: 12px;
+}
+.links-wrpper ul li:hover > ul {
+    display: block;
+}
+.img-logo {
+    width: 50px;
+    height: auto;
+    vertical-align: middle;
+}
+.hamburger-icon {
+    display: none;
+    font-size: 24px; 
+    cursor: pointer;
+}
+@media (max-width: 900px) {
+    header {
+        flex-wrap: wrap;
+    }
+    .links-wrpper {
+        display: none;
+        width: 100%;
+        order: 3;
+        flex-direction: column;
+    }
+    .links-wrpper.active {
+        display: flex;
+    }
+    .links-wrpper ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .hamburger-icon {
+        display: block;
+        order: 2;
+        cursor: pointer;
+        padding: 5px;
+    }
+    .hamburger-icon::before {
+        content: '\2630';
+        font-size: 24px;
+        color: #f77b7b;
+    }
+    .hamburger-icon.active::before {
+        content: '\2715';
+    }
+    .sign-in {
+        order: 1;
+    }
+}
+.sign-in {
+    border: 2px solid #fff;
+    border-radius: 15px;
+    background: #fff;
+    padding: 5px 15px;
+}
+.sign-in a {
+    color: #333;
+    font-weight: bold;
+}
+.sign-in:hover {
+    background-color: green;
+}
+.sign-in:hover a {
+    color: #fff;
+}

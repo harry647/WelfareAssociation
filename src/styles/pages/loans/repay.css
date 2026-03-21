@@ -1,0 +1,864 @@
+/* ============================================
+   Loan Repayment Page Styles
+   Modern Design with BEM Methodology
+   ============================================ */
+
+/* CSS Custom Properties */
+:root {
+    /* Primary Colors - Teal/Green Theme */
+    --repay-primary: #0d9488;
+    --repay-primary-dark: #0f766e;
+    --repay-primary-light: #14b8a6;
+    --repay-primary-bg: #f0fdfa;
+    
+    /* Secondary Colors */
+    --repay-secondary: #64748b;
+    --repay-secondary-dark: #475569;
+    
+    /* Accent Colors */
+    --repay-accent-success: #10b981;
+    --repay-accent-success-bg: #d1fae5;
+    --repay-accent-warning: #f59e0b;
+    --repay-accent-warning-bg: #fef3c7;
+    --repay-accent-danger: #ef4444;
+    --repay-accent-danger-bg: #fee2e2;
+    --repay-accent-info: #3b82f6;
+    --repay-accent-info-bg: #dbeafe;
+    
+    /* Neutral Colors */
+    --repay-white: #ffffff;
+    --repay-gray-50: #f8fafc;
+    --repay-gray-100: #f1f5f9;
+    --repay-gray-200: #e2e8f0;
+    --repay-gray-300: #cbd5e1;
+    --repay-gray-400: #94a3b8;
+    --repay-gray-500: #64748b;
+    --repay-gray-600: #475569;
+    --repay-gray-700: #334155;
+    --repay-gray-800: #1e293b;
+    --repay-gray-900: #0f172a;
+    
+    /* Shadows */
+    --repay-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --repay-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --repay-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --repay-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    
+    /* Border Radius */
+    --repay-radius-sm: 0.375rem;
+    --repay-radius-md: 0.5rem;
+    --repay-radius-lg: 0.75rem;
+    --repay-radius-xl: 1rem;
+    --repay-radius-full: 9999px;
+    
+    /* Transitions */
+    --repay-transition-fast: 150ms ease;
+    --repay-transition-base: 200ms ease;
+    --repay-transition-slow: 300ms ease;
+    
+    /* Spacing */
+    --repay-space-xs: 0.25rem;
+    --repay-space-sm: 0.5rem;
+    --repay-space-md: 1rem;
+    --repay-space-lg: 1.5rem;
+    --repay-space-xl: 2rem;
+    --repay-space-2xl: 3rem;
+}
+
+/* ============================================
+   Page Header
+   ============================================ */
+.repay-header {
+    background: linear-gradient(135deg, var(--repay-primary) 0%, var(--repay-primary-dark) 100%);
+    color: var(--repay-white);
+    padding: var(--repay-space-2xl) var(--repay-space-lg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.repay-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50h20v20H50zM10 10h20v20H10zM30 50h20v20H30zM50 30h20v20H50z' fill='%23ffffff' fill-opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+
+.repay-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--repay-space-sm);
+    font-weight: 700;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--repay-space-md);
+}
+
+.repay-header h1 i {
+    font-size: 2rem;
+    animation: moneyWave 1.5s ease-in-out infinite;
+}
+
+@keyframes moneyWave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+}
+
+.repay-header p {
+    font-size: 1.125rem;
+    opacity: 0.9;
+    position: relative;
+    font-weight: 400;
+}
+
+/* ============================================
+   Main Container
+   ============================================ */
+.repay-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--repay-space-2xl) var(--repay-space-lg);
+}
+
+/* ============================================
+   Loan Summary Section
+   ============================================ */
+.loan-summary {
+    background: var(--repay-white);
+    padding: var(--repay-space-xl);
+    border-radius: var(--repay-radius-xl);
+    box-shadow: var(--repay-shadow-lg);
+    margin-bottom: var(--repay-space-xl);
+    border: 1px solid var(--repay-gray-200);
+    position: relative;
+    overflow: hidden;
+}
+
+.loan-summary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--repay-primary), var(--repay-accent-success));
+}
+
+.loan-summary__title {
+    color: var(--repay-primary);
+    margin-bottom: var(--repay-space-lg);
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--repay-space-sm);
+}
+
+.loan-summary__title i {
+    color: var(--repay-primary);
+}
+
+/* Summary Card */
+.summary-card {
+    border: 2px solid var(--repay-gray-200);
+    border-radius: var(--repay-radius-lg);
+    padding: var(--repay-space-lg);
+    background: var(--repay-gray-50);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--repay-space-md) 0;
+    border-bottom: 1px solid var(--repay-gray-100);
+    transition: background var(--repay-transition-fast);
+    border-radius: var(--repay-radius-sm);
+    margin-bottom: var(--repay-space-xs);
+}
+
+.summary-row:hover {
+    background: var(--repay-white);
+    padding-left: var(--repay-space-sm);
+    padding-right: var(--repay-space-sm);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.summary-label {
+    color: var(--repay-gray-600);
+    font-weight: 600;
+}
+
+.summary-value {
+    color: var(--repay-gray-800);
+    font-weight: 700;
+}
+
+.summary-value--highlight {
+    color: var(--repay-primary);
+    font-size: 1.25rem;
+}
+
+.summary-value--danger {
+    color: var(--repay-accent-danger);
+    font-size: 1.25rem;
+}
+
+.summary-value--success {
+    color: var(--repay-accent-success);
+}
+
+/* Status Badge */
+.status-badge {
+    padding: var(--repay-space-xs) var(--repay-space-md);
+    border-radius: var(--repay-radius-full);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--repay-space-xs);
+}
+
+.status-badge--pending {
+    background: var(--repay-accent-warning-bg);
+    color: #b45309;
+}
+
+.status-badge--pending::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: blink 1.5s ease infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.status-badge--success {
+    background: var(--repay-accent-success-bg);
+    color: #047857;
+}
+
+.status-badge--success::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.7rem;
+}
+
+.status-badge--danger {
+    background: var(--repay-accent-danger-bg);
+    color: #b91c1c;
+}
+
+/* ============================================
+   Payment Options Section
+   ============================================ */
+.payment-options {
+    background: var(--repay-white);
+    padding: var(--repay-space-xl);
+    border-radius: var(--repay-radius-xl);
+    box-shadow: var(--repay-shadow-lg);
+    margin-bottom: var(--repay-space-xl);
+    border: 1px solid var(--repay-gray-200);
+}
+
+.payment-options__title {
+    color: var(--repay-primary);
+    margin-bottom: var(--repay-space-lg);
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--repay-space-sm);
+}
+
+/* Payment Methods Grid */
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--repay-space-lg);
+}
+
+.payment-method {
+    cursor: pointer;
+    position: relative;
+}
+
+.payment-method input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Method Card */
+.method-card {
+    padding: var(--repay-space-xl);
+    border: 2px solid var(--repay-gray-200);
+    border-radius: var(--repay-radius-lg);
+    text-align: center;
+    transition: all var(--repay-transition-base);
+    background: var(--repay-gray-50);
+    position: relative;
+    overflow: hidden;
+}
+
+.method-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(13, 148, 136, 0.05) 100%);
+    opacity: 0;
+    transition: opacity var(--repay-transition-base);
+}
+
+.payment-method input:checked + .method-card {
+    border-color: var(--repay-primary);
+    background: var(--repay-primary-bg);
+    box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15);
+    transform: translateY(-4px);
+}
+
+.payment-method input:checked + .method-card::before {
+    opacity: 1;
+}
+
+.method-card__icon {
+    font-size: 2.5rem;
+    color: var(--repay-primary);
+    margin-bottom: var(--repay-space-md);
+    display: inline-flex;
+    transition: transform var(--repay-transition-base);
+}
+
+.payment-method:hover .method-card {
+    border-color: var(--repay-primary-light);
+    transform: translateY(-2px);
+}
+
+.payment-method:hover .method-card__icon {
+    transform: scale(1.1);
+}
+
+.payment-method input:checked + .method-card .method-card__icon {
+    animation: iconPop 0.3s ease;
+}
+
+@keyframes iconPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.method-card__title {
+    color: var(--repay-gray-800);
+    margin-bottom: var(--repay-space-sm);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.method-card__description {
+    color: var(--repay-gray-500);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   Payment Form Section
+   ============================================ */
+.payment-form-section {
+    background: var(--repay-white);
+    padding: var(--repay-space-xl);
+    border-radius: var(--repay-radius-xl);
+    box-shadow: var(--repay-shadow-lg);
+    margin-bottom: var(--repay-space-xl);
+    border: 1px solid var(--repay-gray-200);
+}
+
+.payment-form-section__title {
+    color: var(--repay-primary);
+    margin-bottom: var(--repay-space-lg);
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--repay-space-sm);
+}
+
+/* Form Styles */
+.repayment-form .form-group {
+    margin-bottom: var(--repay-space-lg);
+}
+
+.repayment-form label {
+    display: block;
+    color: var(--repay-gray-700);
+    font-weight: 600;
+    margin-bottom: var(--repay-space-sm);
+    font-size: 0.95rem;
+}
+
+.repayment-form input,
+.repayment-form textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--repay-gray-200);
+    border-radius: var(--repay-radius-md);
+    font-size: 1rem;
+    transition: border-color var(--repay-transition-fast), box-shadow var(--repay-transition-fast), transform var(--repay-transition-fast);
+    background: var(--repay-white);
+    color: var(--repay-gray-800);
+}
+
+.repayment-form input::placeholder,
+.repayment-form textarea::placeholder {
+    color: var(--repay-gray-400);
+}
+
+.repayment-form input:focus,
+.repayment-form textarea:focus {
+    outline: none;
+    border-color: var(--repay-primary);
+    box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+    transform: translateY(-1px);
+}
+
+.repayment-form input:hover:not(:focus),
+.repayment-form textarea:hover:not(:focus) {
+    border-color: var(--repay-gray-300);
+}
+
+.repayment-form small {
+    display: block;
+    color: var(--repay-gray-500);
+    margin-top: var(--repay-space-xs);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.repayment-form__required {
+    color: var(--repay-accent-danger);
+    font-weight: 700;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: var(--repay-space-md);
+    justify-content: center;
+    margin-top: var(--repay-space-xl);
+    padding-top: var(--repay-space-xl);
+    border-top: 1px solid var(--repay-gray-200);
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: var(--repay-radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--repay-transition-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--repay-space-sm);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn--primary {
+    background: linear-gradient(135deg, var(--repay-primary) 0%, var(--repay-primary-dark) 100%);
+    color: var(--repay-white);
+    box-shadow: 0 4px 14px 0 rgba(13, 148, 136, 0.39);
+}
+
+.btn--primary:hover {
+    background: linear-gradient(135deg, var(--repay-primary-dark) 0%, #0f5753 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(13, 148, 136, 0.5);
+}
+
+.btn--primary:active {
+    transform: translateY(0);
+}
+
+.btn--secondary {
+    background: var(--repay-gray-200);
+    color: var(--repay-gray-700);
+}
+
+.btn--secondary:hover {
+    background: var(--repay-gray-300);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   Payment History Table Section
+   ============================================ */
+.payment-history {
+    background: var(--repay-white);
+    padding: var(--repay-space-xl);
+    border-radius: var(--repay-radius-xl);
+    box-shadow: var(--repay-shadow-lg);
+    margin-bottom: var(--repay-space-xl);
+    border: 1px solid var(--repay-gray-200);
+}
+
+.payment-history__title {
+    color: var(--repay-primary);
+    margin-bottom: var(--repay-space-lg);
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--repay-space-sm);
+}
+
+.payment-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-history th,
+.payment-history td {
+    padding: var(--repay-space-md);
+    text-align: left;
+    border-bottom: 1px solid var(--repay-gray-100);
+}
+
+.payment-history th {
+    background: var(--repay-gray-50);
+    color: var(--repay-gray-700);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.payment-history tbody tr {
+    transition: background var(--repay-transition-fast);
+}
+
+.payment-history tbody tr:hover {
+    background: var(--repay-primary-bg);
+}
+
+/* ============================================
+   Quick Pay Section
+   ============================================ */
+.quick-amounts {
+    background: var(--repay-white);
+    padding: var(--repay-space-xl);
+    border-radius: var(--repay-radius-xl);
+    box-shadow: var(--repay-shadow-lg);
+    margin-bottom: var(--repay-space-xl);
+    border: 1px solid var(--repay-gray-200);
+}
+
+.quick-amounts__title {
+    color: var(--repay-primary);
+    margin-bottom: var(--repay-space-lg);
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--repay-space-sm);
+}
+
+/* Quick Amount Buttons */
+.amount-buttons {
+    display: flex;
+    gap: var(--repay-space-md);
+    flex-wrap: wrap;
+}
+
+.quick-amount-btn {
+    padding: var(--repay-space-md) var(--repay-space-xl);
+    background: var(--repay-primary-bg);
+    border: 2px solid var(--repay-primary);
+    border-radius: var(--repay-radius-md);
+    color: var(--repay-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--repay-transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-amount-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--repay-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--repay-transition-base);
+    z-index: 0;
+}
+
+.quick-amount-btn:hover {
+    color: var(--repay-white);
+    transform: translateY(-2px);
+    box-shadow: var(--repay-shadow-md);
+}
+
+.quick-amount-btn:hover::before {
+    transform: scaleX(1);
+}
+
+.quick-amount-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   Support Info Section
+   ============================================ */
+.support-info {
+    background: var(--repay-white);
+    padding: var(--repay-space-xl);
+    border-radius: var(--repay-radius-xl);
+    box-shadow: var(--repay-shadow-lg);
+    border: 1px solid var(--repay-gray-200);
+}
+
+.support-info__title {
+    color: var(--repay-primary);
+    margin-bottom: var(--repay-space-md);
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--repay-space-sm);
+}
+
+.support-info__description {
+    color: var(--repay-gray-600);
+    margin-bottom: var(--repay-space-lg);
+    line-height: 1.6;
+}
+
+/* Contact Methods Grid */
+.contact-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--repay-space-lg);
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: var(--repay-space-md);
+    color: var(--repay-gray-700);
+    padding: var(--repay-space-md);
+    background: var(--repay-gray-50);
+    border-radius: var(--repay-radius-md);
+    transition: background var(--repay-transition-fast), transform var(--repay-transition-fast);
+}
+
+.contact-item:hover {
+    background: var(--repay-primary-bg);
+    transform: translateX(4px);
+}
+
+.contact-item i {
+    color: var(--repay-primary);
+    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--repay-white);
+    border-radius: var(--repay-radius-full);
+    box-shadow: var(--repay-shadow-sm);
+}
+
+.contact-item span {
+    font-weight: 500;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+    .repay-header {
+        padding: var(--repay-space-xl) var(--repay-space-md);
+    }
+    
+    .repay-header h1 {
+        font-size: 1.75rem;
+        flex-direction: column;
+        gap: var(--repay-space-sm);
+    }
+    
+    .repay-header h1 i {
+        font-size: 1.5rem;
+    }
+    
+    .repay-container {
+        padding: var(--repay-space-xl) var(--repay-space-md);
+    }
+    
+    .payment-methods {
+        grid-template-columns: 1fr;
+    }
+    
+    .method-card {
+        padding: var(--repay-space-lg);
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .payment-history table {
+        font-size: 0.9rem;
+    }
+    
+    .payment-history th,
+    .payment-history td {
+        padding: var(--repay-space-sm);
+    }
+    
+    .amount-buttons {
+        flex-direction: column;
+    }
+    
+    .quick-amount-btn {
+        width: 100%;
+    }
+    
+    .contact-methods {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-row {
+        flex-direction: column;
+        gap: var(--repay-space-xs);
+        text-align: center;
+    }
+    
+    .summary-value--highlight,
+    .summary-value--danger {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .loan-summary__title,
+    .payment-options__title,
+    .payment-form-section__title,
+    .payment-history__title,
+    .quick-amounts__title,
+    .support-info__title {
+        font-size: 1.4rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .loan-summary__title i,
+    .payment-options__title i,
+    .payment-form-section__title i,
+    .payment-history__title i,
+    .quick-amounts__title i,
+    .support-info__title i {
+        margin-bottom: var(--repay-space-xs);
+    }
+    
+    .summary-card {
+        padding: var(--repay-space-md);
+    }
+    
+    .repayment-form fieldset {
+        padding: var(--repay-space-md);
+    }
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loan-summary,
+.payment-options,
+.payment-form-section,
+.payment-history,
+.quick-amounts,
+.support-info {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.payment-options {
+    animation-delay: 0.1s;
+}
+
+.payment-form-section {
+    animation-delay: 0.2s;
+}
+
+.payment-history {
+    animation-delay: 0.3s;
+}
+
+.quick-amounts {
+    animation-delay: 0.4s;
+}
+
+.support-info {
+    animation-delay: 0.5s;
+}

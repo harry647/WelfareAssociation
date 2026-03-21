@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contributions Report - SWA contribution statistics">
+    <meta name="keywords" content="SWA, contributions, report, statistics">
+    <title>Contributions Report - Student Welfare Association | JOOUST</title>
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Report Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/reports/contributions-report.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <!-- Page Header -->
+    <header class="report-header">
+        <h1><i class="fas fa-donate"></i> Contributions Report</h1>
+        <p>Member contribution statistics and details</p>
+    </header>
+
+    <main class="report-container">
+        <!-- Summary Stats -->
+        <section class="report-stats">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3>Total Contributors</h3>
+                <p class="stat-number">42</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <h3>Total Collected</h3>
+                <p class="stat-number">Ksh 150,000</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-alt"></i>
+                <h3>This Month</h3>
+                <p class="stat-number">Ksh 25,000</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Average</h3>
+                <p class="stat-number">Ksh 595</p>
+            </div>
+        </section>
+
+        <!-- Contributions Table -->
+        <section class="report-table">
+            <h2>Recent Contributions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Member</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mar 15, 2025</td>
+                        <td>Lavenda Achieng</td>
+                        <td>Monthly</td>
+                        <td>Ksh 1,000</td>
+                        <td><span class="status verified">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mar 14, 2025</td>
+                        <td>Mary Odundo</td>
+                        <td>Welfare</td>
+                        <td>Ksh 2,000</td>
+                        <td><span class="status verified">Verified</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+    <script type="module" src="../../src/scripts/pages/reports/contributions-report.js"></script>
+</body>
+
+</html>

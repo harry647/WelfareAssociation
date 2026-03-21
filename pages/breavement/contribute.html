@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contribute to Bereavement Fund - SWA">
+    <meta name="keywords" content="SWA, bereavement, contribute, support, JOOUST">
+    <title>Contribute to Bereavement Fund - Student Welfare Association | JOOUST</title>
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Bereavement Contribute Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/breavement/contribute.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <!-- Page Header -->
+    <header class="contribute-header">
+        <h1><i class="fas fa-hand-holding-heart"></i> Contribute to Bereavement Support</h1>
+        <p>Your support brings comfort during difficult times</p>
+    </header>
+
+    <main class="contribute-container">
+        <!-- Select Beneficiary -->
+        <section class="beneficiary-section">
+            <h2><i class="fas fa-user"></i> Select Beneficiary</h2>
+            
+            <div class="beneficiary-list">
+                <label class="beneficiary-card">
+                    <input type="radio" name="beneficiary" value="sarah-kemunto" checked>
+                    <div class="card-content">
+                        <h3>Sarah Kemunto</h3>
+                        <p class="student-id">JOO/2024/045</p>
+                        <p class="bereavement-type">Loss of Parent - March 15, 2025</p>
+                        <p class="current-support">Ksh 25,000 raised so far</p>
+                    </div>
+                </label>
+                
+                <label class="beneficiary-card">
+                    <input type="radio" name="beneficiary" value="james-ochieng">
+                    <div class="card-content">
+                        <h3>James Ochieng</h3>
+                        <p class="student-id">JOO/2023/112</p>
+                        <p class="bereavement-type">Loss of Sibling - February 28, 2025</p>
+                        <p class="current-support">Ksh 35,000 raised so far</p>
+                    </div>
+                </label>
+                
+                <label class="beneficiary-card">
+                    <input type="radio" name="beneficiary" value="grace-atieno">
+                    <div class="card-content">
+                        <h3>Grace Atieno</h3>
+                        <p class="student-id">JOO/2024/078</p>
+                        <p class="bereavement-type">Loss of Parent - January 10, 2025</p>
+                        <p class="current-support">Ksh 30,000 raised so far</p>
+                    </div>
+                </label>
+            </div>
+        </section>
+
+        <!-- Contribution Form -->
+        <section class="form-section">
+            <h2><i class="fas fa-file-invoice-dollar"></i> Contribution Details</h2>
+            
+            <form id="bereavementForm" class="contribution-form">
+                <!-- Contributor Info -->
+                <fieldset>
+                    <legend><i class="fas fa-user"></i> Your Information</legend>
+                    
+                    <div class="form-group">
+                        <label for="fullName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="fullName" name="fullName" required 
+                               placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentId">Student ID</label>
+                        <input type="text" id="studentId" name="studentId" 
+                               placeholder="e.g., JOO/2024/001">
+                    </div>
+                </fieldset>
+
+                <!-- Contribution Details -->
+                <fieldset>
+                    <legend><i class="fas fa-donate"></i> Contribution Details</legend>
+                    
+                    <div class="form-group">
+                        <label for="contributionType">Support Type <span class="required">*</span></label>
+                        <select id="contributionType" name="contributionType" required>
+                            <option value="">Select type of support</option>
+                            <option value="cash">Cash Support</option>
+                            <option value="food">Food Hamper</option>
+                            <option value="goods">Household Goods</option>
+                            <option value="transport">Transport Assistance</option>
+                            <option value="counseling">Counseling Support</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount">Amount (Ksh) - if cash</label>
+                        <input type="number" id="amount" name="amount" 
+                               min="100" placeholder="Enter amount">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description of Support</label>
+                        <textarea id="description" name="description" rows="3" 
+                                  placeholder="Describe your contribution..."></textarea>
+                    </div>
+                </fieldset>
+
+                <!-- Payment Info -->
+                <fieldset>
+                    <legend><i class="fas fa-credit-card"></i> Payment Information</legend>
+                    
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method <span class="required">*</span></label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="">Select method</option>
+                            <option value="mpesa">M-Pesa</option>
+                            <option value="bank">Bank Transfer</option>
+                            <option value="cash">Cash (Hand delivery)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transactionId">Transaction ID</label>
+                        <input type="text" id="transactionId" name="transactionId" 
+                               placeholder="Enter transaction ID">
+                    </div>
+                </fieldset>
+
+                <!-- Anonymous Option -->
+                <fieldset>
+                    <legend><i class="fas fa-user-secret"></i> Privacy</legend>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="anonymous" name="anonymous">
+                            <span>Make my contribution anonymous</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Submit Contribution
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+    <script type="module" src="../../src/scripts/pages/breavement/contribute.js"></script>
+</body>
+
+</html>

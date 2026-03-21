@@ -1,0 +1,658 @@
+/* ============================================
+   Bereavement Support Page Styles
+   Student Welfare Association - JOOUST
+   ============================================ */
+
+/* CSS Custom Properties */
+:root {
+  /* Color Palette - Refined & Consistent */
+  --bereavement-primary: #2c3e50;
+  --bereavement-primary-dark: #1a252f;
+  --bereavement-primary-light: #34495e;
+  --bereavement-accent: #c0392b;
+  --bereavement-accent-light: #e74c3c;
+  --bereavement-accent-muted: #e8a4a4;
+  --bereavement-success: #27ae60;
+  --bereavement-success-light: #d4edda;
+  --bereavement-bg: #f8f9fa;
+  --bereavement-bg-alt: #ffffff;
+  --bereavement-text: #2c3e50;
+  --bereavement-text-muted: #6c757d;
+  --bereavement-text-light: #95a5a6;
+  --bereavement-border: #e9ecef;
+  
+  /* Shadows - Layered Depth */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+}
+
+/* ============================================
+   Page Header
+   ============================================ */
+.bereavement-header {
+  background: linear-gradient(135deg, var(--bereavement-primary) 0%, var(--bereavement-primary-dark) 50%, var(--bereavement-primary-light) 100%);
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.bereavement-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(192, 57, 43, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.bereavement-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--bereavement-accent), var(--bereavement-accent-light), var(--bereavement-accent));
+}
+
+.bereavement-header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.bereavement-header h1 i {
+  margin-right: 12px;
+  color: var(--bereavement-accent-light);
+}
+
+.bereavement-header p {
+  font-size: 1.25rem;
+  opacity: 0.95;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+/* ============================================
+   Main Container
+   ============================================ */
+.bereavement-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+/* Section Base Styles */
+.bereaved-members,
+.contributions-section,
+.contribute-section,
+.types-section {
+  margin-bottom: 60px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.bereaved-members h2,
+.contributions-section h2,
+.contribute-section h2,
+.types-section h2 {
+  color: var(--bereavement-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bereaved-members h2 i,
+.contributions-section h2 i,
+.contribute-section h2 i,
+.types-section h2 i {
+  color: var(--bereavement-accent);
+  font-size: 1.5rem;
+}
+
+/* ============================================
+   Bereavement Cards Grid
+   ============================================ */
+.bereavement-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 28px;
+}
+
+/* Individual Card */
+.bereavement-card {
+  background: var(--bereavement-bg-alt);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  border: 1px solid var(--bereavement-border);
+}
+
+.bereavement-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Card Header */
+.bereavement-card__header {
+  background: linear-gradient(135deg, #fefefe 0%, var(--bereavement-bg) 100%);
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--bereavement-border);
+}
+
+.bereavement-card__date {
+  color: var(--bereavement-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bereavement-card__date i {
+  color: var(--bereavement-accent);
+}
+
+.bereavement-card__type {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bereavement-card__type--death {
+  background: linear-gradient(135deg, var(--bereavement-accent) 0%, var(--bereavement-accent-light) 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+/* Card Body */
+.bereavement-card__body {
+  padding: 24px;
+}
+
+.bereavement-card__name {
+  color: var(--bereavement-text);
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.bereavement-card__id {
+  color: var(--bereavement-text-light);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 14px;
+  font-family: 'Courier New', monospace;
+}
+
+.bereavement-card__description {
+  color: var(--bereavement-text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+/* Card Footer */
+.bereavement-card__footer {
+  padding: 18px 24px;
+  background: linear-gradient(135deg, var(--bereavement-bg) 0%, #f0f2f5 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--bereavement-border);
+}
+
+.bereavement-card__supporters,
+.bereavement-card__amount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.bereavement-card__supporters {
+  color: var(--bereavement-text-muted);
+}
+
+.bereavement-card__supporters i {
+  color: var(--bereavement-primary-light);
+}
+
+.bereavement-card__amount {
+  color: var(--bereavement-success);
+  font-weight: 600;
+}
+
+.bereavement-card__amount i {
+  color: var(--bereavement-success);
+}
+
+/* ============================================
+   Contributions Table Section
+   ============================================ */
+.contributions-section {
+  background: var(--bereavement-bg-alt);
+  padding: 36px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--bereavement-border);
+}
+
+.contributions-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.contributions-table thead {
+  background: linear-gradient(135deg, var(--bereavement-primary) 0%, var(--bereavement-primary-light) 100%);
+}
+
+.contributions-table th {
+  padding: 16px 20px;
+  text-align: left;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contributions-table th:first-child {
+  border-top-left-radius: var(--radius-md);
+}
+
+.contributions-table th:last-child {
+  border-top-right-radius: var(--radius-md);
+}
+
+.contributions-table td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--bereavement-border);
+  color: var(--bereavement-text);
+  font-size: 0.95rem;
+  transition: background var(--transition-fast);
+}
+
+.contributions-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.contributions-table tbody tr:hover {
+  background: var(--bereavement-bg);
+}
+
+.contributions-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.contributions-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.contributions-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--radius-md);
+}
+
+/* Status Badge */
+.contributions-table .status {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contributions-table .status--verified {
+  background: var(--bereavement-success-light);
+  color: var(--bereavement-success);
+  box-shadow: 0 2px 6px rgba(39, 174, 96, 0.2);
+}
+
+/* ============================================
+   Contribute CTA Section
+   ============================================ */
+.contribute-section {
+  background: linear-gradient(135deg, var(--bereavement-primary) 0%, var(--bereavement-primary-dark) 60%, var(--bereavement-primary-light) 100%);
+  padding: 56px 40px;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.contribute-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 70% 30%, rgba(231, 76, 60, 0.1) 0%, transparent 40%);
+  animation: subtleFloat 8s ease-in-out infinite;
+}
+
+.contribute-section h2 {
+  color: white;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.contribute-section h2 i {
+  color: var(--bereavement-accent-light);
+}
+
+.contribute-section p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Buttons */
+.btn {
+  padding: 16px 36px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: all var(--transition-base);
+  position: relative;
+  z-index: 1;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--bereavement-accent) 0%, var(--bereavement-accent-light) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+}
+
+.btn--primary:hover {
+  background: linear-gradient(135deg, var(--bereavement-accent-light) 0%, #d63031 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(231, 76, 60, 0.5);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+}
+
+.btn--primary i {
+  font-size: 1.1rem;
+}
+
+/* ============================================
+   Bereavement Types Grid
+   ============================================ */
+.types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+/* Type Card */
+.type-card {
+  background: var(--bereavement-bg-alt);
+  padding: 32px 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition: all var(--transition-base);
+  border: 1px solid var(--bereavement-border);
+}
+
+.type-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--bereavement-accent-muted);
+}
+
+.type-card__icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--bereavement-primary) 0%, var(--bereavement-primary-light) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.type-card:hover .type-card__icon {
+  background: linear-gradient(135deg, var(--bereavement-accent) 0%, var(--bereavement-accent-light) 100%);
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(231, 76, 60, 0.3);
+}
+
+.type-card__icon i {
+  font-size: 1.75rem;
+  color: white;
+}
+
+.type-card__title {
+  color: var(--bereavement-text);
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.type-card__description {
+  color: var(--bereavement-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-20px, 20px);
+  }
+}
+
+/* Staggered animations for cards */
+.bereavement-card:nth-child(1) { animation-delay: 0.1s; }
+.bereavement-card:nth-child(2) { animation-delay: 0.2s; }
+.bereavement-card:nth-child(3) { animation-delay: 0.3s; }
+
+.bereavement-card {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+.type-card:nth-child(1) { animation-delay: 0.1s; }
+.type-card:nth-child(2) { animation-delay: 0.2s; }
+.type-card:nth-child(3) { animation-delay: 0.3s; }
+.type-card:nth-child(4) { animation-delay: 0.4s; }
+
+.type-card {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 992px) {
+  .bereavement-header {
+    padding: 60px 20px;
+  }
+  
+  .bereavement-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .bereavement-container {
+    padding: 40px 20px;
+  }
+  
+  .bereavement-cards {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .bereavement-header h1 {
+    font-size: 2rem;
+  }
+  
+  .bereavement-header p {
+    font-size: 1rem;
+  }
+  
+  .bereavement-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .contributions-section {
+    padding: 24px;
+    overflow-x: auto;
+  }
+  
+  .contributions-table {
+    min-width: 600px;
+  }
+  
+  .contribute-section {
+    padding: 40px 24px;
+  }
+  
+  .contribute-section h2 {
+    font-size: 1.5rem;
+  }
+  
+  .types-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .btn {
+    padding: 14px 28px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bereavement-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .bereavement-card__footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .contribute-section {
+    padding: 32px 20px;
+  }
+}
+
+/* ============================================
+   Accessibility - Focus States
+   ============================================ */
+*:focus-visible {
+  outline: 3px solid var(--bereavement-accent-light);
+  outline-offset: 2px;
+}
+
+.bereavement-card:focus-within,
+.type-card:focus-within,
+.btn:focus-visible {
+  outline: 3px solid var(--bereavement-accent-light);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

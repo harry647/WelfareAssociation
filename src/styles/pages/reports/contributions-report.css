@@ -1,0 +1,340 @@
+/* ===================================================================
+   Contributions Report Styles - Modern UI/UX Design
+   =================================================================== */
+
+/* CSS Custom Properties - Design Tokens */
+:root {
+    /* Primary Colors - Purple/Violet palette */
+    --contrib-primary: #9b59b6;
+    --contrib-primary-dark: #8e44ad;
+    --contrib-primary-light: #bb8fce;
+    
+    /* Neutral Colors */
+    --contrib-white: #ffffff;
+    --contrib-gray-50: #f8f9fa;
+    --contrib-gray-100: #f1f3f4;
+    --contrib-gray-200: #e9ecef;
+    --contrib-gray-300: #dee2e6;
+    --contrib-gray-400: #ced4da;
+    --contrib-gray-500: #adb5bd;
+    --contrib-gray-600: #6c757d;
+    --contrib-gray-700: #495057;
+    --contrib-gray-800: #343a40;
+    --contrib-gray-900: #212529;
+    
+    /* Semantic Colors */
+    --contrib-success: #27ae60;
+    --contrib-info: #3498db;
+    --contrib-warning: #f39c12;
+    --contrib-danger: #e74c3c;
+    
+    /* Shadows */
+    --contrib-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --contrib-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --contrib-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --contrib-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+    
+    /* Transitions */
+    --contrib-transition-fast: 0.15s ease;
+    --contrib-transition-base: 0.25s ease;
+    --contrib-transition-slow: 0.4s ease;
+    
+    /* Border Radius */
+    --contrib-radius-sm: 6px;
+    --contrib-radius-md: 10px;
+    --contrib-radius-lg: 16px;
+    --contrib-radius-xl: 24px;
+    
+    /* Spacing */
+    --contrib-spacing-xs: 0.5rem;
+    --contrib-spacing-sm: 1rem;
+    --contrib-spacing-md: 1.5rem;
+    --contrib-spacing-lg: 2rem;
+    --contrib-spacing-xl: 3rem;
+}
+
+/* Page Header */
+.report-header {
+    background: linear-gradient(135deg, var(--contrib-primary) 0%, var(--contrib-primary-dark) 100%);
+    color: var(--contrib-white);
+    padding: var(--contrib-spacing-xl) var(--contrib-spacing-md);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.report-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5l5 4-5 4z' fill='%23ffffff' fill-opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.8;
+}
+
+.report-header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    margin-bottom: var(--contrib-spacing-xs);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--contrib-spacing-sm);
+}
+
+.report-header h1 i {
+    font-size: 0.9em;
+    animation: float 3s ease-in-out infinite;
+}
+
+.report-header p {
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    opacity: 0.9;
+    font-weight: 400;
+    position: relative;
+}
+
+/* Main Container */
+.report-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--contrib-spacing-xl) var(--contrib-spacing-md);
+}
+
+/* Stats Section */
+.report-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--contrib-spacing-md);
+    margin-bottom: var(--contrib-spacing-xl);
+}
+
+.report-stats .stat-card {
+    background: var(--contrib-white);
+    padding: var(--contrib-spacing-lg);
+    border-radius: var(--contrib-radius-lg);
+    box-shadow: var(--contrib-shadow-md);
+    text-align: center;
+    transition: all var(--contrib-transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.report-stats .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--contrib-primary), var(--contrib-primary-light));
+    transform: translateX(-100%);
+    transition: transform var(--contrib-transition-base);
+}
+
+.report-stats .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--contrib-shadow-lg);
+}
+
+.report-stats .stat-card:hover::after {
+    transform: translateX(0);
+}
+
+.report-stats .stat-card i {
+    font-size: 2rem;
+    color: var(--contrib-primary);
+    margin-bottom: var(--contrib-spacing-sm);
+    display: inline-block;
+    transition: transform var(--contrib-transition-base);
+}
+
+.report-stats .stat-card:hover i {
+    transform: rotate(10deg) scale(1.1);
+}
+
+.report-stats .stat-card h3 {
+    color: var(--contrib-gray-600);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--contrib-spacing-xs);
+}
+
+.report-stats .stat-number {
+    color: var(--contrib-gray-900);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Table Section */
+.report-table {
+    background: var(--contrib-white);
+    padding: var(--contrib-spacing-lg);
+    border-radius: var(--contrib-radius-lg);
+    box-shadow: var(--contrib-shadow-md);
+    overflow: hidden;
+}
+
+.report-table h2 {
+    color: var(--contrib-primary);
+    font-size: 1.375rem;
+    font-weight: 700;
+    margin-bottom: var(--contrib-spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--contrib-spacing-sm);
+}
+
+.report-table h2 i {
+    font-size: 1.125rem;
+}
+
+.report-table table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--contrib-radius-md);
+    overflow: hidden;
+}
+
+.report-table th,
+.report-table td {
+    padding: var(--contrib-spacing-sm) var(--contrib-spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--contrib-gray-200);
+}
+
+.report-table th {
+    background: linear-gradient(135deg, var(--contrib-gray-100) 0%, var(--contrib-gray-50) 100%);
+    font-weight: 700;
+    color: var(--contrib-gray-700);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.report-table tbody tr {
+    transition: background-color var(--contrib-transition-fast);
+}
+
+.report-table tbody tr:hover {
+    background-color: rgba(155, 89, 182, 0.05);
+}
+
+.report-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status Badges */
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    gap: 6px;
+}
+
+.status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status.verified {
+    background: rgba(39, 174, 96, 0.15);
+    color: var(--contrib-success);
+}
+
+.status.pending {
+    background: rgba(243, 156, 18, 0.15);
+    color: #d68910;
+}
+
+/* Report Footer */
+.report-footer {
+    background: linear-gradient(135deg, var(--contrib-primary) 0%, var(--contrib-primary-dark) 100%);
+    color: var(--contrib-white);
+    padding: var(--contrib-spacing-lg);
+    text-align: center;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered Animations */
+.report-stats .stat-card {
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0;
+}
+
+.report-stats .stat-card:nth-child(1) { animation-delay: 0.1s; }
+.report-stats .stat-card:nth-child(2) { animation-delay: 0.2s; }
+.report-stats .stat-card:nth-child(3) { animation-delay: 0.3s; }
+.report-stats .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .report-container {
+        padding: var(--contrib-spacing-lg) var(--contrib-spacing-sm);
+    }
+    
+    .report-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .report-table {
+        padding: var(--contrib-spacing-md);
+        overflow-x: auto;
+    }
+    
+    .report-table table {
+        min-width: 500px;
+    }
+}
+
+@media (max-width: 480px) {
+    .report-header {
+        padding: var(--contrib-spacing-lg) var(--contrib-spacing-sm);
+    }
+    
+    .report-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .report-stats .stat-card {
+        padding: var(--contrib-spacing-md);
+    }
+    
+    .report-stats .stat-number {
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bereavement Report - SWA Bereavement Support Statistics">
+    <meta name="keywords" content="SWA, bereavement, report, statistics, support">
+    <title>Bereavement Report - Student Welfare Association | JOOUST</title>
+    
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../src/styles/main.css">
+    <link rel="stylesheet" href="../../src/styles/original/header.css">
+    <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Bereavement Report Styles -->
+    <link rel="stylesheet" href="../../src/styles/pages/reports/bereavement-report.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <!-- Page Header -->
+    <header class="report-header">
+        <h1><i class="fas fa-heartbreak"></i> Bereavement Report</h1>
+        <p>Bereavement support records and contributions</p>
+    </header>
+
+    <main class="report-container">
+        <!-- Summary Stats -->
+        <section class="report-stats">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3>Total Cases</h3>
+                <p class="stat-number">3</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <h3>Total Raised</h3>
+                <p class="stat-number">Ksh 90,000</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h3>Total Contributors</h3>
+                <p class="stat-number">55</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-percentage"></i>
+                <h3>Support Rate</h3>
+                <p class="stat-number">98%</p>
+            </div>
+        </section>
+
+        <!-- Bereavement Records Table -->
+        <section class="report-table">
+            <h2><i class="fas fa-list"></i> Bereavement Cases</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Member</th>
+                        <th>Student ID</th>
+                        <th>Type of Bereavement</th>
+                        <th>Supporters</th>
+                        <th>Amount Raised</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mar 15, 2025</td>
+                        <td>Sarah Kemunto</td>
+                        <td>JOO/2024/045</td>
+                        <td>Loss of Parent</td>
+                        <td>15</td>
+                        <td>Ksh 25,000</td>
+                        <td><span class="status active">Active Support</span></td>
+                    </tr>
+                    <tr>
+                        <td>Feb 28, 2025</td>
+                        <td>James Ochieng</td>
+                        <td>JOO/2023/112</td>
+                        <td>Loss of Sibling</td>
+                        <td>22</td>
+                        <td>Ksh 35,000</td>
+                        <td><span class="status active">Active Support</span></td>
+                    </tr>
+                    <tr>
+                        <td>Jan 10, 2025</td>
+                        <td>Grace Atieno</td>
+                        <td>JOO/2024/078</td>
+                        <td>Loss of Parent</td>
+                        <td>18</td>
+                        <td>Ksh 30,000</td>
+                        <td><span class="status closed">Completed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Contributions Summary -->
+        <section class="report-table">
+            <h2><i class="fas fa-donate"></i> Recent Contributions</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Contributor</th>
+                        <th>Beneficiary</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mar 18, 2025</td>
+                        <td>Lavenda Achieng</td>
+                        <td>Sarah Kemunto</td>
+                        <td>Cash Support</td>
+                        <td>Ksh 2,000</td>
+                        <td><span class="status verified">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mar 17, 2025</td>
+                        <td>Mary Odundo</td>
+                        <td>Sarah Kemunto</td>
+                        <td>Food Hamper</td>
+                        <td>Ksh 3,000</td>
+                        <td><span class="status verified">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mar 16, 2025</td>
+                        <td>Vincent Otieno</td>
+                        <td>Sarah Kemunto</td>
+                        <td>Cash Support</td>
+                        <td>Ksh 5,000</td>
+                        <td><span class="status verified">Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mar 01, 2025</td>
+                        <td>Francis Opiyo</td>
+                        <td>James Ochieng</td>
+                        <td>Cash Support</td>
+                        <td>Ksh 1,000</td>
+                        <td><span class="status verified">Verified</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Bereavement Types Breakdown -->
+        <section class="breakdown-section">
+            <h2><i class="fas fa-chart-pie"></i> Bereavement Types</h2>
+            
+            <div class="breakdown-cards">
+                <div class="breakdown-card">
+                    <i class="fas fa-user-friends"></i>
+                    <h3>Loss of Parent</h3>
+                    <p class="count">2 cases</p>
+                    <p class="amount">Ksh 55,000 raised</p>
+                </div>
+                <div class="breakdown-card">
+                    <i class="fas fa-user-friends"></i>
+                    <h3>Loss of Sibling</h3>
+                    <p class="count">1 case</p>
+                    <p class="amount">Ksh 35,000 raised</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+    <script type="module" src="../../src/scripts/pages/reports/bereavement-report.js"></script>
+</body>
+
+</html>

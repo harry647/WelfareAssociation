@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SWA Student Portal - Register as a member and access student resources">
+    <title>Student Portal - Student Welfare Association | JOOUST</title>
+    <!-- Main Styles -->
+  <link rel="stylesheet" href="../../src/styles/main.css">
+  <link rel="stylesheet" href="../../src/styles/original/header.css">
+  <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+  <link rel="stylesheet" href="../../src/styles/original/footer.css">
+    <!-- Student Portal Styles -->
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/student-portal.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <!-- Shared Header -->
+  <div w3-include-html="../shared/header.html"></div>
+
+    <header class="student-header">
+        <h1><i class="fas fa-user-graduate"></i> Student Portal</h1>
+        <p>Join the Student Welfare Association today</p>
+    </header>
+
+    <main class="student-container">
+        <!-- Introduction -->
+        <section class="portal-intro">
+            <h2>Welcome to SWA Student Portal</h2>
+            <p>Register to become a member of the Student Welfare Association and unlock access to exclusive benefits including interest-free loans, welfare support, academic resources, and networking opportunities.</p>
+            <p><strong>Registration is FREE!</strong></p>
+        </section>
+
+        <!-- Login Section - Link to Login Page -->
+        <section class="login-section">
+            <h2><i class="fas fa-sign-in-alt"></i> Existing Members Login</h2>
+            <p>If you're already a member, log in to access the members portal:</p>
+            <div class="login-cta">
+                <a href="../auth/login-page.html" class="cta-button">
+                    <i class="fas fa-sign-in-alt"></i> Login to Member Portal
+                </a>
+                <p class="login-note">
+                    <small>Already a member? Click above to login with your credentials.</small>
+                </p>
+            </div>
+        </section>
+
+        <!-- Registration Section -->
+        <section class="registration-section">
+            <h2><i class="fas fa-user-plus"></i> New Member Registration</h2>
+            <p>Interested in joining SWA? Here's what you need to know:</p>
+            
+            <div class="benefits-preview">
+                <h3>As an SWA Member, You'll Get:</h3>
+                <ul>
+                    <li><i class="fas fa-check"></i> Access to interest-free loans</li>
+                    <li><i class="fas fa-check"></i> Emergency welfare support</li>
+                    <li><i class="fas fa-check"></i> Academic mentorship programs</li>
+                    <li><i class="fas fa-check"></i> Career development workshops</li>
+                    <li><i class="fas fa-check"></i> Networking events</li>
+                    <li><i class="fas fa-check"></i> Community service opportunities</li>
+                </ul>
+            </div>
+
+            <div class="eligibility">
+                <h3>Eligibility</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Must be a registered JOOUST student</li>
+                    <li><i class="fas fa-check-circle"></i> Valid student ID required</li>
+                    <li><i class="fas fa-check-circle"></i> Willing to make monthly contributions</li>
+                    <li><i class="fas fa-check-circle"></i> Agree to abide by SWA policies</li>
+                </ul>
+            </div>
+
+            <div class="registration-cta">
+                <p>Ready to join? Fill out our registration form!</p>
+                <a href="../auth/registration-form.html" class="cta-button">
+                    <i class="fas fa-clipboard-list"></i> Complete Registration Form
+                </a>
+            </div>
+        </section>
+
+        <!-- Guided Links -->
+        <section class="guided-links">
+            <h2><i class="fas fa-compass"></i> Guided Links</h2>
+            <p>Welcome to the Student Welfare Association (SWA) portal. Here you can find information about our team, events, and how to get involved.</p>
+            
+            <div class="links-grid">
+                <a href="../public/about-us.html" class="guide-card">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>About Us</h3>
+                    <p>Learn about SWA's mission, vision, and values</p>
+                </a>
+                <a href="../public/our-team.html" class="guide-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Our Team</h3>
+                    <p>Meet the executive committee members</p>
+                </a>
+                <a href="../public/events.html" class="guide-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Events</h3>
+                    <p>Browse upcoming events and activities</p>
+                </a>
+                <a href="../public/policies.html" class="guide-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Policies</h3>
+                    <p>View our policies and guidelines</p>
+                </a>
+                <a href="../public/faqs.html" class="guide-card">
+                    <i class="fas fa-question-circle"></i>
+                    <h3>FAQs</h3>
+                    <p>Find answers to common questions</p>
+                </a>
+                <a href="../public/contact-information.html" class="guide-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Contact</h3>
+                    <p>Get in touch with us</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Team Preview -->
+        <section class="team-preview">
+            <h2><i class="fas fa-users"></i> Meet Our Team</h2>
+            <p>The appointed welfare team leaders:</p>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="../../images/chair.jpg" alt="Chairman">
+                    <h4>Vincent Otieno</h4>
+                    <p>Chairman</p>
+                </div>
+                <div class="team-member">
+                    <img src="../../images/teasurer.jpg" alt="Treasurer">
+                    <h4>Mary Odundo</h4>
+                    <p>Treasurer</p>
+                </div>
+                <div class="team-member">
+                    <img src="../../images/secretary.png" alt="Secretary">
+                    <h4>Francis Opiyo</h4>
+                    <p>Secretary</p>
+                </div>
+                <div class="team-member">
+                    <img src="../../images/sec-gen.jpg" alt="Organizing Secretary">
+                    <h4>Jeff Juma</h4>
+                    <p>Organizing Secretary</p>
+                </div>
+            </div>
+            <a href="../public/our-team.html" class="view-more">View Full Team →</a>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section">
+            <h2><i class="fas fa-headset"></i> Need Help?</h2>
+            <p>For any inquiries, please contact us through the provided channels:</p>
+            <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> Email: swateam@gmail.com</p>
+                <p><i class="fas fa-phone"></i> Phone: +254 123 439 040</p>
+                <p><i class="fas fa-map-marker-alt"></i> Office: SWA Office, JOOUST Campus</p>
+            </div>
+            <a href="../public/contact-information.html" class="cta-button secondary">Contact Us</a>
+        </section>
+
+        <!-- Notice -->
+        <section class="notice">
+            <h3><i class="fas fa-info-circle"></i> Notice</h3>
+            <p>This portal is for educational and informational purposes. Member data is handled according to our Privacy Policy.</p>
+        </section>
+    </main>
+
+    <!-- Shared Footer -->
+  <div w3-include-html="../shared/footer.html"></div>
+
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+</body>
+</html>
