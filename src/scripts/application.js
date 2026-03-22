@@ -294,17 +294,31 @@ class Application {
             });
         });
 
-        // Header scroll effect
-        window.addEventListener('scroll', throttle(() => {
+        // Header scroll effect - works with dynamically loaded headers
+        const initHeaderScrollEffect = () => {
             const header = document.querySelector('header');
             if (header) {
+                // Add scrolled class based on initial scroll position
                 if (window.scrollY > 50) {
                     header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
                 }
+                
+                // Update on scroll
+                window.addEventListener('scroll', throttle(() => {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                }, 200));
+            } else {
+                // Header not found yet, try again (for dynamically loaded headers)
+                setTimeout(initHeaderScrollEffect, 100);
             }
-        }, 200));
+        };
+        
+        // Initialize header scroll effect
+        initHeaderScrollEffect();
     }
 
     /**
@@ -355,6 +369,35 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => app.init());
 } else {
     app.init();
+}
+
+// Handle W3.js includeHTML callback if available
+if (typeof w3 !== 'undefined' && w3.includeHTML) {
+    // Override includeHTML to ensure header scroll effect works after loading
+    const originalIncludeHTML = w3.includeHTML;
+    w3.includeHTML = function(callback) {
+        originalIncludeHTML(function() {
+            // Re-initialize header scroll effect after content loads
+            const header = document.querySelector('header');
+            if (header) {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                }
+                // Add scroll listener if not already added
+                if (!header.dataset.scrollListenerAdded) {
+                    header.dataset.scrollListenerAdded = 'true';
+                    window.addEventListener('scroll', throttle(() => {
+                        if (window.scrollY > 50) {
+                            header.classList.add('scrolled');
+                        } else {
+                            header.classList.remove('scrolled');
+                        }
+                    }, 200));
+                }
+            }
+            if (callback) callback();
+        });
+    };
 }
 
 // Export for use in other modules

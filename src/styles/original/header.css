@@ -6,9 +6,11 @@ header {
     justify-content: space-between;
     background-color: #333;
     padding: 10px 20px;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    right: 0;
+    z-index: 9999;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 .links-wrpper {
@@ -108,24 +110,44 @@ header {
         background-color: #444;
     }
     /* Mobile dropdown styles */
+    .dropdown {
+        position: relative;
+    }
     .dropdown-content {
         display: none;
-        position: static;
+        position: relative;
         background-color: #1a1a1a;
         width: 100%;
         border-radius: 8px;
         margin-top: 5px;
         padding: 5px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
     }
     .dropdown.active .dropdown-content {
         display: block;
+        max-height: 500px;
+        padding: 10px;
     }
     .dropdown-content a {
-        padding: 10px 15px !important;
+        padding: 12px 20px !important;
         font-size: 14px !important;
+        border-radius: 5px;
+        margin: 2px 0;
+    }
+    .dropbtn::after {
+        content: '\f107';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        margin-left: 8px;
+        transition: transform 0.3s ease;
+    }
+    .dropdown.active .dropbtn::after {
+        transform: rotate(180deg);
     }
     .hamburger-icon {
-        display: flex;
+        display: flex !important;
         order: 2;
         cursor: pointer;
         padding: 8px;
@@ -133,15 +155,19 @@ header {
         min-height: 44px;
         align-items: center;
         justify-content: center;
-        z-index: 1001;
+        z-index: 10001;
+        background: transparent;
+        border: none;
     }
     .hamburger-icon::before {
         content: '\2630';
-        font-size: 24px;
+        font-size: 28px;
         color: #f77b7b;
+        line-height: 1;
     }
     .hamburger-icon.active::before {
         content: '\2715';
+        font-size: 24px;
     }
     .sign-in {
         order: 1;

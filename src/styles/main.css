@@ -75,6 +75,7 @@ body {
     color: #333;
     background-color: #f0f0f0;
     overflow-x: hidden;
+    padding-top: 60px;
 }
 
 /* Typography */
