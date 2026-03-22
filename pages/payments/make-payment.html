@@ -290,50 +290,101 @@
 
         <!-- Payment Instructions -->
         <section class="payment-instructions">
-            <h2><i class="fas fa-info-circle"></i> Payment Instructions</h2>
+            <h2><i class="fas fa-info-circle"></i> How to Make a Payment</h2>
             
+            <!-- Step-by-Step Guide -->
             <div class="instructions-card">
-                <h3>M-Pesa STK Push (Recommended)</h3>
+                <h3><i class="fas fa-list-ol"></i> Step-by-Step Guide</h3>
                 <ol>
-                    <li>Enter your phone number above</li>
-                    <li>Click "Pay via M-Pesa (STK Push)"</li>
-                    <li>Wait for M-Pesa prompt on your phone</li>
-                    <li>Enter your M-Pesa PIN to confirm</li>
-                    <li>You'll receive a confirmation SMS</li>
+                    <li><strong>Select Payment Type</strong> - Choose your payment category (Contribution, Loan, Event, etc.) from the options above</li>
+                    <li><strong>Fill in Your Details</strong> - Enter your Full Name, Student ID, Phone Number, and Amount</li>
+                    <li><strong>Choose Payment Method</strong> - Select M-Pesa, Bank Transfer, Card Payment, or Cash</li>
+                    <li><strong>Complete Payment</strong> - Follow the instructions for your chosen method below</li>
+                    <li><strong>Get Confirmation</strong> - You'll receive an SMS confirmation and receipt</li>
                 </ol>
             </div>
             
+            <!-- M-Pesa STK Push -->
             <div class="instructions-card">
-                <h3>M-Pesa Manual Payment</h3>
+                <h3><i class="fas fa-mobile-alt"></i> M-Pesa STK Push (Recommended - Fastest)</h3>
                 <ol>
-                    <li>Go to M-Pesa on your phone</li>
-                    <li>Select "Pay Bill"</li>
-                    <li>Enter Business Number: <strong>123456</strong></li>
-                    <li>Enter Account Number: <strong>Your Student ID</strong></li>
-                    <li>Enter amount and confirm</li>
-                    <li>Enter the Transaction ID above</li>
+                    <li>Enter your phone number in the Phone Number field (format: 2547XXXXXXXX)</li>
+                    <li>Click the green <strong>"Pay via M-Pesa (STK Push)"</strong> button</li>
+                    <li>Wait for the M-Pesa prompt on your phone (you'll receive an SMS)</li>
+                    <li>Enter your M-Pesa PIN and press OK to confirm</li>
+                    <li>You'll receive a confirmation SMS with your transaction details</li>
+                    <li>Your payment will be automatically recorded - no need to enter Transaction ID</li>
+                </ol>
+                <p><em><i class="fas fa-info-circle"></i> This method is instant and recommended for fastest payment processing.</em></p>
+            </div>
+            
+            <!-- M-Pesa Manual -->
+            <div class="instructions-card">
+                <h3><i class="fas fa-money-bill-alt"></i> M-Pesa Manual Payment</h3>
+                <ol>
+                    <li>Go to <strong>M-Pesa</strong> on your phone</li>
+                    <li>Select <strong>"Lipa na M-Pesa"</strong></li>
+                    <li>Select <strong>"Pay Bill"</strong></li>
+                    <li>Enter <strong>Business Number:</strong> <strong>123456</strong></li>
+                    <li>Enter <strong>Account Number:</strong> <strong>Your Student ID</strong> (e.g., JOO/2024/001)</li>
+                    <li>Enter the <strong>Amount</strong> and confirm</li>
+                    <li>You will receive an SMS confirmation with Transaction ID</li>
+                    <li><strong>Enter the Transaction ID</strong> in the Transaction ID field above</li>
+                    <li>Click <strong>"Submit Payment"</strong> to complete</li>
                 </ol>
             </div>
             
+            <!-- Bank Transfer -->
             <div class="instructions-card">
-                <h3>Bank Transfer</h3>
+                <h3><i class="fas fa-university"></i> Bank Transfer</h3>
                 <ol>
-                    <li>Bank: <strong>Kenya Commercial Bank</strong></li>
-                    <li>Account Name: <strong>SWA JOOUST</strong></li>
-                    <li>Account Number: <strong>1234567890</strong></li>
-                    <li>Use your Student ID as reference</li>
-                    <li>Upload proof of payment above</li>
+                    <li>Log in to your online banking or visit any KCB branch</li>
+                    <li><strong>Bank:</strong> Kenya Commercial Bank (KCB)</li>
+                    <li><strong>Account Name:</strong> SWA JOOUST</li>
+                    <li><strong>Account Number:</strong> 1234567890</li>
+                    <li><strong>Reference:</strong> Use your Student ID (e.g., JOO/2024/001)</li>
+                    <li>Complete the transfer and keep the receipt</li>
+                    <li><strong>Upload proof of payment</strong> using the file upload field above, or</li>
+                    <li>Enter the transaction/reference number in the Transaction ID field</li>
+                    <li>Click <strong>"Submit Payment"</strong> to complete</li>
                 </ol>
             </div>
             
+            <!-- Card Payment -->
             <div class="instructions-card">
-                <h3>Card Payment</h3>
+                <h3><i class="fas fa-credit-card"></i> Card Payment (Visa/Mastercard)</h3>
                 <ol>
-                    <li>Select "Card Payment" as method</li>
-                    <li>Click "Submit Payment"</li>
-                    <li>You'll be redirected to secure payment gateway</li>
-                    <li>Complete payment with your card</li>
+                    <li>Select <strong>"Card Payment"</strong> as the payment method</li>
+                    <li>Click <strong>"Submit Payment"</strong> button</li>
+                    <li>You will be redirected to a secure payment gateway</li>
+                    <li>Enter your card details (card number, expiry, CVV)</li>
+                    <li>Complete the transaction with your bank's OTP verification</li>
+                    <li>You'll receive a confirmation and be redirected back</li>
                 </ol>
+            </div>
+            
+            <!-- Cash Payment -->
+            <div class="instructions-card">
+                <h3><i class="fas fa-money-bill-wave"></i> Cash Payment</h3>
+                <ol>
+                    <li>Select <strong>"Cash"</strong> as the payment method</li>
+                    <li>Click <strong>"Submit Payment"</strong></li>
+                    <li>Visit the SWA office during working hours</li>
+                    <li>Pay the exact amount to the finance team</li>
+                    <li>Get a physical receipt for your records</li>
+                </ol>
+            </div>
+            
+            <!-- Important Notes -->
+            <div class="instructions-card" style="background: #fff3cd; border-color: #ffc107;">
+                <h3><i class="fas fa-exclamation-triangle"></i> Important Notes</h3>
+                <ul>
+                    <li>All payments must include your <strong>Student ID</strong> as reference</li>
+                    <li>Save your <strong>Transaction ID</strong> as proof of payment</li>
+                    <li>You'll receive an <strong>SMS confirmation</strong> once payment is processed</li>
+                    <li>For any issues, contact the finance team via the Contact page</li>
+                    <li>Payments are processed within <strong>24-48 hours</strong></li>
+                </ul>
             </div>
         </section>
     </main>
