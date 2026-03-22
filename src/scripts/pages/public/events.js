@@ -9,11 +9,85 @@ class EventsPage {
     constructor() {
         this.eventButtons = document.querySelectorAll('.event-btn');
         this.newsletterForm = document.querySelector('.signup-form');
+        this.modal = null;
+        this.currentEventName = '';
         this.init();
     }
 
     init() {
+        this.createModal();
         this.bindEvents();
+    }
+
+    createModal() {
+        // Create modal HTML
+        const modalHTML = `
+            <div id="event-registration-modal" class="modal-overlay">
+                <div class="modal-content">
+                    <button class="modal-close">&times;</button>
+                    <h2>Event Registration</h2>
+                    <p class="modal-event-name"></p>
+                    <form id="event-registration-form">
+                        <div class="form-group">
+                            <label for="reg-name">Full Name</label>
+                            <input type="text" id="reg-name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">Email Address</label>
+                            <input type="email" id="reg-email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-phone">Phone Number</label>
+                            <input type="tel" id="reg-phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-student-id">Student ID</label>
+                            <input type="text" id="reg-student-id" name="studentId">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-notes">Additional Notes</label>
+                            <textarea id="reg-notes" name="notes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Registration</button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        this.modal = document.getElementById('event-registration-modal');
+
+        // Bind modal events
+        const closeBtn = this.modal.querySelector('.modal-close');
+        closeBtn.addEventListener('click', () => this.closeModal());
+
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.closeModal();
+            }
+        });
+
+        // Bind form submission
+        const form = document.getElementById('event-registration-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleFormSubmit(form);
+        });
+    }
+
+    openModal(eventName) {
+        this.currentEventName = eventName;
+        const eventNameEl = this.modal.querySelector('.modal-event-name');
+        eventNameEl.textContent = `Registering for: ${eventName}`;
+        this.modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeModal() {
+        this.modal.classList.remove('active');
+        document.body.style.overflow = '';
+        document.getElementById('event-registration-form').reset();
     }
 
     bindEvents() {
@@ -36,8 +110,34 @@ class EventsPage {
 
     handleEventRegistration(btn) {
         const eventName = btn.closest('.event-card')?.querySelector('h3')?.textContent || 'this event';
-        
-        alert(`Registration for "${eventName}" will be available soon!\n\nYou will be notified when registration opens.`);
+        this.openModal(eventName);
+    }
+
+    async handleFormSubmit(form) {
+        const submitBtn = form.querySelector('.btn-submit');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Registering...';
+        submitBtn.disabled = true;
+
+        // Get form data
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        data.eventName = this.currentEventName;
+
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // Show success
+            alert(`Successfully registered for "${this.currentEventName}"!\n\nWe will send a confirmation email to ${data.email}`);
+            this.closeModal();
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert('Failed to register. Please try again.');
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
     }
 
     async handleNewsletterSignup() {
