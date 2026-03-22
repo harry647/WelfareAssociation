@@ -5,17 +5,38 @@
  * @version 1.0.0
  */
 
+// Import services
+import { authService, memberService, contributionService, loanService } from '../../../services/index.js';
+
 class MemberPortal {
     constructor() {
         this.contributionForm = document.querySelector('.make-contribution form');
         this.loanForm = document.querySelector('.loan-section form');
         this.profileEditBtn = document.querySelector('.profile-section .btn');
-        this.init();
     }
 
     init() {
+        // Check authentication first
+        if (!this.checkAuth()) {
+            return; // Will redirect to login
+        }
         this.bindEvents();
         this.loadMemberData();
+    }
+
+    checkAuth() {
+        if (!authService.isAuthenticated()) {
+            // Not logged in, redirect to login page
+            window.location.href = '../../auth/login-page.html?redirect=member-portal.html';
+            return false;
+        }
+        
+        const user = authService.getCurrentUser();
+        if (!user) {
+            window.location.href = '../../auth/login-page.html?redirect=member-portal.html';
+            return false;
+        }
+        return true;
     }
 
     bindEvents() {

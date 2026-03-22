@@ -32,11 +32,18 @@ class AdminDashboardManager {
 
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            const user = authService.getCurrentUser();
-            if (!user || user.role !== 'admin') {
-                console.log('Demo mode: Admin access granted');
-            }
+            // Not logged in, redirect to login page
+            window.location.href = '../../auth/login-page.html?redirect=admin-dashboard.html';
+            return false;
         }
+        
+        const user = authService.getCurrentUser();
+        if (!user || user.role !== 'admin') {
+            // Not admin, redirect to login
+            window.location.href = '../../auth/login-page.html?redirect=admin-dashboard.html';
+            return false;
+        }
+        return true;
     }
 
     async loadDashboardData() {

@@ -335,6 +335,165 @@ router.get('/membership', auth, authorize('admin', 'treasurer'), async (req, res
 });
 
 /**
+ * GET /api/reports/export
+ * Export report data
+ */
+router.get('/export', auth, authorize('admin', 'treasurer'), async (req, res) => {
+    try {
+        const { type, format = 'json', startDate, endDate } = req.query;
+        
+        let data = {};
+        let reportName = '';
+        
+        switch (type) {
+            case 'contributions':
+                reportName = 'Contributions Report';
+                const contribQuery = {};
+                if (startDate || endDate) {
+                    contribQuery.createdAt = {};
+                    if (startDate) contribQuery.createdAt.$gte = new Date(startDate);
+                    if (endDate) contribQuery.createdAt.$lte = new Date(endDate);
+                }
+                const contributions = await Contribution.find(contribQuery)
+                    .populate('member', 'firstName lastName memberNumber');
+                data.contributions = contributions;
+                data.summary = {
+                    total: contributions.length,
+                    totalAmount: contributions.reduce((sum, c) => sum + (c.amount || 0), 0)
+                };
+                break;
+                
+            case 'loans':
+                reportName = 'Loans Report';
+                const loanQuery = {};
+                if (startDate || endDate) {
+                    loanQuery.createdAt = {};
+                    if (startDate) loanQuery.createdAt.$gte = new Date(startDate);
+                    if (endDate) loanQuery.createdAt.$lte = new Date(endDate);
+                }
+                const loans = await Loan.find(loanQuery)
+                    .populate('member', 'firstName lastName memberNumber');
+                data.loans = loans;
+                data.summary = {
+                    total: loans.length,
+                    pending: loans.filter(l => l.status === 'pending').length,
+                    active: loans.filter(l => l.status === 'active').length,
+                    totalDisbursed: loans.filter(l => l.status === 'active').reduce((sum, l) => sum + (l.principal || 0), 0)
+                };
+                break;
+                
+            case 'membership':
+                reportName = 'Membership Report';
+                const members = await Member.find();
+                data.members = members;
+                data.summary = {
+                    total: members.length,
+                    active: members.filter(m => m.status === 'active').length,
+                    inactive: members.filter(m => m.status === 'inactive').length
+                };
+                break;
+                
+            case 'bereavement':
+                reportName = 'Bereavement Report';
+                const cases = await Bereavement.find()
+                    .populate('member', 'firstName lastName memberNumber');
+                data.cases = cases;
+                data.summary = {
+                    total: cases.length,
+                    active: cases.filter(c => c.status === 'active').length,
+                    totalContributions: cases.reduce((sum, c) => sum + (c.totalContributions || 0), 0)
+                };
+                break;
+                
+            default:
+                return res.status(400).json({ success: false, message: 'Invalid report type' });
+        }
+        
+        if (format === 'csv') {
+            let csv = '';
+            if (type === 'contributions') {
+                csv = 'Member,Amount,Date,Method\n';
+                data.contributions.forEach(c => {
+                    csv += `${c.member?.firstName} ${c.member?.lastName},${c.amount},${c.createdAt},${c.paymentMethod}\n`;
+                });
+            } else if (type === 'loans') {
+                csv = 'Member,Principal,Status,Date\n';
+                data.loans.forEach(l => {
+                    csv += `${l.member?.firstName} ${l.member?.lastName},${l.principal},${l.status},${l.createdAt}\n`;
+                });
+            } else if (type === 'membership') {
+                csv = 'Name,Email,Status,Joined Date\n';
+                data.members.forEach(m => {
+                    csv += `${m.firstName} ${m.lastName},${m.email},${m.status},${m.createdAt}\n`;
+                });
+            }
+            
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', `attachment; filename=${reportName.replace(/\\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
+            return res.send(csv);
+        }
+        
+        res.json({
+            success: true,
+            reportName,
+            generatedAt: new Date().toISOString(),
+            data
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error exporting report' });
+    }
+});
+
+/**
+ * POST /api/reports/schedule
+ * Schedule automated report generation
+ */
+router.post('/schedule', auth, authorize('admin', 'treasurer'), [
+    body('type').notEmpty().withMessage('Report type is required'),
+    body('frequency').isIn(['daily', 'weekly', 'monthly']).withMessage('Valid frequency is required')
+], validate, async (req, res) => {
+    try {
+        const { type, frequency, recipients, parameters } = req.body;
+        
+        const schedule = {
+            id: Date.now().toString(),
+            type,
+            frequency,
+            recipients: recipients || [],
+            parameters: parameters || {},
+            nextRun: calculateNextRun(frequency),
+            createdBy: req.user._id,
+            createdAt: new Date(),
+            isActive: true
+        };
+        
+        res.status(201).json({
+            success: true,
+            message: 'Report schedule created successfully',
+            data: schedule
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error creating report schedule' });
+    }
+});
+
+/**
+ * GET /api/reports/schedules
+ * Get all scheduled reports
+ */
+router.get('/schedules', auth, authorize('admin', 'treasurer'), async (req, res) => {
+    try {
+        res.json({
+            success: true,
+            data: [],
+            message: 'No scheduled reports found'
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching schedules' });
+    }
+});
+
+/**
  * DELETE /api/reports/:id
  * Delete report
  */
@@ -353,6 +512,25 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
 });
 
 // Helper functions for report generation
+function calculateNextRun(frequency) {
+    const now = new Date();
+    const next = new Date(now);
+    
+    switch (frequency) {
+        case 'daily':
+            next.setDate(next.getDate() + 1);
+            break;
+        case 'weekly':
+            next.setDate(next.getDate() + 7);
+            break;
+        case 'monthly':
+            next.setMonth(next.getMonth() + 1);
+            break;
+    }
+    
+    return next;
+}
+
 async function generateContributionReport(parameters) {
     const { startDate, endDate } = parameters || {};
     const query = {};

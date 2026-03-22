@@ -205,4 +205,39 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     }
 });
 
+/**
+ * GET /api/messages
+ * Get all messages (alias for /api/contact)
+ */
+router.get('/messages', auth, authorize('admin', 'secretary'), async (req, res) => {
+    try {
+        const { status, priority, category, page = 1, limit = 10 } = req.query;
+        let query = {};
+
+        if (status) query.status = status;
+        if (priority) query.priority = priority;
+        if (category) query.category = category;
+
+        const contacts = await Contact.find(query)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit));
+
+        const total = await Contact.countDocuments(query);
+
+        res.json({
+            success: true,
+            data: contacts,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching messages' });
+    }
+});
+
 module.exports = router;

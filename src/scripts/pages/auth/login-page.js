@@ -103,11 +103,15 @@ class LoginPage {
             }
 
             // Show success and redirect
-            this.showSuccess('Login successful! Redirecting to Member Portal...');
+            this.showSuccess('Login successful! Redirecting...');
+            
+            // Get redirect URL from query parameter or default to member portal
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect') || '../dashboard/member-portal.html';
             
             // Redirect after short delay
             setTimeout(() => {
-                window.location.href = '../dashboard/member-portal.html';
+                window.location.href = redirectUrl;
             }, 1500);
 
         } catch (error) {
