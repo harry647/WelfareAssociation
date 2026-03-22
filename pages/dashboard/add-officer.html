@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../src/styles/pages/dashboard/add-officer.css">
-  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
   
 </head>
 <body>
@@ -116,12 +115,14 @@
 
               <div class="form-group">
                 <label for="termStart">Term Start Date</label>
-                <input type="date" id="termStart" required>
+                <input type="date" id="termStart" required placeholder="dd/mm/yyyy">
+                <span class="input-hint">Select the start date of the officer's term</span>
               </div>
 
               <div class="form-group">
                 <label for="termEnd">Term End Date</label>
-                <input type="date" id="termEnd" required>
+                <input type="date" id="termEnd" required placeholder="dd/mm/yyyy">
+                <span class="input-hint">Select the end date of the officer's term</span>
               </div>
 
               <div class="form-group">
