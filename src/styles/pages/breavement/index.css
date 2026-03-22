@@ -116,7 +116,6 @@
 }
 
 /* Section Base Styles */
-.bereaved-members,
 .contributions-section,
 .contribute-section,
 .types-section {
@@ -124,7 +123,6 @@
   animation: fadeIn 0.6s ease-out;
 }
 
-.bereaved-members h2,
 .contributions-section h2,
 .contribute-section h2,
 .types-section h2 {
@@ -137,7 +135,6 @@
   gap: 12px;
 }
 
-.bereaved-members h2 i,
 .contributions-section h2 i,
 .contribute-section h2 i,
 .types-section h2 i {
@@ -148,6 +145,40 @@
 /* ============================================
    Bereavement Cards Grid
    ============================================ */
+.bereaved-members {
+  margin-bottom: 60px;
+  animation: fadeIn 0.6s ease-out;
+  position: relative;
+}
+
+.bereaved-members::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--bereavement-accent), transparent);
+  border-radius: 2px;
+}
+
+.bereaved-members h2 {
+  color: var(--bereavement-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--bereavement-border);
+}
+
+.bereaved-members h2 i {
+  color: var(--bereavement-accent);
+  font-size: 1.5rem;
+}
+
 .bereavement-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -162,11 +193,38 @@
   overflow: hidden;
   transition: transform var(--transition-base), box-shadow var(--transition-base);
   border: 1px solid var(--bereavement-border);
+  position: relative;
+}
+
+.bereavement-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--bereavement-primary), var(--bereavement-accent));
 }
 
 .bereavement-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-hover);
+  border-color: var(--bereavement-accent-muted);
+}
+
+/* Urgent card special styling */
+.bereavement-card[data-status="urgent"]::before {
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+  animation: urgentPulse 2s infinite;
+}
+
+@keyframes urgentPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* Card Header */
@@ -654,5 +712,686 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   Search & Filter Section
+   ============================================ */
+.search-filter-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  background: var(--bereavement-bg-alt);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--bereavement-border);
+}
+
+.search-box {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+}
+
+.search-box i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--bereavement-text-muted);
+}
+
+.search-box input,
+.filter-box select {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border: 2px solid var(--bereavement-border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast);
+  background: white;
+}
+
+.search-box input:focus,
+.filter-box select:focus {
+  border-color: var(--bereavement-primary);
+  outline: none;
+}
+
+.filter-box {
+  display: flex;
+  gap: 12px;
+}
+
+.filter-box select {
+  padding: 14px 16px;
+  min-width: 160px;
+  cursor: pointer;
+}
+
+/* ============================================
+   Summary Section
+   ============================================ */
+.summary-section {
+  margin-bottom: 48px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.summary-section h2 {
+  color: var(--bereavement-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summary-section h2 i {
+  color: var(--bereavement-accent);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  background: linear-gradient(135deg, var(--bereavement-primary) 0%, var(--bereavement-primary-light) 100%);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.summary-card i {
+  font-size: 2.5rem;
+  color: var(--bereavement-accent-light);
+  opacity: 0.9;
+}
+
+.summary-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.summary-content p {
+  font-size: 0.875rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* ============================================
+   Urgent Badge
+   ============================================ */
+.urgent {
+  color: white;
+  background: #e74c3c;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+  animation: pulse 2s infinite;
+}
+
+.urgent-type {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ============================================
+   Progress Bar
+   ============================================ */
+.progress-container {
+  margin: 20px 0;
+}
+
+.progress-bar {
+  height: 12px;
+  background: var(--bereavement-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar .progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--bereavement-success) 0%, #2ecc71 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  color: var(--bereavement-text-muted);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* ============================================
+   M-Pesa Box
+   ============================================ */
+.mpesa-box {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  color: white;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.mpesa-box h4 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mpesa-box p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.mpesa-box strong {
+  background: rgba(255,255,255,0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   Card Actions
+   ============================================ */
+.card-actions {
+  padding: 16px 24px 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.card-actions .btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+
+.btn--secondary {
+  background: linear-gradient(135deg, var(--bereavement-primary) 0%, var(--bereavement-primary-light) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+}
+
+.btn--secondary:hover {
+  background: linear-gradient(135deg, var(--bereavement-primary-light) 0%, var(--bereavement-primary-dark) 100%);
+  transform: translateY(-2px);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--bereavement-accent) 0%, var(--bereavement-accent-light) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn--primary:hover {
+  background: linear-gradient(135deg, var(--bereavement-accent-light) 0%, #d63031 100%);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   Modal Styles
+   ============================================ */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--radius-xl);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 2rem;
+  color: var(--bereavement-text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--bereavement-accent);
+}
+
+.modal-header {
+  padding: 24px 24px 0;
+  border-bottom: none;
+}
+
+.modal-header h2 {
+  color: var(--bereavement-primary);
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.modal-header p {
+  color: var(--bereavement-text-muted);
+}
+
+.modal-header p span {
+  color: var(--bereavement-accent);
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-footer {
+  padding: 0 24px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--bereavement-border);
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.detail-section h4 {
+  color: var(--bereavement-primary);
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-section h4 i {
+  color: var(--bereavement-accent);
+}
+
+.detail-section p {
+  margin: 6px 0;
+  color: var(--bereavement-text);
+}
+
+/* ============================================
+   Condolence Section
+   ============================================ */
+.condolence-section {
+  background: var(--bereavement-bg-alt);
+  padding: 40px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--bereavement-border);
+  margin-bottom: 60px;
+}
+
+.condolence-section h2 {
+  color: var(--bereavement-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.condolence-section h2 i {
+  color: var(--bereavement-accent);
+}
+
+.condolence-section > p {
+  color: var(--bereavement-text-muted);
+  margin-bottom: 28px;
+}
+
+.condolence-form {
+  display: grid;
+  gap: 20px;
+}
+
+.condolence-form .form-group {
+  margin-bottom: 0;
+}
+
+.condolence-form input[type="text"],
+.condolence-form textarea,
+.condolence-form select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--bereavement-border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast);
+  font-family: inherit;
+}
+
+.condolence-form input:focus,
+.condolence-form textarea:focus,
+.condolence-form select:focus {
+  border-color: var(--bereavement-primary);
+  outline: none;
+}
+
+.condolence-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: var(--bereavement-text);
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--bereavement-primary);
+}
+
+/* Messages Display */
+.messages-display {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid var(--bereavement-border);
+}
+
+.messages-display h3 {
+  color: var(--bereavement-primary);
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.messages-list {
+  display: grid;
+  gap: 16px;
+}
+
+.message-item {
+  background: var(--bereavement-bg);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--bereavement-accent);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.message-author {
+  font-weight: 600;
+  color: var(--bereavement-primary);
+}
+
+.message-date {
+  color: var(--bereavement-text-muted);
+  font-size: 0.85rem;
+}
+
+.message-text {
+  color: var(--bereavement-text);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================
+   Document Upload Section (Admin)
+   ============================================ */
+.document-upload-section {
+  background: var(--bereavement-bg-alt);
+  padding: 40px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--bereavement-border);
+  margin-bottom: 60px;
+}
+
+.document-upload-section h2 {
+  color: var(--bereavement-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.document-upload-section h2 i {
+  color: var(--bereavement-accent);
+}
+
+.document-upload-section > p {
+  color: var(--bereavement-text-muted);
+  margin-bottom: 28px;
+}
+
+.document-upload-form {
+  display: grid;
+  gap: 20px;
+}
+
+.document-upload-form .form-group {
+  margin-bottom: 0;
+}
+
+.document-upload-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--bereavement-text);
+}
+
+.document-upload-form select,
+.document-upload-form input[type="file"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--bereavement-border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast);
+  background: white;
+}
+
+.document-upload-form select:focus,
+.document-upload-form input[type="file"]:focus {
+  border-color: var(--bereavement-primary);
+  outline: none;
+}
+
+/* ============================================
+   No Results Message
+   ============================================ */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--bereavement-text-muted);
+}
+
+.no-results i {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+}
+
+/* ============================================
+   Form Groups (Shared)
+   ============================================ */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--bereavement-text);
+}
+
+/* ============================================
+   Status Badges (Extended)
+   ============================================ */
+.status {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status--verified {
+  background: var(--bereavement-success-light);
+  color: var(--bereavement-success);
+  box-shadow: 0 2px 6px rgba(39, 174, 96, 0.2);
+}
+
+.status--pending {
+  background: #fff3cd;
+  color: #856404;
+  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.2);
+}
+
+/* ============================================
+   Additional Animations
+   ============================================ */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+/* ============================================
+   Responsive Updates
+   ============================================ */
+@media (max-width: 768px) {
+  .search-filter-section {
+    flex-direction: column;
+  }
+  
+  .filter-box {
+    flex-direction: column;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-actions {
+    flex-direction: column;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .condolence-section,
+  .document-upload-section {
+    padding: 24px;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
   }
 }

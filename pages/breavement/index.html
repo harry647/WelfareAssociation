@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="../../src/styles/original/footer.css">
     <!-- Bereavement Styles -->
     <link rel="stylesheet" href="../../src/styles/pages/breavement/index.css">
+    <link rel="stylesheet" href="../../src/styles/pages/reports/bereavement-report.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
@@ -32,62 +33,253 @@
     </header>
 
     <main class="bereavement-container">
-        <!-- Bereavement Records Section -->
-        <section class="bereaved-members">
-            <h2><i class="fas fa-users"></i> Members Who Have Lost Loved Ones</h2>
-            
-            <div class="bereavement-cards">
-                <div class="bereavement-card">
-                    <div class="card-header">
-                        <span class="date"><i class="fas fa-calendar"></i> March 15, 2025</span>
-                        <span class="type death">Loss of Parent</span>
-                    </div>
-                    <div class="card-body">
-                        <h3>Sarah Kemunto</h3>
-                        <p class="student-id">JOO/2024/045</p>
-                        <p class="description">Lost her father to a sudden illness. The SWA family extends its deepest condolences.</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="supporters"><i class="fas fa-users"></i> 15 supporters</span>
-                        <span class="amount-raised"><i class="fas fa-money-bill-wave"></i> Ksh 25,000 raised</span>
+        
+        <!-- Search and Filter Section -->
+        <section class="search-filter-section">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search member by name or ID..." id="searchInput">
+            </div>
+            <div class="filter-box">
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="parent">Loss of Parent</option>
+                    <option value="sibling">Loss of Sibling</option>
+                    <option value="guardian">Loss of Guardian</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="urgent">Urgent Cases</option>
+                    <option value="active">Active</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Support Summary Section -->
+        <section class="summary-section">
+            <h2><i class="fas fa-chart-pie"></i> Support Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <i class="fas fa-users"></i>
+                    <div class="summary-content">
+                        <h3 id="totalCases">3</h3>
+                        <p>Total Cases</p>
                     </div>
                 </div>
-                
-                <div class="bereavement-card">
-                    <div class="card-header">
-                        <span class="date"><i class="fas fa-calendar"></i> February 28, 2025</span>
-                        <span class="type death">Loss of Sibling</span>
-                    </div>
-                    <div class="card-body">
-                        <h3>James Ochieng</h3>
-                        <p class="student-id">JOO/2023/112</p>
-                        <p class="description">Lost his younger brother in a road accident. Our thoughts are with him and his family.</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="supporters"><i class="fas fa-users"></i> 22 supporters</span>
-                        <span class="amount-raised"><i class="fas fa-money-bill-wave"></i> Ksh 35,000 raised</span>
+                <div class="summary-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <div class="summary-content">
+                        <h3 id="totalRaised">Ksh 90,000</h3>
+                        <p>Total Raised</p>
                     </div>
                 </div>
-                
-                <div class="bereavement-card">
-                    <div class="card-header">
-                        <span class="date"><i class="fas fa-calendar"></i> January 10, 2025</span>
-                        <span class="type death">Loss of Parent</span>
+                <div class="summary-card">
+                    <i class="fas fa-hands-helping"></i>
+                    <div class="summary-content">
+                        <h3 id="totalContributors">55</h3>
+                        <p>Total Contributors</p>
                     </div>
-                    <div class="card-body">
-                        <h3>Grace Atieno</h3>
-                        <p class="student-id">JOO/2024/078</p>
-                        <p class="description">Lost her mother after a brief illness. Sending strength and support.</p>
-                    </div>
-                    <div class="card-footer">
-                        <span class="supporters"><i class="fas fa-users"></i> 18 supporters</span>
-                        <span class="amount-raised"><i class="fas fa-money-bill-wave"></i> Ksh 30,000 raised</span>
+                </div>
+                <div class="summary-card">
+                    <i class="fas fa-target"></i>
+                    <div class="summary-content">
+                        <h3 id="targetAmount">Ksh 150,000</h3>
+                        <p>Target Amount</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Bereavement Contributions -->
+        <!-- Bereavement Records Section -->
+        <section class="bereaved-members">
+            <h2><i class="fas fa-users"></i> Members Who Have Lost Loved Ones</h2>
+            
+            <div class="bereavement-cards" id="bereavementCards">
+                <!-- Card 1 - Sarah Kemunto -->
+                <div class="bereavement-card" data-id="1" data-name="Sarah Kemunto" data-type="parent" data-status="active">
+                    <div class="card-header">
+                        <span class="date"><i class="fas fa-calendar"></i> March 15, 2025</span>
+                        <span class="type death">Loss of Parent</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Sarah Kemunto <span class="urgent" style="display: none;">Urgent</span></h3>
+                        <p class="student-id">JOO/2024/045</p>
+                        <p class="description">Lost her father to a sudden illness. The SWA family extends its deepest condolences.</p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 50%;"></div>
+                            </div>
+                            <p class="progress-text">50% of Ksh 50,000 target</p>
+                        </div>
+                        
+                        <!-- M-Pesa Box -->
+                        <div class="mpesa-box">
+                            <h4><i class="fas fa-mobile-alt"></i> Lipa na M-Pesa</h4>
+                            <p>Paybill: <strong>123456</strong></p>
+                            <p>Account: <strong>SarahKemunto</strong></p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="supporters"><i class="fas fa-users"></i> 15 supporters</span>
+                        <span class="amount-raised"><i class="fas fa-money-bill-wave"></i> Ksh 25,000 raised</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary view-details-btn" data-id="1">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </button>
+                        <button class="btn btn-primary quick-contribute-btn" data-id="1" data-name="Sarah Kemunto">
+                            <i class="fas fa-hand-holding-heart"></i> Support Sarah
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Card 2 - James Ochieng (Urgent) -->
+                <div class="bereavement-card" data-id="2" data-name="James Ochieng" data-type="sibling" data-status="urgent">
+                    <div class="card-header">
+                        <span class="date"><i class="fas fa-calendar"></i> February 28, 2025</span>
+                        <span class="type death urgent-type">Loss of Sibling</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>James Ochieng <span class="urgent">Urgent</span></h3>
+                        <p class="student-id">JOO/2023/112</p>
+                        <p class="description">Lost his younger brother in a road accident. Our thoughts are with him and his family.</p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 70%;"></div>
+                            </div>
+                            <p class="progress-text">70% of Ksh 50,000 target</p>
+                        </div>
+                        
+                        <!-- M-Pesa Box -->
+                        <div class="mpesa-box">
+                            <h4><i class="fas fa-mobile-alt"></i> Lipa na M-Pesa</h4>
+                            <p>Paybill: <strong>123456</strong></p>
+                            <p>Account: <strong>JamesOchieng</strong></p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="supporters"><i class="fas fa-users"></i> 22 supporters</span>
+                        <span class="amount-raised"><i class="fas fa-money-bill-wave"></i> Ksh 35,000 raised</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary view-details-btn" data-id="2">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </button>
+                        <button class="btn btn-primary quick-contribute-btn" data-id="2" data-name="James Ochieng">
+                            <i class="fas fa-hand-holding-heart"></i> Support James
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Card 3 - Grace Atieno -->
+                <div class="bereavement-card" data-id="3" data-name="Grace Atieno" data-type="parent" data-status="active">
+                    <div class="card-header">
+                        <span class="date"><i class="fas fa-calendar"></i> January 10, 2025</span>
+                        <span class="type death">Loss of Parent</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Grace Atieno <span class="urgent" style="display: none;">Urgent</span></h3>
+                        <p class="student-id">JOO/2024/078</p>
+                        <p class="description">Lost her mother after a brief illness. Sending strength and support.</p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 60%;"></div>
+                            </div>
+                            <p class="progress-text">60% of Ksh 50,000 target</p>
+                        </div>
+                        
+                        <!-- M-Pesa Box -->
+                        <div class="mpesa-box">
+                            <h4><i class="fas fa-mobile-alt"></i> Lipa na M-Pesa</h4>
+                            <p>Paybill: <strong>123456</strong></p>
+                            <p>Account: <strong>GraceAtieno</strong></p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="supporters"><i class="fas fa-users"></i> 18 supporters</span>
+                        <span class="amount-raised"><i class="fas fa-money-bill-wave"></i> Ksh 30,000 raised</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary view-details-btn" data-id="3">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </button>
+                        <button class="btn btn-primary quick-contribute-btn" data-id="3" data-name="Grace Atieno">
+                            <i class="fas fa-hand-holding-heart"></i> Support Grace
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- No results message -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <i class="fas fa-search"></i>
+                <p>No matching records found</p>
+            </div>
+        </section>
+
+        <!-- Condolence Message Section -->
+        <section class="condolence-section">
+            <h2><i class="fas fa-comment-dots"></i> Send a Condolence Message</h2>
+            <p>Leave a supportive message for members who have lost loved ones.</p>
+            
+            <form id="condolenceForm" class="condolence-form">
+                <div class="form-group">
+                    <input type="text" id="contributorName" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <select id="beneficiarySelect" required>
+                        <option value="">Select Member</option>
+                        <option value="1">Sarah Kemunto</option>
+                        <option value="2">James Ochieng</option>
+                        <option value="3">Grace Atieno</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <textarea id="condolenceMessage" placeholder="Write your message of support..." required></textarea>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="anonymousCheck">
+                        Send anonymously
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+            
+            <!-- Messages Display -->
+            <div class="messages-display" id="messagesDisplay">
+                <h3><i class="fas fa-messages"></i> Recent Messages</h3>
+                <div class="messages-list" id="messagesList">
+                    <!-- Messages will be dynamically added here -->
+                    <div class="message-item">
+                        <div class="message-header">
+                            <span class="message-author">Lavenda Achieng</span>
+                            <span class="message-date">Mar 18, 2025</span>
+                        </div>
+                        <p class="message-text">Thinking of you during this difficult time. May God give you strength.</p>
+                    </div>
+                    <div class="message-item">
+                        <div class="message-header">
+                            <span class="message-author">Anonymous</span>
+                            <span class="message-date">Mar 17, 2025</span>
+                        </div>
+                        <p class="message-text">You're not alone. We're here for you.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bereavement Contributions Table -->
         <section class="contributions-section">
             <h2><i class="fas fa-hand-holding-heart"></i> Recent Contributions</h2>
             
@@ -102,7 +294,7 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="contributionsTableBody">
                     <tr>
                         <td>Mar 18, 2025</td>
                         <td>Lavenda Achieng</td>
@@ -117,7 +309,7 @@
                         <td>Sarah Kemunto</td>
                         <td>Food Hamper</td>
                         <td>Ksh 3,000</td>
-                        <td><span class="status verified">Verified</td>
+                        <td><span class="status verified">Verified</span></td>
                     </tr>
                     <tr>
                         <td>Mar 16, 2025</td>
@@ -149,6 +341,50 @@
             </a>
         </section>
 
+        <!-- Document Upload Section (Admin) -->
+        <section class="document-upload-section" id="adminSection">
+            <h2><i class="fas fa-file-upload"></i> Document Upload (Admin)</h2>
+            <p>Upload supporting documents for verification purposes.</p>
+            
+            <form id="documentUploadForm" class="document-upload-form">
+                <div class="form-group">
+                    <label>Select Case</label>
+                    <select id="caseSelect" required>
+                        <option value="">Select Case</option>
+                        <option value="1">Sarah Kemunto - Loss of Parent</option>
+                        <option value="2">James Ochieng - Loss of Sibling</option>
+                        <option value="3">Grace Atieno - Loss of Parent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Document Type</label>
+                    <select id="documentType" required>
+                        <option value="">Select Type</option>
+                        <option value="death-certificate">Death Certificate</option>
+                        <option value="burial-program">Burial Program</option>
+                        <option value="medical-report">Medical Report</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Upload Document</label>
+                    <input type="file" id="documentFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                </div>
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-upload"></i> Upload Document
+                </button>
+            </form>
+            
+            <!-- Admin Dashboard Hook -->
+            <!-- 
+            TODO: Connect to Admin Dashboard
+            - Auto-fetch student name + ID from student database
+            - Auto-update contribution balances
+            - Integrate with Finance system for reporting
+            - Send notifications for new cases
+            -->
+        </section>
+
         <!-- Bereavement Types Info -->
         <section class="types-section">
             <h2><i class="fas fa-info-circle"></i> Types of Bereavement Support</h2>
@@ -177,6 +413,64 @@
             </div>
         </section>
     </main>
+
+    <!-- View Details Modal -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalTitle">Case Details</h2>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Close</button>
+                <button class="btn btn-primary" id="modalContributeBtn">
+                    <i class="fas fa-hand-holding-heart"></i> Contribute
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Contribute Modal -->
+    <div class="modal" id="contributeModal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-header">
+                <h2>Quick Contribute</h2>
+                <p id="contributeBeneficiary">Supporting: <span></span></p>
+            </div>
+            <div class="modal-body">
+                <form id="quickContributeForm">
+                    <div class="form-group">
+                        <label>Contribution Type</label>
+                        <select id="contributionType" required>
+                            <option value="">Select Type</option>
+                            <option value="cash">Cash Support</option>
+                            <option value="food">Food Hamper</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (Ksh)</label>
+                        <input type="number" id="contributionAmount" placeholder="Enter amount" min="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="contributorName" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number (for M-Pesa)</label>
+                        <input type="tel" id="contributorPhone" placeholder="e.g., 254712345678">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-check"></i> Confirm Contribution
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Shared Footer -->
   <div w3-include-html="../shared/footer.html"></div>
