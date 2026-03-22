@@ -6,7 +6,7 @@
  */
 
 // Export main app
-export { default as app } from './app.js';
+export { default as app } from './application.js';
 
 // Export page modules
 export * from './pages/index.js';

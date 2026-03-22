@@ -28,6 +28,13 @@
     <p>Manage your SWA account, contributions, and loans</p>
   </header>
 
+  <!-- Fine Alerts (Warning Banner) -->
+  <div id="fineAlert" class="alert alert-warning" style="display: none;">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span id="fineAlertText">You have unpaid fines of Ksh 0</span>
+    <a href="#fines-section" class="alert-link">View Details</a>
+  </div>
+
   <!-- Dashboard Summary -->
   <div class="dashboard">
     <div class="card">
@@ -51,6 +58,29 @@
       <p class="label">Available</p>
     </div>
   </div>
+
+  <!-- Fine Summary Section -->
+  <section class="fine-summary" id="fines-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; margin: 20px; color: white;">
+    <h2 style="margin-top: 0;"><i class="fas fa-file-invoice-dollar"></i> My Fines Summary</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
+      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
+        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="totalFines">Ksh 0</p>
+        <p style="margin: 5px 0 0 0; font-size: 14px;">Total Fines</p>
+      </div>
+      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
+        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #4ade80;" id="paidFines">Ksh 0</p>
+        <p style="margin: 5px 0 0 0; font-size: 14px;">Paid</p>
+      </div>
+      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
+        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #fbbf24;" id="unpaidFines">Ksh 0</p>
+        <p style="margin: 5px 0 0 0; font-size: 14px;">Balance</p>
+      </div>
+      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
+        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="fineCount">0</p>
+        <p style="margin: 5px 0 0 0; font-size: 14px;">Total Records</p>
+      </div>
+    </div>
+  </section>
 
   <!-- Notifications -->
   <section class="notifications-section">
@@ -85,6 +115,28 @@
 
   <!-- Main Content Grid -->
   <main class="portal-main">
+    <!-- Fine Records Table -->
+    <section class="fines-section" id="finesSection" style="display: none;">
+      <h2><i class="fas fa-file-invoice-dollar"></i> My Fine Records</h2>
+      <p>View and manage your fine records</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Fine Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="finesTableBody">
+          <!-- Fines will be loaded dynamically -->
+        </tbody>
+      </table>
+    </section>
+
     <!-- Contribution History -->
     <section class="contribution-section">
       <h2><i class="fas fa-history"></i> My Contributions</h2>
@@ -133,6 +185,15 @@
       <p>Make your monthly contribution easily through our secure payment system.</p>
       <a href="../payments/make-payment.html" class="btn submit-btn">
         <i class="fas fa-credit-card"></i> Go to Payment Page
+      </a>
+    </section>
+
+    <!-- Pay Fines Section (shown when there are unpaid fines) -->
+    <section class="pay-fines-section" id="payFinesSection" style="display: none;">
+      <h2><i class="fas fa-credit-card"></i> Pay Outstanding Fines</h2>
+      <p>You have unpaid fines. Click below to make payment.</p>
+      <a href="../payments/make-payment.html?category=fine" class="btn submit-btn" style="background: #dc2626;">
+        <i class="fas fa-money-bill-wave"></i> Pay Fines Now
       </a>
     </section>
 
@@ -209,7 +270,13 @@
         w3.includeHTML();
     </script>
     
-    <!-- Dynamic Member Welcome Script -->
+    <!-- Fine Service -->
+    <script type="module">
+        import { fineService } from '../../src/services/fine-service.js';
+        window.fineService = fineService;
+    </script>
+    
+    <!-- Dynamic Member Welcome Script & Fine Tracking -->
     <script>
         (function() {
             // Try to get member data from localStorage
@@ -217,6 +284,7 @@
             const registrationKey = 'swa_registration';
             
             let memberData = null;
+            let memberId = null;
             
             // Try profile data first
             const profileData = localStorage.getItem(profileKey);
@@ -257,8 +325,80 @@
                 if (displayStudentId) {
                     displayStudentId.textContent = memberData.studentId || memberData.student_id || '-';
                 }
+                
+                // Set member ID for fines
+                memberId = memberData.studentId || memberData.student_id || 'JOO/2024/001';
+            } else {
+                // Use default member ID for demo
+                memberId = 'JOO/2024/001';
             }
+            
+            // Load fine summary and records
+            loadFineData(memberId);
         })();
+        
+        function loadFineData(memberId) {
+            if (!window.fineService) {
+                console.error('Fine service not loaded');
+                return;
+            }
+            
+            const summary = window.fineService.getMemberFineSummary(memberId);
+            const fines = window.fineService.getMemberFinesFromStorage(memberId);
+            
+            // Update summary display
+            document.getElementById('totalFines').textContent = 'Ksh ' + summary.total.toLocaleString();
+            document.getElementById('paidFines').textContent = 'Ksh ' + summary.paid.toLocaleString();
+            document.getElementById('unpaidFines').textContent = 'Ksh ' + summary.unpaid.toLocaleString();
+            document.getElementById('fineCount').textContent = summary.count;
+            
+            // Show/hide fine alert
+            const fineAlert = document.getElementById('fineAlert');
+            const fineAlertText = document.getElementById('fineAlertText');
+            
+            if (summary.unpaid > 0) {
+                fineAlert.style.display = 'flex';
+                fineAlertText.innerHTML = `<strong>⚠ You have unpaid fines of Ksh ${summary.unpaid.toLocaleString()}</strong>`;
+            } else {
+                fineAlert.style.display = 'none';
+            }
+            
+            // Show/hide sections based on fine data
+            const finesSection = document.getElementById('finesSection');
+            const payFinesSection = document.getElementById('payFinesSection');
+            
+            if (fines.length > 0) {
+                finesSection.style.display = 'block';
+                
+                const tbody = document.getElementById('finesTableBody');
+                tbody.innerHTML = fines.map(fine => `
+                    <tr>
+                        <td><strong>${fine.fine_type}</strong></td>
+                        <td>Ksh ${fine.amount.toLocaleString()}</td>
+                        <td>${fine.date}</td>
+                        <td>${fine.due_date}</td>
+                        <td>
+                            <span class="status ${fine.status === 'paid' ? 'received' : (new Date(fine.due_date) < new Date() ? 'overdue' : 'pending')}">
+                                ${fine.status === 'paid' ? '✓ Paid' : (new Date(fine.due_date) < new Date() ? 'Overdue' : 'Pending')}
+                            </span>
+                        </td>
+                        <td>
+                            ${fine.status !== 'paid' ? `
+                                <a href="../payments/make-payment.html?category=fine&fineId=${fine.id}" class="btn" style="padding: 5px 10px; font-size: 12px;">
+                                    <i class="fas fa-credit-card"></i> Pay
+                                </a>
+                            ` : '<span style="color: #666;">-</span>'}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            if (summary.unpaid > 0) {
+                payFinesSection.style.display = 'block';
+            } else {
+                payFinesSection.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

@@ -4,27 +4,8 @@
  * Ready for backend API integration
  */
 
-import { loanService } from '../../../services/loan-service.js';
-
-// API Configuration - Ready for backend integration
-const API_CONFIG = {
-    baseUrl: '/api',
-    endpoints: {
-        loans: '/loans',
-        loanDetails: '/loans/:id',
-        loanApprove: '/loans/:id/approve',
-        loanReject: '/loans/:id/reject',
-        payments: '/payments',
-        paymentVerify: '/payments/verify',
-        sendReminder: '/reminders/send',
-        autoReminders: '/reminders/auto',
-        exportPdf: '/export/pdf',
-        exportExcel: '/export/excel',
-        auditLog: '/audit/log',
-        notifications: '/notifications',
-        analytics: '/analytics/loans'
-    }
-};
+import { loanService } from '../../../services/index.js';
+import { API_CONFIG } from '../../../config/app-config.js';
 
 // Demo data for display
 let loansData = [];
@@ -183,6 +164,92 @@ function initCharts() {
         });
     }
 }
+
+// ============================================
+// OVERDUE LOANS DETECTION & PENALTY
+// ============================================
+
+/**
+ * Calculate penalty for overdue loan
+ * Formula: Penalty = Balance × 1% per day × Days Overdue
+ * @param {number} balance - Remaining balance
+ * @param {number} daysOverdue - Number of days overdue
+ * @returns {number} Penalty amount
+ */
+function calculatePenalty(balance, daysOverdue) {
+    const dailyRate = 0.01; // 1% per day
+    const penalty = balance * dailyRate * daysOverdue;
+    return penalty;
+}
+
+/**
+ * Check if loan is overdue and calculate days
+ * @param {string|Date} dueDate - The due date of the loan
+ * @returns {number} Number of days overdue (0 if not overdue)
+ */
+function checkOverdue(dueDate) {
+    const today = new Date();
+    const due = new Date(dueDate);
+    
+    if (today > due) {
+        const diffTime = today - due;
+        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        return days;
+    }
+    return 0;
+}
+
+/**
+ * Check for overdue loans and update UI
+ */
+function checkForOverdueLoans() {
+    // Demo data - in production, this would come from the API
+    const loans = [
+        { id: 'LN/2025/001', principal: 5000, due_date: '2025-04-30', status: 'active', paid_amount: 3500 },
+        { id: 'LN/2025/008', principal: 3000, due_date: '2025-03-15', status: 'active', paid_amount: 0 },
+    ];
+    
+    let totalOverdue = 0;
+    let totalPenalty = 0;
+    
+    loans.forEach(loan => {
+        const daysOverdue = checkOverdue(loan.due_date);
+        if (daysOverdue > 0) {
+            totalOverdue++;
+            const remainingBalance = loan.principal - (loan.paid_amount || 0);
+            const penalty = calculatePenalty(remainingBalance, daysOverdue);
+            totalPenalty += penalty;
+        }
+    });
+    
+    // Update the overdue alert
+    const overdueAlert = document.getElementById('overdueAlert');
+    const overdueCount = document.getElementById('overdueCount');
+    const totalPenaltyEl = document.getElementById('totalPenalty');
+    
+    if (overdueAlert && totalOverdue > 0) {
+        overdueAlert.classList.add('show');
+        if (overdueCount) overdueCount.textContent = totalOverdue;
+        if (totalPenaltyEl) totalPenaltyEl.textContent = `Ksh ${totalPenalty.toLocaleString()}`;
+    }
+    
+    console.log(`Overdue loans: ${totalOverdue}, Total penalty: Ksh ${totalPenalty.toLocaleString()}`);
+    return { totalOverdue, totalPenalty };
+}
+
+/**
+ * Filter to show only overdue loans
+ */
+function filterOverdue() {
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+        statusFilter.value = 'overdue';
+        filterLoanHistory();
+    }
+}
+
+// Expose filterOverdue globally for the onclick in HTML
+window.filterOverdue = filterOverdue;
 
 // ============================================
 // FILTERS & SEARCH

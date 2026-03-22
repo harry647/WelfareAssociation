@@ -5,8 +5,8 @@
  * @version 1.0.0
  */
 
-import { authService, memberService, contributionService, loanService } from '../services/index.js';
-import { showNotification, formatCurrency, formatDate } from '../utils/helpers.js';
+import { authService, memberService, contributionService, loanService } from '../../services/index.js';
+import { showNotification, formatCurrency, formatDate } from '../../utils/utility-functions.js';
 
 /**
  * MemberDashboard Class

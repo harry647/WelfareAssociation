@@ -272,6 +272,100 @@ class LoanService {
         );
     }
 
+    // ============================================
+    // PENALTY CALCULATION (New - Phase 2: Overdue)
+    // ============================================
+    
+    /**
+     * Calculate penalty for overdue loan
+     * Formula: Penalty = Balance × 1% per day × Days Overdue
+     * @param {number} balance - Remaining balance
+     * @param {number} daysOverdue - Number of days overdue
+     * @returns {number} Penalty amount
+     */
+    calculatePenalty(balance, daysOverdue) {
+        const dailyRate = 0.01; // 1% per day
+        const penalty = balance * dailyRate * daysOverdue;
+        return penalty;
+    }
+    
+    /**
+     * Check if loan is overdue and calculate days
+     * @param {string|Date} dueDate - The due date of the loan
+     * @returns {number} Number of days overdue (0 if not overdue)
+     */
+    checkOverdue(dueDate) {
+        const today = new Date();
+        const due = new Date(dueDate);
+        
+        if (today > due) {
+            const diffTime = today - due;
+            const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            return days;
+        }
+        return 0;
+    }
+    
+    /**
+     * Calculate complete loan with interest and potential penalty
+     * @param {number} principal - Loan principal amount
+     * @param {number} months - Repayment period in months
+     * @param {string|Date} dueDate - Due date for repayment
+     * @returns {Object} Complete loan calculation
+     */
+    calculateLoan(principal, months, dueDate = null) {
+        // Phase 1: Normal Loan Period - 10% flat interest
+        const interestRate = 0.10;
+        const interest = principal * interestRate;
+        const total = principal + interest;
+        const monthly = months > 0 ? total / months : 0;
+        
+        // Calculate due date if not provided
+        if (!dueDate) {
+            const today = new Date();
+            today.setMonth(today.getMonth() + months);
+            dueDate = today.toISOString().split('T')[0];
+        }
+        
+        // Phase 2: Check for overdue and calculate penalty
+        const daysOverdue = this.checkOverdue(dueDate);
+        const penalty = daysOverdue > 0 ? this.calculatePenalty(principal, daysOverdue) : 0;
+        const newTotal = penalty > 0 ? principal + interest + penalty : total;
+        
+        return {
+            principal,
+            interest,
+            total,
+            monthly,
+            dueDate,
+            daysOverdue,
+            penalty,
+            newTotal: newTotal
+        };
+    }
+    
+    /**
+     * Get loan status with penalty info
+     * @param {Object} loan - Loan object from database
+     * @returns {Object} Loan with updated status and penalty
+     */
+    getLoanWithPenalty(loan) {
+        const daysOverdue = this.checkOverdue(loan.due_date);
+        const penalty = daysOverdue > 0 ? this.calculatePenalty(loan.principal, daysOverdue) : 0;
+        
+        let status = loan.status;
+        if (daysOverdue > 0 && status === 'active') {
+            status = 'overdue';
+        }
+        
+        return {
+            ...loan,
+            daysOverdue,
+            penalty,
+            updatedBalance: loan.principal + (loan.interest || 0) + penalty - (loan.paid_amount || 0)
+        };
+    }
+
     // Helper methods
     generateLoanId() {
         const date = new Date();

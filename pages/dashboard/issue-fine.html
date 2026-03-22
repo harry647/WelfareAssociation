@@ -98,20 +98,26 @@
                 </select>
               </div>
 
+              <!-- Fine Type Selection with Auto-fill -->
               <div class="form-group">
-                <label for="fineType">Fine Type</label>
-                <select id="fineType" required>
+                <label for="fineType">
+                  <i class="fas fa-list"></i> Fine Type
+                  <span style="font-weight: normal; color: var(--text-light);">(Select to auto-fill amount)</span>
+                </label>
+                <select id="fineType" required onchange="autoFillFineAmount()">
                   <option value="">-- Select Fine Type --</option>
-                  <option value="late-payment">Late Payment - Ksh 500</option>
-                  <option value="missing-event">Missing Event - Ksh 1,000</option>
-                  <option value="missing-report">Missing Report - Ksh 750</option>
-                  <option value="policy-violation">Policy Violation - Ksh 2,000</option>
-                  <option value="other">Other</option>
+                  <!-- Fine types will be loaded dynamically -->
                 </select>
+                <small style="color: var(--text-light);">
+                  <i class="fas fa-info-circle"></i> Select a fine type to automatically fill the amount, or choose "Other" to enter a custom amount.
+                </small>
               </div>
 
               <div class="form-group">
-                <label for="fineAmount">Fine Amount (Ksh)</label>
+                <label for="fineAmount">
+                  <i class="fas fa-money-bill-wave"></i> Fine Amount (Ksh)
+                  <span style="font-weight: normal; color: var(--text-light);">(Auto-filled from fine type)</span>
+                </label>
                 <input type="number" id="fineAmount" placeholder="Enter amount" min="0" required>
               </div>
 
@@ -133,11 +139,183 @@
           </div>
         </section>
 
+        <!-- Fine Type Reference -->
+        <section class="data-section">
+          <h2><i class="fas fa-info-circle"></i> Available Fine Types</h2>
+          <p style="margin-bottom: 15px;">Current fine types configured in the system:</p>
+          <div id="fineTypesReference" class="table-container">
+            <!-- Loaded dynamically -->
+          </div>
+        </section>
+
       </div>
     </div>
 
   </div>
 
   <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+  <script type="module">
+    import { fineService } from '../../src/services/fine-service.js';
+    
+    // Make fineService available globally
+    window.fineService = fineService;
+  </script>
+  <script>
+    // Load fine types on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadFineTypesForSelect();
+      loadFineTypesReference();
+      setDefaultDueDate();
+    });
+    
+    function loadFineTypesForSelect() {
+      const fineTypes = window.fineService.getFineTypes();
+      const select = document.getElementById('fineType');
+      
+      // Add "Other" option first
+      select.innerHTML = '<option value="">-- Select Fine Type --</option>';
+      
+      // Add fine types grouped by category
+      const categories = {};
+      fineTypes.forEach(ft => {
+        if (!categories[ft.category]) {
+          categories[ft.category] = [];
+        }
+        categories[ft.category].push(ft);
+      });
+      
+      for (const [category, types] of Object.entries(categories)) {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = capitalizeFirst(category);
+        
+        types.forEach(ft => {
+          const option = document.createElement('option');
+          option.value = JSON.stringify({ id: ft.id, amount: ft.amount, name: ft.name });
+          option.textContent = `${ft.name} - Ksh ${ft.amount.toLocaleString()}`;
+          optgroup.appendChild(option);
+        });
+        
+        select.appendChild(optgroup);
+      }
+      
+      // Add "Other/Custom" option
+      const otherOption = document.createElement('option');
+      otherOption.value = 'other';
+      otherOption.textContent = 'Other - Custom Amount';
+      select.appendChild(otherOption);
+    }
+    
+    function loadFineTypesReference() {
+      const fineTypes = window.fineService.getFineTypes();
+      const container = document.getElementById('fineTypesReference');
+      
+      if (container) {
+        container.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Fine Type</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${fineTypes.map(ft => `
+                <tr>
+                  <td><strong>${ft.name}</strong></td>
+                  <td>Ksh ${ft.amount.toLocaleString()}</td>
+                  <td><span class="badge">${capitalizeFirst(ft.category)}</span></td>
+                  <td>${ft.description || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+    }
+    
+    // Auto-fill amount when fine type is selected
+    function autoFillFineAmount() {
+      const fineTypeSelect = document.getElementById('fineType');
+      const amountInput = document.getElementById('fineAmount');
+      const selectedValue = fineTypeSelect.value;
+      
+      if (selectedValue && selectedValue !== 'other') {
+        try {
+          const fineTypeData = JSON.parse(selectedValue);
+          amountInput.value = fineTypeData.amount;
+        } catch (e) {
+          console.error('Error parsing fine type data:', e);
+        }
+      } else if (selectedValue === 'other') {
+        // Clear the amount for custom entry
+        amountInput.value = '';
+        amountInput.focus();
+      }
+    }
+    
+    function setDefaultDueDate() {
+      // Set default due date to 14 days from now
+      const dueDateInput = document.getElementById('dueDate');
+      const today = new Date();
+      const defaultDue = new Date(today.getTime() + (14 * 24 * 60 * 60 * 1000));
+      dueDateInput.value = defaultDue.toISOString().split('T')[0];
+    }
+    
+    function capitalizeFirst(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+    
+    // Form submission
+    document.getElementById('issueFineForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const memberId = document.getElementById('memberSelect').value;
+      const fineTypeSelect = document.getElementById('fineType');
+      const fineAmount = parseInt(document.getElementById('fineAmount').value);
+      const dueDate = document.getElementById('dueDate').value;
+      const description = document.getElementById('fineReason').value;
+      
+      let fineTypeId;
+      let fineTypeName;
+      
+      if (fineTypeSelect.value === 'other') {
+        fineTypeId = null;
+        fineTypeName = 'Custom Fine';
+      } else {
+        try {
+          const fineTypeData = JSON.parse(fineTypeSelect.value);
+          fineTypeId = fineTypeData.id;
+          fineTypeName = fineTypeData.name;
+        } catch (e) {
+          fineTypeId = null;
+          fineTypeName = 'Custom Fine';
+        }
+      }
+      
+      // Issue the fine using fineService
+      try {
+        const newFine = window.fineService.issueFineToMember(memberId, {
+          fineTypeId: fineTypeId,
+          amount: fineAmount,
+          dueDate: dueDate,
+          description: description
+        });
+        
+        alert(`Fine issued successfully!\n\nMember: ${memberId}\nFine Type: ${fineTypeName}\nAmount: Ksh ${fineAmount.toLocaleString()}\nDue Date: ${dueDate}`);
+        
+        // Reset form
+        document.getElementById('issueFineForm').reset();
+        setDefaultDueDate();
+        loadFineTypesForSelect();
+        
+        // Optionally redirect to fines collection
+        // window.location.href = 'fines-collection.html';
+      } catch (error) {
+        alert('Error issuing fine: ' + error.message);
+      }
+    });
+  </script>
 </body>
 </html>

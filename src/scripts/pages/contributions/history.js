@@ -3,7 +3,7 @@
  * Handles contribution history display and filtering
  */
 
-import { ContributionService } from '../../../services/contribution-service.js';
+import { contributionService } from '../../../services/index.js';
 
 // Initialize contribution history functionality
 document.addEventListener('DOMContentLoaded', () => {

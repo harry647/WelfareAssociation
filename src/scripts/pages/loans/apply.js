@@ -3,22 +3,8 @@
  * Handles the loan application form submission, validation, and M-Pesa integration
  */
 
-import { loanService } from '../../../services/loan-service.js';
-
-// API Configuration - Ready for backend integration
-const API_CONFIG = {
-    baseUrl: '/api',
-    endpoints: {
-        applyLoan: '/apply-loan',
-        stkPush: '/stk-push',
-        mpesaCallback: '/mpesa-callback',
-        generateReceipt: '/generate-receipt',
-        loanStatus: '/loan-status',
-        checkEligibility: '/check-eligibility',
-        checkGuarantor: '/check-guarantor',
-        uploadDocument: '/upload-document'
-    }
-};
+import { loanService } from '../../../services/index.js';
+import { API_CONFIG } from '../../../config/app-config.js';
 
 // Initialize the loan application functionality
 document.addEventListener('DOMContentLoaded', () => {
@@ -226,15 +212,28 @@ function calculateLoanRepayment() {
     const amount = parseFloat(document.getElementById('loanAmount')?.value) || 0;
     const period = parseInt(document.getElementById('repaymentPeriod')?.value) || 0;
     
-    const interestRate = 0.05; // 5% per month
-    const interest = amount * interestRate * period;
+    // Phase 1: Normal Loan Period - 10% flat interest (not compounding)
+    const interestRate = 0.10; // 10% flat
+    const interest = amount * interestRate;
     const totalRepayment = amount + interest;
+    
+    // Monthly Payment = Total / Months
+    const monthlyPayment = period > 0 ? totalRepayment / period : 0;
+    
+    // Phase 2: Overdue Penalty Calculation
+    // Penalty = Remaining Balance × 1% per day × Days Overdue
+    // For calculator, show potential penalty for 1-30 days overdue as example
+    const dailyPenaltyRate = 0.01; // 1% per day
+    const exampleDaysOverdue = 5; // Show example for 5 days overdue
+    const examplePenalty = amount * dailyPenaltyRate * exampleDaysOverdue;
     
     const summaryCard = document.getElementById('loanSummaryCard');
     const principalEl = document.getElementById('summaryPrincipal');
     const interestEl = document.getElementById('summaryInterest');
     const periodEl = document.getElementById('summaryPeriod');
     const totalEl = document.getElementById('summaryTotal');
+    const monthlyEl = document.getElementById('summaryMonthly');
+    const penaltyEl = document.getElementById('summaryPenalty');
     
     if (amount > 0 && period > 0) {
         if (summaryCard) summaryCard.classList.add('show');
@@ -242,11 +241,45 @@ function calculateLoanRepayment() {
         if (interestEl) interestEl.textContent = `Ksh ${interest.toLocaleString()}`;
         if (periodEl) periodEl.textContent = `${period} month${period > 1 ? 's' : ''}`;
         if (totalEl) totalEl.textContent = `Ksh ${totalRepayment.toLocaleString()}`;
+        if (monthlyEl) monthlyEl.textContent = `Ksh ${monthlyPayment.toLocaleString()}`;
+        if (penaltyEl) penaltyEl.textContent = `Ksh ${examplePenalty.toLocaleString()} (${exampleDaysOverdue} days)`;
     } else {
         if (summaryCard) summaryCard.classList.remove('show');
     }
     
-    return { amount, interest, totalRepayment, period };
+    return { amount, interest, totalRepayment, period, monthlyPayment, penalty: examplePenalty };
+}
+
+// ============================================
+// PENALTY CALCULATION (Used in history/dashboard)
+// ============================================
+/**
+ * Calculate penalty for overdue loan
+ * @param {number} balance - Remaining balance
+ * @param {number} daysOverdue - Number of days overdue
+ * @returns {number} Penalty amount
+ */
+function calculatePenalty(balance, daysOverdue) {
+    const dailyRate = 0.01; // 1% per day
+    const penalty = balance * dailyRate * daysOverdue;
+    return penalty;
+}
+
+/**
+ * Check if loan is overdue and calculate days
+ * @param {string|Date} dueDate - The due date of the loan
+ * @returns {number} Number of days overdue (0 if not overdue)
+ */
+function checkOverdue(dueDate) {
+    const today = new Date();
+    const due = new Date(dueDate);
+    
+    if (today > due) {
+        const diffTime = today - due;
+        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        return days;
+    }
+    return 0;
 }
 
 // ============================================

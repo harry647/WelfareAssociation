@@ -5,8 +5,8 @@
  * @version 2.0.0
  */
 
-import { volunteerService } from '../../../services/volunteer-service.js';
-import { showNotification } from '../../../utils/utility-functions.js';
+import { volunteerService } from '../../services/index.js';
+import { showNotification } from '../../utils/utility-functions.js';
 
 class VolunteerPage {
     constructor() {
