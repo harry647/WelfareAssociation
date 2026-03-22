@@ -32,11 +32,49 @@ export const API_CONFIG = {
         loans: '/loans',
         applyLoan: '/loans/apply',
         
+        // Payments
+        payments: '/payments',
+        
         // Debts
         debts: '/debts',
         
         // Events
         events: '/events',
+        eventRegister: '/events/register',
+        newsletter: '/newsletter',
+        
+        // News
+        news: '/news',
+        newsSubscribe: '/news/subscribe',
+        
+        // Bereavement
+        bereavement: '/bereavement',
+        bereavementContribute: '/bereavement/contribute',
+        bereavementMessages: '/bereavement/messages',
+        
+        // Notices & Announcements
+        notices: '/notices',
+        announcements: '/announcements',
+        
+        // Reports
+        reports: '/reports',
+        
+        // Savings
+        savings: '/savings',
+        savingsGoals: '/savings/goals',
+        
+        // Fines
+        fines: '/fines',
+        
+        // Documents
+        documents: '/documents',
+        
+        // FAQs & Policies
+        faqs: '/faqs',
+        policies: '/policies',
+        
+        // Gallery
+        gallery: '/gallery',
         
         // Messages/Contact
         contact: '/contact',
@@ -45,6 +83,11 @@ export const API_CONFIG = {
         // Volunteers
         volunteers: '/volunteers',
         volunteerApply: '/volunteers/apply',
+        
+        // Public Pages
+        publicPages: '/public',
+        organization: '/organization',
+        inquiry: '/inquiry',
     },
     
     // Request timeout in milliseconds
