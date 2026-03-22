@@ -270,73 +270,72 @@
         w3.includeHTML();
     </script>
     
-    <!-- Fine Service -->
+    <!-- Fine Service -->    
     <script type="module">
+        // Import and initialize fine service
         import { fineService } from '../../src/services/fine-service.js';
         window.fineService = fineService;
+        
+        // Get member data and load fine data after service is ready
+        const profileKey = 'swa_member_profile';
+        const registrationKey = 'swa_registration';
+        
+        let memberData = null;
+        let memberId = 'JOO/2024/001'; // default
+        
+        // Try profile data first
+        const profileData = localStorage.getItem(profileKey);
+        if (profileData) {
+            memberData = JSON.parse(profileData);
+        }
+        
+        // Try registration data as fallback
+        if (!memberData) {
+            const registrationData = localStorage.getItem(registrationKey);
+            if (registrationData) {
+                memberData = JSON.parse(registrationData);
+            }
+        }
+        
+        // Update welcome message if member data exists
+        if (memberData) {
+            const welcomeElement = document.getElementById('welcome-message');
+            if (welcomeElement) {
+                const firstName = memberData.firstName || memberData.first_name || '';
+                const lastName = memberData.lastName || memberData.last_name || '';
+                const fullName = (firstName + ' ' + lastName).trim();
+                
+                if (fullName) {
+                    welcomeElement.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + fullName;
+                }
+            }
+            
+            // Also update profile section if it exists
+            const displayName = document.getElementById('display-name');
+            if (displayName) {
+                const firstName = memberData.firstName || memberData.first_name || '';
+                const lastName = memberData.lastName || memberData.last_name || '';
+                displayName.textContent = (firstName + ' ' + lastName).trim() || 'Member';
+            }
+            
+            const displayStudentId = document.getElementById('display-student-id');
+            if (displayStudentId) {
+                displayStudentId.textContent = memberData.studentId || memberData.student_id || '-';
+            }
+            
+            // Set member ID for fines
+            memberId = memberData.studentId || memberData.student_id || 'JOO/2024/001';
+        }
+        
+        // Load fine summary and records (now that service is loaded)
+        if (typeof loadFineData === 'function') {
+            loadFineData(memberId);
+        }
     </script>
     
-    <!-- Dynamic Member Welcome Script & Fine Tracking -->
+    <!-- Dynamic Member Welcome Script (kept for other functionality) -->
     <script>
-        (function() {
-            // Try to get member data from localStorage
-            const profileKey = 'swa_member_profile';
-            const registrationKey = 'swa_registration';
-            
-            let memberData = null;
-            let memberId = null;
-            
-            // Try profile data first
-            const profileData = localStorage.getItem(profileKey);
-            if (profileData) {
-                memberData = JSON.parse(profileData);
-            }
-            
-            // Try registration data as fallback
-            if (!memberData) {
-                const registrationData = localStorage.getItem(registrationKey);
-                if (registrationData) {
-                    memberData = JSON.parse(registrationData);
-                }
-            }
-            
-            // Update welcome message if member data exists
-            if (memberData) {
-                const welcomeElement = document.getElementById('welcome-message');
-                if (welcomeElement) {
-                    const firstName = memberData.firstName || memberData.first_name || '';
-                    const lastName = memberData.lastName || memberData.last_name || '';
-                    const fullName = (firstName + ' ' + lastName).trim();
-                    
-                    if (fullName) {
-                        welcomeElement.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + fullName;
-                    }
-                }
-                
-                // Also update profile section if it exists
-                const displayName = document.getElementById('display-name');
-                if (displayName) {
-                    const firstName = memberData.firstName || memberData.first_name || '';
-                    const lastName = memberData.lastName || memberData.last_name || '';
-                    displayName.textContent = (firstName + ' ' + lastName).trim() || 'Member';
-                }
-                
-                const displayStudentId = document.getElementById('display-student-id');
-                if (displayStudentId) {
-                    displayStudentId.textContent = memberData.studentId || memberData.student_id || '-';
-                }
-                
-                // Set member ID for fines
-                memberId = memberData.studentId || memberData.student_id || 'JOO/2024/001';
-            } else {
-                // Use default member ID for demo
-                memberId = 'JOO/2024/001';
-            }
-            
-            // Load fine summary and records
-            loadFineData(memberId);
-        })();
-        
+        // This script runs immediately but fine loading is now handled in the module above
         function loadFineData(memberId) {
             if (!window.fineService) {
                 console.error('Fine service not loaded');

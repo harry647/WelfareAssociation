@@ -5,45 +5,60 @@
  * @version 1.0.0
  */
 
-// API & Core Services
-export { apiService, ApiError } from './api-service.js';
-export { authService } from './auth-service.js';
+// Import all services for use in default export
+import { apiService, ApiError } from './api-service.js';
+import { authService } from './auth-service.js';
+import { memberService } from './member-service.js';
+import { contributionService } from './contribution-service.js';
+import { loanService } from './loan-service.js';
+import { paymentService } from './payment-service.js';
+import { debtService } from './debt-service.js';
+import { fineService } from './fine-service.js';
+import { savingsService } from './savings-service.js';
+import { eventService } from './event-service.js';
+import { newsService } from './news-service.js';
+import { faqService } from './faq-service.js';
+import { policyService } from './policy-service.js';
+import { galleryService } from './gallery-service.js';
+import { publicService } from './public-service.js';
+import { bereavementService } from './bereavement-service.js';
+import { volunteerService } from './volunteer-service.js';
+import { contactService } from './contact-service.js';
+import { noticeService } from './notice-service.js';
+import { reportService } from './report-service.js';
+import { documentService } from './document-service.js';
 
-// Member & User Services
-export { memberService } from './member-service.js';
-
-// Financial Services
-export { contributionService } from './contribution-service.js';
-export { loanService } from './loan-service.js';
-export { paymentService } from './payment-service.js';
-export { debtService } from './debt-service.js';
-export { fineService } from './fine-service.js';
-export { savingsService } from './savings-service.js';
-
-// Content Services
-export { eventService } from './event-service.js';
-export { newsService } from './news-service.js';
-export { faqService } from './faq-service.js';
-export { policyService } from './policy-service.js';
-export { galleryService } from './gallery-service.js';
-export { publicService } from './public-service.js';
-
-// Support Services
-export { bereavementService } from './bereavement-service.js';
-export { volunteerService } from './volunteer-service.js';
-
-// Communication Services
-export { contactService } from './contact-service.js';
-export { noticeService } from './notice-service.js';
-
-// Management Services
-export { reportService } from './report-service.js';
-export { documentService } from './document-service.js';
+// Re-export all services for named imports
+export {
+    apiService,
+    ApiError,
+    authService,
+    memberService,
+    contributionService,
+    loanService,
+    paymentService,
+    debtService,
+    fineService,
+    savingsService,
+    eventService,
+    newsService,
+    faqService,
+    policyService,
+    galleryService,
+    publicService,
+    bereavementService,
+    volunteerService,
+    contactService,
+    noticeService,
+    reportService,
+    documentService
+};
 
 // Default export for convenience
 export default {
     // Core
     apiService,
+    ApiError,
     authService,
     memberService,
     
