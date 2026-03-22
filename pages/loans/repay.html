@@ -243,8 +243,11 @@
 </head>
 
 <body>
-    <!-- Shared Header -->
-  <div w3-include-html="../shared/header.html"></div>
+    <!-- Redirect to unified payment page -->
+    <script>
+        // Auto-redirect to unified payment page with loan repayment category
+        window.location.href = '../payments/make-payment.html?category=loan';
+    </script>
 
     <!-- Page Header -->
     <header class="repay-header">

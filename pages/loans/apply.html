@@ -559,36 +559,11 @@
                     </div>
                 </fieldset>
 
-                <!-- M-Pesa Payment Section (Shows after form submission) -->
-                <div class="mpesa-section" id="mpesaSection">
-                    <h3><i class="fas fa-mobile-alt"></i> M-Pesa Payment</h3>
-                    <p>Complete your payment to finalize the loan application</p>
-                    
-                    <div class="form-group">
-                        <label for="mpesaConfirm">Confirm M-Pesa Number</label>
-                        <input type="tel" id="mpesaConfirm" placeholder="e.g., 254712345678">
-                        <small>Enter the number that will receive the STK push</small>
-                    </div>
-                    
-                    <button type="button" id="stkPushBtn" class="btn btn-success">
-                        <i class="fas fa-mobile-alt"></i> Pay via M-Pesa
-                    </button>
-                    
-                    <!-- Payment Status -->
-                    <div class="payment-status pending" id="paymentStatus">
-                        Waiting for M-Pesa confirmation...
-                    </div>
-                </div>
-
-                <!-- Receipt Section (Shows after successful payment) -->
-                <div class="receipt-section" id="receiptSection">
-                    <button type="button" id="downloadReceipt" class="btn btn-primary" disabled>
-                        <i class="fas fa-file-pdf"></i> Download Receipt
-                    </button>
-                </div>
-
                 <!-- Form Actions -->
                 <div class="form-actions">
+                    <a href="../payments/make-payment.html?category=loan" class="btn btn-success">
+                        <i class="fas fa-credit-card"></i> Proceed to Payment
+                    </a>
                     <button type="button" class="btn btn-secondary" id="saveDraftBtn">
                         <i class="fas fa-save"></i> Save Draft
                     </button>

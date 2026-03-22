@@ -47,6 +47,33 @@
                 </label>
                 
                 <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="shares">
+                    <div class="card-content">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Shares Contribution</h3>
+                        <p>Build your shares</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="welfare">
+                    <div class="card-content">
+                        <i class="fas fa-users"></i>
+                        <h3>Welfare Fund</h3>
+                        <p>Support our members</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="bereavement">
+                    <div class="card-content">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <h3>Bereavement Fund</h3>
+                        <p>Support in times of loss</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
                     <input type="radio" name="paymentCategory" value="loan">
                     <div class="card-content">
                         <i class="fas fa-money-bill-wave"></i>
@@ -61,6 +88,33 @@
                         <i class="fas fa-ticket-alt"></i>
                         <h3>Event Fee</h3>
                         <p>Event registration</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="fine">
+                    <div class="card-content">
+                        <i class="fas fa-gavel"></i>
+                        <h3>Penalty/Fine</h3>
+                        <p>Pay fines/penalties</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="registration">
+                    <div class="card-content">
+                        <i class="fas fa-user-plus"></i>
+                        <h3>Registration Fee</h3>
+                        <p>New member registration</p>
+                    </div>
+                </label>
+                
+                <label class="category-card">
+                    <input type="radio" name="paymentCategory" value="subscription">
+                    <div class="card-content">
+                        <i class="fas fa-redo"></i>
+                        <h3>Subscription</h3>
+                        <p>Monthly auto-payment</p>
                     </div>
                 </label>
                 
@@ -80,6 +134,14 @@
             <h2><i class="fas fa-file-invoice"></i> Payment Details</h2>
             
             <form id="paymentForm" class="payment-form">
+                <!-- Unique Reference Number (Auto-generated) -->
+                <div class="form-group">
+                    <label for="referenceNumber">Reference Number</label>
+                    <input type="text" id="referenceNumber" name="referenceNumber" readonly 
+                           placeholder="Auto-generated">
+                    <small class="form-hint">Unique payment reference</small>
+                </div>
+                
                 <div class="form-group">
                     <label for="fullName">Full Name <span class="required">*</span></label>
                     <input type="text" id="fullName" name="fullName" required 
@@ -92,10 +154,52 @@
                            placeholder="e.g., JOO/2024/001">
                 </div>
                 
+                <!-- Phone Number for STK Push -->
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone" placeholder="2547XXXXXXXX" required>
+                    <small class="form-hint">For M-Pesa STK Push (format: 2547XXXXXXXX)</small>
+                </div>
+                
+                <!-- Event Selection (for event-based payments) -->
+                <div class="form-group" id="eventGroup" style="display: none;">
+                    <label for="eventSelect">Select Event <span class="required">*</span></label>
+                    <select id="eventSelect" name="eventSelect">
+                        <option value="">Select Event</option>
+                        <option value="trip" data-amount="2000">Annual Trip - Ksh 2000</option>
+                        <option value="party" data-amount="1500">End Year Party - Ksh 1500</option>
+                        <option value="workshop" data-amount="500">Career Workshop - Ksh 500</option>
+                        <option value="sports" data-amount="300">Sports Day - Ksh 300</option>
+                    </select>
+                </div>
+                
+                <!-- Loan Balance Display (for loan repayments) -->
+                <div class="form-group" id="loanBalanceGroup" style="display: none;">
+                    <label for="loanBalance">Outstanding Loan Balance</label>
+                    <div class="loan-balance-display">
+                        <span id="loanBalance">Ksh 0.00</span>
+                        <small class="form-hint">Your current loan balance</small>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label for="amount">Amount (Ksh) <span class="required">*</span></label>
                     <input type="number" id="amount" name="amount" required 
                            min="100" placeholder="Enter amount">
+                    <small class="form-hint" id="amountHint">Minimum: Ksh 100</small>
+                </div>
+                
+                <!-- Recurring Payment Options -->
+                <div class="form-group" id="recurringGroup" style="display: none;">
+                    <label for="paymentSchedule">Payment Schedule</label>
+                    <select id="paymentSchedule" name="paymentSchedule">
+                        <option value="">Select schedule (optional)</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                    <small class="form-hint">Set up recurring payment reminder</small>
                 </div>
                 
                 <div class="form-group">
@@ -104,6 +208,7 @@
                         <option value="">Select method</option>
                         <option value="mpesa">M-Pesa</option>
                         <option value="bank">Bank Transfer</option>
+                        <option value="card">Card Payment (Visa/Mastercard)</option>
                         <option value="cash">Cash</option>
                     </select>
                 </div>
@@ -111,15 +216,76 @@
                 <div class="form-group">
                     <label for="transactionId">Transaction ID</label>
                     <input type="text" id="transactionId" name="transactionId" 
-                           placeholder="Enter transaction ID">
+                           placeholder="Enter transaction ID (for manual payments)">
                 </div>
                 
+                <!-- Upload Proof (Fallback for manual payments) -->
+                <div class="form-group" id="uploadProofGroup" style="display: none;">
+                    <label for="paymentProof">Upload Payment Proof</label>
+                    <input type="file" id="paymentProof" name="paymentProof" 
+                           accept="image/*,application/pdf">
+                    <small class="form-hint">Upload receipt/screenshot (optional for manual payments)</small>
+                </div>
+                
+                <!-- Payment Status (for tracking) -->
+                <div class="form-group">
+                    <label for="paymentStatus">Payment Status</label>
+                    <div class="status-badge status-pending">
+                        <span id="paymentStatus">Pending</span>
+                    </div>
+                </div>
+                
+                <!-- Notes/Description -->
+                <div class="form-group">
+                    <label for="notes">Notes (Optional)</label>
+                    <textarea id="notes" name="notes" rows="3" 
+                              placeholder="Add any additional notes..."></textarea>
+                </div>
+                
+                <!-- Payment Actions -->
                 <div class="form-actions">
+                    <!-- STK Push Button (Primary for M-Pesa) -->
+                    <button type="button" id="stkPushBtn" class="btn btn-success">
+                        <i class="fas fa-mobile-alt"></i> Pay via M-Pesa (STK Push)
+                    </button>
+                    
+                    <!-- Submit Button (for manual payments) -->
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-check"></i> Submit Payment
                     </button>
+                    
+                    <!-- Cancel Button -->
+                    <button type="button" id="cancelBtn" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
                 </div>
             </form>
+        </section>
+
+        <!-- Real-Time Feedback Section -->
+        <section class="payment-feedback" id="paymentFeedback" style="display: none;">
+            <div class="feedback-content">
+                <div class="spinner" id="loadingSpinner"></div>
+                <div class="feedback-message" id="feedbackMessage">
+                    <i class="fas fa-spinner fa-spin"></i> Processing payment...
+                </div>
+            </div>
+        </section>
+
+        <!-- Success Message (Hidden by default) -->
+        <section class="payment-success" id="paymentSuccess" style="display: none;">
+            <div class="success-content">
+                <i class="fas fa-check-circle"></i>
+                <h3>Payment Successful!</h3>
+                <p id="successMessage">Your payment has been submitted successfully.</p>
+                <div class="receipt-preview" id="receiptPreview">
+                    <h4>Payment Receipt</h4>
+                    <div id="receiptDetails"></div>
+                    <button type="button" id="downloadReceiptBtn" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download PDF Receipt
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- Payment Instructions -->
@@ -127,13 +293,25 @@
             <h2><i class="fas fa-info-circle"></i> Payment Instructions</h2>
             
             <div class="instructions-card">
-                <h3>M-Pesa Payment</h3>
+                <h3>M-Pesa STK Push (Recommended)</h3>
+                <ol>
+                    <li>Enter your phone number above</li>
+                    <li>Click "Pay via M-Pesa (STK Push)"</li>
+                    <li>Wait for M-Pesa prompt on your phone</li>
+                    <li>Enter your M-Pesa PIN to confirm</li>
+                    <li>You'll receive a confirmation SMS</li>
+                </ol>
+            </div>
+            
+            <div class="instructions-card">
+                <h3>M-Pesa Manual Payment</h3>
                 <ol>
                     <li>Go to M-Pesa on your phone</li>
                     <li>Select "Pay Bill"</li>
                     <li>Enter Business Number: <strong>123456</strong></li>
                     <li>Enter Account Number: <strong>Your Student ID</strong></li>
                     <li>Enter amount and confirm</li>
+                    <li>Enter the Transaction ID above</li>
                 </ol>
             </div>
             
@@ -144,6 +322,17 @@
                     <li>Account Name: <strong>SWA JOOUST</strong></li>
                     <li>Account Number: <strong>1234567890</strong></li>
                     <li>Use your Student ID as reference</li>
+                    <li>Upload proof of payment above</li>
+                </ol>
+            </div>
+            
+            <div class="instructions-card">
+                <h3>Card Payment</h3>
+                <ol>
+                    <li>Select "Card Payment" as method</li>
+                    <li>Click "Submit Payment"</li>
+                    <li>You'll be redirected to secure payment gateway</li>
+                    <li>Complete payment with your card</li>
                 </ol>
             </div>
         </section>

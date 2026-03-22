@@ -1,62 +1,17 @@
 /**
  * Bereavement Contribute Script
- * Handles bereavement contribution form submission
+ * Redirects to unified payment page
+ * 
+ * Note: This functionality has been moved to pages/payments/make-payment.html
+ * This file is kept for backwards compatibility but redirects users
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('bereavementForm');
+    // Redirect to unified payment page with bereavement category
+    const redirectUrl = '../payments/make-payment.html?category=bereavement';
     
-    if (!form) return;
-
-    // Handle payment method change
-    const paymentMethod = document.getElementById('paymentMethod');
-    const transactionId = document.getElementById('transactionId');
-    
-    if (paymentMethod && transactionId) {
-        paymentMethod.addEventListener('change', (e) => {
-            if (e.target.value === 'cash') {
-                transactionId.disabled = true;
-                transactionId.placeholder = 'N/A - Hand delivery';
-            } else if (e.target.value) {
-                transactionId.disabled = false;
-                transactionId.placeholder = 'Enter transaction ID';
-            } else {
-                transactionId.disabled = true;
-            }
-        });
+    // Check if we're not already on the payment page
+    if (!window.location.href.includes('make-payment.html')) {
+        window.location.href = redirectUrl;
     }
-
-    // Form submission
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(form);
-        
-        // Get selected beneficiary
-        const selectedBeneficiary = document.querySelector('input[name="beneficiary"]:checked');
-        const beneficiaryName = selectedBeneficiary ? 
-            selectedBeneficiary.parentElement.querySelector('h3').textContent : '';
-        
-        const contributionData = {
-            beneficiary: beneficiaryName,
-            fullName: formData.get('fullName'),
-            studentId: formData.get('studentId'),
-            contributionType: formData.get('contributionType'),
-            amount: formData.get('amount'),
-            description: formData.get('description'),
-            paymentMethod: formData.get('paymentMethod'),
-            transactionId: formData.get('transactionId'),
-            anonymous: formData.get('anonymous') === 'on'
-        };
-
-        // Basic validation
-        if (!contributionData.fullName || !contributionData.contributionType) {
-            alert('Please fill in all required fields');
-            return;
-        }
-
-        // Show success (in real app, send to server)
-        alert(`Thank you for your contribution to ${beneficiaryName}! Your support means a lot.`);
-        form.reset();
-    });
 });
