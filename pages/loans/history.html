@@ -510,6 +510,17 @@
         font-weight: bold;
     }
   </style>
+  <!-- Early Authentication Check - Redirect before page renders -->
+  <script>
+    (function() {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      
+      if (!authToken || !userData) {
+        window.location.href = '../auth/login-page.html?redirect=../loans/history.html';
+      }
+    })();
+  </script>
 </head>
 <body>
 
