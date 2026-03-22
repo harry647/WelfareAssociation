@@ -33,14 +33,14 @@ class AdminDashboardManager {
     async checkAuth() {
         if (!authService.isAuthenticated()) {
             // Not logged in, redirect to login page
-            window.location.href = '../../auth/login-page.html?redirect=admin-dashboard.html';
+            window.location.href = '../auth/login-page.html?redirect=../dashboard/admin-dashboard.html';
             return false;
         }
         
         const user = authService.getCurrentUser();
         if (!user || user.role !== 'admin') {
             // Not admin, redirect to login
-            window.location.href = '../../auth/login-page.html?redirect=admin-dashboard.html';
+            window.location.href = '../auth/login-page.html?redirect=../dashboard/admin-dashboard.html';
             return false;
         }
         return true;

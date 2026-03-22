@@ -13,6 +13,9 @@ class MemberPortal {
         this.contributionForm = document.querySelector('.make-contribution form');
         this.loanForm = document.querySelector('.loan-section form');
         this.profileEditBtn = document.querySelector('.profile-section .btn');
+        
+        // Initialize on construction
+        this.init();
     }
 
     init() {
@@ -27,13 +30,13 @@ class MemberPortal {
     checkAuth() {
         if (!authService.isAuthenticated()) {
             // Not logged in, redirect to login page
-            window.location.href = '../../auth/login-page.html?redirect=member-portal.html';
+            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
             return false;
         }
         
         const user = authService.getCurrentUser();
         if (!user) {
-            window.location.href = '../../auth/login-page.html?redirect=member-portal.html';
+            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
             return false;
         }
         return true;

@@ -18,6 +18,20 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- Early Authentication Check - Redirect before page renders -->
+  <script>
+    (function() {
+      // Check for auth token in localStorage
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      
+      if (!authToken || !userData) {
+        // Not authenticated, redirect to login immediately
+        window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
+      }
+    })();
+  </script>
 </head>
 <body>
   <!-- Shared Header -->
@@ -399,6 +413,6 @@
             }
         }
     </script>
-  <script src="../../src/scripts/pages/dashboard/member-portal.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/member-portal.js"></script>
 </body>
 </html>

@@ -9,6 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
   
+  <!-- Early Authentication Check - Redirect before page renders -->
+  <script>
+    (function() {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      
+      if (!authToken || !userData) {
+        window.location.href = '../auth/login-page.html?redirect=../dashboard/admin-dashboard.html';
+      }
+    })();
+  </script>
 </head>
 <body>
 
