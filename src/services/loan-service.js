@@ -37,6 +37,158 @@ class LoanService {
     }
 
     /**
+     * Apply for a loan (alias for apply)
+     * @param {Object} loanData - Loan application data
+     */
+    async applyForLoan(loanData) {
+        try {
+            // In production, this would call the actual API
+            // For demo, return success
+            console.log('Applying for loan:', loanData);
+            return {
+                success: true,
+                message: 'Loan application submitted successfully',
+                data: {
+                    loanId: loanData.loanId || this.generateLoanId(),
+                    status: 'pending',
+                    ...loanData
+                }
+            };
+        } catch (error) {
+            console.error('Error applying for loan:', error);
+            return {
+                success: false,
+                message: error.message || 'Failed to submit loan application'
+            };
+        }
+    }
+
+    /**
+     * Make a loan payment
+     * @param {Object} paymentData - Payment data
+     */
+    async makePayment(paymentData) {
+        try {
+            // In production, this would call the actual API
+            // For demo, return success
+            console.log('Processing payment:', paymentData);
+            return {
+                success: true,
+                message: 'Payment processed successfully',
+                data: {
+                    paymentId: this.generatePaymentId(),
+                    ...paymentData
+                }
+            };
+        } catch (error) {
+            console.error('Error processing payment:', error);
+            return {
+                success: false,
+                message: error.message || 'Failed to process payment'
+            };
+        }
+    }
+
+    /**
+     * Get loan payment history
+     * @param {string} loanId - Loan ID
+     */
+    async getPaymentHistory(loanId) {
+        try {
+            return {
+                success: true,
+                data: []
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message
+            };
+        }
+    }
+
+    /**
+     * Initiate STK Push payment
+     * @param {Object} stkData - STK Push data
+     */
+    async initiateSTKPush(stkData) {
+        try {
+            // In production, this would call the M-Pesa API
+            console.log('Initiating STK Push:', stkData);
+            return {
+                success: true,
+                checkoutRequestId: this.generateCheckoutId(),
+                message: 'STK push initiated'
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message || 'Failed to initiate STK push'
+            };
+        }
+    }
+
+    /**
+     * Check loan eligibility
+     * @param {string} studentId - Student ID
+     */
+    async checkEligibility(studentId) {
+        try {
+            // In production, check actual eligibility
+            return {
+                success: true,
+                eligible: true,
+                message: 'Eligible for loan'
+            };
+        } catch (error) {
+            return {
+                success: false,
+                eligible: false,
+                message: error.message
+            };
+        }
+    }
+
+    /**
+     * Check guarantor status
+     * @param {string} guarantorId - Guarantor ID
+     */
+    async checkGuarantor(guarantorId) {
+        try {
+            // In production, check actual guarantor status
+            return {
+                success: true,
+                activeGuarantees: 0,
+                message: 'Guarantor is valid'
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message
+            };
+        }
+    }
+
+    /**
+     * Generate loan receipt
+     * @param {Object} receiptData - Receipt data
+     */
+    async generateReceipt(receiptData) {
+        try {
+            return {
+                success: true,
+                pdfUrl: null,
+                message: 'Receipt generated'
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message
+            };
+        }
+    }
+
+    /**
      * Update loan
      * @param {string|number} id - Loan ID
      * @param {Object} loanData - Loan data to update
@@ -119,9 +271,36 @@ class LoanService {
             true
         );
     }
+
+    // Helper methods
+    generateLoanId() {
+        const date = new Date();
+        const year = date.getFullYear();
+        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        return `LN/${year}/${random}`;
+    }
+
+    generatePaymentId() {
+        const date = new Date();
+        const timestamp = date.getTime().toString().slice(-8);
+        return `PAY${timestamp}`;
+    }
+
+    generateCheckoutId() {
+        const date = new Date();
+        const timestamp = date.getTime().toString();
+        return `ws_${timestamp}`;
+    }
+
+    generateReceiptNumber() {
+        const date = new Date();
+        const timestamp = date.getTime().toString().slice(-8);
+        return `RCP${timestamp}`;
+    }
 }
 
 // Export singleton instance
 export const loanService = new LoanService();
 
+// Also export the class for extension
 export default LoanService;

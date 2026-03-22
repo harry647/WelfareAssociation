@@ -19,6 +19,336 @@
     <link rel="stylesheet" href="../../src/styles/pages/loans/apply.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        /* Progress Bar Styles */
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .progress-step {
+            text-align: center;
+            opacity: 0.5;
+        }
+        .progress-step.active {
+            opacity: 1;
+            font-weight: bold;
+            color: #11998e;
+        }
+        
+        /* Loan Summary Styles */
+        .loan-summary-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .loan-summary-card.show {
+            display: block;
+        }
+        .loan-summary-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+        }
+        .loan-summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .loan-summary-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* Eligibility Check Styles */
+        .eligibility-check {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .eligibility-check.show {
+            display: block;
+        }
+        .eligibility-check.success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+        }
+        .eligibility-check.error {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #721c24;
+        }
+        .eligibility-check.warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+        }
+        
+        /* Risk Alert Styles */
+        .risk-alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .risk-alert.show {
+            display: block;
+        }
+        .risk-alert i {
+            color: #856404;
+            margin-right: 8px;
+        }
+        
+        /* M-Pesa Payment Section Styles */
+        .mpesa-section {
+            background: #f8f9fa;
+            border: 2px solid #11998e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        .mpesa-section.show {
+            display: block;
+        }
+        .mpesa-section h3 {
+            color: #11998e;
+            margin-top: 0;
+        }
+        .payment-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .payment-status.pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+        .payment-status.processing {
+            background: #cce5ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+        .payment-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #28a745;
+        }
+        .payment-status.failed {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #dc3545;
+        }
+        
+        /* Application Status Styles */
+        .application-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        .application-status.show {
+            display: block;
+        }
+        .application-status .badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .application-status .badge.pending {
+            background: #ffc107;
+            color: #000;
+        }
+        .application-status .badge.approved {
+            background: #28a745;
+            color: #fff;
+        }
+        .application-status .badge.rejected {
+            background: #dc3545;
+            color: #fff;
+        }
+        .application-status .badge.disbursed {
+            background: #17a2b8;
+            color: #fff;
+        }
+        .application-status .badge.repaid {
+            background: #11998e;
+            color: #fff;
+        }
+        
+        /* Receipt Button Styles */
+        .receipt-section {
+            margin-top: 20px;
+            display: none;
+        }
+        .receipt-section.show {
+            display: block;
+        }
+        
+        /* File Upload Styles */
+        .file-upload-group {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .file-upload-group:hover {
+            border-color: #11998e;
+            background: #f8f9fa;
+        }
+        .file-upload-group input[type="file"] {
+            display: none;
+        }
+        .file-upload-group i {
+            font-size: 32px;
+            color: #11998e;
+            margin-bottom: 10px;
+        }
+        .file-list {
+            margin-top: 10px;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        .file-item button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Authenticated User Info Styles */
+        .user-info-bar {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .user-info-bar.show {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-info-bar i {
+            font-size: 24px;
+            color: #11998e;
+        }
+        .user-info-bar .user-details {
+            flex: 1;
+        }
+        .user-info-bar .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Confirmation Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-content h3 {
+            color: #11998e;
+            margin-top: 0;
+        }
+        .modal-content .loan-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .modal-content .loan-details p {
+            margin: 8px 0;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        /* Phone Error Styles */
+        .phone-error {
+            color: #dc3545;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
+        }
+        .phone-error.show {
+            display: block;
+        }
+        
+        /* Auto-filled readonly field */
+        input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 
 <body>
@@ -32,32 +362,68 @@
     </header>
 
     <main class="loan-container">
-        <!-- Loan Information Section -->
-        <section class="loan-info">
-            <h2><i class="fas fa-info-circle"></i> Loan Information</h2>
-            <div class="info-cards">
-                <div class="info-card">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <h3>Maximum Amount</h3>
-                    <p>Ksh 10,000</p>
-                </div>
-                <div class="info-card">
-                    <i class="fas fa-percent"></i>
-                    <h3>Interest Rate</h3>
-                    <p>5% per month</p>
-                </div>
-                <div class="info-card">
-                    <i class="fas fa-calendar-alt"></i>
-                    <h3>Repayment Period</h3>
-                    <p>up to 3 months</p>
-                </div>
-                <div class="info-card">
-                    <i class="fas fa-clock"></i>
-                    <h3>Processing Time</h3>
-                    <p>24-48 hours</p>
-                </div>
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
-        </section>
+            <div class="progress-steps">
+                <span class="progress-step active" data-step="1">1. Personal Info</span>
+                <span class="progress-step" data-step="2">2. Loan Details</span>
+                <span class="progress-step" data-step="3">3. Guarantor</span>
+                <span class="progress-step" data-step="4">4. Review & Submit</span>
+            </div>
+        </div>
+
+        <!-- Authenticated User Info -->
+        <div class="user-info-bar" id="userInfoBar">
+            <i class="fas fa-user-circle"></i>
+            <div class="user-details">
+                <strong>Logged in as:</strong> <span id="userName">John Doe</span><br>
+                <small>Student ID: <span id="userStudentId">JOO/2024/001</span> | Email: <span id="userEmail">john.doe@student.joust.ac.ke</span></small>
+            </div>
+            <button type="button" class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <!-- Loan Summary (Dynamic Calculation) -->
+        <div class="loan-summary-card" id="loanSummaryCard">
+            <h3><i class="fas fa-calculator"></i> Loan Repayment Summary</h3>
+            <div class="loan-summary-row">
+                <span>Principal Amount:</span>
+                <span id="summaryPrincipal">Ksh 0</span>
+            </div>
+            <div class="loan-summary-row">
+                <span>Interest (5% per month):</span>
+                <span id="summaryInterest">Ksh 0</span>
+            </div>
+            <div class="loan-summary-row">
+                <span>Repayment Period:</span>
+                <span id="summaryPeriod">0 months</span>
+            </div>
+            <div class="loan-summary-row">
+                <span>Total Repayment:</span>
+                <span id="summaryTotal">Ksh 0</span>
+            </div>
+        </div>
+
+        <!-- Eligibility Check -->
+        <div class="eligibility-check" id="eligibilityCheck">
+            <i class="fas fa-check-circle"></i>
+            <span id="eligibilityMessage">Checking eligibility...</span>
+        </div>
+
+        <!-- Risk Alerts -->
+        <div class="risk-alert" id="riskAlert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="riskMessage"></span>
+        </div>
+
+        <!-- Application Status -->
+        <div class="application-status" id="applicationStatus">
+            <p>Application Status: <span class="badge pending" id="statusBadge">Pending Approval</span></p>
+        </div>
 
         <!-- Loan Application Form -->
         <section class="loan-form-section">
@@ -82,7 +448,9 @@
                     <div class="form-group">
                         <label for="phone">Phone Number <span class="required">*</span></label>
                         <input type="tel" id="phone" name="phone" required 
-                               placeholder="e.g., 0712 345 678">
+                               placeholder="e.g., 0712 345 678 or 254712345678">
+                        <small id="phoneFormatHint" class="text-muted">Format: 0712 345 678 or 254712345678</small>
+                        <small id="phoneError" class="phone-error"></small>
                     </div>
                     
                     <div class="form-group">
@@ -133,6 +501,19 @@
                             <option value="3">3 Months</option>
                         </select>
                     </div>
+                    
+                    <!-- File Upload -->
+                    <div class="form-group">
+                        <label>Supporting Documents (Optional)</label>
+                        <div class="file-upload-group" id="fileUploadGroup">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload or drag and drop</p>
+                            <small>PDF, JPG, PNG (Max 5MB each)</small>
+                            <input type="file" id="documentUpload" name="documentUpload" 
+                                   accept=".pdf,.jpg,.jpeg,.png" multiple>
+                        </div>
+                        <div class="file-list" id="fileList"></div>
+                    </div>
                 </fieldset>
 
                 <!-- Guarantor Information -->
@@ -178,9 +559,40 @@
                     </div>
                 </fieldset>
 
+                <!-- M-Pesa Payment Section (Shows after form submission) -->
+                <div class="mpesa-section" id="mpesaSection">
+                    <h3><i class="fas fa-mobile-alt"></i> M-Pesa Payment</h3>
+                    <p>Complete your payment to finalize the loan application</p>
+                    
+                    <div class="form-group">
+                        <label for="mpesaConfirm">Confirm M-Pesa Number</label>
+                        <input type="tel" id="mpesaConfirm" placeholder="e.g., 254712345678">
+                        <small>Enter the number that will receive the STK push</small>
+                    </div>
+                    
+                    <button type="button" id="stkPushBtn" class="btn btn-success">
+                        <i class="fas fa-mobile-alt"></i> Pay via M-Pesa
+                    </button>
+                    
+                    <!-- Payment Status -->
+                    <div class="payment-status pending" id="paymentStatus">
+                        Waiting for M-Pesa confirmation...
+                    </div>
+                </div>
+
+                <!-- Receipt Section (Shows after successful payment) -->
+                <div class="receipt-section" id="receiptSection">
+                    <button type="button" id="downloadReceipt" class="btn btn-primary" disabled>
+                        <i class="fas fa-file-pdf"></i> Download Receipt
+                    </button>
+                </div>
+
                 <!-- Form Actions -->
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="button" class="btn btn-secondary" id="saveDraftBtn">
+                        <i class="fas fa-save"></i> Save Draft
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         <i class="fas fa-paper-plane"></i> Submit Application
                     </button>
                     <button type="reset" class="btn btn-secondary">
@@ -219,6 +631,23 @@
             </details>
         </section>
     </main>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <h3><i class="fas fa-question-circle"></i> Confirm Loan Application</h3>
+            <p>Are you sure you want to apply for this loan?</p>
+            <div class="loan-details" id="confirmLoanDetails">
+                <p><strong>Amount:</strong> <span id="confirmAmount">Ksh 0</span></p>
+                <p><strong>Total Repayment:</strong> <span id="confirmTotal">Ksh 0</span></p>
+                <p><strong>Period:</strong> <span id="confirmPeriod">0 months</span></p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelConfirmBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmitBtn">Confirm & Submit</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Shared Footer -->
   <div w3-include-html="../shared/footer.html"></div>

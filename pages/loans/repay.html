@@ -19,6 +19,227 @@
     <link rel="stylesheet" href="../../src/styles/pages/loans/repay.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        /* Payment Status Styles */
+        .payment-status-container {
+            margin: 20px 0;
+            display: none;
+        }
+        .payment-status-container.show {
+            display: block;
+        }
+        .payment-status {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .payment-status.pending {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+        .payment-status.processing {
+            background: #cce5ff;
+            border: 2px solid #b8daff;
+            color: #004085;
+        }
+        .payment-status.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        .payment-status.failed {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        .payment-status i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .payment-status h3 {
+            margin: 0 0 10px 0;
+        }
+        
+        /* Receipt Download Section */
+        .receipt-actions {
+            margin-top: 20px;
+            display: none;
+        }
+        .receipt-actions.show {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* M-Pesa STK Push Section */
+        .mpesa-payment-section {
+            background: #f8f9fa;
+            border: 2px solid #11998e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        .mpesa-payment-section.show {
+            display: block;
+        }
+        .mpesa-payment-section h3 {
+            color: #11998e;
+            margin-top: 0;
+        }
+        .mpesa-number-input {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .mpesa-number-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        /* Phone validation */
+        .phone-error {
+            color: #dc3545;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
+        }
+        .phone-error.show {
+            display: block;
+        }
+        
+        /* Payment Confirmation Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-content h3 {
+            color: #11998e;
+            margin-top: 0;
+        }
+        .modal-content .payment-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .modal-content .payment-details p {
+            margin: 8px 0;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        /* Notification Styles */
+        .sms-notification {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .sms-notification.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sms-notification i {
+            font-size: 24px;
+            color: #11998e;
+        }
+        
+        /* Loan Status Badge */
+        .loan-status-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loan-status-badge {
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .loan-status-badge.pending {
+            background: #ffc107;
+            color: #000;
+        }
+        .loan-status-badge.active {
+            background: #17a2b8;
+            color: #fff;
+        }
+        .loan-status-badge.overdue {
+            background: #dc3545;
+            color: #fff;
+        }
+        .loan-status-badge.paid {
+            background: #28a745;
+            color: #fff;
+        }
+        
+        /* Amount Input Group */
+        .amount-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .amount-input-group .currency {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* Payment Progress */
+        .payment-progress {
+            margin: 20px 0;
+        }
+        .progress-bar-container {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            transition: width 0.5s ease;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
 </head>
 
 <body>
@@ -43,34 +264,66 @@
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Original Amount:</span>
-                    <span class="summary-value">Ksh 5,000</span>
+                    <span class="summary-value" id="originalAmount">Ksh 5,000</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Interest (5%):</span>
-                    <span class="summary-value">Ksh 250</span>
+                    <span class="summary-value" id="interestAmount">Ksh 250</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Total Due:</span>
-                    <span class="summary-value highlight">Ksh 5,250</span>
+                    <span class="summary-value highlight" id="totalDue">Ksh 5,250</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Amount Paid:</span>
-                    <span class="summary-value">Ksh 2,000</span>
+                    <span class="summary-value" id="amountPaid">Ksh 2,000</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Remaining Balance:</span>
-                    <span class="summary-value danger">Ksh 3,250</span>
+                    <span class="summary-value danger" id="remainingBalance">Ksh 3,250</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Due Date:</span>
-                    <span class="summary-value">March 25, 2025</span>
+                    <span class="summary-value" id="dueDate">March 25, 2025</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Status:</span>
-                    <span class="summary-value"><span class="status-badge pending">In Progress</span></span>
+                    <span class="summary-value">
+                        <span class="loan-status-badge active" id="loanStatusBadge">In Progress</span>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Payment Progress Bar -->
+            <div class="payment-progress">
+                <div class="progress-bar-container">
+                    <div class="progress-fill" id="paymentProgress" style="width: 38%"></div>
+                </div>
+                <div class="progress-labels">
+                    <span>Paid: Ksh 2,000</span>
+                    <span>38%</span>
+                    <span>Total: Ksh 5,250</span>
                 </div>
             </div>
         </section>
+
+        <!-- SMS Notification Section -->
+        <div class="sms-notification" id="smsNotification">
+            <i class="fas fa-sms"></i>
+            <div>
+                <strong>SMS Confirmation</strong>
+                <p id="smsMessage" style="margin: 5px 0 0 0;">Payment confirmation will be sent to your phone</p>
+            </div>
+        </div>
+
+        <!-- Payment Status Container -->
+        <div class="payment-status-container" id="paymentStatusContainer">
+            <div class="payment-status pending" id="paymentStatus">
+                <i class="fas fa-clock"></i>
+                <h3>Waiting for Payment</h3>
+                <p>Your payment is being processed</p>
+            </div>
+        </div>
 
         <!-- Payment Options -->
         <section class="payment-options">
@@ -106,6 +359,24 @@
             </div>
         </section>
 
+        <!-- M-Pesa STK Push Section -->
+        <div class="mpesa-payment-section" id="mpesaPaymentSection">
+            <h3><i class="fas fa-mobile-alt"></i> Pay via M-Pesa</h3>
+            <p>Enter your M-Pesa number to receive an STK push prompt</p>
+            
+            <div class="form-group">
+                <label for="mpesaPhone">M-Pesa Phone Number</label>
+                <div class="mpesa-number-input">
+                    <input type="tel" id="mpesaPhone" placeholder="e.g., 254712345678">
+                </div>
+                <small id="phoneError" class="phone-error"></small>
+            </div>
+            
+            <button type="button" id="initiateStkPush" class="btn btn-success">
+                <i class="fas fa-paper-plane"></i> Send STK Push
+            </button>
+        </div>
+
         <!-- Payment Form -->
         <section class="payment-form-section">
             <h2><i class="fas fa-file-invoice-dollar"></i> Payment Details</h2>
@@ -113,10 +384,13 @@
             <form id="repaymentForm" class="repayment-form">
                 <div class="form-group">
                     <label for="paymentAmount">Amount to Pay (Ksh) <span class="required">*</span></label>
-                    <input type="number" id="paymentAmount" name="paymentAmount" required 
-                           min="100" max="3250" step="100" 
-                           placeholder="Enter amount">
-                    <small>Remaining balance: Ksh 3,250</small>
+                    <div class="amount-input-group">
+                        <span class="currency">Ksh</span>
+                        <input type="number" id="paymentAmount" name="paymentAmount" required 
+                               min="100" max="3250" step="100" 
+                               placeholder="Enter amount">
+                    </div>
+                    <small>Remaining balance: Ksh <span id="remainingBalanceDisplay">3,250</span></small>
                 </div>
                 
                 <div class="form-group">
@@ -136,8 +410,21 @@
                               placeholder="Any additional information..."></textarea>
                 </div>
                 
+                <!-- Receipt Actions -->
+                <div class="receipt-actions" id="receiptActions">
+                    <button type="button" class="btn btn-primary" id="downloadReceiptBtn">
+                        <i class="fas fa-file-pdf"></i> Download Receipt
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="emailReceiptBtn">
+                        <i class="fas fa-envelope"></i> Email Receipt
+                    </button>
+                </div>
+                
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="button" class="btn btn-secondary" id="previewPaymentBtn">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitPaymentBtn">
                         <i class="fas fa-check"></i> Submit Payment
                     </button>
                     <button type="reset" class="btn btn-secondary">
@@ -159,15 +446,17 @@
                         <th>Method</th>
                         <th>Transaction ID</th>
                         <th>Status</th>
+                        <th>Receipt</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="paymentHistoryBody">
                     <tr>
                         <td>Feb 15, 2025</td>
                         <td>Ksh 1,000</td>
                         <td>M-Pesa</td>
                         <td>MPO123456789</td>
                         <td><span class="status-badge success">Verified</span></td>
+                        <td><button class="btn-sm" onclick="downloadPaymentReceipt('MPO123456789')"><i class="fas fa-download"></i></button></td>
                     </tr>
                     <tr>
                         <td>Feb 28, 2025</td>
@@ -175,6 +464,7 @@
                         <td>M-Pesa</td>
                         <td>MPO987654321</td>
                         <td><span class="status-badge success">Verified</span></td>
+                        <td><button class="btn-sm" onclick="downloadPaymentReceipt('MPO987654321')"><i class="fas fa-download"></i></button></td>
                     </tr>
                 </tbody>
             </table>
@@ -210,6 +500,24 @@
             </div>
         </section>
     </main>
+
+    <!-- Payment Confirmation Modal -->
+    <div class="modal-overlay" id="paymentConfirmModal">
+        <div class="modal-content">
+            <h3><i class="fas fa-credit-card"></i> Confirm Payment</h3>
+            <p>Please confirm your payment details</p>
+            <div class="payment-details" id="paymentDetailsPreview">
+                <p><strong>Amount:</strong> Ksh <span id="previewAmount">0</span></p>
+                <p><strong>Method:</strong> <span id="previewMethod">M-Pesa</span></p>
+                <p><strong>Date:</strong> <span id="previewDate">-</span></p>
+                <p><strong>Transaction ID:</strong> <span id="previewTransactionId">-</span></p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelPaymentBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmPaymentBtn">Confirm & Pay</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Shared Footer -->
   <div w3-include-html="../shared/footer.html"></div>

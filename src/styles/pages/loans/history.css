@@ -1,29 +1,32 @@
 /* ============================================
    Loan History Page Styles
-   Modern Design with BEM Methodology
+   Enhanced Modern Design with BEM Methodology
+   Purple Admin Theme
    ============================================ */
 
-/* CSS Custom Properties */
+/* CSS Custom Properties - Purple Admin Theme */
 :root {
-    /* Primary Colors - Purple Theme */
+    /* Primary Colors - Purple */
     --history-primary: #7c3aed;
     --history-primary-dark: #6d28d9;
     --history-primary-light: #8b5cf6;
     --history-primary-bg: #f5f3ff;
+    --history-primary-subtle: #ede9fe;
+    --history-primary-dark-subtle: #4c1d95;
     
     /* Secondary Colors */
     --history-secondary: #64748b;
     --history-secondary-dark: #475569;
     
     /* Accent Colors */
-    --history-accent-success: #10b981;
+    --history-accent-success: #059669;
     --history-accent-success-bg: #d1fae5;
-    --history-accent-warning: #f59e0b;
+    --history-accent-warning: #d97706;
     --history-accent-warning-bg: #fef3c7;
-    --history-accent-danger: #ef4444;
+    --history-accent-danger: #dc2626;
     --history-accent-danger-bg: #fee2e2;
-    --history-accent-info: #3b82f6;
-    --history-accent-info-bg: #dbeafe;
+    --history-accent-info: #0284c7;
+    --history-accent-info-bg: #e0f2fe;
     
     /* Neutral Colors */
     --history-white: #ffffff;
@@ -38,23 +41,32 @@
     --history-gray-800: #1e293b;
     --history-gray-900: #0f172a;
     
+    /* Glassmorphism */
+    --history-glass-bg: rgba(255, 255, 255, 0.9);
+    --history-glass-border: rgba(124, 58, 237, 0.15);
+    --history-glass-shadow: 0 8px 32px rgba(124, 58, 237, 0.12);
+    
     /* Shadows */
     --history-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --history-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     --history-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     --history-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --history-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --history-shadow-primary: 0 10px 40px -10px rgba(124, 58, 237, 0.4);
     
     /* Border Radius */
     --history-radius-sm: 0.375rem;
     --history-radius-md: 0.5rem;
     --history-radius-lg: 0.75rem;
     --history-radius-xl: 1rem;
+    --history-radius-2xl: 1.5rem;
     --history-radius-full: 9999px;
     
     /* Transitions */
     --history-transition-fast: 150ms ease;
     --history-transition-base: 200ms ease;
     --history-transition-slow: 300ms ease;
+    --history-transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
     
     /* Spacing */
     --history-space-xs: 0.25rem;
@@ -63,15 +75,56 @@
     --history-space-lg: 1.5rem;
     --history-space-xl: 2rem;
     --history-space-2xl: 3rem;
+    --history-space-3xl: 4rem;
+    
+    /* Typography */
+    --history-font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --history-font-display: 'Syne', var(--history-font-sans);
 }
 
 /* ============================================
-   Page Header
+   Base Styles & Enhanced Scrollbar
+   ============================================ */
+html {
+    scroll-behavior: smooth;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--history-gray-100);
+    border-radius: var(--history-radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--history-gray-300);
+    border-radius: var(--history-radius-full);
+    border: 2px solid var(--history-gray-100);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--history-gray-400);
+}
+
+::selection {
+    background: var(--history-primary-light);
+    color: var(--history-white);
+}
+
+/* ============================================
+   Page Header - Enhanced Design
    ============================================ */
 .history-header {
-    background: linear-gradient(135deg, var(--history-primary) 0%, var(--history-primary-dark) 100%);
+    background: linear-gradient(135deg, var(--history-primary) 0%, var(--history-primary-dark) 50%, var(--history-primary-dark-subtle) 100%);
     color: var(--history-white);
-    padding: var(--history-space-2xl) var(--history-space-lg);
+    padding: var(--history-space-3xl) var(--history-space-lg);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -84,24 +137,45 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3Ccircle cx='10' cy='10' r='3'/%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.5;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3Ccircle cx='10' cy='10' r='3'/%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.8;
+}
+
+.history-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        var(--history-accent-warning), 
+        var(--history-primary-light), 
+        var(--history-accent-success)
+    );
 }
 
 .history-header h1 {
-    font-size: 2.5rem;
+    font-family: var(--history-font-display);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
     margin-bottom: var(--history-space-sm);
-    font-weight: 700;
+    font-weight: 800;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--history-space-md);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    letter-spacing: -0.5px;
 }
 
 .history-header h1 i {
-    font-size: 2rem;
+    font-size: 2.25rem;
     animation: spin 3s linear infinite;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 @keyframes spin {
@@ -110,43 +184,50 @@
 }
 
 .history-header p {
-    font-size: 1.125rem;
-    opacity: 0.9;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    opacity: 0.95;
     position: relative;
     font-weight: 400;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
 }
 
 /* ============================================
    Main Container
    ============================================ */
 .history-container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: var(--history-space-2xl) var(--history-space-lg);
 }
 
 /* ============================================
-   Loan Statistics Section
+   Loan Statistics Section - Enhanced
    ============================================ */
 .loan-stats {
     margin-bottom: var(--history-space-2xl);
 }
 
+.loan-stats h2,
 .loan-stats__title {
     color: var(--history-primary);
     margin-bottom: var(--history-space-lg);
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 4vw, 1.875rem);
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: var(--history-space-sm);
+    font-family: var(--history-font-display);
 }
 
+.loan-stats h2 i,
 .loan-stats__title i {
     color: var(--history-primary);
+    font-size: 1.5rem;
 }
 
-/* Stats Grid */
+/* Stats Grid - Enhanced */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -154,17 +235,28 @@
 }
 
 .stat-card {
-    background: var(--history-white);
+    background: var(--history-glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: var(--history-space-xl);
-    border-radius: var(--history-radius-lg);
-    box-shadow: var(--history-shadow-md);
+    border-radius: var(--history-radius-xl);
+    box-shadow: var(--history-glass-shadow);
     display: flex;
     align-items: center;
     gap: var(--history-space-lg);
-    transition: transform var(--history-transition-base), box-shadow var(--history-transition-base);
-    border: 1px solid var(--history-gray-200);
+    transition: all var(--history-transition-slow);
+    border: 1px solid var(--history-glass-border);
     position: relative;
     overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(124, 58, 237, 0.03) 100%);
+    opacity: 0;
+    transition: opacity var(--history-transition-base);
 }
 
 .stat-card::after {
@@ -180,64 +272,79 @@
 }
 
 .stat-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--history-shadow-xl);
+    transform: translateY(-8px);
+    box-shadow: var(--history-shadow-2xl);
+}
+
+.stat-card:hover::before {
+    opacity: 1;
 }
 
 .stat-card:hover::after {
     transform: scaleX(1);
 }
 
+.stat-card i,
 .stat-card__icon {
     font-size: 2.5rem;
     color: var(--history-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 70px;
-    height: 70px;
-    background: var(--history-primary-bg);
-    border-radius: var(--history-radius-lg);
-    transition: transform var(--history-transition-base), background var(--history-transition-base);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--history-primary-subtle) 0%, var(--history-white) 100%);
+    border-radius: var(--history-radius-xl);
+    transition: all var(--history-transition-spring);
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+    flex-shrink: 0;
 }
 
+.stat-card:hover i,
 .stat-card:hover .stat-card__icon {
     transform: scale(1.1) rotate(5deg);
     background: var(--history-primary);
     color: var(--history-white);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
 }
 
-.stat-card__info h3 {
+.stat-card__info h3,
+.stat-card h3 {
     color: var(--history-gray-500);
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     margin-bottom: var(--history-space-xs);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.75px;
 }
 
-.stat-card__number {
+.stat-card__info p,
+.stat-card__number,
+.stat-card p {
     color: var(--history-gray-900);
     font-size: 2rem;
     font-weight: 800;
     line-height: 1;
+    font-family: var(--history-font-display);
 }
 
 /* ============================================
-   Active Loans Section
+   Active Loans Section - Enhanced Cards
    ============================================ */
 .active-loans {
     margin-bottom: var(--history-space-2xl);
 }
 
+.active-loans h2,
 .active-loans__title {
     color: var(--history-primary);
     margin-bottom: var(--history-space-lg);
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 4vw, 1.875rem);
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: var(--history-space-sm);
+    font-family: var(--history-font-display);
 }
 
 .loan-cards {
@@ -245,41 +352,48 @@
     gap: var(--history-space-lg);
 }
 
-/* Loan Card */
+/* Loan Card - Enhanced */
 .loan-card {
-    background: var(--history-white);
+    background: var(--history-glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: var(--history-radius-xl);
-    box-shadow: var(--history-shadow-lg);
+    box-shadow: var(--history-glass-shadow);
     overflow: hidden;
-    transition: transform var(--history-transition-base), box-shadow var(--history-transition-base);
-    border: 1px solid var(--history-gray-200);
+    transition: all var(--history-transition-slow);
+    border: 1px solid var(--history-glass-border);
 }
 
 .loan-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--history-shadow-xl);
+    transform: translateY(-6px);
+    box-shadow: var(--history-shadow-2xl);
 }
 
-.loan-card--active {
+.loan-card--active,
+.loan-card.active {
     border-left: 5px solid var(--history-primary);
 }
 
 .loan-card__header {
     padding: var(--history-space-lg);
-    background: var(--history-gray-50);
+    background: linear-gradient(135deg, var(--history-gray-50) 0%, var(--history-white) 100%);
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--history-gray-100);
+    flex-wrap: wrap;
+    gap: var(--history-space-md);
 }
 
-.loan-card__id {
+.loan-card__id,
+.loan-card-id {
     font-weight: 700;
     color: var(--history-gray-800);
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: var(--history-space-sm);
+    font-family: var(--history-font-display);
 }
 
 .loan-card__id::before {
@@ -289,7 +403,7 @@
     color: var(--history-gray-400);
 }
 
-/* Status Badge */
+/* Status Badge - Enhanced */
 .status-badge {
     padding: var(--history-space-xs) var(--history-space-md);
     border-radius: var(--history-radius-full);
@@ -300,14 +414,17 @@
     display: inline-flex;
     align-items: center;
     gap: var(--history-space-xs);
+    box-shadow: var(--history-shadow-sm);
 }
 
-.status-badge--pending {
+.status-badge--pending,
+.status-badge.pending {
     background: var(--history-accent-warning-bg);
     color: #b45309;
 }
 
-.status-badge--pending::before {
+.status-badge--pending::before,
+.status-badge.pending::before {
     content: '';
     width: 6px;
     height: 6px;
@@ -321,63 +438,76 @@
     50% { opacity: 0.4; }
 }
 
-.status-badge--success {
+.status-badge--success,
+.status-badge.success {
     background: var(--history-accent-success-bg);
     color: #047857;
 }
 
-.status-badge--success::before {
+.status-badge--success::before,
+.status-badge.success::before {
     content: '\f00c';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     font-size: 0.7rem;
 }
 
+.status-badge--danger,
+.status-badge.danger,
 .status-badge--danger {
     background: var(--history-accent-danger-bg);
     color: #b91c1c;
 }
 
-.status-badge--info {
+.status-badge--info,
+.status-badge.info {
     background: var(--history-accent-info-bg);
     color: #1d4ed8;
 }
 
-.loan-card__body {
+.loan-card__body,
+.loan-card-body {
     padding: var(--history-space-lg);
 }
 
-.loan-card__detail {
+.loan-card__detail,
+.loan-detail {
     display: flex;
     justify-content: space-between;
-    padding: var(--history-space-sm) 0;
+    padding: var(--history-space-md);
     border-bottom: 1px solid var(--history-gray-100);
-    transition: background var(--history-transition-fast);
-    border-radius: var(--history-radius-sm);
+    transition: all var(--history-transition-fast);
+    border-radius: var(--history-radius-md);
     margin-bottom: var(--history-space-xs);
 }
 
-.loan-card__detail:hover {
-    background: var(--history-gray-50);
-    padding-left: var(--history-space-sm);
-    padding-right: var(--history-space-sm);
+.loan-card__detail:hover,
+.loan-detail:hover {
+    background: var(--history-primary-subtle);
+    padding-left: var(--history-space-lg);
+    padding-right: var(--history-space-lg);
 }
 
-.loan-card__detail:last-child {
+.loan-card__detail:last-child,
+.loan-detail:last-child {
     border-bottom: none;
+    margin-bottom: 0;
 }
 
-.loan-card__label {
+.loan-card__label,
+.loan-detail .label {
     color: var(--history-gray-500);
-    font-weight: 500;
+    font-weight: 600;
 }
 
-.loan-card__value {
+.loan-card__value,
+.loan-detail .value {
     color: var(--history-gray-800);
     font-weight: 700;
 }
 
-.loan-card__footer {
+.loan-card__footer,
+.loan-card-footer {
     padding: var(--history-space-lg);
     background: var(--history-gray-50);
     text-align: center;
@@ -385,43 +515,65 @@
 }
 
 /* ============================================
-   Loan History Table Section
+   Loan History Table Section - Enhanced
    ============================================ */
 .loan-history-table {
-    background: var(--history-white);
+    background: var(--history-glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: var(--history-space-xl);
     border-radius: var(--history-radius-xl);
-    box-shadow: var(--history-shadow-lg);
+    box-shadow: var(--history-glass-shadow);
     margin-bottom: var(--history-space-2xl);
-    border: 1px solid var(--history-gray-200);
+    border: 1px solid var(--history-glass-border);
+    position: relative;
 }
 
+.loan-history-table::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--history-primary), transparent);
+    border-radius: var(--history-radius-full);
+}
+
+.loan-history-table h2,
 .loan-history-table__title {
     color: var(--history-primary);
     margin-bottom: var(--history-space-lg);
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 4vw, 1.875rem);
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: var(--history-space-sm);
+    font-family: var(--history-font-display);
 }
 
-/* Table Filters */
+/* Table Filters - Enhanced */
 .table-filters {
     display: flex;
     gap: var(--history-space-lg);
     margin-bottom: var(--history-space-lg);
     flex-wrap: wrap;
+    padding: var(--history-space-md);
+    background: var(--history-gray-50);
+    border-radius: var(--history-radius-lg);
 }
 
-.table-filters__group {
+.table-filters label {
     display: flex;
     align-items: center;
     gap: var(--history-space-sm);
     color: var(--history-gray-600);
     font-weight: 500;
+    font-size: 0.9rem;
 }
 
+.table-filters select,
 .table-filters__select {
     padding: var(--history-space-sm) var(--history-space-md);
     border: 2px solid var(--history-gray-200);
@@ -429,61 +581,92 @@
     background: var(--history-white);
     color: var(--history-gray-700);
     font-size: 0.9rem;
-    transition: border-color var(--history-transition-fast);
+    transition: all var(--history-transition-fast);
     cursor: pointer;
+    min-width: 150px;
 }
 
+.table-filters select:focus,
 .table-filters__select:focus {
     outline: none;
     border-color: var(--history-primary);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
 }
 
-/* Table Styles */
+/* Table Styles - Enhanced */
 .loan-history-table table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .loan-history-table th,
 .loan-history-table td {
-    padding: var(--history-space-md);
+    padding: var(--history-space-md) var(--history-space-lg);
     text-align: left;
     border-bottom: 1px solid var(--history-gray-100);
 }
 
 .loan-history-table th {
-    background: var(--history-gray-50);
+    background: linear-gradient(135deg, var(--history-gray-50) 0%, var(--history-white) 100%);
     color: var(--history-gray-700);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.75px;
     position: sticky;
     top: 0;
+    white-space: nowrap;
+}
+
+.loan-history-table th:first-child {
+    border-top-left-radius: var(--history-radius-md);
+}
+
+.loan-history-table th:last-child {
+    border-top-right-radius: var(--history-radius-md);
 }
 
 .loan-history-table tbody tr {
-    transition: background var(--history-transition-fast);
+    transition: all var(--history-transition-fast);
 }
 
 .loan-history-table tbody tr:hover {
-    background: var(--history-primary-bg);
+    background: var(--history-primary-subtle);
 }
 
-/* Action Links */
+.loan-history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.loan-history-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: var(--history-radius-md);
+}
+
+.loan-history-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: var(--history-radius-md);
+}
+
+/* Action Links - Enhanced */
 .action-link {
     color: var(--history-primary);
     text-decoration: none;
     margin-right: var(--history-space-md);
     font-weight: 600;
     font-size: 0.9rem;
-    transition: color var(--history-transition-fast), transform var(--history-transition-fast);
-    display: inline-block;
+    transition: all var(--history-transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--history-space-xs);
+    padding: var(--history-space-xs) var(--history-space-sm);
+    border-radius: var(--history-radius-md);
 }
 
 .action-link:hover {
     color: var(--history-primary-dark);
     transform: translateX(3px);
+    background: var(--history-white);
+    box-shadow: var(--history-shadow-sm);
 }
 
 .action-link:last-child {
@@ -491,50 +674,55 @@
 }
 
 /* ============================================
-   Payment Records Section
+   Payment Records Section - Enhanced
    ============================================ */
 .payment-records {
-    background: var(--history-white);
+    background: var(--history-glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: var(--history-space-xl);
     border-radius: var(--history-radius-xl);
-    box-shadow: var(--history-shadow-lg);
+    box-shadow: var(--history-glass-shadow);
     margin-bottom: var(--history-space-2xl);
-    border: 1px solid var(--history-gray-200);
+    border: 1px solid var(--history-glass-border);
 }
 
+.payment-records h2,
 .payment-records__title {
     color: var(--history-primary);
     margin-bottom: var(--history-space-lg);
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 4vw, 1.875rem);
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: var(--history-space-sm);
+    font-family: var(--history-font-display);
 }
 
 .payment-records table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .payment-records th,
 .payment-records td {
-    padding: var(--history-space-md);
+    padding: var(--history-space-md) var(--history-space-lg);
     text-align: left;
     border-bottom: 1px solid var(--history-gray-100);
 }
 
 .payment-records th {
-    background: var(--history-gray-50);
+    background: linear-gradient(135deg, var(--history-gray-50) 0%, var(--history-white) 100%);
     color: var(--history-gray-700);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.75px;
 }
 
 .payment-records tbody tr {
-    transition: background var(--history-transition-fast);
+    transition: all var(--history-transition-fast);
 }
 
 .payment-records tbody tr:hover {
@@ -542,9 +730,9 @@
 }
 
 /* ============================================
-   Apply CTA Section
+   Quick Actions Section - Enhanced
    ============================================ */
-.apply-cta {
+.quick-actions {
     background: linear-gradient(135deg, var(--history-primary) 0%, var(--history-primary-dark) 100%);
     padding: var(--history-space-2xl);
     border-radius: var(--history-radius-xl);
@@ -555,14 +743,14 @@
     box-shadow: var(--history-shadow-xl);
 }
 
-.apply-cta::before {
+.quick-actions::before {
     content: '';
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
     animation: shimmer 3s ease-in-out infinite;
 }
 
@@ -572,45 +760,35 @@
     100% { transform: scale(1); opacity: 0; }
 }
 
-.cta-content {
+.quick-actions h2 {
+    font-family: var(--history-font-display);
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    margin-bottom: var(--history-space-xl);
+    font-weight: 700;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--history-space-sm);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--history-space-md);
+    justify-content: center;
+    flex-wrap: wrap;
     position: relative;
     z-index: 1;
 }
 
-.cta-content__icon {
-    font-size: 3.5rem;
-    margin-bottom: var(--history-space-lg);
-    display: inline-block;
-    animation: bounce 2s ease infinite;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.cta-content__title {
-    font-size: 1.75rem;
-    margin-bottom: var(--history-space-md);
-    font-weight: 700;
-}
-
-.cta-content__description {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    margin-bottom: var(--history-space-xl);
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Button Styles */
-.btn {
-    padding: 0.875rem 2rem;
+.action-btn {
+    padding: var(--history-space-md) var(--history-space-xl);
+    background: var(--history-white);
+    color: var(--history-primary);
     border: none;
-    border-radius: var(--history-radius-md);
-    font-size: 1rem;
+    border-radius: var(--history-radius-lg);
     font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all var(--history-transition-base);
     display: inline-flex;
@@ -618,28 +796,36 @@
     justify-content: center;
     gap: var(--history-space-sm);
     text-decoration: none;
-    position: relative;
-    overflow: hidden;
+    box-shadow: var(--history-shadow-md);
 }
 
-.btn--primary {
-    background: var(--history-white);
-    color: var(--history-primary);
-    box-shadow: var(--history-shadow-lg);
-}
-
-.btn--primary:hover {
+.action-btn:hover {
     transform: translateY(-3px);
     box-shadow: var(--history-shadow-xl);
     background: var(--history-gray-100);
 }
 
+.action-btn i {
+    font-size: 1rem;
+}
+
 /* ============================================
-   Responsive Design
+   Responsive Design - Enhanced
    ============================================ */
+@media (max-width: 992px) {
+    .history-container {
+        padding: var(--history-space-xl) var(--history-space-md);
+    }
+    
+    .loan-history-table,
+    .payment-records {
+        padding: var(--history-space-lg);
+    }
+}
+
 @media (max-width: 768px) {
     .history-header {
-        padding: var(--history-space-xl) var(--history-space-md);
+        padding: var(--history-space-2xl) var(--history-space-md);
     }
     
     .history-header h1 {
@@ -650,10 +836,6 @@
     
     .history-header h1 i {
         font-size: 1.5rem;
-    }
-    
-    .history-container {
-        padding: var(--history-space-xl) var(--history-space-md);
     }
     
     .stats-grid {
@@ -668,9 +850,9 @@
     }
     
     .stat-card__icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
+        width: 60px;
+        height: 60px;
+        font-size: 1.75rem;
     }
     
     .stat-card__number {
@@ -682,46 +864,40 @@
         gap: var(--history-space-md);
     }
     
-    .table-filters__group {
-        width: 100%;
+    .table-filters label {
+        flex-direction: column;
+        align-items: flex-start;
     }
     
-    .table-filters__select {
-        flex: 1;
+    .table-filters select {
+        width: 100%;
     }
     
     .loan-history-table,
     .payment-records {
         overflow-x: auto;
-        padding: var(--history-space-lg);
+        padding: var(--history-space-md);
     }
     
     .loan-history-table table,
     .payment-records table {
-        min-width: 600px;
+        min-width: 700px;
     }
     
-    .apply-cta {
+    .quick-actions {
         padding: var(--history-space-xl);
     }
     
-    .cta-content__title {
-        font-size: 1.5rem;
+    .action-buttons {
+        flex-direction: column;
     }
     
-    .cta-content__icon {
-        font-size: 2.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
+    .action-btn {
+        width: 100%;
     }
     
     .loan-card__header {
         flex-direction: column;
-        gap: var(--history-space-sm);
         text-align: center;
     }
     
@@ -735,21 +911,45 @@
         font-size: 1.1rem;
     }
     
-    .loan-history-table__title,
-    .payment-records__title,
-    .loan-stats__title,
-    .active-loans__title {
+    .loan-history-table h2,
+    .payment-records h2,
+    .loan-stats h2,
+    .active-loans h2 {
         font-size: 1.4rem;
     }
 }
 
+@media (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card__icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .loan-history-table h2,
+    .payment-records__title,
+    .loan-stats__title,
+    .active-loans__title {
+        font-size: 1.25rem;
+    }
+    
+    .status-badge {
+        font-size: 0.7rem;
+        padding: var(--history-space-xs) var(--history-space-sm);
+    }
+}
+
 /* ============================================
-   Animations
+   Animations - Enhanced
    ============================================ */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
@@ -757,26 +957,90 @@
     }
 }
 
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 .loan-stats,
 .active-loans,
 .loan-history-table,
 .payment-records,
-.apply-cta {
-    animation: fadeInUp 0.5s ease forwards;
+.quick-actions {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
 }
 
 .active-loans {
-    animation-delay: 0.1s;
+    animation-delay: 0.15s;
 }
 
 .loan-history-table {
-    animation-delay: 0.2s;
-}
-
-.payment-records {
     animation-delay: 0.3s;
 }
 
-.apply-cta {
-    animation-delay: 0.4s;
+.payment-records {
+    animation-delay: 0.45s;
+}
+
+.quick-actions {
+    animation-delay: 0.6s;
+}
+
+/* Staggered animation for stat cards */
+.stat-card:nth-child(1) { animation: fadeInScale 0.5s ease forwards 0.1s; opacity: 0; }
+.stat-card:nth-child(2) { animation: fadeInScale 0.5s ease forwards 0.2s; opacity: 0; }
+.stat-card:nth-child(3) { animation: fadeInScale 0.5s ease forwards 0.3s; opacity: 0; }
+.stat-card:nth-child(4) { animation: fadeInScale 0.5s ease forwards 0.4s; opacity: 0; }
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+    .history-header {
+        background: none !important;
+        color: #000 !important;
+        padding: var(--history-space-md) !important;
+    }
+    
+    .history-header::before,
+    .history-header::after {
+        display: none !important;
+    }
+    
+    .stat-card,
+    .loan-card,
+    .loan-history-table,
+    .payment-records,
+    .quick-actions {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .action-btn {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
 }
