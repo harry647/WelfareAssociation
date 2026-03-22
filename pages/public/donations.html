@@ -80,7 +80,7 @@
                 <div class="donation-content">
                     <h3>One-Time Donation</h3>
                     <p>Make a single donation of any amount to support our programs. Every contribution, big or small, helps.</p>
-                    <a href="#" class="donate-btn" onclick="alert('Donation form coming soon!')">Donate Now</a>
+                    <a href="#" class="donate-btn" data-donation-type="one-time">Donate Now</a>
                 </div>
             </div>
 
@@ -91,7 +91,7 @@
                 <div class="donation-content">
                     <h3>Monthly Giving</h3>
                     <p>Become a monthly donor and provide consistent support to students throughout the year.</p>
-                    <a href="#" class="donate-btn" onclick="alert('Monthly giving setup coming soon!')">Set Up Monthly</a>
+                    <a href="#" class="donate-btn" data-donation-type="monthly">Set Up Monthly</a>
                 </div>
             </div>
 
@@ -102,7 +102,7 @@
                 <div class="donation-content">
                     <h3>Scholarship Fund</h3>
                     <p>Sponsor a student's education for a semester or year. Your sponsorship can change their future.</p>
-                    <a href="#" class="donate-btn" onclick="alert('Scholarship program details coming soon!')">Sponsor Student</a>
+                    <a href="#" class="donate-btn" data-donation-type="scholarship">Sponsor Student</a>
                 </div>
             </div>
 
@@ -113,7 +113,7 @@
                 <div class="donation-content">
                     <h3>Corporate Partnership</h3>
                     <p>Partner with us as a business to make a larger impact. We offer various partnership opportunities.</p>
-                    <a href="mailto:partnerships@swajoust.org" class="donate-btn">Partner With Us</a>
+                    <a href="#" class="donate-btn" data-donation-type="corporate">Partner With Us</a>
                 </div>
             </div>
 
@@ -124,7 +124,7 @@
                 <div class="donation-content">
                     <h3>In-Kind Donations</h3>
                     <p>Donate books, laptops, food packages, or other materials that can benefit students.</p>
-                    <a href="contact-information.html" class="donate-btn">Contact for Details</a>
+                    <a href="#" class="donate-btn" data-donation-type="inkind">Contact for Details</a>
                 </div>
             </div>
         </section>
@@ -188,11 +188,281 @@
         </section>
     </main>
 
+    <!-- Donation Modal -->
+    <div id="donationModal" class="donation-modal">
+        <div class="donation-modal-content">
+            <span class="donation-modal-close">&times;</span>
+            <h2 id="donationModalTitle">Make a Donation</h2>
+            <p id="donationModalDescription">Thank you for your generosity!</p>
+            
+            <!-- One-Time Donation Form -->
+            <form id="oneTimeDonationForm" class="donation-form" style="display: none;">
+                <div class="form-group">
+                    <label for="donorName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="donorName" name="donorName" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="donorEmail">Email Address <span class="required">*</span></label>
+                    <input type="email" id="donorEmail" name="donorEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="donorPhone">Phone Number</label>
+                    <input type="tel" id="donorPhone" name="donorPhone" placeholder="e.g., 254712345678">
+                </div>
+                <div class="form-group">
+                    <label for="donationAmount">Donation Amount (Ksh) <span class="required">*</span></label>
+                    <input type="number" id="donationAmount" name="donationAmount" required min="100" placeholder="Enter amount">
+                    <small>Minimum: Ksh 100</small>
+                </div>
+                <div class="form-group">
+                    <label for="donationPaymentMethod">Payment Method <span class="required">*</span></label>
+                    <select id="donationPaymentMethod" name="donationPaymentMethod" required>
+                        <option value="">Select payment method</option>
+                        <option value="mpesa">M-Pesa</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="cash">Cash</option>
+                    </select>
+                </div>
+                <div class="form-group" id="transactionIdGroup" style="display: none;">
+                    <label for="donorTransactionId">Transaction ID</label>
+                    <input type="text" id="donorTransactionId" name="donorTransactionId" placeholder="Enter M-Pesa transaction ID">
+                </div>
+                <div class="form-group">
+                    <label for="donorMessage">Message (Optional)</label>
+                    <textarea id="donorMessage" name="donorMessage" rows="3" placeholder="Leave a message or dedication"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="donorAnonymous" name="donorAnonymous">
+                        Make my donation anonymous
+                    </label>
+                </div>
+                <input type="hidden" id="donationType" name="donationType" value="one-time">
+                <button type="submit" class="submit-donation-btn">Submit Donation</button>
+            </form>
+
+            <!-- Monthly Giving Form -->
+            <form id="monthlyDonationForm" class="donation-form" style="display: none;">
+                <div class="form-group">
+                    <label for="monthlyDonorName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="monthlyDonorName" name="monthlyDonorName" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="monthlyDonorEmail">Email Address <span class="required">*</span></label>
+                    <input type="email" id="monthlyDonorEmail" name="monthlyDonorEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="monthlyDonorPhone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="monthlyDonorPhone" name="monthlyDonorPhone" required placeholder="e.g., 254712345678">
+                    <small>This will be used for monthly M-Pesa deductions</small>
+                </div>
+                <div class="form-group">
+                    <label for="monthlyAmount">Monthly Amount (Ksh) <span class="required">*</span></label>
+                    <input type="number" id="monthlyAmount" name="monthlyAmount" required min="100" placeholder="Enter monthly amount">
+                    <small>Minimum: Ksh 100/month</small>
+                </div>
+                <div class="form-group">
+                    <label for="monthlyStartDate">Start Date <span class="required">*</span></label>
+                    <input type="date" id="monthlyStartDate" name="monthlyStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="monthlyDuration">Duration</label>
+                    <select id="monthlyDuration" name="monthlyDuration">
+                        <option value="ongoing">Ongoing (until cancelled)</option>
+                        <option value="6months">6 Months</option>
+                        <option value="12months">12 Months</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="monthlyDonorMessage">Message (Optional)</label>
+                    <textarea id="monthlyDonorMessage" name="monthlyDonorMessage" rows="3" placeholder="Leave a message"></textarea>
+                </div>
+                <input type="hidden" id="monthlyDonationType" name="donationType" value="monthly">
+                <button type="submit" class="submit-donation-btn">Set Up Monthly Giving</button>
+            </form>
+
+            <!-- Scholarship Sponsorship Form -->
+            <form id="scholarshipForm" class="donation-form" style="display: none;">
+                <div class="form-group">
+                    <label for="scholarName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="scholarName" name="scholarName" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="scholarEmail">Email Address <span class="required">*</span></label>
+                    <input type="email" id="scholarEmail" name="scholarEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="scholarPhone">Phone Number</label>
+                    <input type="tel" id="scholarPhone" name="scholarPhone" placeholder="e.g., 254712345678">
+                </div>
+                <div class="form-group">
+                    <label for="sponsorshipType">Sponsorship Type <span class="required">*</span></label>
+                    <select id="sponsorshipType" name="sponsorshipType" required>
+                        <option value="">Select sponsorship type</option>
+                        <option value="full">Full Scholarship (Full Year)</option>
+                        <option value="semester">Semester Sponsorship</option>
+                        <option value="partial">Partial Support</option>
+                        <option value="custom">Custom Amount</option>
+                    </select>
+                </div>
+                <div class="form-group" id="customAmountGroup" style="display: none;">
+                    <label for="scholarshipAmount">Amount (Ksh) <span class="required">*</span></label>
+                    <input type="number" id="scholarshipAmount" name="scholarshipAmount" min="1000" placeholder="Enter custom amount">
+                </div>
+                <div class="form-group">
+                    <label for="scholarshipDuration">Preferred Duration</label>
+                    <select id="scholarshipDuration" name="scholarshipDuration">
+                        <option value="one-time">One-time Payment</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="scholarshipFocus">Focus Area (Optional)</label>
+                    <select id="scholarshipFocus" name="scholarshipFocus">
+                        <option value="any">Any Field</option>
+                        <option value="science">Science & Technology</option>
+                        <option value="business">Business & Economics</option>
+                        <option value="arts">Arts & Humanities</option>
+                        <option value="health">Health Sciences</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="scholarshipMessage">Message / Requirements</label>
+                    <textarea id="scholarshipMessage" name="scholarshipMessage" rows="4" placeholder="Any specific requirements or message"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="scholarshipAnonymous" name="scholarshipAnonymous">
+                        I prefer to remain anonymous
+                    </label>
+                </div>
+                <input type="hidden" id="scholarshipDonationType" name="donationType" value="scholarship">
+                <button type="submit" class="submit-donation-btn">Submit Sponsorship Inquiry</button>
+            </form>
+
+            <!-- Corporate Partnership Form -->
+            <form id="corporateForm" class="donation-form" style="display: none;">
+                <div class="form-group">
+                    <label for="companyName">Company Name <span class="required">*</span></label>
+                    <input type="text" id="companyName" name="companyName" required placeholder="Enter company name">
+                </div>
+                <div class="form-group">
+                    <label for="contactPerson">Contact Person <span class="required">*</span></label>
+                    <input type="text" id="contactPerson" name="contactPerson" required placeholder="Enter contact person name">
+                </div>
+                <div class="form-group">
+                    <label for="companyEmail">Company Email <span class="required">*</span></label>
+                    <input type="email" id="companyEmail" name="companyEmail" required placeholder="Enter company email">
+                </div>
+                <div class="form-group">
+                    <label for="companyPhone">Phone Number</label>
+                    <input type="tel" id="companyPhone" name="companyPhone" placeholder="e.g., 254712345678">
+                </div>
+                <div class="form-group">
+                    <label for="partnershipType">Partnership Type <span class="required">*</span></label>
+                    <select id="partnershipType" name="partnershipType" required>
+                        <option value="">Select partnership type</option>
+                        <option value="sponsor">Event Sponsor</option>
+                        <option value="scholarship"> scholarship Program</option>
+                        <option value="mentorship">Mentorship Program</option>
+                        <option value="infrastructure">Infrastructure Support</option>
+                        <option value="custom">Custom Partnership</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="proposedContribution">Proposed Contribution</label>
+                    <textarea id="proposedContribution" name="proposedContribution" rows="3" placeholder="Describe your proposed contribution"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="companyMessage">Message</label>
+                    <textarea id="companyMessage" name="companyMessage" rows="4" placeholder="Tell us more about your company and how you'd like to partner with us"></textarea>
+                </div>
+                <input type="hidden" id="corporateDonationType" name="donationType" value="corporate">
+                <button type="submit" class="submit-donation-btn">Submit Partnership Inquiry</button>
+            </form>
+
+            <!-- In-Kind Donation Form -->
+            <form id="inkindForm" class="donation-form" style="display: none;">
+                <div class="form-group">
+                    <label for="inkindName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="inkindName" name="inkindName" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="inkindEmail">Email Address <span class="required">*</span></label>
+                    <input type="email" id="inkindEmail" name="inkindEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="inkindPhone">Phone Number</label>
+                    <input type="tel" id="inkindPhone" name="inkindPhone" placeholder="e.g., 254712345678">
+                </div>
+                <div class="form-group">
+                    <label for="donationCategory">Donation Category <span class="required">*</span></label>
+                    <select id="donationCategory" name="donationCategory" required>
+                        <option value="">Select category</option>
+                        <option value="books">Books & Learning Materials</option>
+                        <option value="laptops">Laptops & Electronics</option>
+                        <option value="food">Food Packages</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="stationery">Stationery</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemDescription">Item Description <span class="required">*</span></label>
+                    <textarea id="itemDescription" name="itemDescription" rows="3" required placeholder="Describe the items you wish to donate"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="itemQuantity">Quantity/Approximate Number</label>
+                    <input type="number" id="itemQuantity" name="itemQuantity" min="1" placeholder="Enter quantity">
+                </div>
+                <div class="form-group">
+                    <label for="itemCondition">Condition</label>
+                    <select id="itemCondition" name="itemCondition">
+                        <option value="new">New</option>
+                        <option value="like-new">Like New</option>
+                        <option value="good">Good</option>
+                        <option value="fair">Fair</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pickupOption">Pickup Option</label>
+                    <select id="pickupOption" name="pickupOption">
+                        <option value="dropoff">I will drop off</option>
+                        <option value="pickup">Arrange pickup</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inkindMessage">Additional Message</label>
+                    <textarea id="inkindMessage" name="inkindMessage" rows="3" placeholder="Any additional information"></textarea>
+                </div>
+                <input type="hidden" id="inkindDonationType" name="donationType" value="inkind">
+                <button type="submit" class="submit-donation-btn">Submit In-Kind Donation</button>
+            </form>
+
+            <!-- Form Feedback/Loading -->
+            <div id="donationFormFeedback" class="donation-form-feedback" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p id="feedbackText">Processing...</p>
+            </div>
+
+            <!-- Form Success Message -->
+            <div id="donationSuccessMessage" class="donation-success-message" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <h3>Thank You!</h3>
+                <p id="successText">Your donation has been submitted successfully.</p>
+                <button type="button" id="closeSuccessBtn" class="cta-button">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Shared Footer -->
     <div w3-include-html="../shared/footer.html"></div>
     <!-- W3 Schools HTML Includes Script -->
     <script>
         w3.includeHTML();
     </script>
+    <!-- Donations Page Script -->
+    <script type="module" src="../../src/scripts/pages/public/donations.js"></script>
 </body>
 </html>

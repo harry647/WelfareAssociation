@@ -88,7 +88,7 @@
                     <li><strong>Skills needed:</strong> Organization, creativity, teamwork</li>
                     <li><strong>Tasks:</strong> Event logistics, vendor coordination, attendee management</li>
                 </ul>
-                <button class="apply-btn" onclick="alert('Application form will open shortly!')">Apply Now</button>
+                <button class="apply-btn">Apply Now</button>
             </div>
 
             <div class="opportunity-card">
@@ -102,7 +102,7 @@
                     <li><strong>Skills needed:</strong> Good communication, patience, empathy</li>
                     <li><strong>Tasks:</strong> One-on-one mentoring, group sessions</li>
                 </ul>
-                <button class="apply-btn" onclick="alert('Application form will open shortly!')">Apply Now</button>
+                <button class="apply-btn">Apply Now</button>
             </div>
 
             <div class="opportunity-card">
@@ -116,7 +116,7 @@
                     <li><strong>Skills needed:</strong> Teamwork, enthusiasm, adaptability</li>
                     <li><strong>Tasks:</strong> Community visits, fundraising, distribution</li>
                 </ul>
-                <button class="apply-btn" onclick="alert('Application form will open shortly!')">Apply Now</button>
+                <button class="apply-btn">Apply Now</button>
             </div>
 
             <div class="opportunity-card">
@@ -130,7 +130,7 @@
                     <li><strong>Skills needed:</strong> Social media, photography, writing</li>
                     <li><strong>Tasks:</strong> Content creation, photo/video, social media management</li>
                 </ul>
-                <button class="apply-btn" onclick="alert('Application form will open shortly!')">Apply Now</button>
+                <button class="apply-btn">Apply Now</button>
             </div>
 
             <div class="opportunity-card">
@@ -144,7 +144,7 @@
                     <li><strong>Skills needed:</strong> Web development, IT, data management</li>
                     <li><strong>Tasks:</strong> Website updates, system maintenance</li>
                 </ul>
-                <button class="apply-btn" onclick="alert('Application form will open shortly!')">Apply Now</button>
+                <button class="apply-btn">Apply Now</button>
             </div>
         </section>
 
@@ -184,7 +184,7 @@
         <section class="volunteer-form">
             <h2>Volunteer Registration</h2>
             <p>Ready to make a difference? Fill out the form below to join our volunteer program.</p>
-            <form>
+            <form id="volunteer-registration-form">
                 <div class="form-group">
                     <label for="name">Full Name *</label>
                     <input type="text" id="name" name="name" required placeholder="Enter your full name">
@@ -242,7 +242,7 @@
                     <label for="message">Why do you want to volunteer with SWA?</label>
                     <textarea id="message" name="message" rows="4" placeholder="Share your motivation and what you hope to gain"></textarea>
                 </div>
-                <button type="submit" class="submit-btn" onclick="alert('Thank you for your interest! We will contact you soon.')">Submit Application</button>
+                <button type="submit" class="submit-btn" id="submit-application-btn">Submit Application</button>
             </form>
         </section>
 
@@ -274,5 +274,7 @@
     <script>
         w3.includeHTML();
     </script>
+    <!-- Volunteer Page Script -->
+    <script type="module" src="../../src/scripts/pages/public/volunteer.js"></script>
 </body>
 </html>

@@ -41,6 +41,10 @@ export const API_CONFIG = {
         // Messages/Contact
         contact: '/contact',
         messages: '/messages',
+        
+        // Volunteers
+        volunteers: '/volunteers',
+        volunteerApply: '/volunteers/apply',
     },
     
     // Request timeout in milliseconds
