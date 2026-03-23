@@ -1,6 +1,6 @@
 /**
  * SWA Website Server
- * Express server with MongoDB backend
+ * Express server with PostgreSQL backend
  */
 
 require('dotenv').config();
@@ -12,7 +12,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 
-const connectDB = require('./backend/config/database');
+const { connectDB } = require('./backend/config/database');
 const setupRoutes = require('./backend/routes');
 
 const app = express();
@@ -70,10 +70,10 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Connect to MongoDB and start server
+// Connect to PostgreSQL and start server
 const startServer = async () => {
     try {
-        // Connect to MongoDB
+        // Connect to PostgreSQL
         await connectDB();
         
         // Start server

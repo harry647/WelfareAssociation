@@ -3,80 +3,85 @@
  * Handles member contributions/dues
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const contributionSchema = new mongoose.Schema({
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+const Contribution = sequelize.define('Contribution', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
     contributionNumber: {
-        type: String,
-        unique: true,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true
     },
     // Contribution details
     amount: {
-        type: Number,
-        required: true,
-        min: 0
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
     type: {
-        type: String,
-        enum: ['monthly', 'special', 'registration', 'voluntary', 'fine', 'other'],
-        default: 'monthly'
+        type: DataTypes.ENUM('monthly', 'special', 'registration', 'voluntary', 'fine', 'other'),
+        defaultValue: 'monthly'
     },
     period: {
-        month: Number,
-        year: Number
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
     // Payment details
     paymentMethod: {
-        type: String,
-        enum: ['cash', 'mpesa', 'bank_transfer', 'cheque', 'online', 'other'],
-        default: 'cash'
+        type: DataTypes.ENUM('cash', 'mpesa', 'bank_transfer', 'cheque', 'online', 'other'),
+        defaultValue: 'cash'
     },
-    paymentReference: String,
+    paymentReference: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
     paymentDate: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
     // Status
     status: {
-        type: String,
-        enum: ['pending', 'completed', 'failed', 'refunded'],
-        default: 'pending'
+        type: DataTypes.ENUM('pending', 'completed', 'failed', 'refunded'),
+        defaultValue: 'pending'
     },
     // Notes
-    description: String,
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     // Recorded by
     recordedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     // Attachments
     receipt: {
-        type: String
+        type: DataTypes.STRING(500),
+        allowNull: true
     }
 }, {
+    tableName: 'contributions',
     timestamps: true
 });
 
-// Generate contribution number before saving
-contributionSchema.pre('save', async function(next) {
-    if (!this.contributionNumber) {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const count = await mongoose.model('Contribution').countDocuments();
-        this.contributionNumber = `CON/${year}${month}/${String(count + 1).padStart(4, '0')}`;
-    }
-    next();
-});
-
-// Index for efficient queries
-contributionSchema.index({ member: 1, createdAt: -1 });
-contributionSchema.index({ period: 1 });
-
-module.exports = mongoose.model('Contribution', contributionSchema);
+module.exports = Contribution;

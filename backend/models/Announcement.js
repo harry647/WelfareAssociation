@@ -3,77 +3,73 @@
  * Handles announcement/notification data
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const announcementSchema = new mongoose.Schema({
+const Announcement = sequelize.define('Announcement', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     content: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     type: {
-        type: String,
-        enum: ['general', 'urgent', 'reminder', 'event', 'news'],
-        default: 'general'
+        type: DataTypes.ENUM('general', 'urgent', 'reminder', 'event', 'news'),
+        defaultValue: 'general'
     },
     priority: {
-        type: String,
-        enum: ['low', 'medium', 'high', 'critical'],
-        default: 'medium'
+        type: DataTypes.ENUM('low', 'medium', 'high', 'critical'),
+        defaultValue: 'medium'
     },
     targetAudience: {
-        type: String,
-        enum: ['all', 'members', 'officers', 'executives', 'specific'],
-        default: 'all'
+        type: DataTypes.ENUM('all', 'members', 'officers', 'executives', 'specific'),
+        defaultValue: 'all'
     },
-    specificMembers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member'
-    }],
+    // Specific members (stored as array of UUIDs)
+    specificMembers: {
+        type: DataTypes.ARRAY(DataTypes.UUID),
+        defaultValue: []
+    },
+    // Sent by
     sentBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     sentAt: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
     expiresAt: {
-        type: Date,
-        default: null
+        type: DataTypes.DATE,
+        allowNull: true
     },
     isActive: {
-        type: Boolean,
-        default: true
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     },
     viewCount: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
-    recipients: [{
-        member: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Member'
-        },
-        viewedAt: Date,
-        viewed: {
-            type: Boolean,
-            default: false
-        }
-    }]
+    // Recipients (stored as JSON)
+    recipients: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    }
 }, {
+    tableName: 'announcements',
     timestamps: true
 });
-
-// Index for faster queries
-announcementSchema.index({ createdAt: -1 });
-announcementSchema.index({ isActive: 1, expiresAt: 1 });
-
-const Announcement = mongoose.model('Announcement', announcementSchema);
 
 module.exports = Announcement;

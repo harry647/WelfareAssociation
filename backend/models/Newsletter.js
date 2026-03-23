@@ -3,42 +3,50 @@
  * Handles newsletter subscriptions
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const newsletterSchema = new mongoose.Schema({
+const Newsletter = sequelize.define('Newsletter', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     email: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true,
-        unique: true
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        unique: true,
+        validate: {
+            isEmail: true
+        }
     },
     name: {
-        type: String,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: true
     },
     isActive: {
-        type: Boolean,
-        default: true
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     },
     subscribedAt: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
-    unsubscribedAt: Date,
-    ipAddress: String,
+    unsubscribedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    ipAddress: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
     source: {
-        type: String,
-        enum: ['website', 'registration', 'event', 'manual'],
-        default: 'website'
+        type: DataTypes.ENUM('website', 'registration', 'event', 'manual'),
+        defaultValue: 'website'
     }
 }, {
+    tableName: 'newsletters',
     timestamps: true
 });
-
-// Index
-newsletterSchema.index({ email: 1 });
-
-const Newsletter = mongoose.model('Newsletter', newsletterSchema);
 
 module.exports = Newsletter;

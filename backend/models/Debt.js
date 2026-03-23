@@ -3,105 +3,100 @@
  * Tracks member debts and outstanding payments
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const debtSchema = new mongoose.Schema({
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+const Debt = sequelize.define('Debt', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
     debtNumber: {
-        type: String,
-        unique: true,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true
     },
     // Debt type
     type: {
-        type: String,
-        enum: ['loan_overdue', 'contribution_arrears', 'fine_unpaid', 'other'],
-        default: 'other'
+        type: DataTypes.ENUM('loan_overdue', 'contribution_arrears', 'fine_unpaid', 'other'),
+        defaultValue: 'other'
     },
     // Amount
     amount: {
-        type: Number,
-        required: true,
-        min: 0
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
     // Due date
     dueDate: {
-        type: Date,
-        required: true
+        type: DataTypes.DATE,
+        allowNull: false
     },
     // Status
     status: {
-        type: String,
-        enum: ['pending', 'overdue', 'paid', 'waived'],
-        default: 'pending'
+        type: DataTypes.ENUM('pending', 'overdue', 'paid', 'waived'),
+        defaultValue: 'pending'
     },
-    // Related entity (loan, fine, etc.)
+    // Related entity (stored as JSON)
     relatedTo: {
-        model: String,
-        id: mongoose.Schema.Types.ObjectId
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
-    // Payment history
-    payments: [{
-        date: Date,
-        amount: Number,
-        method: String,
-        reference: String
-    }],
+    // Payment history (stored as JSON)
+    payments: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     paidAmount: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     remainingBalance: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
-    // Reminders sent
-    remindersSent: [{
-        date: Date,
-        method: String,
-        sentBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    }],
+    // Reminders sent (stored as JSON)
+    remindersSent: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     // Notes
-    notes: String,
+    notes: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     // Waived
     waivedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    waiverReason: String,
-    waivedAt: Date
+    waiverReason: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    waivedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    }
 }, {
+    tableName: 'debts',
     timestamps: true
 });
 
-// Generate debt number before saving
-debtSchema.pre('save', async function(next) {
-    if (!this.debtNumber) {
-        const count = await mongoose.model('Debt').countDocuments();
-        this.debtNumber = `DEBT${String(count + 1).padStart(5, '0')}`;
-    }
-    next();
-});
-
-// Calculate days overdue
-debtSchema.virtual('daysOverdue').get(function() {
-    if (this.status === 'paid' || this.status === 'waived') return 0;
-    const now = new Date();
-    const due = new Date(this.dueDate);
-    if (now > due) {
-        return Math.floor((now - due) / (1000 * 60 * 60 * 24));
-    }
-    return 0;
-});
-
-debtSchema.set('toJSON', { virtuals: true });
-debtSchema.set('toObject', { virtuals: true });
-
-module.exports = mongoose.model('Debt', debtSchema);
+module.exports = Debt;

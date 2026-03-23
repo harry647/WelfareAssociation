@@ -3,121 +3,116 @@
  * Handles document management and storage
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const documentSchema = new mongoose.Schema({
+const Document = sequelize.define('Document', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     name: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     description: {
-        type: String,
-        default: ''
+        type: DataTypes.TEXT,
+        defaultValue: ''
     },
     fileName: {
-        type: String,
-        required: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     originalName: {
-        type: String,
-        required: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     mimeType: {
-        type: String,
-        required: true
+        type: DataTypes.STRING(100),
+        allowNull: false
     },
     size: {
-        type: Number,
-        required: true
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     path: {
-        type: String,
-        required: true
+        type: DataTypes.STRING(500),
+        allowNull: false
     },
     category: {
-        type: String,
-        enum: ['policy', 'report', 'meeting', 'financial', 'membership', 'other'],
-        default: 'other'
+        type: DataTypes.ENUM('policy', 'report', 'meeting', 'financial', 'membership', 'other'),
+        defaultValue: 'other'
     },
     subcategory: {
-        type: String,
-        default: ''
+        type: DataTypes.STRING(100),
+        defaultValue: ''
     },
     visibility: {
-        type: String,
-        enum: ['public', 'members', 'officers', 'executives', 'admin'],
-        default: 'members'
+        type: DataTypes.ENUM('public', 'members', 'officers', 'executives', 'admin'),
+        defaultValue: 'members'
     },
     uploadedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
-    tags: [{
-        type: String,
-        trim: true
-    }],
+    tags: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+    },
     version: {
-        type: Number,
-        default: 1
+        type: DataTypes.INTEGER,
+        defaultValue: 1
     },
-    previousVersions: [{
-        version: Number,
-        fileName: String,
-        path: String,
-        uploadedAt: Date,
-        uploadedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    }],
-    sharedWith: [{
-        member: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Member'
-        },
-        sharedAt: {
-            type: Date,
-            default: Date.now
-        },
-        permission: {
-            type: String,
-            enum: ['view', 'download', 'edit'],
-            default: 'view'
-        }
-    }],
+    // Previous versions (stored as JSON)
+    previousVersions: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
+    // Shared with (stored as JSON)
+    sharedWith: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     downloadCount: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     isArchived: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
-    archivedAt: Date,
+    archivedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     archivedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     expiryDate: {
-        type: Date,
-        default: null
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
+    tableName: 'documents',
     timestamps: true
 });
-
-// Indexes
-documentSchema.index({ name: 'text', description: 'text', tags: 'text' });
-documentSchema.index({ category: 1, visibility: 1 });
-documentSchema.index({ uploadedBy: 1 });
-documentSchema.index({ createdAt: -1 });
-
-const Document = mongoose.model('Document', documentSchema);
 
 module.exports = Document;

@@ -3,185 +3,156 @@
  * Handles loan applications and tracking
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const loanSchema = new mongoose.Schema({
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+const Loan = sequelize.define('Loan', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
     loanNumber: {
-        type: String,
-        unique: true,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true
     },
     // Loan details
     principalAmount: {
-        type: Number,
-        required: true,
-        min: 0
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
     interestRate: {
-        type: Number,
-        default: 10, // 10% flat interest
-        min: 0,
-        max: 100
+        type: DataTypes.DECIMAL(5, 2),
+        defaultValue: 10
     },
     interestAmount: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     totalAmount: {
-        type: Number,
-        required: true
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false
     },
     // Repayment terms
     repaymentPeriod: {
-        type: Number, // months
-        required: true,
-        min: 1,
-        max: 60
+        type: DataTypes.INTEGER, // months
+        allowNull: false,
+        validate: {
+            min: 1,
+            max: 60
+        }
     },
     monthlyPayment: {
-        type: Number,
-        required: true
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false
     },
     // Loan status and tracking
     status: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected', 'active', 'completed', 'overdue', 'defaulted'],
-        default: 'pending'
+        type: DataTypes.ENUM('pending', 'approved', 'rejected', 'active', 'completed', 'overdue', 'defaulted'),
+        defaultValue: 'pending'
     },
     applicationDate: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
     approvalDate: {
-        type: Date
+        type: DataTypes.DATE,
+        allowNull: true
     },
     disbursementDate: {
-        type: Date
+        type: DataTypes.DATE,
+        allowNull: true
     },
     dueDate: {
-        type: Date
+        type: DataTypes.DATE,
+        allowNull: true
     },
     // Payment tracking
     paidAmount: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     remainingBalance: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     nextPaymentDate: {
-        type: Date
+        type: DataTypes.DATE,
+        allowNull: true
     },
-    // Penalty tracking (for overdue loans)
+    // Penalty tracking
     penalty: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     daysOverdue: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
-    // Guarantors
-    guarantors: [{
-        member: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Member'
-        },
-        name: String,
-        phone: String,
-        amount: Number,
-        status: {
-            type: String,
-            enum: ['pending', 'confirmed', 'rejected'],
-            default: 'pending'
-        },
-        confirmedAt: Date
-    }],
+    // Guarantors (stored as JSON)
+    guarantors: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     // Loan purpose
     purpose: {
-        type: String,
-        enum: ['education', 'business', 'emergency', 'personal', 'housing', 'medical', 'other'],
-        default: 'personal'
+        type: DataTypes.ENUM('education', 'business', 'emergency', 'personal', 'housing', 'medical', 'other'),
+        defaultValue: 'personal'
     },
-    purposeDescription: String,
-    // Payment history
-    payments: [{
-        date: Date,
-        amount: Number,
-        method: String,
-        reference: String,
-        status: {
-            type: String,
-            enum: ['completed', 'pending', 'failed'],
-            default: 'completed'
-        }
-    }],
-    // Admin notes
+    purposeDescription: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    // Payment history (stored as JSON)
+    payments: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
+    // Admin references
     approvedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     rejectedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    rejectionReason: String,
-    adminNotes: String,
-    // File attachments
-    attachments: [{
-        name: String,
-        url: String,
-        type: String,
-        uploadedAt: Date
-    }]
+    rejectionReason: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    adminNotes: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    // File attachments (stored as JSON)
+    attachments: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    }
 }, {
+    tableName: 'loans',
     timestamps: true
 });
 
-// Generate loan number before saving
-loanSchema.pre('save', async function(next) {
-    if (!this.loanNumber) {
-        const year = new Date().getFullYear();
-        const count = await mongoose.model('Loan').countDocuments();
-        this.loanNumber = `LN/${year}/${String(count + 1).padStart(4, '0')}`;
-    }
-    
-    // Calculate interest and total if not set
-    if (this.isModified('principalAmount') || this.isModified('repaymentPeriod')) {
-        this.interestAmount = (this.principalAmount * this.interestRate) / 100;
-        this.totalAmount = this.principalAmount + this.interestAmount;
-        this.monthlyPayment = this.totalAmount / this.repaymentPeriod;
-        this.remainingBalance = this.totalAmount;
-    }
-    
-    next();
-});
-
-// Calculate loan status
-loanSchema.methods.calculateStatus = function() {
-    if (this.status === 'rejected' || this.status === 'completed') {
-        return this.status;
-    }
-    
-    if (this.dueDate && new Date() > this.dueDate && this.remainingBalance > 0) {
-        return 'overdue';
-    }
-    
-    if (this.paidAmount >= this.totalAmount) {
-        return 'completed';
-    }
-    
-    if (this.status === 'approved' && this.disbursementDate) {
-        return 'active';
-    }
-    
-    return this.status;
-};
-
-module.exports = mongoose.model('Loan', loanSchema);
+module.exports = Loan;

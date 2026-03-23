@@ -3,81 +3,84 @@
  * Handles events and activities
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const eventSchema = new mongoose.Schema({
+const Event = sequelize.define('Event', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     description: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     // Event details
     eventDate: {
-        type: Date,
-        required: true
+        type: DataTypes.DATE,
+        allowNull: false
     },
-    endDate: Date,
+    endDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    // Location (stored as JSON)
     location: {
-        venue: String,
-        address: String,
-        virtual: {
-            isVirtual: Boolean,
-            meetingLink: String
-        }
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
     // Event type
     type: {
-        type: String,
-        enum: ['meeting', 'workshop', 'seminar', 'social', 'fundraiser', 'sports', 'other'],
-        default: 'other'
+        type: DataTypes.ENUM('meeting', 'workshop', 'seminar', 'social', 'fundraiser', 'sports', 'other'),
+        defaultValue: 'other'
     },
     // Registration
     requiresRegistration: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
-    maxAttendees: Number,
-    registeredAttendees: [{
-        member: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Member'
-        },
-        registeredAt: Date,
-        status: {
-            type: String,
-            enum: ['registered', 'attended', 'cancelled'],
-            default: 'registered'
-        }
-    }],
+    maxAttendees: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    // Registered attendees (stored as JSON)
+    registeredAttendees: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     // Status
     status: {
-        type: String,
-        enum: ['draft', 'published', 'cancelled', 'completed'],
-        default: 'draft'
+        type: DataTypes.ENUM('draft', 'published', 'cancelled', 'completed'),
+        defaultValue: 'draft'
     },
     // Image
-    image: String,
+    image: {
+        type: DataTypes.STRING(500),
+        allowNull: true
+    },
     // Organizer
     organizer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    // Attachments
-    attachments: [{
-        name: String,
-        url: String,
-        type: String
-    }]
+    // Attachments (stored as JSON)
+    attachments: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    }
 }, {
+    tableName: 'events',
     timestamps: true
 });
 
-// Index for efficient queries
-eventSchema.index({ eventDate: 1 });
-eventSchema.index({ status: 1 });
-
-module.exports = mongoose.model('Event', eventSchema);
+module.exports = Event;

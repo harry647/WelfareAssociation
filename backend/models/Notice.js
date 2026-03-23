@@ -3,65 +3,73 @@
  * Handles notices and announcements
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const noticeSchema = new mongoose.Schema({
+const Notice = sequelize.define('Notice', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     content: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     // Notice type
     type: {
-        type: String,
-        enum: ['general', 'important', 'urgent', 'event', 'meeting', 'reminder'],
-        default: 'general'
+        type: DataTypes.ENUM('general', 'important', 'urgent', 'event', 'meeting', 'reminder'),
+        defaultValue: 'general'
     },
     // Priority
     priority: {
-        type: String,
-        enum: ['low', 'normal', 'high'],
-        default: 'normal'
+        type: DataTypes.ENUM('low', 'normal', 'high'),
+        defaultValue: 'normal'
     },
     // Target audience
     audience: {
-        type: String,
-        enum: ['all', 'members', 'executives', 'students', 'staff'],
-        default: 'all'
+        type: DataTypes.ENUM('all', 'members', 'executives', 'students', 'staff'),
+        defaultValue: 'all'
     },
     // Status
     isPublished: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
-    publishDate: Date,
-    expiryDate: Date,
-    // Attachments
-    attachments: [{
-        name: String,
-        url: String,
-        type: String
-    }],
+    publishDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    expiryDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    // Attachments (stored as JSON)
+    attachments: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     // Author
     author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     // View count
     views: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
 }, {
+    tableName: 'notices',
     timestamps: true
 });
 
-// Index for efficient queries
-noticeSchema.index({ isPublished: 1, publishDate: -1 });
-
-module.exports = mongoose.model('Notice', noticeSchema);
+module.exports = Notice;

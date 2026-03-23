@@ -3,63 +3,70 @@
  * Handles Frequently Asked Questions
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const faqSchema = new mongoose.Schema({
+const Faq = sequelize.define('Faq', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     question: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(500),
+        allowNull: false
     },
     answer: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     category: {
-        type: String,
-        enum: ['membership', 'contributions', 'loans', 'events', 'general', 'technical', 'other'],
-        default: 'general'
+        type: DataTypes.ENUM('membership', 'contributions', 'loans', 'events', 'general', 'technical', 'other'),
+        defaultValue: 'general'
     },
-    tags: [{
-        type: String,
-        trim: true
-    }],
+    tags: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+    },
     order: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     isActive: {
-        type: Boolean,
-        default: true
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     },
     viewCount: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     helpful: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     notHelpful: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     updatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     }
 }, {
+    tableName: 'faqs',
     timestamps: true
 });
-
-// Indexes
-faqSchema.index({ category: 1, order: 1 });
-faqSchema.index({ question: 'text', answer: 'text' });
-
-const Faq = mongoose.model('Faq', faqSchema);
 
 module.exports = Faq;

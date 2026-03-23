@@ -3,88 +3,106 @@
  * Handles user authentication and profile data
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
+const User = sequelize.define('User', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     email: {
-        type: String,
-        required: [true, 'Email is required'],
+        type: DataTypes.STRING,
+        allowNull: false,
         unique: true,
-        lowercase: true,
-        trim: true,
-        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
+        validate: {
+            isEmail: true
+        }
     },
     password: {
-        type: String,
-        required: [true, 'Password is required'],
-        minlength: [8, 'Password must be at least 8 characters'],
-        select: false
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            len: [8, 100]
+        }
     },
     firstName: {
-        type: String,
-        required: [true, 'First name is required'],
-        trim: true,
-        maxlength: 50
+        type: DataTypes.STRING(50),
+        allowNull: false
     },
     lastName: {
-        type: String,
-        required: [true, 'Last name is required'],
-        trim: true,
-        maxlength: 50
+        type: DataTypes.STRING(50),
+        allowNull: false
     },
     phone: {
-        type: String,
-        trim: true
+        type: DataTypes.STRING(20),
+        allowNull: true
     },
     role: {
-        type: String,
-        enum: ['member', 'admin', 'treasurer', 'secretary', 'chairman'],
-        default: 'member'
+        type: DataTypes.ENUM('member', 'admin', 'treasurer', 'secretary', 'chairman'),
+        defaultValue: 'member'
     },
     memberId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'Members',
+            key: 'id'
+        }
     },
     isActive: {
-        type: Boolean,
-        default: true
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     },
     isEmailVerified: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     lastLogin: {
-        type: Date
+        type: DataTypes.DATE,
+        allowNull: true
     },
-    passwordResetToken: String,
-    passwordResetExpires: Date,
-    emailVerificationToken: String
-}, {
-    timestamps: true
-});
-
-// Hash password before saving
-userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        return next();
+    passwordResetToken: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    passwordResetExpires: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    emailVerificationToken: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
+}, {
+    tableName: 'users',
+    timestamps: true,
+    hooks: {
+        beforeCreate: async (user) => {
+            if (user.password) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        },
+        beforeUpdate: async (user) => {
+            if (user.changed('password')) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        }
+    }
 });
 
-// Compare password method
-userSchema.methods.comparePassword = async function(candidatePassword) {
+// Instance method to compare password
+User.prototype.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Get full name virtual
-userSchema.virtual('fullName').get(function() {
+// Virtual for full name
+User.prototype.getFullName = function() {
     return `${this.firstName} ${this.lastName}`;
-});
+};
 
-userSchema.set('toJSON', { virtuals: true });
-userSchema.set('toObject', { virtuals: true });
-
-module.exports = mongoose.model('User', userSchema);
+module.exports = User;

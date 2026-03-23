@@ -3,137 +3,128 @@
  * Handles member profile and membership details
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const memberSchema = new mongoose.Schema({
+const Member = sequelize.define('Member', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     memberNumber: {
-        type: String,
-        unique: true,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true
     },
     firstName: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(100),
+        allowNull: false
     },
     lastName: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(100),
+        allowNull: false
     },
     email: {
-        type: String,
-        required: true,
-        lowercase: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        validate: {
+            isEmail: true
+        }
     },
     phone: {
-        type: String,
-        trim: true
+        type: DataTypes.STRING(20),
+        allowNull: true
     },
     dateOfBirth: {
-        type: Date
+        type: DataTypes.DATE,
+        allowNull: true
     },
     gender: {
-        type: String,
-        enum: ['male', 'female', 'other'],
-        default: 'other'
+        type: DataTypes.ENUM('male', 'female', 'other'),
+        defaultValue: 'other'
     },
+    // Address (stored as JSON)
     address: {
-        street: String,
-        city: String,
-        state: String,
-        zipCode: String,
-        country: String
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
-    // Education/Institution details
+    // Education/Institution details (stored as JSON)
     institution: {
-        name: String,
-        department: String,
-        studentId: String,
-        admissionYear: Number,
-        graduationYear: Number
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
-    // Employment details (for working members)
+    // Employment details (stored as JSON)
     employment: {
-        company: String,
-        position: String,
-        department: String
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
-    // Membership details
     membershipType: {
-        type: String,
-        enum: ['student', 'alumni', 'staff', 'honorary'],
-        default: 'student'
+        type: DataTypes.ENUM('student', 'alumni', 'staff', 'honorary'),
+        defaultValue: 'student'
     },
     membershipStatus: {
-        type: String,
-        enum: ['active', 'inactive', 'suspended', 'archived'],
-        default: 'active'
+        type: DataTypes.ENUM('active', 'inactive', 'suspended', 'archived'),
+        defaultValue: 'active'
     },
     joinDate: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
-    // Emergency contact
+    // Emergency contact (stored as JSON)
     emergencyContact: {
-        name: String,
-        relationship: String,
-        phone: String,
-        email: String
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
-    // Next of kin
+    // Next of kin (stored as JSON)
     nextOfKin: {
-        name: String,
-        relationship: String,
-        phone: String,
-        address: String
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
     // Profile photo
     photo: {
-        type: String
+        type: DataTypes.STRING(500),
+        allowNull: true
     },
     // Financial summary
     totalContributions: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     totalLoans: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     totalSavings: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     // Notes
     notes: {
-        type: String
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 }, {
+    tableName: 'members',
     timestamps: true
 });
 
-// Generate member number before saving
-memberSchema.pre('save', async function(next) {
-    if (!this.memberNumber) {
-        const count = await mongoose.model('Member').countDocuments();
-        this.memberNumber = `SWA${String(count + 1).padStart(5, '0')}`;
-    }
-    next();
-});
-
 // Virtual for full name
-memberSchema.virtual('fullName').get(function() {
+Member.prototype.getFullName = function() {
     return `${this.firstName} ${this.lastName}`;
-});
+};
 
-memberSchema.set('toJSON', { virtuals: true });
-memberSchema.set('toObject', { virtuals: true });
-
-module.exports = mongoose.model('Member', memberSchema);
+module.exports = Member;

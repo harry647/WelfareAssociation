@@ -3,88 +3,89 @@
  * Handles volunteer applications and management
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const volunteerSchema = new mongoose.Schema({
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+const Volunteer = sequelize.define('Volunteer', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
     },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
+    },
+    userId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     area: {
-        type: String,
-        enum: ['events', 'education', 'community', 'fundraising', 'administration', 'other'],
-        required: true
+        type: DataTypes.ENUM('events', 'education', 'community', 'fundraising', 'administration', 'other'),
+        allowNull: false
     },
-    skills: [{
-        type: String,
-        trim: true
-    }],
+    skills: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+    },
+    // Availability (stored as JSON)
     availability: {
-        weekdays: { type: Boolean, default: false },
-        weekends: { type: Boolean, default: false },
-        evenings: { type: Boolean, default: false }
+        type: DataTypes.JSONB,
+        defaultValue: {}
     },
     experience: {
-        type: String,
-        default: ''
+        type: DataTypes.TEXT,
+        defaultValue: ''
     },
     motivation: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     status: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected', 'active', 'inactive'],
-        default: 'pending'
+        type: DataTypes.ENUM('pending', 'approved', 'rejected', 'active', 'inactive'),
+        defaultValue: 'pending'
     },
     reviewedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    reviewedAt: Date,
+    reviewedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     rejectionReason: {
-        type: String,
-        default: null
+        type: DataTypes.TEXT,
+        allowNull: true
     },
     hoursContributed: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
-    activities: [{
-        date: Date,
-        hours: Number,
-        description: String,
-        recordedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    }],
-    notes: [{
-        content: String,
-        addedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        addedAt: {
-            type: Date,
-            default: Date.now
-        }
-    }]
+    // Activities (stored as JSON)
+    activities: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
+    // Notes (stored as JSON)
+    notes: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    }
 }, {
+    tableName: 'volunteers',
     timestamps: true
 });
-
-// Indexes
-volunteerSchema.index({ member: 1, status: 1 });
-volunteerSchema.index({ area: 1, status: 1 });
-volunteerSchema.index({ createdAt: -1 });
-
-const Volunteer = mongoose.model('Volunteer', volunteerSchema);
 
 module.exports = Volunteer;

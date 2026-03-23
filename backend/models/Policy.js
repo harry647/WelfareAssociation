@@ -3,95 +3,101 @@
  * Handles organization policies and guidelines
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const policySchema = new mongoose.Schema({
+const Policy = sequelize.define('Policy', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     content: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     category: {
-        type: String,
-        enum: ['membership', 'financial', 'loans', 'conduct', 'events', 'hr', 'general', 'other'],
-        default: 'general'
+        type: DataTypes.ENUM('membership', 'financial', 'loans', 'conduct', 'events', 'hr', 'general', 'other'),
+        defaultValue: 'general'
     },
     version: {
-        type: String,
-        default: '1.0'
+        type: DataTypes.STRING(20),
+        defaultValue: '1.0'
     },
     status: {
-        type: String,
-        enum: ['draft', 'pending_review', 'active', 'archived'],
-        default: 'draft'
+        type: DataTypes.ENUM('draft', 'pending_review', 'active', 'archived'),
+        defaultValue: 'draft'
     },
     effectiveDate: {
-        type: Date,
-        default: null
+        type: DataTypes.DATE,
+        allowNull: true
     },
     expiryDate: {
-        type: Date,
-        default: null
+        type: DataTypes.DATE,
+        allowNull: true
     },
     isPublic: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     requiresAcknowledgment: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
-    acknowledgments: [{
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        acknowledgedAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-    attachments: [{
-        name: String,
-        url: String,
-        mimeType: String,
-        size: Number
-    }],
-    relatedPolicies: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Policy'
-    }],
+    // Acknowledgments (stored as JSON)
+    acknowledgments: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
+    // Attachments (stored as JSON)
+    attachments: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
+    // Related policies (stored as array of UUIDs)
+    relatedPolicies: {
+        type: DataTypes.ARRAY(DataTypes.UUID),
+        defaultValue: []
+    },
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     updatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     reviewedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    reviewedAt: Date,
+    reviewedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     viewCount: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
 }, {
+    tableName: 'policies',
     timestamps: true
 });
-
-// Indexes
-policySchema.index({ category: 1, status: 1 });
-policySchema.index({ title: 'text', content: 'text' });
-policySchema.index({ createdAt: -1 });
-
-const Policy = mongoose.model('Policy', policySchema);
 
 module.exports = Policy;

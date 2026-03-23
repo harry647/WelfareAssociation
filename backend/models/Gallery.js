@@ -3,88 +3,79 @@
  * Handles gallery images and media
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const gallerySchema = new mongoose.Schema({
+const Gallery = sequelize.define('Gallery', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     description: {
-        type: String,
-        default: ''
+        type: DataTypes.TEXT,
+        defaultValue: ''
     },
     type: {
-        type: String,
-        enum: ['image', 'video', 'album'],
-        default: 'image'
+        type: DataTypes.ENUM('image', 'video', 'album'),
+        defaultValue: 'image'
     },
     category: {
-        type: String,
-        enum: ['events', 'meetings', 'community', 'projects', 'other'],
-        default: 'other'
+        type: DataTypes.ENUM('events', 'meetings', 'community', 'projects', 'other'),
+        defaultValue: 'other'
     },
-    images: [{
-        url: {
-            type: String,
-            required: true
-        },
-        thumbnail: String,
-        caption: String,
-        altText: String,
-        uploadedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        uploadedAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
+    // Images (stored as JSON)
+    images: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     coverImage: {
-        type: String,
-        default: null
+        type: DataTypes.STRING(500),
+        allowNull: true
     },
-    event: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Event'
+    eventId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'events',
+            key: 'id'
+        }
     },
-    tags: [{
-        type: String,
-        trim: true
-    }],
+    tags: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+    },
     visibility: {
-        type: String,
-        enum: ['public', 'members', 'officers', 'admin'],
-        default: 'public'
+        type: DataTypes.ENUM('public', 'members', 'officers', 'admin'),
+        defaultValue: 'public'
     },
     isFeatured: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     isActive: {
-        type: Boolean,
-        default: true
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     },
     viewCount: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     }
 }, {
+    tableName: 'galleries',
     timestamps: true
 });
-
-// Indexes
-gallerySchema.index({ category: 1, isActive: 1 });
-gallerySchema.index({ tags: 1 });
-gallerySchema.index({ createdAt: -1 });
-
-const Gallery = mongoose.model('Gallery', gallerySchema);
 
 module.exports = Gallery;

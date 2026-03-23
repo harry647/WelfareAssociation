@@ -3,94 +3,104 @@
  * Tracks fines issued to members
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const fineSchema = new mongoose.Schema({
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+const Fine = sequelize.define('Fine', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
     fineNumber: {
-        type: String,
-        unique: true,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true
     },
-    // Fine type reference
+    // Fine type reference (stored as JSON)
     fineType: {
-        name: String,
-        category: String,
-        code: String
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
     // Amount
     amount: {
-        type: Number,
-        required: true,
-        min: 0
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
     // Due date
     dueDate: {
-        type: Date,
-        required: true
+        type: DataTypes.DATE,
+        allowNull: false
     },
     // Status
     status: {
-        type: String,
-        enum: ['unpaid', 'paid', 'waived'],
-        default: 'unpaid'
+        type: DataTypes.ENUM('unpaid', 'paid', 'waived'),
+        defaultValue: 'unpaid'
     },
     // Description
-    description: String,
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     // Payment
-    paidDate: Date,
-    paymentMethod: String,
-    paymentReference: String,
-    // Reminders
-    remindersSent: [{
-        date: Date,
-        sentBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    }],
+    paidDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    paymentMethod: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
+    paymentReference: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
+    // Reminders (stored as JSON)
+    remindersSent: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     // Issued by
     issuedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     // Waived
     waivedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    waiverReason: String,
-    waivedAt: Date
+    waiverReason: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    waivedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+    }
 }, {
+    tableName: 'fines',
     timestamps: true
 });
 
-// Generate fine number before saving
-fineSchema.pre('save', async function(next) {
-    if (!this.fineNumber) {
-        const count = await mongoose.model('Fine').countDocuments();
-        this.fineNumber = `FINE${String(count + 1).padStart(5, '0')}`;
-    }
-    next();
-});
-
-// Virtual for days overdue
-fineSchema.virtual('daysOverdue').get(function() {
-    if (this.status !== 'unpaid') return 0;
-    const now = new Date();
-    const due = new Date(this.dueDate);
-    if (now > due) {
-        return Math.floor((now - due) / (1000 * 60 * 60 * 24));
-    }
-    return 0;
-});
-
-fineSchema.set('toJSON', { virtuals: true });
-fineSchema.set('toObject', { virtuals: true });
-
-module.exports = mongoose.model('Fine', fineSchema);
+module.exports = Fine;

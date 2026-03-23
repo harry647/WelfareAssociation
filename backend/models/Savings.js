@@ -3,90 +3,76 @@
  * Tracks member savings goals and withdrawals
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const savingsSchema = new mongoose.Schema({
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+const Savings = sequelize.define('Savings', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
     goalNumber: {
-        type: String,
-        unique: true,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true
     },
     // Goal details
     name: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
-    description: String,
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     targetAmount: {
-        type: Number,
-        required: true,
-        min: 0
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
     currentAmount: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
     // Status
     status: {
-        type: String,
-        enum: ['active', 'completed', 'withdrawn', 'cancelled'],
-        default: 'active'
+        type: DataTypes.ENUM('active', 'completed', 'withdrawn', 'cancelled'),
+        defaultValue: 'active'
     },
     // Target date
-    targetDate: Date,
-    // Transactions
-    transactions: [{
-        type: {
-            type: String,
-            enum: ['deposit', 'withdrawal'],
-            required: true
-        },
-        amount: {
-            type: Number,
-            required: true
-        },
-        date: {
-            type: Date,
-            default: Date.now
-        },
-        method: String,
-        reference: String,
-        note: String,
-        recordedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    }],
+    targetDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    // Transactions (stored as JSON)
+    transactions: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     // Completion
-    completedDate: Date,
+    completedDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     // Notes
-    notes: String
+    notes: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    }
 }, {
+    tableName: 'savings',
     timestamps: true
 });
 
-// Generate goal number before saving
-savingsSchema.pre('save', async function(next) {
-    if (!this.goalNumber) {
-        const count = await mongoose.model('Savings').countDocuments();
-        this.goalNumber = `SVG${String(count + 1).padStart(5, '0')}`;
-    }
-    next();
-});
-
-// Calculate progress percentage
-savingsSchema.virtual('progress').get(function() {
-    if (this.targetAmount === 0) return 0;
-    return Math.min(100, Math.round((this.currentAmount / this.targetAmount) * 100));
-});
-
-savingsSchema.set('toJSON', { virtuals: true });
-savingsSchema.set('toObject', { virtuals: true });
-
-module.exports = mongoose.model('Savings', savingsSchema);
+module.exports = Savings;

@@ -3,93 +3,103 @@
  * Handles all payment transactions
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const paymentSchema = new mongoose.Schema({
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+const Payment = sequelize.define('Payment', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
     paymentNumber: {
-        type: String,
-        unique: true,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        unique: true
     },
     // Payment type
     type: {
-        type: String,
-        enum: ['loan_repayment', 'contribution', 'savings', 'fine', 'donation', 'other'],
-        required: true
+        type: DataTypes.ENUM('loan_repayment', 'contribution', 'savings', 'fine', 'donation', 'other'),
+        allowNull: false
     },
-    // Related entity (loan, contribution, etc.)
+    // Related entity (stored as JSON)
     relatedTo: {
-        model: {
-            type: String,
-            enum: ['Loan', 'Contribution', 'Savings', 'Fine', 'Bereavement']
-        },
-        id: {
-            type: mongoose.Schema.Types.ObjectId
-        }
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
     // Amount
     amount: {
-        type: Number,
-        required: true,
-        min: 0
+        type: DataTypes.DECIMAL(15, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
     // Payment method
     method: {
-        type: String,
-        enum: ['cash', 'mpesa', 'bank_transfer', 'cheque', 'online', 'other'],
-        default: 'cash'
+        type: DataTypes.ENUM('cash', 'mpesa', 'bank_transfer', 'cheque', 'online', 'other'),
+        defaultValue: 'cash'
     },
-    // M-Pesa specific
+    // M-Pesa specific (stored as JSON)
     mpesa: {
-        checkoutRequestId: String,
-        merchantRequestId: String,
-        transactionId: String,
-        phoneNumber: String
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
     },
     // Payment reference
-    reference: String,
-    transactionId: String,
+    reference: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
+    transactionId: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
     // Status
     status: {
-        type: String,
-        enum: ['pending', 'processing', 'completed', 'failed', 'refunded'],
-        default: 'pending'
+        type: DataTypes.ENUM('pending', 'processing', 'completed', 'failed', 'refunded'),
+        defaultValue: 'pending'
     },
     // Dates
     paymentDate: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
-    processedDate: Date,
+    processedDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     // Description
-    description: String,
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     // Receipt
     receipt: {
-        type: String
+        type: DataTypes.STRING(500),
+        allowNull: true
     },
     // Processed by
     processedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     }
 }, {
+    tableName: 'payments',
     timestamps: true
 });
 
-// Generate payment number before saving
-paymentSchema.pre('save', async function(next) {
-    if (!this.paymentNumber) {
-        const date = new Date();
-        const year = date.getFullYear();
-        const count = await mongoose.model('Payment').countDocuments();
-        this.paymentNumber = `PAY/${year}/${String(count + 1).padStart(5, '0')}`;
-    }
-    next();
-});
-
-module.exports = mongoose.model('Payment', paymentSchema);
+module.exports = Payment;

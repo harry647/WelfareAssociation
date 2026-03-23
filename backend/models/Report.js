@@ -3,104 +3,86 @@
  * Handles report generation and management
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const reportSchema = new mongoose.Schema({
+const Report = sequelize.define('Report', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     name: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     type: {
-        type: String,
-        enum: ['contribution', 'loan', 'membership', 'financial', 'attendance', 'bereavement', 'summary', 'custom'],
-        required: true
+        type: DataTypes.ENUM('contribution', 'loan', 'membership', 'financial', 'attendance', 'bereavement', 'summary', 'custom'),
+        allowNull: false
     },
     description: {
-        type: String,
-        default: ''
+        type: DataTypes.TEXT,
+        defaultValue: ''
     },
     generatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    parameters: {
-        startDate: Date,
-        endDate: Date,
-        memberId: mongoose.Schema.Types.ObjectId,
-        department: String,
-        status: String,
-        category: String,
-        includeCharts: {
-            type: Boolean,
-            default: false
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
         }
     },
+    // Parameters (stored as JSON)
+    parameters: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
+    },
+    // Data (stored as JSON)
     data: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
+        type: DataTypes.JSONB,
+        defaultValue: {}
     },
     fileUrl: {
-        type: String,
-        default: null
+        type: DataTypes.STRING(500),
+        allowNull: true
     },
     fileName: {
-        type: String,
-        default: null
+        type: DataTypes.STRING(255),
+        allowNull: true
     },
     format: {
-        type: String,
-        enum: ['pdf', 'excel', 'csv', 'json'],
-        default: 'pdf'
+        type: DataTypes.ENUM('pdf', 'excel', 'csv', 'json'),
+        defaultValue: 'pdf'
     },
     status: {
-        type: String,
-        enum: ['pending', 'processing', 'completed', 'failed'],
-        default: 'pending'
+        type: DataTypes.ENUM('pending', 'processing', 'completed', 'failed'),
+        defaultValue: 'pending'
     },
+    // Scheduled (stored as JSON)
     scheduled: {
-        isScheduled: {
-            type: Boolean,
-            default: false
-        },
-        frequency: {
-            type: String,
-            enum: ['daily', 'weekly', 'monthly', 'quarterly', 'annually'],
-            default: null
-        },
-        nextRun: Date,
-        lastRun: Date,
-        recipients: [{
-            email: String,
-            name: String
-        }]
+        type: DataTypes.JSONB,
+        defaultValue: {}
     },
     isTemplate: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     templateName: {
-        type: String,
-        default: null
+        type: DataTypes.STRING(255),
+        allowNull: true
     },
     viewCount: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     downloadCount: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
 }, {
+    tableName: 'reports',
     timestamps: true
 });
-
-// Indexes
-reportSchema.index({ type: 1, generatedBy: 1 });
-reportSchema.index({ createdAt: -1 });
-reportSchema.index({ status: 1 });
-
-const Report = mongoose.model('Report', reportSchema);
 
 module.exports = Report;

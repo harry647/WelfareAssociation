@@ -3,56 +3,73 @@
  * Handles news articles and updates
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const newsSchema = new mongoose.Schema({
+const News = sequelize.define('News', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
     title: {
-        type: String,
-        required: true,
-        trim: true
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     content: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
-    excerpt: String,
+    excerpt: {
+        type: DataTypes.STRING(500),
+        allowNull: true
+    },
     // Category
     category: {
-        type: String,
-        enum: ['announcement', 'update', 'success_story', 'press_release', 'other'],
-        default: 'announcement'
+        type: DataTypes.ENUM('announcement', 'update', 'success_story', 'press_release', 'other'),
+        defaultValue: 'announcement'
     },
     // Status
     isPublished: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
-    publishDate: Date,
+    publishDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     // Featured image
-    image: String,
+    image: {
+        type: DataTypes.STRING(500),
+        allowNull: true
+    },
     // Author
     author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    // Tags
-    tags: [String],
+    // Tags (stored as array)
+    tags: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+    },
     // View count
     views: {
-        type: Number,
-        default: 0
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     // Featured
     isFeatured: {
-        type: Boolean,
-        default: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 }, {
+    tableName: 'news',
     timestamps: true
 });
 
-// Index for efficient queries
-newsSchema.index({ isPublished: 1, publishDate: -1 });
-
-module.exports = mongoose.model('News', newsSchema);
+module.exports = News;

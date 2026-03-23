@@ -3,85 +3,66 @@
  * Handles bereavement support and contributions
  */
 
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-const bereavementSchema = new mongoose.Schema({
-    // Deceased information
+const Bereavement = sequelize.define('Bereavement', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    // Deceased information (stored as JSON)
     deceased: {
-        name: {
-            type: String,
-            required: true
-        },
-        relationship: {
-            type: String,
-            required: true
-        },
-        dateOfDeath: {
-            type: Date,
-            required: true
-        },
-        dateOfBurial: Date,
-        cause: String
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: {}
     },
     // Member (the one who lost a loved one)
-    member: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+    memberId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members',
+            key: 'id'
+        }
     },
     // Status
     status: {
-        type: String,
-        enum: ['pending', 'active', 'closed'],
-        default: 'pending'
+        type: DataTypes.ENUM('pending', 'active', 'closed'),
+        defaultValue: 'pending'
     },
-    // Contributions from other members
-    contributions: [{
-        contributor: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Member'
-        },
-        amount: Number,
-        date: {
-            type: Date,
-            default: Date.now
-        },
-        paymentMethod: String,
-        reference: String,
-        message: String
-    }],
+    // Contributions from other members (stored as JSON)
+    contributions: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     totalContributions: {
-        type: Number,
-        default: 0
+        type: DataTypes.DECIMAL(15, 2),
+        defaultValue: 0
     },
-    // Messages of condolence
-    messages: [{
-        sender: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Member'
-        },
-        message: String,
-        date: {
-            type: Date,
-            default: Date.now
-        }
-    }],
+    // Messages of condolence (stored as JSON)
+    messages: {
+        type: DataTypes.JSONB,
+        defaultValue: []
+    },
     // Notes
-    notes: String,
+    notes: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     // Created by
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     }
 }, {
+    tableName: 'bereavements',
     timestamps: true
 });
 
-// Update total contributions after save
-bereavementSchema.methods.updateTotalContributions = async function() {
-    const total = this.contributions.reduce((sum, c) => sum + c.amount, 0);
-    this.totalContributions = total;
-    await this.save();
-};
-
-module.exports = mongoose.model('Bereavement', bereavementSchema);
+module.exports = Bereavement;
