@@ -89,8 +89,47 @@ Volunteer.belongsTo(User, { foreignKey: 'reviewedBy', as: 'reviewer' });
 Event.hasMany(Gallery, { foreignKey: 'eventId', as: 'galleries' });
 Gallery.belongsTo(Event, { foreignKey: 'eventId', as: 'event' });
 
+/**
+ * Initialize all models with sequelize instance
+ * @param {Sequelize} sequelize - Sequelize instance
+ */
+async function initModels(sequelizeInstance) {
+    // Re-initialize with the provided sequelize instance if different
+    if (sequelizeInstance && sequelizeInstance !== sequelize) {
+        // All models are already defined with the global sequelize instance
+        // This function can be used to ensure associations are set up
+        console.log('Models already initialized with default sequelize instance');
+    }
+    
+    return {
+        sequelize,
+        User,
+        Member,
+        Loan,
+        Contribution,
+        Payment,
+        Notice,
+        Event,
+        News,
+        Bereavement,
+        Debt,
+        Fine,
+        Savings,
+        Announcement,
+        Document,
+        Report,
+        Volunteer,
+        Faq,
+        Policy,
+        Gallery,
+        Contact,
+        Newsletter
+    };
+}
+
 module.exports = {
     sequelize,
+    initModels,
     User,
     Member,
     Loan,

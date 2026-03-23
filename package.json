@@ -6,7 +6,14 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "prod": "set NODE_ENV=production&& node server.js"
+    "prod": "set NODE_ENV=production&& node server.js",
+    "init": "node backend/scripts/init-app.js",
+    "init:db": "node backend/scripts/init-db.js",
+    "init:keys": "node backend/utils/keyGenerator.js --init",
+    "reset": "del .initialized && node server.js",
+    "rotate:keys": "node backend/utils/keyGenerator.js --rotate",
+    "keys:status": "node backend/utils/keyGenerator.js --status",
+    "keys:schedule": "node backend/utils/keyGenerator.js --schedule"
   },
   "keywords": [
     "swa",

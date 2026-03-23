@@ -30,3 +30,9 @@ build/
 # MongoDB data (local)
 data/
 mongodb/
+
+# Initialization flag
+.initialized
+
+# Key backups
+backend/backups/
