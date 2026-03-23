@@ -92,7 +92,7 @@ class ApiService {
             // Handle token expiration
             if (response.status === 401) {
                 this.clearTokens();
-                window.location.href = '/login.html';
+                window.location.href = '../auth/login-page.html';
             }
 
             throw new ApiError(

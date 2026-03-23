@@ -35,11 +35,13 @@ function generateSecureKey(length, prefix) {
 async function initializeKeys() {
     const envFile = path.join(__dirname, '.env');
     let envVars = {};
+    let originalLines = [];
     
     // Read existing .env
     try {
         if (fs.existsSync(envFile)) {
             const content = fs.readFileSync(envFile, 'utf-8');
+            originalLines = content.split('\n');
             content.split('\n').forEach(line => {
                 const match = line.match(/^([^=]+)=(.*)$/);
                 if (match) {
@@ -93,13 +95,42 @@ async function initializeKeys() {
             console.log('✓ Backed up existing .env file');
         }
         
-        // Update .env file
-        const allKeys = { ...envVars, ...newKeys };
-        const envContent = Object.entries(allKeys)
-            .map(([key, value]) => `${key}=${value}`)
-            .join('\n');
+        // Update .env file while preserving comments and structure
+        let newEnvContent = '';
+        const keysToUpdate = { ...envVars, ...newKeys };
         
-        fs.writeFileSync(envFile, envContent, 'utf-8');
+        // Rebuild the file, updating existing keys and adding new ones
+        const existingKeys = new Set();
+        
+        // Process original lines
+        originalLines.forEach(line => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('#') || trimmed === '') {
+                // Preserve comments and blank lines
+                newEnvContent += line + '\n';
+            } else {
+                const match = trimmed.match(/^([^=]+)=(.*)$/);
+                if (match) {
+                    const key = match[1].trim();
+                    existingKeys.add(key);
+                    if (keysToUpdate[key]) {
+                        newEnvContent += `${key}=${keysToUpdate[key]}\n`;
+                        delete keysToUpdate[key];
+                    } else {
+                        newEnvContent += line + '\n';
+                    }
+                } else {
+                    newEnvContent += line + '\n';
+                }
+            }
+        });
+        
+        // Add any remaining new keys
+        Object.entries(keysToUpdate).forEach(([key, value]) => {
+            newEnvContent += `${key}=${value}\n`;
+        });
+        
+        fs.writeFileSync(envFile, newEnvContent, 'utf-8');
         console.log('✓ Security keys initialized and .env file updated');
     } else {
         console.log('✓ Security keys already present');
@@ -123,8 +154,8 @@ async function initializeDatabase() {
         throw new Error('PostgreSQL URI not configured');
     }
     
-    // Parse URI
-    const match = postgresUri.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
+    // Parse URI (supports both postgres:// and postgresql:// protocols)
+    const match = postgresUri.match(/(?:postgres|postgresql):\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
     if (!match) {
         throw new Error('Invalid PostgreSQL URI format');
     }
@@ -138,11 +169,9 @@ async function initializeDatabase() {
     };
     
     // Connect to postgres default database to create our target database
-    const adminSequelize = new Sequelize('postgres://', {
+    const adminSequelize = new Sequelize('postgres', 'postgres', creds.password, {
         host: creds.host,
         port: creds.port,
-        user: creds.user,
-        password: creds.password,
         dialect: 'postgres',
         logging: false
     });
@@ -166,12 +195,11 @@ async function initializeDatabase() {
         await adminSequelize.close();
     }
     
-    // Load models and sync
+    // Load models and sync (handled by database.js)
     require('./backend/models');
+    console.log('✓ Database models loaded');
     
-    // Sync models with alter mode (safe)
-    await sequelize.sync({ alter: true });
-    console.log('✓ Database models synced');
+    return true;
     
     return true;
 }
@@ -224,11 +252,13 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "'unsafe-inline'", "https://www.w3schools.com", "https://cdnjs.cloudflare.com"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+            scriptSrcAttr: ["'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
             imgSrc: ["'self'", "data:", "https:"],
-            fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],
-            connectSrc: ["'self'"],
-            frameSrc: ["'self'"]
+            fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
+            connectSrc: ["'self'", "https://httpbin.org"],
+            formAction: ["'self'", "https://httpbin.org"],
+            frameSrc: ["'self'", "https://www.google.com"]
         }
     }
 }));
@@ -251,6 +281,24 @@ app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== 'production') {
     app.use(morgan('dev'));
 }
+
+// Prevent caching for protected pages
+app.use((req, res, next) => {
+    // Check if requesting HTML pages in protected directories
+    if (req.url.includes('/pages/dashboard/') || 
+        req.url.includes('/pages/loans/') ||
+        req.url.includes('/pages/payments/') ||
+        req.url.includes('/pages/contributions/') ||
+        req.url.includes('/pages/breavement/') ||
+        req.url.includes('/pages/reports/')) {
+        // Set no-cache headers
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
+    }
+    next();
+});
 
 // Serve static files from root directory
 app.use(express.static(__dirname));

@@ -306,11 +306,33 @@ class RegistrationForm {
             // Get the generated password before form reset
             const generatedPassword = document.getElementById('password-display').value;
             
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Show success with the generated password
+            // Get the form action URL
+            const formAction = this.form.getAttribute('action') || 'https://httpbin.org/post';
+            
+            // Submit form data to the specified endpoint
+            const response = await fetch(formAction, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            // Show success message
             this.showSuccess(`Registration submitted successfully! Your generated password is: <strong>${generatedPassword}</strong>. Please save this password - you will need it to log in.`);
+            
+            // Store auth token and user data for session
+            const authToken = btoa(`${registrationData.email}:${Date.now()}`);
+            localStorage.setItem('swa_auth_token', authToken);
+            localStorage.setItem('swa_user', JSON.stringify({
+                email: registrationData.email,
+                firstName: registrationData.firstName,
+                lastName: registrationData.lastName,
+                memberNumber: registrationData.studentId
+            }));
             
             // Store registration data for demo
             localStorage.setItem('swa_registration', JSON.stringify(registrationData));
@@ -387,6 +409,3 @@ class RegistrationForm {
 document.addEventListener('DOMContentLoaded', () => {
     new RegistrationForm();
 });
-
-// Export for module use
-export default RegistrationForm;

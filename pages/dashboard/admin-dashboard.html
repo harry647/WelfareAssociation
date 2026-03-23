@@ -9,16 +9,50 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
   
-  <!-- Early Authentication Check - Redirect before page renders -->
+  <!-- Immediate auth check - hide body until verified -->
   <script>
+    // Run immediately before any content renders
     (function() {
+      // Hide body immediately to prevent flash of content
+      document.documentElement.style.visibility = 'hidden';
+      
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       
       if (!authToken || !userData) {
-        window.location.href = '../auth/login-page.html?redirect=../dashboard/admin-dashboard.html';
+        // Not authenticated, redirect immediately
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
+        return;
       }
+      
+      // Check if user is admin
+      const user = JSON.parse(userData);
+      if (user.role !== 'admin') {
+        // Not admin, redirect to member portal
+        window.location.replace('../dashboard/member-portal.html');
+        return;
+      }
+      
+      // Authenticated - show content
+      document.documentElement.style.visibility = 'visible';
     })();
+    
+    // Also check on pageshow event (handles back button)
+    window.addEventListener('pageshow', function(event) {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      
+      if (!authToken || !userData) {
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
+        return;
+      }
+      
+      // Check if user is admin
+      const user = JSON.parse(userData);
+      if (user.role !== 'admin') {
+        window.location.replace('../dashboard/member-portal.html');
+      }
+    });
   </script>
 </head>
 <body>

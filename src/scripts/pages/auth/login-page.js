@@ -78,17 +78,48 @@ class LoginPage {
             return;
         }
 
-        // Simulate login (in real app, call authentication service)
-        this.performLogin(username, remember);
+        // Perform login with credentials
+        this.performLogin(username, password, remember);
     }
 
-    async performLogin(username, remember) {
+    async performLogin(username, password, remember) {
         try {
             // Show loading state
             const submitBtn = this.form.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
             submitBtn.disabled = true;
+
+            // Fetch admin credentials from server
+            let adminEmail = 'admin@swa.org';
+            let adminPassword = 'SWAAdmin2024!';
+            
+            try {
+                const configResponse = await fetch('/api/config/admin');
+                if (configResponse.ok) {
+                    const config = await configResponse.json();
+                    adminEmail = config.adminEmail;
+                    adminPassword = config.adminPassword;
+                }
+            } catch (e) {
+                console.warn('Could not fetch admin config, using defaults');
+            }
+            
+            // Check if admin credentials
+            const isAdmin = (username === adminEmail || username.toLowerCase() === adminEmail.toLowerCase()) && 
+                           password === adminPassword;
+            
+            // Check if regular user (has valid auth token from registration)
+            const registeredUser = localStorage.getItem('swa_user');
+            const isRegisteredUser = registeredUser && JSON.parse(registeredUser).email === username;
+            
+            // Validate credentials
+            if (!isAdmin && !isRegisteredUser) {
+                this.showError('Invalid credentials. Please check your email/username and password.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
 
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -102,12 +133,37 @@ class LoginPage {
                 localStorage.removeItem('swa_username');
             }
 
-            // Show success and redirect
-            this.showSuccess('Login successful! Redirecting...');
+            // Store auth token and user data for session
+            const authToken = btoa(`${username}:${Date.now()}`);
+            localStorage.setItem('swa_auth_token', authToken);
             
-            // Get redirect URL from query parameter or default to member portal
+            if (isAdmin) {
+                localStorage.setItem('swa_user', JSON.stringify({
+                    email: username,
+                    firstName: 'Admin',
+                    lastName: 'User',
+                    role: 'admin'
+                }));
+            } else {
+                localStorage.setItem('swa_user', JSON.stringify({
+                    email: username,
+                    firstName: username.split('@')[0],
+                    lastName: ''
+                }));
+            }
+
+            // Show success and redirect
+            const userType = isAdmin ? 'Admin' : '';
+            this.showSuccess(`${userType}Login successful! Redirecting...`);
+            
+            // Get redirect URL from query parameter or default based on role
             const urlParams = new URLSearchParams(window.location.search);
-            const redirectUrl = urlParams.get('redirect') || '../dashboard/member-portal.html';
+            let redirectUrl = urlParams.get('redirect');
+            
+            if (!redirectUrl) {
+                // Default redirect based on user type
+                redirectUrl = isAdmin ? '../dashboard/admin-dashboard.html' : '../dashboard/member-portal.html';
+            }
             
             // Redirect after short delay
             setTimeout(() => {
@@ -183,6 +239,3 @@ class LoginPage {
 document.addEventListener('DOMContentLoaded', () => {
     new LoginPage();
 });
-
-// Export for module use
-export default LoginPage;

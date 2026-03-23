@@ -57,20 +57,15 @@ const connectDB = async () => {
         console.log(`✅ PostgreSQL Connected: ${sequelize.config.host}`);
         console.log(`   Database Name: ${sequelize.config.database}`);
         
-        // Sync models (create tables if they don't exist)
-        // In production, you might want to use migrations instead
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('🔄 Syncing models...');
-            await sequelize.sync({ alter: true });
-            console.log('✅ Models synced successfully');
-        } else {
-            console.log('📋 Running in production mode - no auto-sync');
-        }
+        // Sync models - commented out to avoid console clutter
+        // Uncomment when you need to sync schema changes (add { alter: true } to modify existing tables)
+        // if (process.env.NODE_ENV !== 'production') {
+        //     console.log('🔄 Syncing models...');
+        //     await sequelize.sync({ alter: true });
+        //     console.log('✅ Models synced successfully');
+        // }
         
-        // Handle connection events
-        sequelize.connectionManager.on('error', (err) => {
-            console.error('❌ PostgreSQL connection error:', err.message);
-        });
+        console.log('✓ Database connected and models loaded');
         
         return sequelize;
     } catch (error) {

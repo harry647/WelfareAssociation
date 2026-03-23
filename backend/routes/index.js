@@ -58,4 +58,12 @@ module.exports = (app) => {
             timestamp: new Date().toISOString()
         });
     });
+    
+    // Admin config endpoint - returns admin credentials from environment
+    app.get('/api/config/admin', (req, res) => {
+        res.json({
+            adminEmail: process.env.ADMIN_EMAIL || 'admin@swa.org',
+            adminPassword: process.env.ADMIN_PASSWORD || 'SWAAdmin2024!'
+        });
+    });
 };

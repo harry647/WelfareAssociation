@@ -19,18 +19,41 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
-  <!-- Early Authentication Check - Redirect before page renders -->
+  <!-- Immediate auth check - hide body until verified -->
   <script>
+    // Run immediately before any content renders
     (function() {
-      // Check for auth token in localStorage
+      // Hide body immediately to prevent flash of content
+      document.documentElement.style.visibility = 'hidden';
+      
+      // Prevent caching of protected pages
+      if (performance && performance.navigation.type === 2) {
+        window.location.reload();
+        return;
+      }
+      
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       
       if (!authToken || !userData) {
-        // Not authenticated, redirect to login immediately
-        window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
+        // Not authenticated, redirect immediately
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-portal.html');
+        return;
       }
+      
+      // Authenticated - show content
+      document.documentElement.style.visibility = 'visible';
     })();
+    
+    // Also check on pageshow event (handles back button)
+    window.addEventListener('pageshow', function(event) {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      
+      if (!authToken || !userData) {
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-portal.html');
+      }
+    });
   </script>
 </head>
 <body>
