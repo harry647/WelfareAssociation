@@ -15,10 +15,67 @@ class RegistrationForm {
         if (this.form) {
             this.bindEvents();
             this.setupFieldValidation();
+            this.generatePassword(); // Generate password on page load
         }
     }
 
+    // Generate a secure random password
+    generatePassword() {
+        const passwordDisplay = document.getElementById('password-display');
+        if (!passwordDisplay) return;
+
+        // Character sets for password generation
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        const special = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+        let password = '';
+        // Ensure at least one character from each set
+        password += lowercase[Math.floor(Math.random() * lowercase.length)];
+        password += uppercase[Math.floor(Math.random() * uppercase.length)];
+        password += numbers[Math.floor(Math.random() * numbers.length)];
+        password += special[Math.floor(Math.random() * special.length)];
+
+        // Fill remaining characters (total 12 characters)
+        const allChars = lowercase + uppercase + numbers + special;
+        for (let i = 4; i < 12; i++) {
+            password += allChars[Math.floor(Math.random() * allChars.length)];
+        }
+
+        // Shuffle the password characters
+        password = password.split('').sort(() => Math.random() - 0.5).join('');
+
+        passwordDisplay.value = password;
+    }
+
     bindEvents() {
+        // Copy password button
+        const copyBtn = document.getElementById('copy-password-btn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                const passwordDisplay = document.getElementById('password-display');
+                if (passwordDisplay && passwordDisplay.value) {
+                    navigator.clipboard.writeText(passwordDisplay.value).then(() => {
+                        this.showNotification('Password copied to clipboard!', 'success');
+                        copyBtn.classList.add('copied');
+                        setTimeout(() => copyBtn.classList.remove('copied'), 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy:', err);
+                    });
+                }
+            });
+        }
+
+        // Regenerate password button
+        const regenerateBtn = document.getElementById('regenerate-password-btn');
+        if (regenerateBtn) {
+            regenerateBtn.addEventListener('click', () => {
+                this.generatePassword();
+                this.showNotification('New password generated!', 'info');
+            });
+        }
+
         // Form submission
         this.form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -141,6 +198,29 @@ class RegistrationForm {
             errorMessage = 'You must consent to data processing';
         }
 
+        // Security answer validation
+        if (name === 'security-answer' && value) {
+            if (value.length < 3) {
+                isValid = false;
+                errorMessage = 'Answer must be at least 3 characters';
+            }
+        }
+
+        // Security answer confirmation validation
+        if (name === 'security-answer-confirm' && value) {
+            const originalAnswer = document.getElementById('security-answer');
+            if (originalAnswer && originalAnswer.value !== value) {
+                isValid = false;
+                errorMessage = 'Answers do not match';
+            }
+        }
+
+        // Security question validation
+        if (name === 'security-question' && !value) {
+            isValid = false;
+            errorMessage = 'Please select a security question';
+        }
+
         // Show/hide error
         if (!isValid) {
             this.showFieldError(input, errorMessage);
@@ -188,10 +268,12 @@ class RegistrationForm {
 
         // Collect form data
         const formData = new FormData(this.form);
+        const passwordDisplay = document.getElementById('password-display');
         const registrationData = {
             firstName: formData.get('first-name'),
             lastName: formData.get('last-name'),
             email: formData.get('email'),
+            password: passwordDisplay ? passwordDisplay.value : '',
             phone: formData.get('phone'),
             studentId: formData.get('student-id'),
             dob: formData.get('dob'),
@@ -208,7 +290,10 @@ class RegistrationForm {
             additionalInfo: formData.get('additional-info'),
             termsAccepted: formData.get('terms') === 'on',
             privacyConsent: formData.get('privacy') === 'on',
-            newsletter: formData.get('updates') === 'on'
+            newsletter: formData.get('updates') === 'on',
+            // Security question for password recovery
+            securityQuestion: formData.get('security-question'),
+            securityAnswer: formData.get('security-answer')
         };
 
         // Show loading state
@@ -218,22 +303,29 @@ class RegistrationForm {
         submitBtn.disabled = true;
 
         try {
+            // Get the generated password before form reset
+            const generatedPassword = document.getElementById('password-display').value;
+            
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // Show success
-            this.showSuccess('Registration submitted successfully! Welcome to SWA!');
+            // Show success with the generated password
+            this.showSuccess(`Registration submitted successfully! Your generated password is: <strong>${generatedPassword}</strong>. Please save this password - you will need it to log in.`);
             
             // Store registration data for demo
             localStorage.setItem('swa_registration', JSON.stringify(registrationData));
+            
+            // Store the password for display during redirect delay
+            localStorage.setItem('swa_temp_password', generatedPassword);
             
             // Reset form
             this.form.reset();
 
             // Redirect after delay
             setTimeout(() => {
+                localStorage.removeItem('swa_temp_password');
                 window.location.href = '../dashboard/member-portal.html';
-            }, 2000);
+            }, 5000);
 
         } catch (error) {
             this.showError('Registration failed. Please try again.');
@@ -268,6 +360,21 @@ class RegistrationForm {
         if (container) {
             container.insertBefore(alertDiv, container.firstChild);
         }
+    }
+
+    showNotification(message, type = 'info') {
+        this.removeAlerts();
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+        alertDiv.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+        
+        const container = document.querySelector('.registration-container');
+        if (container) {
+            container.insertBefore(alertDiv, container.firstChild);
+        }
+
+        setTimeout(() => this.removeAlerts(), 3000);
     }
 
     removeAlerts() {

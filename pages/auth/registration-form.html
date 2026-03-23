@@ -73,6 +73,23 @@
                         <small class="registration-form__help">Use your JOOUST student email for faster verification</small>
                     </div>
 
+                    <div class="registration-form__group">
+                        <label for="password-display" class="registration-form__label registration-form__label--required">Generated Password</label>
+                        <div class="registration-form__input-wrapper">
+                            <i class="fas fa-lock registration-form__icon"></i>
+                            <input type="text" id="password-display" name="password-display" class="registration-form__input registration-form__input--readonly" readonly>
+                            <button type="button" class="registration-form__copy-btn" id="copy-password-btn" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button type="button" class="registration-form__regenerate-btn" id="regenerate-password-btn" title="Generate new password">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <small class="registration-form__help registration-form__help--important">
+                            <i class="fas fa-exclamation-triangle"></i> Save this password! It will be displayed only once and you'll need it to log in.
+                        </small>
+                    </div>
+
                     <div class="registration-form__row">
                         <div class="registration-form__group">
                             <label for="phone" class="registration-form__label registration-form__label--required">Phone Number</label>
@@ -164,6 +181,39 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
+                    </div>
+                </fieldset>
+
+                <!-- Security Question for Password Reset -->
+                <fieldset>
+                    <legend><i class="fas fa-shield-alt"></i> Security Question (Required for Password Recovery)</legend>
+                    <p class="registration-form__info">Choose a security question and provide an answer. This will be used to verify your identity when resetting your password.</p>
+                    
+                    <div class="registration-form__group">
+                        <label for="security-question" class="registration-form__label registration-form__label--required">Select a Security Question</label>
+                        <select id="security-question" name="security-question" class="registration-form__select" required>
+                            <option value="">Select a security question</option>
+                            <option value="pet-name">What is your pet's name?</option>
+                            <option value="mother-maiden-name">What is your mother's maiden name?</option>
+                            <option value="first-school">What is the name of your first school?</option>
+                            <option value="favorite-food">What is your favorite food?</option>
+                            <option value="city-born">In which city were you born?</option>
+                            <option value="best-friend">What is your best friend's name?</option>
+                            <option value="first-car">What was the make of your first car?</option>
+                            <option value="favorite-movie">What is your favorite movie?</option>
+                        </select>
+                    </div>
+
+                    <div class="registration-form__group">
+                        <label for="security-answer" class="registration-form__label registration-form__label--required">Your Answer</label>
+                        <input type="text" id="security-answer" name="security-answer" class="registration-form__input" placeholder="Enter your answer (minimum 3 characters)" minlength="3" autocomplete="off" required>
+                        <small class="registration-form__help">Remember your answer exactly as you enter it - it's case-sensitive</small>
+                    </div>
+
+                    <div class="registration-form__group">
+                        <label for="security-answer-confirm" class="registration-form__label registration-form__label--required">Confirm Your Answer</label>
+                        <input type="text" id="security-answer-confirm" name="security-answer-confirm" class="registration-form__input" placeholder="Re-enter your answer to confirm" minlength="3" autocomplete="off" required>
+                        <small class="registration-form__error" id="security-answer-error"></small>
                     </div>
                 </fieldset>
 

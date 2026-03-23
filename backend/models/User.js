@@ -75,6 +75,16 @@ const User = sequelize.define('User', {
     emailVerificationToken: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    // Security question for password reset
+    securityQuestion: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    // Hashed security answer (not plain text)
+    securityAnswer: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: 'users',

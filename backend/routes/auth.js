@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const Member = require('../models/Member');
@@ -33,10 +34,12 @@ router.post('/register', [
     body('firstName').notEmpty().trim(),
     body('lastName').notEmpty().trim(),
     body('phone').optional().trim(),
+    body('securityQuestion').optional().trim(),
+    body('securityAnswer').optional().trim(),
     validate
 ], async (req, res) => {
     try {
-        const { email, password, firstName, lastName, phone } = req.body;
+        const { email, password, firstName, lastName, phone, securityQuestion, securityAnswer } = req.body;
 
         // Check if user exists
         const existingUser = await User.findOne({ email });
@@ -47,6 +50,13 @@ router.post('/register', [
             });
         }
 
+        // Hash security answer before storing
+        let hashedSecurityAnswer = null;
+        if (securityAnswer) {
+            const salt = await bcrypt.genSalt(10);
+            hashedSecurityAnswer = await bcrypt.hash(securityAnswer.toLowerCase(), salt);
+        }
+
         // Create user
         const user = await User.create({
             email,
@@ -54,7 +64,9 @@ router.post('/register', [
             firstName,
             lastName,
             phone,
-            role: 'member'
+            role: 'member',
+            securityQuestion,
+            securityAnswer: hashedSecurityAnswer
         });
 
         // Create member profile
@@ -340,6 +352,147 @@ router.post('/change-password', auth, [
         res.status(500).json({
             success: false,
             message: 'Error changing password'
+        });
+    }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ * Verify email and get security question for password reset
+ */
+router.post('/forgot-password', [
+    body('email').isEmail().normalizeEmail(),
+    validate
+], async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        
+        if (!user) {
+            // Return success for security (don't reveal if email exists)
+            return res.json({
+                success: true,
+                message: 'If the email exists, a security question will be presented'
+            });
+        }
+
+        // Check if user has a security question set
+        if (!user.securityQuestion || !user.securityAnswer) {
+            return res.json({
+                success: false,
+                message: 'This account does not have a security question set. Please contact support.'
+            });
+        }
+
+        // Return success with security question
+        res.json({
+            success: true,
+            securityQuestion: user.securityQuestion
+        });
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred. Please try again.'
+        });
+    }
+});
+
+/**
+ * POST /api/auth/verify-security-answer
+ * Verify security answer for password reset
+ */
+router.post('/verify-security-answer', [
+    body('email').isEmail().normalizeEmail(),
+    body('answer').notEmpty().trim(),
+    validate
+], async (req, res) => {
+    try {
+        const { email, answer } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Verify security answer (case-insensitive comparison)
+        const isMatch = await bcrypt.compare(answer.toLowerCase(), user.securityAnswer);
+        
+        if (!isMatch) {
+            return res.json({
+                success: false,
+                message: 'Incorrect security answer'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Security answer verified successfully'
+        });
+    } catch (error) {
+        console.error('Security verification error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred. Please try again.'
+        });
+    }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password after security verification
+ */
+router.post('/reset-password', [
+    body('email').isEmail().normalizeEmail(),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+    body('password').matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter'),
+    body('password').matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter'),
+    body('password').matches(/\d/).withMessage('Password must contain at least one number'),
+    body('password').matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/).withMessage('Password must contain at least one special character'),
+    validate
+], async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Hash new password before saving
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Update password
+        user.password = hashedPassword;
+        
+        // Clear any existing password reset tokens
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Password reset successfully'
+        });
+    } catch (error) {
+        console.error('Password reset error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while resetting password. Please try again.'
         });
     }
 });
