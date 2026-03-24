@@ -309,7 +309,7 @@ class RegistrationForm {
             // Get the form action URL
             const formAction = this.form.getAttribute('action') || 'https://httpbin.org/post';
             
-            // Submit form data to the specified endpoint
+            // First, submit to external endpoint
             const response = await fetch(formAction, {
                 method: 'POST',
                 body: formData
@@ -319,7 +319,8 @@ class RegistrationForm {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            // Try to also register in database
+            // Now try to register in database
+            let dbRegistrationSuccess = false;
             try {
                 const dbResponse = await fetch('/api/auth/register', {
                     method: 'POST',
@@ -340,6 +341,10 @@ class RegistrationForm {
                 if (dbResponse.ok) {
                     const dbResult = await dbResponse.json();
                     console.log('Database registration:', dbResult);
+                    dbRegistrationSuccess = true;
+                } else {
+                    const dbError = await dbResponse.json();
+                    console.warn('Database registration failed:', dbError);
                 }
             } catch (e) {
                 console.warn('Could not register in database:', e);
@@ -347,36 +352,45 @@ class RegistrationForm {
             
             const result = await response.json();
             
-            // Show success message
-            this.showSuccess(`Registration submitted successfully! Your generated password is: <strong>${generatedPassword}</strong>. Please save this password - you will need it to log in.`);
-            
-            // Store auth token and user data for session
-            const authToken = btoa(`${registrationData.email}:${Date.now()}`);
-            localStorage.setItem('swa_auth_token', authToken);
-            localStorage.setItem('swa_user', JSON.stringify({
-                email: registrationData.email,
-                firstName: registrationData.firstName,
-                lastName: registrationData.lastName,
-                memberNumber: registrationData.studentId
-            }));
-            
-            // Store registration data for demo
-            localStorage.setItem('swa_registration', JSON.stringify(registrationData));
-            
-            // Store the password for display during redirect delay
-            localStorage.setItem('swa_temp_password', generatedPassword);
-            
-            // Reset form
-            this.form.reset();
+            // Check database registration status and show appropriate feedback
+            if (dbRegistrationSuccess) {
+                // Show success message
+                this.showSuccess(`Registration successful! Your generated password is: <strong>${generatedPassword}</strong>. Please save this password - you will need it to log in. Redirecting to member portal...`);
+                
+                // Store auth token and user data for session
+                const authToken = btoa(`${registrationData.email}:${Date.now()}`);
+                localStorage.setItem('swa_auth_token', authToken);
+                localStorage.setItem('swa_user', JSON.stringify({
+                    email: registrationData.email,
+                    firstName: registrationData.firstName,
+                    lastName: registrationData.lastName,
+                    memberNumber: registrationData.studentId
+                }));
+                
+                // Store registration data for demo
+                localStorage.setItem('swa_registration', JSON.stringify(registrationData));
+                
+                // Store the password for display during redirect delay
+                localStorage.setItem('swa_temp_password', generatedPassword);
+                
+                // Reset form
+                this.form.reset();
 
-            // Redirect after delay
-            setTimeout(() => {
-                localStorage.removeItem('swa_temp_password');
-                window.location.href = '../dashboard/member-portal.html';
-            }, 5000);
+                // Redirect after delay
+                setTimeout(() => {
+                    localStorage.removeItem('swa_temp_password');
+                    window.location.href = '../dashboard/member-portal.html';
+                }, 3000);
+            } else {
+                // Database registration failed - show error
+                this.showError('Registration was submitted but there was an issue creating your account in our system. Please contact support at swateam@gmail.com or try again later.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
 
         } catch (error) {
-            this.showError('Registration failed. Please try again.');
+            this.showError('Registration failed. Please check your internet connection and try again.');
             console.error('Registration error:', error);
         } finally {
             submitBtn.innerHTML = originalText;
@@ -384,13 +398,25 @@ class RegistrationForm {
         }
     }
 
+    getAlertContainer() {
+        let container = document.querySelector('.registration-page__container');
+        if (!container) {
+            container = document.querySelector('.registration-page');
+        }
+        if (!container) {
+            container = document.querySelector('.registration-form-section');
+        }
+        return container;
+    }
+
     showError(message) {
         this.removeAlerts();
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-error';
         alertDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+        alertDiv.style.cssText = 'padding: 15px 20px; margin: 20px auto; max-width: 600px; border-radius: 8px; font-weight: 500; text-align: center;';
         
-        const container = document.querySelector('.registration-container');
+        const container = this.getAlertContainer();
         if (container) {
             container.insertBefore(alertDiv, container.firstChild);
         }
@@ -403,8 +429,9 @@ class RegistrationForm {
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-success';
         alertDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+        alertDiv.style.cssText = 'padding: 15px 20px; margin: 20px auto; max-width: 600px; border-radius: 8px; font-weight: 500; text-align: center;';
         
-        const container = document.querySelector('.registration-container');
+        const container = this.getAlertContainer();
         if (container) {
             container.insertBefore(alertDiv, container.firstChild);
         }
@@ -416,8 +443,9 @@ class RegistrationForm {
         alertDiv.className = `alert alert-${type}`;
         const icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
         alertDiv.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+        alertDiv.style.cssText = 'padding: 15px 20px; margin: 20px auto; max-width: 600px; border-radius: 8px; font-weight: 500; text-align: center;';
         
-        const container = document.querySelector('.registration-container');
+        const container = this.getAlertContainer();
         if (container) {
             container.insertBefore(alertDiv, container.firstChild);
         }
