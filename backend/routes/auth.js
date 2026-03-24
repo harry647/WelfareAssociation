@@ -15,7 +15,8 @@ const Savings = require('../models/Savings');
 const Contribution = require('../models/Contribution');
 const Bereavement = require('../models/Bereavement');
 const Fine = require('../models/Fine');
-const { generateTokens, verifyToken, auth } = require('../middleware/auth');
+const Notice = require('../models/Notice');
+const { generateTokens, verifyToken, verifyRefreshToken, auth } = require('../middleware/auth');
 
 // Validation middleware
 const validate = (req, res, next) => {
@@ -93,7 +94,7 @@ router.post('/register', [
         console.log(`Created member profile: ${member.id} for user: ${user.id}`);
 
         // Generate tokens
-        const { accessToken, refreshToken } = generateTokens(user._id);
+        const { accessToken, refreshToken } = generateTokens(user.id);
 
         res.status(201).json({
             success: true,
@@ -101,7 +102,7 @@ router.post('/register', [
             token: accessToken,
             refreshToken,
             user: {
-                id: user._id,
+                id: user.id,
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -154,7 +155,8 @@ router.post('/login', [
 
         // Find user with password using Sequelize
         const user = await User.findOne({
-            where: { email }
+            where: { email },
+            attributes: ['id', 'email', 'firstName', 'lastName', 'phone', 'role', 'isEmailVerified', 'lastLogin', 'createdAt', 'member']
         });
         
         if (!user) {
@@ -189,7 +191,7 @@ router.post('/login', [
         const member = await Member.findByPk(user.memberId);
 
         // Generate tokens
-        const { accessToken, refreshToken } = generateTokens(user._id);
+        const { accessToken, refreshToken } = generateTokens(user.id);
 
         res.json({
             success: true,
@@ -197,13 +199,13 @@ router.post('/login', [
             token: accessToken,
             refreshToken,
             user: {
-                id: user._id,
+                id: user.id,
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 role: user.role,
                 member: member ? {
-                    id: member._id,
+                    id: member.id,
                     memberNumber: member.memberNumber,
                     firstName: member.firstName,
                     lastName: member.lastName
@@ -247,7 +249,7 @@ router.post('/refresh', async (req, res) => {
         }
 
         // Verify refresh token
-        const decoded = verifyToken(refreshToken);
+        const decoded = verifyRefreshToken(refreshToken);
         
         // Check if user exists
         const user = await User.findByPk(decoded.userId);
@@ -259,7 +261,7 @@ router.post('/refresh', async (req, res) => {
         }
 
         // Generate new tokens
-        const tokens = generateTokens(user._id);
+        const tokens = generateTokens(user.id);
 
         res.json({
             success: true,
@@ -303,14 +305,22 @@ router.get('/profile', auth, async (req, res) => {
         const memberId = member.id;
         
         // Fetch service data
-        const [loans, savings, contributions, fines, bereavements, payments, debts] = await Promise.all([
+        const [loans, savings, contributions, fines, bereavements, payments, debts, notices] = await Promise.all([
             Loan.findAll({ where: { memberId } }),
             Savings.findAll({ where: { memberId } }),
             Contribution.findAll({ where: { memberId } }),
             Fine.findAll({ where: { memberId } }),
             Bereavement.findAll({ where: { memberId } }),
             Payment.findAll({ where: { memberId } }),
-            Debt.findAll({ where: { memberId } })
+            Debt.findAll({ where: { memberId } }),
+            Notice.findAll({ 
+                where: { 
+                    isPublished: true,
+                    audience: { $in: ['all', 'members', 'students'] }
+                },
+                order: [['priority', 'DESC'], ['createdAt', 'DESC']],
+                limit: 5
+            })
         ]);
         
         // Calculate summaries
@@ -331,7 +341,8 @@ router.get('/profile', auth, async (req, res) => {
                 phone: user.phone,
                 role: user.role,
                 isEmailVerified: user.isEmailVerified,
-                lastLogin: user.lastLogin
+                lastLogin: user.lastLogin,
+                registeredAt: user.createdAt
             },
             member: {
                 id: member.id,
@@ -370,6 +381,10 @@ router.get('/profile', auth, async (req, res) => {
                 debts: {
                     records: debts,
                     total: totalDebts
+                },
+                notices: {
+                    records: notices,
+                    unread: notices.filter(n => !n.views || n.views === 0).length
                 }
             }
         });
@@ -417,7 +432,7 @@ router.put('/profile', auth, [
             success: true,
             message: 'Profile updated successfully',
             user: {
-                id: user._id,
+                id: user.id,
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,

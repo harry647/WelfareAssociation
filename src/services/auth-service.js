@@ -43,7 +43,10 @@ class AuthService {
      * Check if user is authenticated
      */
     isAuthenticated() {
-        return !!apiService.getAuthToken();
+        const token = apiService.getAuthToken();
+        console.log('authService.isAuthenticated() - token exists:', !!token);
+        console.log('authService.isAuthenticated() - token value:', token ? token.substring(0, 20) + '...' : 'null');
+        return !!token;
     }
 
     /**
@@ -61,17 +64,24 @@ class AuthService {
      */
     async login(email, password) {
         try {
+            console.log('authService.login() called with email:', email);
             const response = await apiService.post(
                 API_CONFIG.endpoints.login,
                 { email, password },
                 false // Don't include auth header
             );
 
+            console.log('Login response received:', response);
+
             if (response.token) {
+                console.log('Setting tokens...');
                 apiService.setTokens(response.token, response.refreshToken);
+                console.log('Tokens set successfully');
                 this.saveUser(response.user);
+                console.log('User saved to localStorage');
             }
 
+            console.log('Login completed successfully');
             return response;
         } catch (error) {
             console.error('Login failed:', error);

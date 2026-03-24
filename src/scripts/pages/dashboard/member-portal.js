@@ -6,7 +6,7 @@
  */
 
 // Import services
-import { authService, memberService, contributionService, loanService } from '../../../services/index.js';
+import { authService, memberService, contributionService, loanService, apiService } from '../../../services/index.js';
 
 class MemberPortal {
     constructor() {
@@ -20,25 +20,36 @@ class MemberPortal {
 
     init() {
         // Check authentication first
+        console.log('MemberPortal init() called');
         if (!this.checkAuth()) {
+            console.log('checkAuth() returned false, exiting init');
             return; // Will redirect to login
         }
+        console.log('checkAuth() passed, binding events and loading data');
         this.bindEvents();
         this.loadMemberData();
     }
 
     checkAuth() {
-        if (!authService.isAuthenticated()) {
+        console.log('checkAuth() called');
+        const isAuth = authService.isAuthenticated();
+        console.log('authService.isAuthenticated() returned:', isAuth);
+        
+        if (!isAuth) {
             // Not logged in, redirect to login page
+            console.log('User not authenticated, redirecting to login');
             window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
             return false;
         }
         
         const user = authService.getCurrentUser();
+        console.log('Current user:', user);
         if (!user) {
+            console.log('No current user found, redirecting to login');
             window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
             return false;
         }
+        console.log('Authentication check passed');
         return true;
     }
 
@@ -244,48 +255,131 @@ class MemberPortal {
     
     async fetchMemberDataFromAPI() {
         try {
-            const response = await fetch('/api/auth/profile', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('swa_auth_token')}`
-                }
-            });
+            const result = await apiService.get('/auth/profile', {}, true, { preventAutoRedirect: true });
             
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success) {
-                    // Store the data locally
-                    localStorage.setItem('swa_member_data', JSON.stringify(result));
-                    this.populateProfile(result);
-                    console.log('Loaded member data from API:', result);
-                }
-            } else {
-                console.warn('Failed to fetch member data from API:', response.status);
+            if (result.success) {
+                // Store the data locally
+                localStorage.setItem('swa_member_data', JSON.stringify(result));
+                this.populateProfile(result);
+                console.log('Loaded member data from API:', result);
             }
         } catch (error) {
-            console.error('Error fetching member data:', error);
+            // Don't let the apiService auto-redirect on 401 errors
+            if (error.status === 401) {
+                console.warn('Authentication expired, attempting token refresh...');
+                
+                // Try to refresh the token
+                const refreshed = await apiService.refreshToken();
+                
+                if (refreshed) {
+                    console.log('Token refreshed successfully, retrying request...');
+                    // Retry the original request
+                    try {
+                        const result = await apiService.get('/auth/profile', {}, true, { preventAutoRedirect: true });
+                        if (result.success) {
+                            localStorage.setItem('swa_member_data', JSON.stringify(result));
+                            this.populateProfile(result);
+                            console.log('Loaded member data after token refresh:', result);
+                            return;
+                        }
+                    } catch (retryError) {
+                        console.warn('Retry after token refresh failed:', retryError.message);
+                    }
+                }
+                
+                // Token refresh failed, need to redirect to login
+                console.log('Token refresh failed, redirecting to login...');
+                localStorage.removeItem('swa_auth_token');
+                localStorage.removeItem('swa_refresh_token');
+                localStorage.removeItem('swa_user');
+                window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
+                return;
+            }
+            console.warn('Failed to fetch member data from API:', error.status || error.message);
         }
     }
 
     populateProfile(data) {
+        console.log('Full API response data:', data);
+        
         // Handle both API response format and localStorage format
         const memberData = data.member || data;
         const services = data.services || {};
         const userData = data.user || {};
         
+        console.log('Parsed data:', { memberData, userData, services });
+        
+        // Update welcome message
+        const welcomeElement = document.getElementById('welcome-message');
+        if (welcomeElement) {
+            const firstName = memberData.firstName || userData.firstName || '';
+            const lastName = memberData.lastName || userData.lastName || '';
+            const fullName = (firstName + ' ' + lastName).trim();
+            
+            if (fullName) {
+                welcomeElement.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + fullName;
+                console.log('Updated welcome message to:', fullName);
+            }
+        }
+        
         const profileInfo = document.querySelector('.profile-info');
         if (profileInfo) {
             // Update profile fields
-            const nameField = profileInfo.querySelector('p:first-child');
-            if (nameField && memberData.firstName) {
-                nameField.innerHTML = `<strong>Name:</strong> ${memberData.firstName} ${memberData.lastName || ''}`;
+            const nameField = document.getElementById('profile-name');
+            if (nameField) {
+                const fullName = `${memberData.firstName || userData.firstName || ''} ${memberData.lastName || userData.lastName || ''}`.trim();
+                nameField.textContent = fullName;
             }
             
-            // Add member number if available
-            const memberNumField = profileInfo.querySelector('p:nth-child(2)');
-            if (memberNumField && memberData.memberNumber) {
-                memberNumField.innerHTML = `<strong>Member No:</strong> ${memberData.memberNumber}`;
+            // Update member number
+            const memberNumField = document.getElementById('profile-member-number');
+            if (memberNumField) {
+                memberNumField.textContent = memberData.memberNumber || userData.memberNumber || 'Not assigned';
+            }
+            
+            // Update email
+            const emailField = document.getElementById('profile-email');
+            if (emailField) {
+                emailField.textContent = memberData.email || userData.email || 'Not available';
+            }
+            
+            // Update phone
+            const phoneField = document.getElementById('profile-phone');
+            if (phoneField) {
+                phoneField.textContent = memberData.phone || userData.phone || 'Not provided';
+            }
+            
+            // Update member since
+            const memberSinceField = document.getElementById('profile-member-since');
+            if (memberSinceField) {
+                // Registration date is in userData (user object), not memberData (member object)
+                const registeredDate = userData.registeredAt;
+                console.log('Available dates:', { 
+                    userDataRegisteredAt: userData.registeredAt, 
+                    memberDataRegisteredAt: memberData.registeredAt,
+                    selectedDate: registeredDate 
+                });
+                
+                if (registeredDate) {
+                    const memberSince = new Date(registeredDate).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    memberSinceField.textContent = memberSince;
+                    console.log('Formatted member since:', memberSince);
+                } else {
+                    memberSinceField.textContent = 'Unknown';
+                    console.log('No registration date found in userData');
+                }
+            }
+            
+            // Update status
+            const statusField = document.getElementById('profile-status');
+            if (statusField) {
+                const status = memberData.membershipStatus || userData.membershipStatus || 'Active';
+                statusField.textContent = status;
+                statusField.className = `status ${status.toLowerCase()}`;
             }
         }
         
@@ -315,11 +409,45 @@ class MemberPortal {
             el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
         });
         
+        // Update debts display
+        const debtElements = document.querySelectorAll('[data-service="debts"]');
+        debtElements.forEach(el => {
+            const amount = services.debts?.total || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
         // Update fines display
         const fineElements = document.querySelectorAll('[data-service="fines"]');
         fineElements.forEach(el => {
             const amount = services.fines?.balance || 0;
             el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        // Update fines summary elements
+        const totalFinesElements = document.querySelectorAll('[data-service="fines-total"]');
+        totalFinesElements.forEach(el => {
+            const fines = services.fines?.records || [];
+            const total = fines.reduce((sum, fine) => sum + parseFloat(fine.amount || 0), 0);
+            el.textContent = `Ksh ${total.toLocaleString()}`;
+        });
+        
+        const paidFinesElements = document.querySelectorAll('[data-service="fines-paid"]');
+        paidFinesElements.forEach(el => {
+            const fines = services.fines?.records || [];
+            const paid = fines.filter(f => f.status === 'paid').reduce((sum, fine) => sum + parseFloat(fine.amount || 0), 0);
+            el.textContent = `Ksh ${paid.toLocaleString()}`;
+        });
+        
+        const unpaidFinesElements = document.querySelectorAll('[data-service="fines-balance"]');
+        unpaidFinesElements.forEach(el => {
+            const amount = services.fines?.balance || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        const fineCountElements = document.querySelectorAll('[data-service="fines-count"]');
+        fineCountElements.forEach(el => {
+            const fines = services.fines?.records || [];
+            el.textContent = fines.length;
         });
         
         // Update payments display
@@ -329,14 +457,154 @@ class MemberPortal {
             el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
         });
         
-        // Update debts display
-        const debtElements = document.querySelectorAll('[data-service="debts"]');
-        debtElements.forEach(el => {
-            const amount = services.debts?.total || 0;
-            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
-        });
+        // Populate contribution history table
+        this.populateContributionTable(services.contributions?.records || []);
+        
+        // Populate fines table
+        this.populateFinesTable(services.fines?.records || []);
+        
+        // Populate notifications
+        this.populateNotifications(services.notices?.records || []);
         
         console.log('Updated service displays with data:', services);
+    }
+    
+    /**
+     * Populate contribution history table
+     */
+    populateContributionTable(contributions) {
+        const tbody = document.getElementById('contributionsTableBody');
+        if (!tbody) return;
+        
+        if (contributions.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No contributions found</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = contributions.map(contribution => `
+            <tr>
+                <td>${new Date(contribution.date).toLocaleDateString()}</td>
+                <td>Ksh ${parseFloat(contribution.amount).toLocaleString()}</td>
+                <td>${contribution.method || 'N/A'}</td>
+                <td><span class="status ${contribution.status === 'verified' ? 'received' : 'pending'}">
+                    ${contribution.status === 'verified' ? '✓ Received' : '⏳ Pending'}
+                </span></td>
+            </tr>
+        `).join('');
+    }
+    
+    /**
+     * Populate fines table
+     */
+    populateFinesTable(fines) {
+        const tbody = document.getElementById('finesTableBody');
+        if (!tbody) return;
+        
+        if (fines.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No fines found</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = fines.map(fine => `
+            <tr>
+                <td><strong>${fine.fine_type || fine.type || 'General'}</strong></td>
+                <td>Ksh ${parseFloat(fine.amount).toLocaleString()}</td>
+                <td>${new Date(fine.date).toLocaleDateString()}</td>
+                <td>${new Date(fine.due_date).toLocaleDateString()}</td>
+                <td><span class="status ${fine.status === 'paid' ? 'received' : fine.status === 'pending' ? 'pending' : 'unpaid'}">
+                    ${fine.status === 'paid' ? '✓ Paid' : fine.status === 'pending' ? '⏳ Pending' : '⚠ Unpaid'}
+                </span></td>
+                <td>
+                    ${fine.status === 'unpaid' ? `<button onclick="window.location.href='../payments/make-payment.html?category=fine&fineId=${fine.id}'" class="btn" style="padding: 5px 10px; font-size: 12px;">Pay Now</button>` : '-'}
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    /**
+     * Populate notifications section
+     */
+    populateNotifications(notices) {
+        const container = document.getElementById('notificationCards');
+        if (!container) return;
+        
+        if (notices.length === 0) {
+            container.innerHTML = '<div class="no-notifications"><i class="fas fa-bell-slash"></i> No notifications at this time</div>';
+            return;
+        }
+        
+        container.innerHTML = notices.map(notice => {
+            const iconClass = this.getNotificationIcon(notice.type);
+            const timeAgo = this.getTimeAgo(notice.createdAt);
+            const isUnread = !notice.views || notice.views === 0;
+            
+            return `
+                <div class="notification-card ${isUnread ? 'unread' : ''}" onclick="this.markAsRead('${notice.id}')">
+                    <div class="card-icon">
+                        <i class="${iconClass}"></i>
+                        ${isUnread ? '<span class="unread-dot"></span>' : ''}
+                    </div>
+                    <div class="card-content">
+                        <h3>${notice.title}</h3>
+                        <p>${notice.content}</p>
+                        <span class="time">${timeAgo}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    /**
+     * Get appropriate icon for notification type
+     */
+    getNotificationIcon(type) {
+        const icons = {
+            'general': 'fas fa-info-circle',
+            'important': 'fas fa-exclamation-triangle',
+            'urgent': 'fas fa-exclamation-circle',
+            'event': 'fas fa-calendar-alt',
+            'meeting': 'fas fa-users',
+            'reminder': 'fas fa-bell'
+        };
+        return icons[type] || 'fas fa-info-circle';
+    }
+    
+    /**
+     * Get time ago string
+     */
+    getTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMins = Math.floor(diffMs / (1000 * 60));
+        
+        if (diffDays > 0) {
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        } else if (diffHours > 0) {
+            return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        } else {
+            return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+        }
+    }
+    
+    /**
+     * Mark notification as read
+     */
+    async markAsRead(noticeId) {
+        try {
+            await apiService.post(`/notices/${noticeId}/read`, {}, true);
+            // Remove unread indicator
+            const notificationCard = document.querySelector(`[onclick*="${noticeId}"]`);
+            if (notificationCard) {
+                notificationCard.classList.remove('unread');
+                const unreadDot = notificationCard.querySelector('.unread-dot');
+                if (unreadDot) unreadDot.remove();
+            }
+        } catch (error) {
+            console.error('Failed to mark notification as read:', error);
+        }
     }
     
     /**

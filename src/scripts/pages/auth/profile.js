@@ -21,19 +21,53 @@ class ProfileManager {
      * Load profile data from localStorage or set defaults
      */
     loadProfileData() {
-        // Try to get stored profile data
-        let profileData = localStorage.getItem(this.storageKey);
+        // Try to get current logged-in user data first
+        let userData = localStorage.getItem('swa_user');
+        let memberData = localStorage.getItem('swa_member_data');
         
-        // If no stored data, try registration data
+        let profileData = null;
+        
+        // If we have logged-in user data, use that
+        if (userData) {
+            const user = JSON.parse(userData);
+            if (memberData) {
+                const member = JSON.parse(memberData);
+                // Combine user and member data
+                profileData = {
+                    firstName: member.member?.firstName || user.firstName,
+                    lastName: member.member?.lastName || user.lastName,
+                    email: member.member?.email || user.email,
+                    phone: member.member?.phone || user.phone,
+                    memberNumber: member.member?.memberNumber || '',
+                    memberSince: member.member?.memberSince || this.getCurrentMonthYear()
+                };
+            } else {
+                // Only user data available
+                profileData = {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    phone: user.phone || '',
+                    memberNumber: '',
+                    memberSince: this.getCurrentMonthYear()
+                };
+            }
+        }
+        
+        // Fallback to old storage methods
         if (!profileData) {
-            const registrationData = localStorage.getItem('swa_registration');
-            if (registrationData) {
-                profileData = registrationData;
+            profileData = localStorage.getItem(this.storageKey);
+            
+            if (!profileData) {
+                const registrationData = localStorage.getItem('swa_registration');
+                if (registrationData) {
+                    profileData = registrationData;
+                }
             }
         }
 
         if (profileData) {
-            const data = JSON.parse(profileData);
+            const data = typeof profileData === 'string' ? JSON.parse(profileData) : profileData;
             this.populateForm(data);
             this.updateProfileSummary(data);
         } else {
@@ -71,7 +105,7 @@ class ProfileManager {
             'last-name': data.lastName || data.last_name || '',
             'email': data.email || '',
             'phone': data.phone || '',
-            'student-id': data.studentId || data.student_id || '',
+            'student-id': data.memberNumber || data.id || data.studentId || data.student_id || '',
             'dob': data.dob || '',
             'gender': data.gender || '',
             'department': data.department || '',
@@ -105,7 +139,7 @@ class ProfileManager {
     updateProfileSummary(data) {
         const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Member';
         document.getElementById('display-name').textContent = fullName;
-        document.getElementById('display-student-id').textContent = data.studentId || data.student_id || '-';
+        document.getElementById('display-student-id').textContent = data.memberNumber || data.id || data.studentId || data.student_id || '-';
         
         // Set member since
         const memberSince = data.memberSince || data.member_since || this.getCurrentMonthYear();

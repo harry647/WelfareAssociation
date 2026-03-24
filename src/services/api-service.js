@@ -64,6 +64,44 @@ class ApiService {
     }
 
     /**
+     * Refresh access token using refresh token
+     * @returns {Promise<boolean>} True if refresh successful
+     */
+    async refreshToken() {
+        const refreshToken = this.getRefreshToken();
+        if (!refreshToken) {
+            return false;
+        }
+
+        try {
+            const response = await fetch(`${this.baseURL}/auth/refresh`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ refreshToken })
+            });
+
+            if (!response.ok) {
+                this.clearTokens();
+                return false;
+            }
+
+            const data = await response.json();
+            if (data.success && data.token) {
+                this.setTokens(data.token, data.refreshToken);
+                return true;
+            }
+
+            return false;
+        } catch (error) {
+            console.error('Token refresh failed:', error);
+            return false;
+        }
+    }
+
+    /**
      * Build headers for requests
      */
     buildHeaders(includeAuth = true) {
@@ -85,12 +123,12 @@ class ApiService {
     /**
      * Handle API response
      */
-    async handleResponse(response) {
+    async handleResponse(response, preventAutoRedirect = false) {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             
             // Handle token expiration
-            if (response.status === 401) {
+            if (response.status === 401 && !preventAutoRedirect) {
                 this.clearTokens();
                 window.location.href = '../auth/login-page.html';
             }
@@ -123,7 +161,7 @@ class ApiService {
 
         try {
             const response = await fetch(url, config);
-            return await this.handleResponse(response);
+            return await this.handleResponse(response, options.preventAutoRedirect);
         } catch (error) {
             if (error.name === 'AbortError') {
                 throw new ApiError('Request timeout', 408, 'TIMEOUT');
@@ -138,10 +176,10 @@ class ApiService {
     /**
      * GET request
      */
-    get(endpoint, params = {}, auth = true) {
+    get(endpoint, params = {}, auth = true, options = {}) {
         const queryString = new URLSearchParams(params).toString();
         const url = queryString ? `${endpoint}?${queryString}` : endpoint;
-        return this.request(url, { method: 'GET', auth });
+        return this.request(url, { method: 'GET', auth, ...options });
     }
 
     /**

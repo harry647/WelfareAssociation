@@ -498,9 +498,29 @@ table tbody tr:last-child td:last-child {
   font-size: 0.75rem;
   color: var(--member-color-text-secondary);
   background: var(--member-color-surface-hover);
-  padding: 4px 10px;
-  border-radius: var(--member-radius-full);
+  padding: 4px 8px;
+  border-radius: var(--member-radius-sm);
   display: inline-block;
+}
+
+.notification-card.unread {
+  border-left: 4px solid var(--member-color-primary);
+  background: var(--member-color-bg);
+}
+
+.notification-card.unread .card-icon {
+  position: relative;
+}
+
+.unread-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  background: var(--member-color-danger);
+  border-radius: 50%;
+  border: 2px solid var(--member-color-surface);
 }
 
 .notification {
@@ -772,6 +792,22 @@ table tbody tr:last-child td:last-child {
   .card .stat {
     font-size: 1.5rem;
   }
+}
+
+/* No notifications state */
+.no-notifications {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--member-color-text-secondary);
+  background: var(--member-color-surface);
+  border-radius: var(--member-radius-md);
+  border: 1px solid var(--member-color-border);
+}
+
+.no-notifications i {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
 }
 
 /* ============================================================================

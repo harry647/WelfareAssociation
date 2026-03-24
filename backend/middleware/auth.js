@@ -33,6 +33,13 @@ const verifyToken = (token) => {
 };
 
 /**
+ * Verify JWT refresh token
+ */
+const verifyRefreshToken = (token) => {
+    return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+};
+
+/**
  * Authentication middleware - protects routes
  */
 const auth = async (req, res, next) => {
@@ -163,6 +170,7 @@ const optionalAuth = async (req, res, next) => {
 module.exports = {
     generateTokens,
     verifyToken,
+    verifyRefreshToken,
     auth,
     authorize,
     optionalAuth

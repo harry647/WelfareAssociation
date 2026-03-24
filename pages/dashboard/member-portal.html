@@ -76,22 +76,22 @@
   <div class="dashboard">
     <div class="card">
       <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
-      <p class="stat">Ksh 3,000</p>
+      <p class="stat" data-service="contributions">Ksh 0</p>
       <p class="label">Lifetime</p>
     </div>
     <div class="card">
       <h3><i class="fas fa-exclamation-circle"></i> Outstanding Debt</h3>
-      <p class="stat">Ksh 500</p>
+      <p class="stat" data-service="debts">Ksh 0</p>
       <p class="label">Due: March 25</p>
     </div>
     <div class="card">
-      <h3><i class="fas fa-hand-holding-usd"></i> Loan Status</h3>
-      <p class="stat">None</p>
-      <p class="label">No active loans</p>
+      <h3><i class="fas fa-hand-holding-usd"></i> Current Loan</h3>
+      <p class="stat" data-service="loans">Ksh 0</p>
+      <p class="label">Balance</p>
     </div>
     <div class="card">
       <h3><i class="fas fa-wallet"></i> Balance</h3>
-      <p class="stat">Ksh 2,500</p>
+      <p class="stat" data-service="savings">Ksh 0</p>
       <p class="label">Available</p>
     </div>
   </div>
@@ -101,19 +101,19 @@
     <h2 style="margin-top: 0;"><i class="fas fa-file-invoice-dollar"></i> My Fines Summary</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
       <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="totalFines">Ksh 0</p>
+        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="totalFines" data-service="fines-total">Ksh 0</p>
         <p style="margin: 5px 0 0 0; font-size: 14px;">Total Fines</p>
       </div>
       <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #4ade80;" id="paidFines">Ksh 0</p>
+        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #4ade80;" id="paidFines" data-service="fines-paid">Ksh 0</p>
         <p style="margin: 5px 0 0 0; font-size: 14px;">Paid</p>
       </div>
       <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #fbbf24;" id="unpaidFines">Ksh 0</p>
+        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #fbbf24;" id="unpaidFines" data-service="fines-balance">Ksh 0</p>
         <p style="margin: 5px 0 0 0; font-size: 14px;">Balance</p>
       </div>
       <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="fineCount">0</p>
+        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="fineCount" data-service="fines-count">0</p>
         <p style="margin: 5px 0 0 0; font-size: 14px;">Total Records</p>
       </div>
     </div>
@@ -122,31 +122,8 @@
   <!-- Notifications -->
   <section class="notifications-section">
     <h2><i class="fas fa-bell"></i> Notifications</h2>
-    <div class="notification-cards">
-      <div class="notification-card meeting">
-        <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
-        <div class="card-content">
-          <h3>Next Meeting</h3>
-          <p>General meeting on April 5th, 2025 at 2 PM</p>
-          <span class="time">2 days ago</span>
-        </div>
-      </div>
-      <div class="notification-card reminder">
-        <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
-        <div class="card-content">
-          <h3>Contribution Reminder</h3>
-          <p>March contribution due by 25th</p>
-          <span class="time">5 days ago</span>
-        </div>
-      </div>
-      <div class="notification-card event">
-        <div class="card-icon"><i class="fas fa-info-circle"></i></div>
-        <div class="card-content">
-          <h3>New Event</h3>
-          <p>Wellness Workshop scheduled for September 15</p>
-          <span class="time">1 week ago</span>
-        </div>
-      </div>
+    <div class="notification-cards" id="notificationCards">
+      <!-- Notifications will be loaded dynamically from API -->
     </div>
   </section>
 
@@ -186,31 +163,8 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>2025-09-01</td>
-            <td>Ksh 500</td>
-            <td>M-Pesa</td>
-            <td><span class="status received">✓ Received</span></td>
-          </tr>
-          <tr>
-            <td>2025-08-15</td>
-            <td>Ksh 1,000</td>
-            <td>Bank</td>
-            <td><span class="status received">✓ Received</span></td>
-          </tr>
-          <tr>
-            <td>2025-07-20</td>
-            <td>Ksh 500</td>
-            <td>Cash</td>
-            <td><span class="status received">✓ Received</span></td>
-          </tr>
-          <tr>
-            <td>2025-06-10</td>
-            <td>Ksh 1,000</td>
-            <td>M-Pesa</td>
-            <td><span class="status received">✓ Received</span></td>
-          </tr>
+        <tbody id="contributionsTableBody">
+          <!-- Contributions will be loaded dynamically from API -->
         </tbody>
       </table>
       <a href="../contributions/history.html" class="view-all">View All Contributions</a>
@@ -279,12 +233,12 @@
     <section class="profile-section">
       <h2><i class="fas fa-user-cog"></i> My Profile</h2>
       <div class="profile-info">
-        <p><strong>Name:</strong> Member Name</p>
-        <p><strong>Student ID:</strong> JOO/2024/XXX</p>
-        <p><strong>Email:</strong> member@student.joust.ac.ke</p>
-        <p><strong>Phone:</strong> +254 XXX XXX XXX</p>
-        <p><strong>Member Since:</strong> January 2025</p>
-        <p><strong>Status:</strong> <span class="status active">Active</span></p>
+        <p><strong>Name:</strong> <span id="profile-name">Loading...</span></p>
+        <p><strong>Student ID:</strong> <span id="profile-member-number">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
+        <p><strong>Phone:</strong> <span id="profile-phone">Loading...</span></p>
+        <p><strong>Member Since:</strong> <span id="profile-member-since">Loading...</span></p>
+        <p><strong>Status:</strong> <span id="profile-status" class="status active">Active</span></p>
       </div>
       <a href="../auth/profile.html" class="btn">
         <i class="fas fa-edit"></i> Edit Profile
@@ -357,11 +311,11 @@
             
             const displayStudentId = document.getElementById('display-student-id');
             if (displayStudentId) {
-                displayStudentId.textContent = memberData.studentId || memberData.student_id || '-';
+                displayStudentId.textContent = memberData.memberNumber || memberData.id || '-';
             }
             
             // Set member ID for fines
-            memberId = memberData.studentId || memberData.student_id || 'JOO/2024/001';
+            memberId = memberData.memberNumber || memberData.id || 'JOO/2024/001';
         }
         
         // Load fine summary and records (now that service is loaded)
