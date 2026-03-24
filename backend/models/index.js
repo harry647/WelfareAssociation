@@ -27,8 +27,8 @@ const Contact = require('./Contact');
 const Newsletter = require('./Newsletter');
 
 // Define associations
-// User - Member association
-User.hasOne(Member, { foreignKey: 'memberId', as: 'member' });
+// User - Member association (User has memberId pointing to Member)
+User.hasOne(Member, { foreignKey: 'userId', as: 'member' });
 Member.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 // Member - Loan associations

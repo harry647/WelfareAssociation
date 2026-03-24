@@ -29,29 +29,30 @@ const validate = (req, res, next) => {
 router.get('/', auth, authorize('admin', 'secretary'), async (req, res) => {
     try {
         const { page = 1, limit = 10, search, status } = req.query;
+        const where = {};
         
-        const queryObj = {};
-        
+        // Build where clause
+        if (status) {
+            where.membershipStatus = status;
+        }
+
+        // Search functionality using Sequelize OR
         if (search) {
-            queryObj.$or = [
-                { firstName: { $regex: search, $options: 'i' } },
-                { lastName: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } },
-                { memberNumber: { $regex: search, $options: 'i' } }
+            where[require('sequelize').Op.or] = [
+                { firstName: { [require('sequelize').Op.iLike]: `%${search}%` } },
+                { lastName: { [require('sequelize').Op.iLike]: `%${search}%` } },
+                { email: { [require('sequelize').Op.iLike]: `%${search}%` } },
+                { memberNumber: { [require('sequelize').Op.iLike]: `%${search}%` } }
             ];
         }
-        
-        if (status) {
-            queryObj.membershipStatus = status;
-        }
 
-        const members = await Member.find(queryObj)
-            .populate('userId', 'email role isActive')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Member.countDocuments(queryObj);
+        const offset = (page - 1) * limit;
+        const { count, rows: members } = await Member.findAndCountAll({
+            where,
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
@@ -59,11 +60,12 @@ router.get('/', auth, authorize('admin', 'secretary'), async (req, res) => {
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count,
+                pages: Math.ceil(count / limit)
             }
         });
     } catch (error) {
+        console.error('Error fetching members:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching members'
@@ -77,14 +79,18 @@ router.get('/', auth, authorize('admin', 'secretary'), async (req, res) => {
  */
 router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const total = await Member.countDocuments();
-        const active = await Member.countDocuments({ membershipStatus: 'active' });
-        const inactive = await Member.countDocuments({ membershipStatus: 'inactive' });
+        const total = await Member.count();
+        const active = await Member.count({ where: { membershipStatus: 'active' } });
+        const inactive = await Member.count({ where: { membershipStatus: 'inactive' } });
         
-        // Get members by type
-        const byType = await Member.aggregate([
-            { $group: { _id: '$membershipType', count: { $sum: 1 } } }
-        ]);
+        // Get members by type using Sequelize
+        const byType = await Member.findAll({
+            attributes: [
+                [require('sequelize').col('membership_type'), 'membershipType'],
+                [require('sequelize').fn('COUNT', require('sequelize').col('membership_type')), 'count']
+            ],
+            group: ['membership_type']
+        });
 
         res.json({
             success: true,
@@ -92,10 +98,14 @@ router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res
                 total,
                 active,
                 inactive,
-                byType
+                byType: byType.map(item => ({
+                    _id: item.membershipType,
+                    count: parseInt(item.dataValues.count)
+                }))
             }
         });
     } catch (error) {
+        console.error('Error fetching statistics:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching statistics'

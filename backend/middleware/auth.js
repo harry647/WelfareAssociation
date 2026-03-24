@@ -52,8 +52,22 @@ const auth = async (req, res, next) => {
         // Verify token
         const decoded = verifyToken(token);
         
-        // Get user from database
-        const user = await User.findById(decoded.userId).populate('memberId');
+        // Get user from database using Sequelize (handle both UUID and string IDs)
+        let user = null;
+        try {
+            // Try finding by UUID first
+            user = await User.findByPk(decoded.userId);
+        } catch (e) {
+            // If userId is not a valid UUID (e.g., 'admin'), create a mock user
+            if (decoded.userId === 'admin') {
+                user = {
+                    id: 'admin',
+                    email: process.env.ADMIN_EMAIL || 'admin@swa.org',
+                    role: 'admin',
+                    isActive: true
+                };
+            }
+        }
         
         if (!user) {
             return res.status(401).json({
@@ -71,7 +85,7 @@ const auth = async (req, res, next) => {
 
         // Attach user to request
         req.user = user;
-        req.userId = user._id;
+        req.userId = user.id || user._id;
         
         next();
     } catch (error) {
