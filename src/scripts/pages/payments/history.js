@@ -57,7 +57,23 @@ let currentState = {
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     initPaymentHistory();
+    initLogout();
 });
+
+function initLogout() {
+    const logoutBtn = document.querySelector('.logout-btn-header');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                localStorage.removeItem('swa_auth_token');
+                localStorage.removeItem('swa_refresh_token');
+                localStorage.removeItem('swa_user');
+                window.location.href = '../../index.html';
+            }
+        });
+    }
+}
 
 async function initPaymentHistory() {
     // Load user data

@@ -19,6 +19,12 @@ class ReportsDashboard {
     }
 
     bindEvents() {
+        // Logout button
+        const logoutBtn = document.querySelector('.logout-btn-header');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.handleLogout());
+        }
+
         // Report card click handlers
         this.reportCards.forEach(card => {
             card.addEventListener('click', (e) => {
@@ -111,6 +117,16 @@ class ReportsDashboard {
             
             alert('Data refreshed successfully!');
         }, 1000);
+    }
+
+    handleLogout() {
+        if (confirm('Are you sure you want to logout?')) {
+            sessionStorage.clear();
+            localStorage.removeItem('swa_auth_token');
+            localStorage.removeItem('swa_refresh_token');
+            localStorage.removeItem('swa_user');
+            window.location.href = '../../index.html';
+        }
     }
 }
 

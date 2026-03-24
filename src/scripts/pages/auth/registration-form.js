@@ -383,9 +383,13 @@ class RegistrationForm {
                 // Show success message
                 this.showSuccess(`Registration successful! Your generated password is: <strong>${generatedPassword}</strong>. Please save this password - you will need it to log in. Redirecting to member portal...`);
                 
-                // Store auth token and user data for session
-                const authToken = btoa(`${registrationData.email}:${Date.now()}`);
-                localStorage.setItem('swa_auth_token', authToken);
+                // Use the JWT token from the backend response instead of creating a fake token
+                if (dbResult.token) {
+                    localStorage.setItem('swa_auth_token', dbResult.token);
+                }
+                if (dbResult.refreshToken) {
+                    localStorage.setItem('swa_refresh_token', dbResult.refreshToken);
+                }
                 localStorage.setItem('swa_user', JSON.stringify({
                     email: registrationData.email,
                     firstName: registrationData.firstName,

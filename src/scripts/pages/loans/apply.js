@@ -760,8 +760,10 @@ function autoFillUserData(userData) {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('userSession');
-            window.location.reload();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('userSession');
+                window.location.href = '../../index.html';
+            }
         });
     }
 }

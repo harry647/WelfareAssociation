@@ -8,7 +8,23 @@ import { contributionService } from '../../../services/index.js';
 // Initialize contribution history functionality
 document.addEventListener('DOMContentLoaded', () => {
     initContributionHistory();
+    initLogout();
 });
+
+function initLogout() {
+    const logoutBtn = document.querySelector('.logout-btn-header');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                localStorage.removeItem('swa_auth_token');
+                localStorage.removeItem('swa_refresh_token');
+                localStorage.removeItem('swa_user');
+                window.location.href = '../../index.html';
+            }
+        });
+    }
+}
 
 function initContributionHistory() {
     // Initialize filters

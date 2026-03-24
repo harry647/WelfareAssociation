@@ -109,6 +109,9 @@ class ActiveMembers {
     handleLogout() {
         if (confirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
+            localStorage.removeItem('swa_auth_token');
+            localStorage.removeItem('swa_refresh_token');
+            localStorage.removeItem('swa_user');
             window.location.href = '../../index.html';
         }
     }

@@ -1318,5 +1318,6 @@ All error responses follow this format:
 
 For questions or support, contact: support@swa-joust.ac.ke
 
-
+# passwords for users for testing
 yUtC%I7r<I+m   mary
+1ayuKU%bnsn$   benard

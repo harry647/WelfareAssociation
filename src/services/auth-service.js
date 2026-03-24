@@ -115,7 +115,7 @@ class AuthService {
         } finally {
             apiService.clearTokens();
             this.currentUser = null;
-            window.location.href = 'index.html';
+            window.location.href = '../../index.html';
         }
     }
 

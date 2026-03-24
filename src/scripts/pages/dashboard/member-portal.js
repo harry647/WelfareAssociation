@@ -43,6 +43,15 @@ class MemberPortal {
     }
 
     bindEvents() {
+        // Logout button
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.handleLogout();
+            });
+        }
+
         // Contribution form
         if (this.contributionForm) {
             this.contributionForm.addEventListener('submit', (e) => {
@@ -328,6 +337,15 @@ class MemberPortal {
         });
         
         console.log('Updated service displays with data:', services);
+    }
+    
+    /**
+     * Handle logout
+     */
+    handleLogout() {
+        if (confirm('Are you sure you want to logout?')) {
+            authService.logout();
+        }
     }
 }
 
