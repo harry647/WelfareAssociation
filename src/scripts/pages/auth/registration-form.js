@@ -319,6 +319,32 @@ class RegistrationForm {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
+            // Try to also register in database
+            try {
+                const dbResponse = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: registrationData.email,
+                        password: generatedPassword,
+                        firstName: registrationData.firstName,
+                        lastName: registrationData.lastName,
+                        phone: registrationData.phone,
+                        securityQuestion: registrationData.securityQuestion,
+                        securityAnswer: registrationData.securityAnswer
+                    })
+                });
+                
+                if (dbResponse.ok) {
+                    const dbResult = await dbResponse.json();
+                    console.log('Database registration:', dbResult);
+                }
+            } catch (e) {
+                console.warn('Could not register in database:', e);
+            }
+            
             const result = await response.json();
             
             // Show success message

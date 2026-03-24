@@ -90,39 +90,23 @@ class LoginPage {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
             submitBtn.disabled = true;
 
-            // Fetch admin credentials from server
-            let adminEmail = 'admin@swa.org';
-            let adminPassword = 'SWAAdmin2024!';
+            // Call the login API
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: username, password: password })
+            });
             
-            try {
-                const configResponse = await fetch('/api/config/admin');
-                if (configResponse.ok) {
-                    const config = await configResponse.json();
-                    adminEmail = config.adminEmail;
-                    adminPassword = config.adminPassword;
-                }
-            } catch (e) {
-                console.warn('Could not fetch admin config, using defaults');
-            }
+            const result = await response.json();
             
-            // Check if admin credentials
-            const isAdmin = (username === adminEmail || username.toLowerCase() === adminEmail.toLowerCase()) && 
-                           password === adminPassword;
-            
-            // Check if regular user (has valid auth token from registration)
-            const registeredUser = localStorage.getItem('swa_user');
-            const isRegisteredUser = registeredUser && JSON.parse(registeredUser).email === username;
-            
-            // Validate credentials
-            if (!isAdmin && !isRegisteredUser) {
-                this.showError('Invalid credentials. Please check your email/username and password.');
+            if (!response.ok || !result.success) {
+                this.showError(result.message || 'Invalid credentials. Please check your email/username and password.');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 return;
             }
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Store remember preference
             if (remember) {
@@ -133,27 +117,19 @@ class LoginPage {
                 localStorage.removeItem('swa_username');
             }
 
-            // Store auth token and user data for session
-            const authToken = btoa(`${username}:${Date.now()}`);
-            localStorage.setItem('swa_auth_token', authToken);
-            
-            if (isAdmin) {
-                localStorage.setItem('swa_user', JSON.stringify({
-                    email: username,
-                    firstName: 'Admin',
-                    lastName: 'User',
-                    role: 'admin'
-                }));
-            } else {
-                localStorage.setItem('swa_user', JSON.stringify({
-                    email: username,
-                    firstName: username.split('@')[0],
-                    lastName: ''
-                }));
+            // Store auth token and user data from API response
+            if (result.token) {
+                localStorage.setItem('swa_auth_token', result.token);
             }
+            if (result.refreshToken) {
+                localStorage.setItem('swa_refresh_token', result.refreshToken);
+            }
+            
+            // Store user data
+            localStorage.setItem('swa_user', JSON.stringify(result.user));
 
             // Show success and redirect
-            const userType = isAdmin ? 'Admin' : '';
+            const userType = result.user?.role === 'admin' ? 'Admin' : '';
             this.showSuccess(`${userType}Login successful! Redirecting...`);
             
             // Get redirect URL from query parameter or default based on role
@@ -162,7 +138,7 @@ class LoginPage {
             
             if (!redirectUrl) {
                 // Default redirect based on user type
-                redirectUrl = isAdmin ? '../dashboard/admin-dashboard.html' : '../dashboard/member-portal.html';
+                redirectUrl = result.user?.role === 'admin' ? '../dashboard/admin-dashboard.html' : '../dashboard/member-portal.html';
             }
             
             // Redirect after short delay

@@ -110,7 +110,7 @@ router.post('/register', [
 
 /**
  * POST /api/auth/login
- * User login
+ * User login - supports both admin (from .env) and database users
  */
 router.post('/login', [
     body('email').isEmail().normalizeEmail(),
@@ -120,8 +120,33 @@ router.post('/login', [
     try {
         const { email, password } = req.body;
 
-        // Find user with password
-        const user = await User.findOne({ email }).select('+password');
+        // Check if this is an admin login (from .env)
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@swa.org';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'SWAAdmin2024!';
+        
+        if (email.toLowerCase() === adminEmail.toLowerCase() && password === adminPassword) {
+            // Admin login - return success without database lookup
+            const { accessToken, refreshToken } = generateTokens('admin');
+            
+            return res.json({
+                success: true,
+                message: 'Login successful',
+                token: accessToken,
+                refreshToken,
+                user: {
+                    id: 'admin',
+                    email: email,
+                    firstName: 'Admin',
+                    lastName: 'User',
+                    role: 'admin'
+                }
+            });
+        }
+
+        // Find user with password using Sequelize
+        const user = await User.findOne({
+            where: { email }
+        });
         
         if (!user) {
             return res.status(401).json({
