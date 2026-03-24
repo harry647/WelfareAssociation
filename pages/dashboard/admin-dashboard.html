@@ -125,22 +125,22 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-users"></i> Total Members</h3>
-            <p class="stat-number">22</p>
+            <p class="stat-number" data-stat="total-members">0</p>
             <p class="stat-label">Active Members</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
-            <p class="stat-number">Ksh 7,000</p>
+            <p class="stat-number" data-stat="monthly-contributions">Ksh 0</p>
             <p class="stat-label">This Month</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-wallet"></i> Available Balance</h3>
-            <p class="stat-number">Ksh 3,000</p>
+            <p class="stat-number" data-stat="available-balance">Ksh 0</p>
             <p class="stat-label">Current Funds</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-exclamation-circle"></i> Pending Debts</h3>
-            <p class="stat-number">Ksh 4,000</p>
+            <p class="stat-number" data-stat="pending-debts">Ksh 0</p>
             <p class="stat-label">Outstanding</p>
           </div>
         </div>
@@ -151,22 +151,22 @@
           <div class="stats-grid">
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-user-graduate"></i></span>
-              <span class="stat-value">50+</span>
+              <span class="stat-value" data-stat="total-registered">0</span>
               <span class="stat-desc">Total Registered</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-hand-holding-heart"></i></span>
-              <span class="stat-value">45</span>
+              <span class="stat-value" data-stat="welfare-packages">0</span>
               <span class="stat-desc">Welfare Packages</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-calendar-check"></i></span>
-              <span class="stat-value">10+</span>
+              <span class="stat-value" data-stat="events-held">0</span>
               <span class="stat-desc">Events Held</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-star"></i></span>
-              <span class="stat-value">25+</span>
+              <span class="stat-value" data-stat="scholarships">0</span>
               <span class="stat-desc">Scholarships</span>
             </div>
           </div>
@@ -187,39 +187,8 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Lavenda Achieng</td>
-                  <td>JOO/2024/001</td>
-                  <td>2025-09-01</td>
-                  <td>Ksh 800</td>
-                  <td>M-Pesa</td>
-                  <td><span class="status received">✓ Received</span></td>
-                </tr>
-                <tr>
-                  <td>Mary Odundo</td>
-                  <td>JOO/2024/002</td>
-                  <td>2025-09-02</td>
-                  <td>Ksh 1,000</td>
-                  <td>Bank Transfer</td>
-                  <td><span class="status received">✓ Received</span></td>
-                </tr>
-                <tr>
-                  <td>Francis Opiyo</td>
-                  <td>JOO/2024/003</td>
-                  <td>2025-09-03</td>
-                  <td>Ksh 500</td>
-                  <td>M-Pesa</td>
-                  <td><span class="status received">✓ Received</span></td>
-                </tr>
-                <tr>
-                  <td>Vincent Otieno</td>
-                  <td>JOO/2024/004</td>
-                  <td>2025-09-04</td>
-                  <td>Ksh 1,200</td>
-                  <td>Cash</td>
-                  <td><span class="status received">✓ Received</span></td>
-                </tr>
+              <tbody id="recent-contributions-table">
+                <!-- Contributions will be loaded dynamically from API -->
               </tbody>
             </table>
           </div>
@@ -234,29 +203,14 @@
                 <tr>
                   <th>Member Name</th>
                   <th>Student ID</th>
+                  <th>Amount</th>
                   <th>Due Date</th>
-                  <th>Amount Owed</th>
-                  <th>Days Overdue</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Mary Atieno</td>
-                  <td>JOO/2024/005</td>
-                  <td>2025-09-05</td>
-                  <td>Ksh 2,000</td>
-                  <td><span style="color: var(--amber); font-weight:500;">5 days</span></td>
-                  <td><button class="btn">Send Reminder</button></td>
-                </tr>
-                <tr>
-                  <td>Francis Opiyo</td>
-                  <td>JOO/2024/003</td>
-                  <td>2025-09-05</td>
-                  <td>Ksh 3,000</td>
-                  <td><span style="color: var(--red); font-weight:500;">3 days</span></td>
-                  <td><button class="btn">Send Reminder</button></td>
-                </tr>
+              <tbody id="pending-debts-table">
+                <!-- Debts will be loaded dynamically from API -->
               </tbody>
             </table>
           </div>
@@ -277,29 +231,8 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Yvonne Achieng</td>
-                  <td>JOO/2024/006</td>
-                  <td>Ksh 1,000</td>
-                  <td>Academic Fees</td>
-                  <td>2025-09-03</td>
-                  <td>
-                    <button class="btn approve">✓ Approve</button>
-                    <button class="btn btn-reject">✗ Reject</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Jeff Juma</td>
-                  <td>JOO/2024/007</td>
-                  <td>Ksh 2,500</td>
-                  <td>Emergency</td>
-                  <td>2025-09-04</td>
-                  <td>
-                    <button class="btn approve">✓ Approve</button>
-                    <button class="btn btn-reject">✗ Reject</button>
-                  </td>
-                </tr>
+              <tbody id="loan-requests-table">
+                <!-- Loan requests will be loaded dynamically from API -->
               </tbody>
             </table>
           </div>

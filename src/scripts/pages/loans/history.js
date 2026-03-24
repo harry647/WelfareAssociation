@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function initLoanHistory() {
     // Initialize all features
     initRealTimeUpdates();
-    initCharts();
     initFilters();
     initSearch();
     initBulkOperations();
@@ -29,11 +28,14 @@ function initLoanHistory() {
     initApprovalWorkflow();
     initModals();
     
-    // Load data
-    loadLoanHistory();
-    loadPaymentHistory();
+    // Load data in sequence
+    loadLoanHistory().then(() => {
+        loadPaymentHistory();
+        checkForOverdueLoans();
+        // Initialize charts after data is loaded
+        initCharts();
+    });
     loadAnalytics();
-    checkForOverdueLoans();
     
     // Initialize table sorting
     initTableSorting();
@@ -71,11 +73,14 @@ async function fetchLoanUpdates() {
             liveStatus.textContent = 'Syncing...';
         }
         
-        // Call backend API (ready for integration)
-        const response = await callAPI(API_CONFIG.endpoints.loans);
+        // Fetch fresh data from backend API
+        const response = await loanService.getAll();
+        loansData = response.data || [];
+        renderLoanHistory(loansData);
         
-        // Update UI with new data
-        // renderLoanHistory(response.loans);
+        // Also refresh statistics and charts
+        await loadAnalytics();
+        initCharts(); // Reinitialize charts with new data
         
         if (liveIndicator && liveStatus) {
             liveIndicator.classList.remove('syncing');
@@ -97,13 +102,15 @@ function initCharts() {
     // Loan Growth Chart
     const loanGrowthCtx = document.getElementById('loanGrowthChart');
     if (loanGrowthCtx) {
+        // Prepare real data or use defaults
+        const monthlyData = getMonthlyLoanData();
         new Chart(loanGrowthCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: monthlyData.labels,
                 datasets: [{
                     label: 'Loans Disbursed',
-                    data: [5, 8, 12, 15, 18, 22],
+                    data: monthlyData.data,
                     borderColor: '#11998e',
                     backgroundColor: 'rgba(17, 153, 142, 0.1)',
                     fill: true,
@@ -130,13 +137,15 @@ function initCharts() {
     // Repayment Trends Chart
     const repaymentCtx = document.getElementById('repaymentChart');
     if (repaymentCtx) {
+        // Prepare real payment data or use defaults
+        const paymentData = getMonthlyPaymentData();
         new Chart(repaymentCtx, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: paymentData.labels,
                 datasets: [{
                     label: 'Repayments Received',
-                    data: [15000, 18000, 22000, 25000, 28000, 32000],
+                    data: paymentData.data,
                     backgroundColor: '#38ef7d',
                     borderColor: '#11998e',
                     borderWidth: 1
@@ -163,6 +172,85 @@ function initCharts() {
             }
         });
     }
+}
+
+// Helper functions to extract monthly data from loans
+function getMonthlyLoanData() {
+    if (!loansData || loansData.length === 0) {
+        return {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            data: [0, 0, 0, 0, 0, 0]
+        };
+    }
+    
+    const monthlyCounts = {};
+    const currentYear = new Date().getFullYear();
+    
+    loansData.forEach(loan => {
+        if (loan.disbursementDate) {
+            const date = new Date(loan.disbursementDate);
+            if (date.getFullYear() === currentYear) {
+                const month = date.toLocaleDateString('en-US', { month: 'short' });
+                monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+            }
+        }
+    });
+    
+    // Get last 6 months
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonth = new Date().getMonth();
+    const last6Months = [];
+    const data = [];
+    
+    for (let i = 5; i >= 0; i--) {
+        const monthIndex = (currentMonth - i + 12) % 12;
+        const monthName = months[monthIndex];
+        last6Months.push(monthName);
+        data.push(monthlyCounts[monthName] || 0);
+    }
+    
+    return { labels: last6Months, data };
+}
+
+function getMonthlyPaymentData() {
+    if (!loansData || loansData.length === 0) {
+        return {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            data: [0, 0, 0, 0, 0, 0]
+        };
+    }
+    
+    const monthlyPayments = {};
+    const currentYear = new Date().getFullYear();
+    
+    loansData.forEach(loan => {
+        if (loan.payments && Array.isArray(loan.payments)) {
+            loan.payments.forEach(payment => {
+                if (payment.date) {
+                    const date = new Date(payment.date);
+                    if (date.getFullYear() === currentYear) {
+                        const month = date.toLocaleDateString('en-US', { month: 'short' });
+                        monthlyPayments[month] = (monthlyPayments[month] || 0) + parseFloat(payment.amount || 0);
+                    }
+                }
+            });
+        }
+    });
+    
+    // Get last 6 months
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonth = new Date().getMonth();
+    const last6Months = [];
+    const data = [];
+    
+    for (let i = 5; i >= 0; i--) {
+        const monthIndex = (currentMonth - i + 12) % 12;
+        const monthName = months[monthIndex];
+        last6Months.push(monthName);
+        data.push(monthlyPayments[monthName] || 0);
+    }
+    
+    return { labels: last6Months, data };
 }
 
 // ============================================
@@ -197,44 +285,6 @@ function checkOverdue(dueDate) {
         return days;
     }
     return 0;
-}
-
-/**
- * Check for overdue loans and update UI
- */
-function checkForOverdueLoans() {
-    // Demo data - in production, this would come from the API
-    const loans = [
-        { id: 'LN/2025/001', principal: 5000, due_date: '2025-04-30', status: 'active', paid_amount: 3500 },
-        { id: 'LN/2025/008', principal: 3000, due_date: '2025-03-15', status: 'active', paid_amount: 0 },
-    ];
-    
-    let totalOverdue = 0;
-    let totalPenalty = 0;
-    
-    loans.forEach(loan => {
-        const daysOverdue = checkOverdue(loan.due_date);
-        if (daysOverdue > 0) {
-            totalOverdue++;
-            const remainingBalance = loan.principal - (loan.paid_amount || 0);
-            const penalty = calculatePenalty(remainingBalance, daysOverdue);
-            totalPenalty += penalty;
-        }
-    });
-    
-    // Update the overdue alert
-    const overdueAlert = document.getElementById('overdueAlert');
-    const overdueCount = document.getElementById('overdueCount');
-    const totalPenaltyEl = document.getElementById('totalPenalty');
-    
-    if (overdueAlert && totalOverdue > 0) {
-        overdueAlert.classList.add('show');
-        if (overdueCount) overdueCount.textContent = totalOverdue;
-        if (totalPenaltyEl) totalPenaltyEl.textContent = `Ksh ${totalPenalty.toLocaleString()}`;
-    }
-    
-    console.log(`Overdue loans: ${totalOverdue}, Total penalty: Ksh ${totalPenalty.toLocaleString()}`);
-    return { totalOverdue, totalPenalty };
 }
 
 /**
@@ -652,7 +702,7 @@ function initModals() {
     }
 }
 
-function openLoanDetails(loanId) {
+async function openLoanDetails(loanId) {
     window.currentSelectedLoanId = loanId;
     
     const modal = document.getElementById('loanDetailsModal');
@@ -660,116 +710,130 @@ function openLoanDetails(loanId) {
     
     if (!modal || !content) return;
     
-    // Populate with demo data
-    content.innerHTML = `
-        <div class="loan-detail-section">
-            <h4><i class="fas fa-user"></i> Borrower Information</h4>
-            <div class="detail-grid">
-                <div><strong>Name:</strong> John Doe</div>
-                <div><strong>Student ID:</strong> JOO/2024/001</div>
-                <div><strong>Phone:</strong> +254712345678</div>
-                <div><strong>Email:</strong> john.doe@student.joust.ac.ke</div>
-            </div>
-        </div>
+    try {
+        // Fetch loan details from API
+        const response = await loanService.getById(loanId);
+        const loan = response.success ? response.data : null;
         
-        <div class="loan-detail-section">
-            <h4><i class="fas fa-money-check"></i> Loan Information</h4>
-            <div class="detail-grid">
-                <div><strong>Loan ID:</strong> ${loanId}</div>
-                <div><strong>Amount:</strong> Ksh 5,000</div>
-                <div><strong>Interest (5%):</strong> Ksh 250</div>
-                <div><strong>Total Due:</strong> Ksh 5,250</div>
-                <div><strong>Amount Paid:</strong> Ksh 2,000</div>
-                <div><strong>Balance:</strong> Ksh 3,250</div>
-                <div><strong>Repayment Period:</strong> 3 months</div>
-                <div><strong>Due Date:</strong> March 25, 2025</div>
-            </div>
-        </div>
-        
-        <div class="loan-detail-section">
-            <h4><i class="fas fa-user-shield"></i> Guarantor Information</h4>
-            <div class="detail-grid">
-                <div><strong>Name:</strong> Jane Smith</div>
-                <div><strong>Student ID:</strong> JOO/2024/002</div>
-                <div><strong>Phone:</strong> +254723456789</div>
-            </div>
-        </div>
-        
-        <div class="loan-detail-section">
-            <h4><i class="fas fa-history"></i> Payment Timeline</h4>
-            <ul class="timeline">
-                <li class="timeline-item loan-issued">
-                    <div class="timeline-date">Jan 15, 2025</div>
-                    <div class="timeline-title">Loan Issued</div>
-                    <div class="timeline-detail">Ksh 5,000 disbursed via M-Pesa</div>
-                </li>
-                <li class="timeline-item payment">
-                    <div class="timeline-date">Feb 15, 2025</div>
-                    <div class="timeline-title">Payment Received</div>
-                    <div class="timeline-detail">Ksh 1,000 via M-Pesa (MPO123456789)</div>
-                </li>
-                <li class="timeline-item payment">
-                    <div class="timeline-date">Feb 28, 2025</div>
-                    <div class="timeline-title">Payment Received</div>
-                    <div class="timeline-detail">Ksh 1,000 via M-Pesa (MPO987654321)</div>
-                </li>
-            </ul>
-        </div>
-        
-        <div class="loan-detail-section">
-            <h4><i class="fas fa-file-alt"></i> M-Pesa Transactions</h4>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Transaction ID</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Disbursement</td>
-                        <td>MPO111111111</td>
-                        <td>Ksh 5,000</td>
-                        <td><span class="status-badge success">Completed</span></td>
-                    </tr>
-                    <tr>
-                        <td>Payment</td>
-                        <td>MPO123456789</td>
-                        <td>Ksh 1,000</td>
-                        <td><span class="status-badge success">Verified</span></td>
-                    </tr>
-                    <tr>
-                        <td>Payment</td>
-                        <td>MPO987654321</td>
-                        <td>Ksh 1,000</td>
-                        <td><span class="status-badge success">Verified</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="loan-detail-section">
-            <h4><i class="fas fa-history"></i> Audit Log</h4>
-            <div class="audit-log">
-                <div class="audit-entry">
-                    <span class="admin-name">Admin</span> created loan <span class="loan-id">${loanId}</span> 
-                    at <span class="timestamp">Jan 15, 2025 10:32 AM</span>
+        if (!loan) {
+            content.innerHTML = `
+                <div class="text-center" style="padding: 40px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f44336; margin-bottom: 15px;"></i>
+                    <p style="color: #666; font-size: 16px; margin: 0;">Loan details not found</p>
                 </div>
-                <div class="audit-entry">
-                    <span class="admin-name">System</span> disbursed Ksh 5,000 
-                    at <span class="timestamp">Jan 15, 2025 10:35 AM</span>
-                </div>
-                <div class="audit-entry">
-                    <span class="admin-name">System</span> received payment Ksh 1,000 
-                    at <span class="timestamp">Feb 15, 2025 2:15 PM</span>
+            `;
+            modal.classList.add('show');
+            return;
+        }
+        
+        const member = loan.member || {};
+        const borrowerName = `${member.firstName || 'Unknown'} ${member.lastName || ''}`.trim();
+        const applicationDate = loan.applicationDate ? new Date(loan.applicationDate).toLocaleDateString() : 'N/A';
+        const dueDate = loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : 'N/A';
+        const principalAmount = loan.principalAmount ? `Ksh ${parseFloat(loan.principalAmount).toLocaleString()}` : 'Ksh 0';
+        const interestAmount = loan.interestAmount ? `Ksh ${parseFloat(loan.interestAmount).toLocaleString()}` : 'Ksh 0';
+        const totalAmount = loan.totalAmount ? `Ksh ${parseFloat(loan.totalAmount).toLocaleString()}` : 'Ksh 0';
+        const paidAmount = loan.paidAmount ? `Ksh ${parseFloat(loan.paidAmount).toLocaleString()}` : 'Ksh 0';
+        const remainingBalance = loan.remainingBalance ? `Ksh ${parseFloat(loan.remainingBalance).toLocaleString()}` : 'Ksh 0';
+        const repaymentPeriod = loan.repaymentPeriod ? `${loan.repaymentPeriod} months` : 'N/A';
+        const purpose = loan.purpose || 'Not specified';
+        const purposeDescription = loan.purposeDescription || '';
+        
+        content.innerHTML = `
+            <div class="loan-detail-section">
+                <h4><i class="fas fa-user"></i> Borrower Information</h4>
+                <div class="detail-grid">
+                    <div><strong>Name:</strong> ${borrowerName}</div>
+                    <div><strong>Student ID:</strong> ${member.memberNumber || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${member.phone || 'N/A'}</div>
+                    <div><strong>Email:</strong> ${member.email || 'N/A'}</div>
                 </div>
             </div>
-        </div>
-    `;
-    
-    modal.classList.add('show');
+            
+            <div class="loan-detail-section">
+                <h4><i class="fas fa-money-check"></i> Loan Information</h4>
+                <div class="detail-grid">
+                    <div><strong>Loan ID:</strong> ${loan.loanNumber || loan.id}</div>
+                    <div><strong>Amount:</strong> ${principalAmount}</div>
+                    <div><strong>Interest (${loan.interestRate || 10}%):</strong> ${interestAmount}</div>
+                    <div><strong>Total Due:</strong> ${totalAmount}</div>
+                    <div><strong>Amount Paid:</strong> ${paidAmount}</div>
+                    <div><strong>Balance:</strong> ${remainingBalance}</div>
+                    <div><strong>Repayment Period:</strong> ${repaymentPeriod}</div>
+                    <div><strong>Due Date:</strong> ${dueDate}</div>
+                    <div><strong>Status:</strong> ${getStatusBadge(loan.status)}</div>
+                    <div><strong>Purpose:</strong> ${purpose}${purposeDescription ? ` - ${purposeDescription}` : ''}</div>
+                </div>
+            </div>
+            
+            ${loan.guarantors && loan.guarantors.length > 0 ? `
+            <div class="loan-detail-section">
+                <h4><i class="fas fa-user-shield"></i> Guarantor Information</h4>
+                <div class="detail-grid">
+                    ${loan.guarantors.map(guarantor => `
+                        <div><strong>Name:</strong> ${guarantor.name || 'N/A'}</div>
+                        <div><strong>Student ID:</strong> ${guarantor.memberNumber || 'N/A'}</div>
+                        <div><strong>Phone:</strong> ${guarantor.phone || 'N/A'}</div>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
+            
+            ${loan.payments && loan.payments.length > 0 ? `
+            <div class="loan-detail-section">
+                <h4><i class="fas fa-history"></i> Payment Timeline</h4>
+                <ul class="timeline">
+                    <li class="timeline-item loan-issued">
+                        <div class="timeline-date">${applicationDate}</div>
+                        <div class="timeline-title">Loan Issued</div>
+                        <div class="timeline-detail">${principalAmount} disbursed</div>
+                    </li>
+                    ${loan.payments.map(payment => `
+                        <li class="timeline-item payment">
+                            <div class="timeline-date">${payment.date ? new Date(payment.date).toLocaleDateString() : 'N/A'}</div>
+                            <div class="timeline-title">Payment Received</div>
+                            <div class="timeline-detail">Ksh ${parseFloat(payment.amount || 0).toLocaleString()} via ${payment.method || 'N/A'} ${payment.reference ? `(${payment.reference})` : ''}</div>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+            ` : ''}
+            
+            <div class="loan-detail-section">
+                <h4><i class="fas fa-file-alt"></i> Audit Log</h4>
+                <div class="audit-log">
+                    <div class="audit-entry">
+                        <span class="admin-name">System</span> created loan <span class="loan-id">${loan.loanNumber || loan.id}</span> 
+                        at <span class="timestamp">${applicationDate}</span>
+                    </div>
+                    ${loan.approvalDate ? `
+                    <div class="audit-entry">
+                        <span class="admin-name">Admin</span> approved loan 
+                        at <span class="timestamp">${new Date(loan.approvalDate).toLocaleDateString()}</span>
+                    </div>
+                    ` : ''}
+                    ${loan.disbursementDate ? `
+                    <div class="audit-entry">
+                        <span class="admin-name">System</span> disbursed ${principalAmount} 
+                        at <span class="timestamp">${new Date(loan.disbursementDate).toLocaleDateString()}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        modal.classList.add('show');
+    } catch (error) {
+        console.error('Error fetching loan details:', error);
+        content.innerHTML = `
+            <div class="text-center" style="padding: 40px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f44336; margin-bottom: 15px;"></i>
+                <p style="color: #666; font-size: 16px; margin: 0;">Error loading loan details</p>
+                <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">Please try again later</p>
+            </div>
+        `;
+        modal.classList.add('show');
+    }
 }
 
 function closeLoanDetails() {
@@ -788,43 +852,280 @@ async function loadLoanHistory() {
         const response = await loanService.getAll();
         loansData = response.data || [];
         console.log('Loan history loaded:', loansData.length);
+        renderLoanHistory(loansData);
     } catch (error) {
         console.error('Error loading loan history:', error);
+        renderLoanHistory([]);
+        showErrorMessage('Failed to load loan history');
     }
 }
 
 async function loadPaymentHistory() {
     try {
-        const response = await loanService.getPaymentHistory();
-        paymentsData = response.data || [];
+        // For now, extract payments from loan data
+        const allPayments = [];
+        loansData.forEach(loan => {
+            if (loan.payments && Array.isArray(loan.payments)) {
+                loan.payments.forEach(payment => {
+                    allPayments.push({
+                        ...payment,
+                        loanId: loan.loanNumber || loan.id,
+                        loanMember: loan.member?.firstName + ' ' + loan.member?.lastName
+                    });
+                });
+            }
+        });
+        paymentsData = allPayments;
         console.log('Payment history loaded:', paymentsData.length);
+        renderPaymentHistory(paymentsData);
     } catch (error) {
         console.error('Error loading payment history:', error);
+        renderPaymentHistory([]);
     }
 }
 
 async function loadAnalytics() {
     try {
-        const response = await callAPI(API_CONFIG.endpoints.analytics);
-        // Update analytics UI
+        const response = await loanService.getStatistics();
+        if (response.success && response.data) {
+            updateStatisticsCards(response.data);
+        }
     } catch (error) {
-        console.log('Using demo analytics');
+        console.error('Error loading analytics:', error);
+        // Keep default values if API fails
     }
 }
+
+// ============================================
+// RENDER FUNCTIONS
+// ============================================
+function renderLoanHistory(loans) {
+    const tableBody = document.getElementById('loanTableBody');
+    if (!tableBody) return;
+    
+    if (!loans || loans.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center" style="padding: 40px;">
+                    <i class="fas fa-inbox" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+                    <p style="color: #666; font-size: 16px; margin: 0;">No loan records found</p>
+                    <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">Loan applications will appear here once submitted</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tableBody.innerHTML = loans.map(loan => {
+        const member = loan.member || {};
+        const borrowerName = `${member.firstName || 'Unknown'} ${member.lastName || ''}`.trim();
+        const loanId = loan.loanNumber || loan.id || 'N/A';
+        const applicationDate = loan.applicationDate ? new Date(loan.applicationDate).toLocaleDateString() : 'N/A';
+        const amount = loan.principalAmount ? `Ksh ${parseFloat(loan.principalAmount).toLocaleString()}` : 'Ksh 0';
+        const purpose = loan.purpose || 'Not specified';
+        const repaymentPeriod = loan.repaymentPeriod ? `${loan.repaymentPeriod} months` : 'N/A';
+        const status = getStatusBadge(loan.status);
+        
+        return `
+            <tr data-loan-id="${loanId}">
+                <td><input type="checkbox" class="row-checkbox"></td>
+                <td>${loanId}</td>
+                <td>${borrowerName}</td>
+                <td>${applicationDate}</td>
+                <td>${amount}</td>
+                <td>${purpose}</td>
+                <td>${repaymentPeriod}</td>
+                <td>${status}</td>
+                <td>
+                    <a href="../payments/make-payment.html?category=loan&loanId=${loanId}" class="action-link">Repay</a>
+                    <a href="#" class="action-link" onclick="openLoanDetails('${loanId}')">Details</a>
+                    <a href="#" class="action-link" onclick="generateReceipt('${loanId}')">Receipt</a>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function renderPaymentHistory(payments) {
+    const tableBody = document.getElementById('paymentTableBody');
+    if (!tableBody) return;
+    
+    if (!payments || payments.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center" style="padding: 40px;">
+                    <i class="fas fa-receipt" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+                    <p style="color: #666; font-size: 16px; margin: 0;">No payment records found</p>
+                    <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">Payment records will appear here once payments are made</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tableBody.innerHTML = payments.map(payment => {
+        const paymentId = payment.id || `PMT/${Date.now()}`;
+        const date = payment.date ? new Date(payment.date).toLocaleDateString() : 'N/A';
+        const amount = payment.amount ? `Ksh ${parseFloat(payment.amount).toLocaleString()}` : 'Ksh 0';
+        const method = payment.method || 'N/A';
+        const reference = payment.reference || payment.transactionId || 'N/A';
+        const status = getStatusBadge(payment.status || 'verified');
+        
+        return `
+            <tr>
+                <td>${paymentId}</td>
+                <td>${date}</td>
+                <td>${payment.loanId || 'N/A'}</td>
+                <td>${amount}</td>
+                <td>${method}</td>
+                <td>${reference}</td>
+                <td>${status}</td>
+                <td><a href="#" class="action-link" onclick="generatePaymentReceipt('${paymentId}')"><i class="fas fa-file-pdf"></i> Receipt</a></td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function updateStatisticsCards(stats) {
+    // Update Total Loans
+    const totalLoansEl = document.querySelector('.stat-card:nth-child(1) .stat-number');
+    if (totalLoansEl && stats.totalLoans !== undefined) {
+        totalLoansEl.textContent = stats.totalLoans;
+    }
+    
+    // Update Fully Repaid
+    const fullyRepaidEl = document.querySelector('.stat-card:nth-child(2) .stat-number');
+    if (fullyRepaidEl && stats.completed !== undefined) {
+        fullyRepaidEl.textContent = stats.completed;
+    }
+    
+    // Update Active Loans
+    const activeLoansEl = document.querySelector('.stat-card:nth-child(3) .stat-number');
+    if (activeLoansEl && stats.active !== undefined) {
+        activeLoansEl.textContent = stats.active;
+    }
+    
+    // Update Default Rate (calculate if not provided)
+    const defaultRateEl = document.querySelector('.stat-card.danger .stat-number');
+    if (defaultRateEl) {
+        if (stats.defaultRate !== undefined) {
+            defaultRateEl.textContent = `${stats.defaultRate}%`;
+        } else if (stats.totalLoans > 0) {
+            const defaultRate = ((stats.overdue || 0) / stats.totalLoans * 100).toFixed(1);
+            defaultRateEl.textContent = `${defaultRate}%`;
+        }
+    }
+    
+    // Update Total Disbursed
+    const totalDisbursedEl = document.querySelector('.stat-card.success .stat-number');
+    if (totalDisbursedEl && stats.totalDisbursed !== undefined) {
+        totalDisbursedEl.textContent = `Ksh ${parseFloat(stats.totalDisbursed).toLocaleString()}`;
+    }
+    
+    // Update Interest Earned (calculate if not provided)
+    const interestEarnedEl = document.querySelector('.stat-card.info .stat-number');
+    if (interestEarnedEl) {
+        if (stats.interestEarned !== undefined) {
+            interestEarnedEl.textContent = `Ksh ${parseFloat(stats.interestEarned).toLocaleString()}`;
+        } else {
+            // Calculate from loans data
+            const totalInterest = loansData.reduce((sum, loan) => {
+                return sum + (parseFloat(loan.interestAmount) || 0);
+            }, 0);
+            interestEarnedEl.textContent = `Ksh ${totalInterest.toLocaleString()}`;
+        }
+    }
+}
+
+function getStatusBadge(status) {
+    const statusMap = {
+        'pending': '<span class="status-badge pending">Pending Approval</span>',
+        'approved': '<span class="status-badge approved">Approved</span>',
+        'active': '<span class="status-badge success">Active</span>',
+        'completed': '<span class="status-badge success">Fully Repaid</span>',
+        'overdue': '<span class="status-badge danger">Overdue</span>',
+        'rejected': '<span class="status-badge danger">Rejected</span>',
+        'defaulted': '<span class="status-badge danger">Defaulted</span>',
+        'verified': '<span class="status-badge success">Verified</span>',
+        'pending_verification': '<span class="status-badge warning">Pending</span>'
+    };
+    
+    return statusMap[status?.toLowerCase()] || '<span class="status-badge">Unknown</span>';
+}
+
+function showErrorMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'alert alert-danger';
+    messageDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${message}</span>`;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px 25px;
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.parentNode.removeChild(messageDiv);
+        }
+    }, 5000);
+}
+
+// Expose functions globally for onclick handlers
+window.openLoanDetails = openLoanDetails;
+window.generateReceipt = function(loanId) {
+    console.log('Generate receipt for loan:', loanId);
+    // TODO: Implement receipt generation
+};
+window.generatePaymentReceipt = function(paymentId) {
+    console.log('Generate receipt for payment:', paymentId);
+    // TODO: Implement payment receipt generation
+};
 
 // ============================================
 // OVERDUE CHECK
 // ============================================
 function checkForOverdueLoans() {
-    // In production, this would come from the API
-    const overdueCount = 2;
-    const overdueAlert = document.getElementById('overdueAlert');
-    const overdueMessage = document.getElementById('overdueMessage');
+    let totalOverdue = 0;
+    let totalPenalty = 0;
     
-    if (overdueCount > 0 && overdueAlert && overdueMessage) {
-        overdueAlert.style.display = 'flex';
-        overdueMessage.textContent = `⚠️ ${overdueCount} loan(s) are overdue`;
+    // Check actual loans data
+    loansData.forEach(loan => {
+        const daysOverdue = loanService.checkOverdue(loan.dueDate);
+        if (daysOverdue > 0 && (loan.status === 'active' || loan.status === 'overdue')) {
+            totalOverdue++;
+            const remainingBalance = parseFloat(loan.remainingBalance) || (parseFloat(loan.totalAmount) - parseFloat(loan.paidAmount || 0));
+            const penalty = loanService.calculatePenalty(remainingBalance, daysOverdue);
+            totalPenalty += penalty;
+        }
+    });
+    
+    // Update the overdue alert
+    const overdueAlert = document.getElementById('overdueAlert');
+    const overdueCount = document.getElementById('overdueCount');
+    const totalPenaltyEl = document.getElementById('totalPenalty');
+    
+    if (overdueAlert && totalOverdue > 0) {
+        overdueAlert.classList.add('show');
+        if (overdueCount) overdueCount.textContent = totalOverdue;
+        if (totalPenaltyEl) totalPenaltyEl.textContent = `Ksh ${totalPenalty.toLocaleString()}`;
+    } else if (overdueAlert) {
+        overdueAlert.classList.remove('show');
     }
+    
+    console.log(`Overdue loans: ${totalOverdue}, Total penalty: Ksh ${totalPenalty.toLocaleString()}`);
+    return { totalOverdue, totalPenalty };
 }
 
 // ============================================
@@ -904,29 +1205,6 @@ function showSuccessMessage(message) {
         right: 20px;
         background: #d4edda;
         color: #155724;
-        padding: 15px 25px;
-        border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        animation: slideIn 0.3s ease;
-    `;
-    document.body.appendChild(messageDiv);
-    setTimeout(() => messageDiv.remove(), 5000);
-}
-
-function showErrorMessage(message) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'alert alert-error';
-    messageDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> <span>${message}</span>`;
-    messageDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #f8d7da;
-        color: #721c24;
         padding: 15px 25px;
         border-radius: 6px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);

@@ -82,28 +82,28 @@
                 <i class="fas fa-users"></i>
                 <div class="stat-info">
                     <h3>Total Members</h3>
-                    <p class="stat-number">50</p>
+                    <p class="stat-number" id="totalMembers">Loading...</p>
                 </div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-money-bill-wave"></i>
                 <div class="stat-info">
                     <h3>Total Contributions</h3>
-                    <p class="stat-number">Ksh 150,000</p>
+                    <p class="stat-number" id="totalContributions">Loading...</p>
                 </div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-hand-holding-usd"></i>
                 <div class="stat-info">
                     <h3>Active Loans</h3>
-                    <p class="stat-number">Ksh 45,000</p>
+                    <p class="stat-number" id="activeLoans">Loading...</p>
                 </div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-check-circle"></i>
                 <div class="stat-info">
                     <h3>Loans Repaid</h3>
-                    <p class="stat-number">Ksh 80,000</p>
+                    <p class="stat-number" id="loansRepaid">Loading...</p>
                 </div>
             </div>
         </section>
@@ -161,18 +161,10 @@
         <section class="recent-activity">
             <h2><i class="fas fa-clock"></i> Recent Activity</h2>
             
-            <div class="activity-list">
+            <div class="activity-list" id="activityList">
                 <div class="activity-item">
-                    <span class="activity-date">Today</span>
-                    <span class="activity-desc">5 new contributions recorded</span>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-date">Yesterday</span>
-                    <span class="activity-desc">2 loan applications approved</span>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-date">Mar 18</span>
-                    <span class="activity-desc">3 new members registered</span>
+                    <span class="activity-date">Loading...</span>
+                    <span class="activity-desc">Fetching recent activity...</span>
                 </div>
             </div>
         </section>
@@ -183,7 +175,7 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+  <script type="module" src="../../src/scripts/pages/reports/index.js"></script>
 </body>
 
 </html>

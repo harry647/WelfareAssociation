@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SWA Withdrawals Management - Admin Panel">
-  <title>Withdrawals Management - Student Welfare Association | JOOUST</title>
+  <meta name="description" content="Member Details - SWA Admin Panel">
+  <title>Member Details - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../src/styles/pages/dashboard/withdrawals.css">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/members.css">
   <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
-  
 </head>
 <body>
 
@@ -73,77 +72,27 @@
       <div class="page-body">
 
         <div class="page-header">
-          <h1><i class="fas fa-wallet"></i> Withdrawals Management</h1>
-          <p>Manage member withdrawal requests</p>
+          <h1><i class="fas fa-user"></i> Member Details</h1>
+          <p>View member information and profile</p>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="cards">
-          <div class="card">
-            <h3><i class="fas fa-money-bill-wave"></i> Total Withdrawn</h3>
-            <p class="stat-number">Ksh 0</p>
-            <p class="stat-label">This Month</p>
-          </div>
-          <div class="card">
-            <h class="card">
-            <h3><i class="fas fa-clock"></i> Pending</h3>
-            <p class="stat-number">0</p>
-            <p class="stat-label">Requests</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-check"></i> Approved</h3>
-            <p class="stat-number">0</p>
-            <p class="stat-label">This Month</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-times-circle"></i> Rejected</h3>
-            <p class="stat-number">0</p>
-            <p class="stat-label">This Month</p>
-          </div>
+        <!-- Back Button -->
+        <div class="back-link">
+          <a href="members.html" class="btn"><i class="fas fa-arrow-left"></i> Back to Members</a>
         </div>
 
-        <!-- Pending Withdrawals -->
-        <section class="data-section">
-          <h2><i class="fas fa-hourglass-half"></i> Pending Withdrawal Requests</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Request ID</th>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
-                  <th>Amount</th>
-                  <th>Request Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Data will be populated by JavaScript -->
-              </tbody>
-            </table>
-          </div>
+        <!-- Member Details -->
+        <section class="data-section" id="memberDetails">
+          <div class="loading">Loading member details...</div>
         </section>
 
-        <!-- Withdrawal History -->
-        <section class="data-section">
-          <h2><i class="fas fa-history"></i> Withdrawal History</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Request ID</th>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
-                  <th>Amount</th>
-                  <th>Processed Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Data will be populated by JavaScript -->
-              </tbody>
-            </table>
+        <!-- Member Actions -->
+        <section class="quick-actions">
+          <h2><i class="fas fa-bolt"></i> Actions</h2>
+          <div class="action-buttons">
+            <a href="#" id="editBtn" class="action-btn"><i class="fas fa-edit"></i> Edit Member</a>
+            <a href="#" id="deleteBtn" class="action-btn"><i class="fas fa-trash"></i> Delete Member</a>
+            <a href="#" id="contributionsBtn" class="action-btn"><i class="fas fa-money-bill-wave"></i> View Contributions</a>
           </div>
         </section>
 
@@ -152,6 +101,6 @@
 
   </div>
 
-  <script type="module" src="../../src/scripts/pages/dashboard/withdrawals.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/member-details.js"></script>
 </body>
 </html>

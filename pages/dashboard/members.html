@@ -93,62 +93,8 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>JOO/2024/001</td>
-                  <td>Lavenda Achieng</td>
-                  <td>lavenda@student.jou.ac.ke</td>
-                  <td>+254 712 345 678</td>
-                  <td>2024-01-15</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                    <button class="btn">Edit</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>JOO/2024/002</td>
-                  <td>Mary Odundo</td>
-                  <td>mary@student.jou.ac.ke</td>
-                  <td>+254 723 456 789</td>
-                  <td>2024-02-20</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                    <button class="btn">Edit</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>JOO/2024/003</td>
-                  <td>Francis Opiyo</td>
-                  <td>francis@student.jou.ac.ke</td>
-                  <td>+254 734 567 890</td>
-                  <td>2024-03-10</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                    <button class="btn">Edit</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>JOO/2024/004</td>
-                  <td>Vincent Otieno</td>
-                  <td>vincent@student.jou.ac.ke</td>
-                  <td>+254 745 678 901</td>
-                  <td>2024-01-05</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                    <button class="btn">Edit</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>JOO/2024/005</td>
-                  <td>Sarah Kemunto</td>
-                  <td>sarah@student.jou.ac.ke</td>
-                  <td>+254 756 789 012</td>
-                  <td>2024-04-12</td>
-                  <td><span class="status" style="background: rgba(245,158,11,0.12); color: #f59e0b;">Pending</span></td>
+              <tbody id="members-table">
+                <!-- Members will be loaded dynamically from API -->
                   <td>
                     <button class="btn">View</button>
                     <button class="btn">Edit</button>
@@ -174,6 +120,6 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/members.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/members.js"></script>
 </body>
 </html>

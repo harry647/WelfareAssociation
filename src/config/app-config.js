@@ -84,6 +84,9 @@ export const API_CONFIG = {
         volunteers: '/volunteers',
         volunteerApply: '/volunteers/apply',
         
+        // Withdrawals
+        withdrawals: '/withdrawals',
+        
         // Public Pages
         publicPages: '/public',
         organization: '/organization',

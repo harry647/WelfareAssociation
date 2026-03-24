@@ -103,28 +103,56 @@ class AdminDashboardManager {
         // Update DOM elements - Quick Stats cards
         const cards = document.querySelectorAll('.card');
         if (cards && cards.length >= 4) {
-            if (cards[0].querySelector('.stat-number')) {
-                cards[0].querySelector('.stat-number').textContent = stats.totalMembers || 22;
+            // Total Members
+            const totalMembersEl = cards[0].querySelector('[data-stat="total-members"]');
+            if (totalMembersEl) {
+                totalMembersEl.textContent = stats.totalMembers || 0;
             }
-            if (cards[1].querySelector('.stat-number')) {
-                cards[1].querySelector('.stat-number').textContent = formatCurrency(stats.totalContributions || 7000);
+            
+            // Monthly Contributions
+            const monthlyContributionsEl = cards[1].querySelector('[data-stat="monthly-contributions"]');
+            if (monthlyContributionsEl) {
+                monthlyContributionsEl.textContent = formatCurrency(stats.monthlyContributions || 0);
             }
-            if (cards[2].querySelector('.stat-number')) {
-                cards[2].querySelector('.stat-number').textContent = formatCurrency(stats.availableBalance || 3000);
+            
+            // Available Balance
+            const availableBalanceEl = cards[2].querySelector('[data-stat="available-balance"]');
+            if (availableBalanceEl) {
+                availableBalanceEl.textContent = formatCurrency(stats.availableBalance || 0);
             }
-            if (cards[3].querySelector('.stat-number')) {
-                cards[3].querySelector('.stat-number').textContent = formatCurrency(stats.pendingDebts || 4000);
+            
+            // Pending Debts
+            const pendingDebtsEl = cards[3].querySelector('[data-stat="pending-debts"]');
+            if (pendingDebtsEl) {
+                pendingDebtsEl.textContent = formatCurrency(stats.pendingDebts || 0);
             }
+        }
+        
+        // Update Overview Statistics
+        const totalRegisteredEl = document.querySelector('[data-stat="total-registered"]');
+        if (totalRegisteredEl) {
+            totalRegisteredEl.textContent = stats.totalRegistered || 0;
+        }
+        
+        const welfarePackagesEl = document.querySelector('[data-stat="welfare-packages"]');
+        if (welfarePackagesEl) {
+            welfarePackagesEl.textContent = stats.welfarePackages || 0;
+        }
+        
+        const eventsHeldEl = document.querySelector('[data-stat="events-held"]');
+        if (eventsHeldEl) {
+            eventsHeldEl.textContent = stats.eventsHeld || 0;
+        }
+        
+        const scholarshipsEl = document.querySelector('[data-stat="scholarships"]');
+        if (scholarshipsEl) {
+            scholarshipsEl.textContent = stats.scholarships || 0;
         }
     }
 
     renderContributions(contributions) {
         // Find the Recent Contributions table
-        const tables = document.querySelectorAll('.data-section table');
-        if (tables.length === 0) return;
-
-        // First table is usually contributions
-        const tbody = tables[0].querySelector('tbody');
+        const tbody = document.getElementById('recent-contributions-table');
         if (!tbody) return;
 
         tbody.innerHTML = contributions.map(c => `
@@ -140,29 +168,23 @@ class AdminDashboardManager {
     }
 
     renderDebts(debts) {
-        const tables = document.querySelectorAll('.data-section table');
-        if (tables.length < 2) return;
-
-        const tbody = tables[1].querySelector('tbody');
+        const tbody = document.getElementById('pending-debts-table');
         if (!tbody) return;
 
         tbody.innerHTML = debts.map(d => `
             <tr>
-                <td>${d.memberName || d.member || 'N/A'}</td>
+                <td>${d.memberName || 'N/A'}</td>
                 <td>${d.studentId || 'N/A'}</td>
-                <td>${formatDate(d.dueDate || d.date)}</td>
                 <td>${formatCurrency(d.amount)}</td>
-                <td><span style="color: var(--amber); font-weight:500;">${d.daysOverdue || 0} days</span></td>
-                <td><button class="btn" onclick="adminDashboardManager.remindDebt('${d.id}')">Send Reminder</button></td>
+                <td>${formatDate(d.dueDate)}</td>
+                <td><span class="status ${d.status === 'paid' ? 'received' : d.status === 'pending' ? 'pending' : 'overdue'}">${d.status === 'paid' ? '✓ Paid' : d.status === 'pending' ? 'Pending' : 'Overdue'}</span></td>
+                <td><button class="btn" onclick="this.sendReminder('${d.id}')">Send Reminder</button></td>
             </tr>
         `).join('');
     }
 
     renderLoans(loans) {
-        const tables = document.querySelectorAll('.data-section table');
-        if (tables.length < 3) return;
-
-        const tbody = tables[2].querySelector('tbody');
+        const tbody = document.getElementById('loan-requests-table');
         if (!tbody) return;
 
         tbody.innerHTML = loans.map(l => `

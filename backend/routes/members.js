@@ -86,10 +86,10 @@ router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res
         // Get members by type using Sequelize
         const byType = await Member.findAll({
             attributes: [
-                [require('sequelize').col('membership_type'), 'membershipType'],
-                [require('sequelize').fn('COUNT', require('sequelize').col('membership_type')), 'count']
+                ['membershipType', 'membershipType'],
+                [sequelize.fn('COUNT', sequelize.col('id')), 'count']
             ],
-            group: ['membership_type']
+            group: ['membershipType']
         });
 
         res.json({

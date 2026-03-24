@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Edit Member - SWA Admin Panel">
+  <title>Edit Member - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/members.css">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <h2>SWA Admin</h2>
+        <p>JOOUST</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Main</div>
+    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+
+    <!-- Top Bar -->
+    <div class="admin-header">
+      <div class="admin-info">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="admin-avatar">VO</div>
+        <div class="admin-details">
+          <h3>Vincent Otieno</h3>
+          <p>Administrator</p>
+          <span class="admin-role">Chairman, SWA</span>
+        </div>
+      </div>
+      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content-section active">
+      <div class="page-body">
+
+        <div class="page-header">
+          <h1><i class="fas fa-user-edit"></i> Edit Member</h1>
+          <p>Update member information</p>
+        </div>
+
+        <!-- Back Button -->
+        <div class="back-link">
+          <a href="members.html" class="btn"><i class="fas fa-arrow-left"></i> Back to Members</a>
+        </div>
+
+        <!-- Edit Member Form -->
+        <section class="data-section">
+          <h2><i class="fas fa-user"></i> Member Information</h2>
+          <div class="form-container">
+            <form id="editMemberForm">
+              <!-- Personal Information -->
+              <div class="form-section">
+                <h3>Personal Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="dateOfBirth">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" name="dateOfBirth">
+                  </div>
+                  <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender">
+                      <option value="">-- Select --</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="address">Address</label>
+                  <input type="text" id="address" name="address">
+                </div>
+              </div>
+
+              <!-- Membership Information -->
+              <div class="form-section">
+                <h3>Membership Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="memberNumber">Member Number</label>
+                    <input type="text" id="memberNumber" name="memberNumber" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="membershipType">Membership Type</label>
+                    <select id="membershipType" name="membershipType">
+                      <option value="Regular">Regular</option>
+                      <option value="Premium">Premium</option>
+                      <option value="Lifetime">Lifetime</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="membershipStatus">Status</label>
+                    <select id="membershipStatus" name="membershipStatus">
+                      <option value="active">Active</option>
+                      <option value="pending">Pending</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="joinDate">Join Date</label>
+                    <input type="date" id="joinDate" name="joinDate" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Emergency Contact -->
+              <div class="form-section">
+                <h3>Emergency Contact</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="emergencyName">Contact Name</label>
+                    <input type="text" id="emergencyName" name="emergencyName">
+                  </div>
+                  <div class="form-group">
+                    <label for="emergencyPhone">Contact Phone</label>
+                    <input type="tel" id="emergencyPhone" name="emergencyPhone">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="emergencyRelationship">Relationship</label>
+                  <input type="text" id="emergencyRelationship" name="emergencyRelationship">
+                </div>
+              </div>
+
+              <!-- Next of Kin -->
+              <div class="form-section">
+                <h3>Next of Kin</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="kinName">Name</label>
+                    <input type="text" id="kinName" name="kinName">
+                  </div>
+                  <div class="form-group">
+                    <label for="kinPhone">Phone</label>
+                    <input type="tel" id="kinPhone" name="kinPhone">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="kinRelationship">Relationship</label>
+                  <input type="text" id="kinRelationship" name="kinRelationship">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <a href="members.html" class="btn">Cancel</a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="../../src/scripts/pages/dashboard/edit-member.js"></script>
+</body>
+</html>

@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
   <link rel="stylesheet" href="../../src/styles/pages/loans/history.css">
   <!-- Chart.js for analytics -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   
   <style>
     /* Real-time Indicator */
@@ -655,7 +655,7 @@
         <div id="alertsContainer">
             <div class="alert-box warning" id="overdueAlert" style="display: none;">
                 <i class="fas fa-exclamation-triangle"></i>
-                <span id="overdueMessage">⚠️ 2 loans are overdue</span>
+                <span id="overdueMessage">⚠️ 0 loans are overdue</span>
             </div>
         </div>
 
@@ -668,42 +668,42 @@
                     <i class="fas fa-file-invoice" style="background: #e8f5e9; color: #2e7d32;"></i>
                     <div class="stat-info">
                         <h3>Total Loans</h3>
-                        <p class="stat-number">48</p>
+                        <p class="stat-number">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-check-circle" style="background: #e3f2fd; color: #1565c0;"></i>
                     <div class="stat-info">
                         <h3>Fully Repaid</h3>
-                        <p class="stat-number">35</p>
+                        <p class="stat-number">0</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-spinner" style="background: #fff3e0; color: #ef6c00;"></i>
                     <div class="stat-info">
                         <h3>Active Loans</h3>
-                        <p class="stat-number">11</p>
+                        <p class="stat-number">0</p>
                     </div>
                 </div>
                 <div class="stat-card danger">
                     <i class="fas fa-exclamation-triangle"></i>
                     <div class="stat-info">
                         <h3>Default Rate</h3>
-                        <p class="stat-number">4%</p>
+                        <p class="stat-number">0%</p>
                     </div>
                 </div>
                 <div class="stat-card success">
                     <i class="fas fa-money-bill-wave"></i>
                     <div class="stat-info">
                         <h3>Total Disbursed</h3>
-                        <p class="stat-number">Ksh 285,000</p>
+                        <p class="stat-number">Ksh 0</p>
                     </div>
                 </div>
                 <div class="stat-card info">
                     <i class="fas fa-percentage"></i>
                     <div class="stat-info">
                         <h3>Interest Earned</h3>
-                        <p class="stat-number">Ksh 24,500</p>
+                        <p class="stat-number">Ksh 0</p>
                     </div>
                 </div>
             </div>
@@ -787,49 +787,7 @@
                     </tr>
                 </thead>
                 <tbody id="loanTableBody">
-                    <tr data-loan-id="LN/2025/001">
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td>LN/2025/001</td>
-                        <td>John Doe</td>
-                        <td>Jan 15, 2025</td>
-                        <td>Ksh 5,000</td>
-                        <td>Academic Fees</td>
-                        <td>3 months</td>
-                        <td><span class="status-badge pending">In Progress</span></td>
-                        <td>
-                            <a href="../payments/make-payment.html?category=loan" class="action-link">Repay</a>
-                            <a href="#" class="action-link" onclick="openLoanDetails('LN/2025/001')">Details</a>
-                            <a href="#" class="action-link">Receipt</a>
-                        </td>
-                    </tr>
-                    <tr data-loan-id="LN/2024/015">
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td>LN/2024/015</td>
-                        <td>Jane Smith</td>
-                        <td>Nov 10, 2024</td>
-                        <td>Ksh 3,000</td>
-                        <td>Books & Supplies</td>
-                        <td>2 months</td>
-                        <td><span class="status-badge success">Fully Repaid</span></td>
-                        <td>
-                            <a href="#" class="action-link">View</a>
-                            <a href="#" class="action-link">Receipt</a>
-                        </td>
-                    </tr>
-                    <tr data-loan-id="LN/2024/008" class="overdue-row">
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td>LN/2024/008</td>
-                        <td>Bob Wilson</td>
-                        <td>Aug 05, 2024</td>
-                        <td>Ksh 4,000</td>
-                        <td>Accommodation</td>
-                        <td>3 months</td>
-                        <td><span class="status-badge danger">Overdue</span></td>
-                        <td>
-                            <a href="#" class="action-link">Details</a>
-                            <a href="#" class="action-link warning">Reminder</a>
-                        </td>
-                    </tr>
+                    <!-- Loan records will be dynamically loaded here -->
                 </tbody>
             </table>
         </section>
@@ -852,26 +810,7 @@
                     </tr>
                 </thead>
                 <tbody id="paymentTableBody">
-                    <tr>
-                        <td>PMT/2025/001</td>
-                        <td>Feb 28, 2025</td>
-                        <td>LN/2025/001</td>
-                        <td>Ksh 1,000</td>
-                        <td>M-Pesa</td>
-                        <td>MPO987654321</td>
-                        <td><span class="status-badge success">Verified</span></td>
-                        <td><a href="#" class="action-link"><i class="fas fa-file-pdf"></i> Receipt</a></td>
-                    </tr>
-                    <tr>
-                        <td>PMT/2025/002</td>
-                        <td>Feb 15, 2025</td>
-                        <td>LN/2025/001</td>
-                        <td>Ksh 1,000</td>
-                        <td>M-Pesa</td>
-                        <td>MPO123456789</td>
-                        <td><span class="status-badge success">Verified</span></td>
-                        <td><a href="#" class="action-link"><i class="fas fa-file-pdf"></i> Receipt</a></td>
-                    </tr>
+                    <!-- Payment records will be dynamically loaded here -->
                 </tbody>
             </table>
         </section>
@@ -917,7 +856,7 @@
     </div>
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
   <script type="module" src="../../src/scripts/pages/loans/history.js"></script>
 </body>
 </html>

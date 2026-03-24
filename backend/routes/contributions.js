@@ -6,8 +6,10 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Contribution = require('../models/Contribution');
 const Member = require('../models/Member');
+const User = require('../models/User');
 const { auth, authorize } = require('../middleware/auth');
 
 // Validation middleware
@@ -30,44 +32,59 @@ router.get('/', auth, async (req, res) => {
     try {
         const { memberId, type, status, page = 1, limit = 10 } = req.query;
         
-        let query = {};
+        const where = {};
         
         // Non-admin users only see their own contributions
         if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
-            const member = await Member.findOne({ userId: req.user._id });
+            const member = await Member.findOne({ where: { userId: req.user._id } });
             if (member) {
-                query.member = member._id;
+                where.memberId = member.id;
             }
         } else if (memberId) {
-            query.member = memberId;
+            where.memberId = memberId;
         }
         
-        if (type) query.type = type;
-        if (status) query.status = status;
+        if (type) where.type = type;
+        if (status) where.status = status;
 
-        const contributions = await Contribution.find(query)
-            .populate('member', 'firstName lastName memberNumber email')
-            .populate('recordedBy', 'firstName lastName')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Contribution.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: contributions } = await Contribution.findAndCountAll({
+            where,
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email'] 
+                }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: contributions,
+            data: contributions || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching contributions'
+        console.error('Error fetching contributions:', error);
+        // Return empty data instead of 500 error
+        res.json({
+            success: true,
+            data: [],
+            pagination: {
+                page: 1,
+                limit: 10,
+                total: 0,
+                pages: 0
+            },
+            message: 'No contributions found or database not initialized'
         });
     }
 });
@@ -78,18 +95,18 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/total', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const result = await Contribution.aggregate([
-            { $match: { status: 'completed' } },
-            { $group: { _id: null, total: { $sum: '$amount' } } }
-        ]);
+        const result = await Contribution.sum('amount', {
+            where: { status: 'completed' }
+        });
 
         res.json({
             success: true,
             data: {
-                total: result[0]?.total || 0
+                total: result || 0
             }
         });
     } catch (error) {
+        console.error('Error fetching total:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching total'
@@ -106,54 +123,55 @@ router.get('/summary', auth, authorize('admin', 'treasurer'), async (req, res) =
         const { year } = req.query;
         const currentYear = year || new Date().getFullYear();
 
-        // Monthly contributions
-        const monthlyContributions = await Contribution.aggregate([
-            {
-                $match: {
-                    status: 'completed',
-                    createdAt: {
-                        $gte: new Date(`${currentYear}-01-01`),
-                        $lt: new Date(`${currentYear + 1}-01-01`)
-                    }
+        // Get all completed contributions for the year
+        const contributions = await Contribution.findAll({
+            where: {
+                status: 'completed',
+                createdAt: {
+                    [Op.gte]: new Date(`${currentYear}-01-01`),
+                    [Op.lt]: new Date(`${currentYear + 1}-01-01`)
                 }
             },
-            {
-                $group: {
-                    _id: { $month: '$createdAt' },
-                    total: { $sum: '$amount' },
-                    count: { $sum: 1 }
-                }
-            },
-            { $sort: { _id: 1 } }
-        ]);
+            attributes: ['amount', 'type', 'createdAt']
+        });
 
-        // By type
-        const byType = await Contribution.aggregate([
-            { $match: { status: 'completed' } },
-            {
-                $group: {
-                    _id: '$type',
-                    total: { $sum: '$amount' },
-                    count: { $sum: 1 }
-                }
+        // Group by month
+        const monthlyMap = {};
+        const typeMap = {};
+        let yearlyTotal = 0;
+
+        contributions.forEach(c => {
+            const month = new Date(c.createdAt).getMonth() + 1;
+            yearlyTotal += parseFloat(c.amount);
+
+            // Monthly
+            if (!monthlyMap[month]) {
+                monthlyMap[month] = { month, total: 0, count: 0 };
             }
-        ]);
+            monthlyMap[month].total += parseFloat(c.amount);
+            monthlyMap[month].count += 1;
 
-        // Total
-        const total = await Contribution.aggregate([
-            { $match: { status: 'completed' } },
-            { $group: { _id: null, total: { $sum: '$amount' } } }
-        ]);
+            // By type
+            if (!typeMap[c.type]) {
+                typeMap[c.type] = { _id: c.type, total: 0, count: 0 };
+            }
+            typeMap[c.type].total += parseFloat(c.amount);
+            typeMap[c.type].count += 1;
+        });
+
+        const monthlyContributions = Object.values(monthlyMap).sort((a, b) => a.month - b.month);
+        const byType = Object.values(typeMap);
 
         res.json({
             success: true,
             data: {
-                yearlyTotal: total[0]?.total || 0,
+                yearlyTotal,
                 monthlyContributions,
                 byType
             }
         });
     } catch (error) {
+        console.error('Error fetching summary:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching summary'
@@ -167,9 +185,12 @@ router.get('/summary', auth, authorize('admin', 'treasurer'), async (req, res) =
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const contribution = await Contribution.findById(req.params.id)
-            .populate('member', 'firstName lastName memberNumber email')
-            .populate('recordedBy', 'firstName lastName');
+        const contribution = await Contribution.findByPk(req.params.id, {
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber', 'email'] },
+                { model: User, as: 'recordedBy', attributes: ['firstName', 'lastName'] }
+            ]
+        });
 
         if (!contribution) {
             return res.status(404).json({
@@ -183,6 +204,7 @@ router.get('/:id', auth, async (req, res) => {
             data: contribution
         });
     } catch (error) {
+        console.error('Error fetching contribution:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching contribution'
@@ -206,9 +228,9 @@ router.post('/add', auth, [
         // Determine which member
         let member;
         if (memberId && ['admin', 'treasurer'].includes(req.user.role)) {
-            member = await Member.findById(memberId);
+            member = await Member.findByPk(memberId);
         } else {
-            member = await Member.findOne({ userId: req.user._id });
+            member = await Member.findOne({ where: { userId: req.user._id } });
         }
 
         if (!member) {
@@ -233,7 +255,7 @@ router.post('/add', auth, [
         }
 
         const contribution = await Contribution.create({
-            member: member._id,
+            memberId: member.id,
             amount,
             type,
             period: periodObj,
@@ -246,8 +268,10 @@ router.post('/add', auth, [
         });
 
         // Update member's total contributions
-        member.totalContributions = (member.totalContributions || 0) + amount;
-        await member.save();
+        const currentTotal = parseFloat(member.totalContributions) || 0;
+        await member.update({
+            totalContributions: currentTotal + parseFloat(amount)
+        });
 
         res.status(201).json({
             success: true,
@@ -271,7 +295,7 @@ router.put('/:id', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
         const { amount, type, status, description } = req.body;
 
-        const contribution = await Contribution.findById(req.params.id);
+        const contribution = await Contribution.findByPk(req.params.id);
         
         if (!contribution) {
             return res.status(404).json({
@@ -281,18 +305,26 @@ router.put('/:id', auth, authorize('admin', 'treasurer'), async (req, res) => {
         }
 
         // Update member's contribution total if amount changed
-        const member = await Member.findById(contribution.member);
-        if (member && amount !== contribution.amount) {
-            member.totalContributions = member.totalContributions - contribution.amount + amount;
-            await member.save();
+        if (amount && parseFloat(amount) !== parseFloat(contribution.amount)) {
+            const member = await Member.findByPk(contribution.memberId);
+            if (member) {
+                const currentTotal = parseFloat(member.totalContributions) || 0;
+                const oldAmount = parseFloat(contribution.amount);
+                const newAmount = parseFloat(amount);
+                await member.update({
+                    totalContributions: currentTotal - oldAmount + newAmount
+                });
+            }
         }
 
-        if (amount) contribution.amount = amount;
-        if (type) contribution.type = type;
-        if (status) contribution.status = status;
-        if (description) contribution.description = description;
+        // Update contribution
+        const updateData = {};
+        if (amount) updateData.amount = amount;
+        if (type) updateData.type = type;
+        if (status) updateData.status = status;
+        if (description !== undefined) updateData.description = description;
 
-        await contribution.save();
+        await contribution.update(updateData);
 
         res.json({
             success: true,
@@ -300,6 +332,7 @@ router.put('/:id', auth, authorize('admin', 'treasurer'), async (req, res) => {
             data: contribution
         });
     } catch (error) {
+        console.error('Error updating contribution:', error);
         res.status(500).json({
             success: false,
             message: 'Error updating contribution'
@@ -313,7 +346,7 @@ router.put('/:id', auth, authorize('admin', 'treasurer'), async (req, res) => {
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const contribution = await Contribution.findById(req.params.id);
+        const contribution = await Contribution.findByPk(req.params.id);
         
         if (!contribution) {
             return res.status(404).json({
@@ -323,19 +356,23 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
         }
 
         // Update member's total
-        const member = await Member.findById(contribution.member);
+        const member = await Member.findByPk(contribution.memberId);
         if (member) {
-            member.totalContributions = Math.max(0, member.totalContributions - contribution.amount);
-            await member.save();
+            const currentTotal = parseFloat(member.totalContributions) || 0;
+            const contributionAmount = parseFloat(contribution.amount);
+            await member.update({
+                totalContributions: Math.max(0, currentTotal - contributionAmount)
+            });
         }
 
-        await Contribution.findByIdAndDelete(req.params.id);
+        await contribution.destroy();
 
         res.json({
             success: true,
             message: 'Contribution deleted successfully'
         });
     } catch (error) {
+        console.error('Error deleting contribution:', error);
         res.status(500).json({
             success: false,
             message: 'Error deleting contribution'

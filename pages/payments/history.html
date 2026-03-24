@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
   <link rel="stylesheet" href="../../src/styles/pages/payments/history.css">
   <!-- Chart.js for analytics -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -33,10 +33,23 @@
     <a href="../dashboard/withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
     <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
     <a href="../dashboard/debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
-    <a href="history.html" class="nav-link active"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
     <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
-    <a href="../reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
     <a href="../dashboard/settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-section-label">More</div>
+    <a href="../dashboard/registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
+    <a href="../dashboard/active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
+    <a href="../dashboard/fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
+    <a href="../dashboard/members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+    <a href="../dashboard/executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
+    <a href="../dashboard/documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
+    <a href="../dashboard/notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="../dashboard/analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="../dashboard/security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
   </div>
 
   <!-- Main Content -->
@@ -326,7 +339,7 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/admin-dashboard.js"></script>
   <script type="module" src="../../src/scripts/pages/payments/history.js"></script>
 </body>
 

@@ -4,7 +4,11 @@
  * Supports both "My Payments" and "All Payments (Admin)" views
  */
 
-// Payment data store (mock data - in production would come from API)
+// Import services
+import { paymentService, authService } from '../../../services/index.js';
+import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
+
+// Payment data store
 let paymentStore = {
     myPayments: [],
     allPayments: [],
@@ -88,9 +92,9 @@ async function initPaymentHistory() {
     // Initialize filters
     initFilters();
     
-    // Check if admin (for demo, check localStorage)
-    const isAdmin = localStorage.getItem('swa_is_admin') === 'true';
-    if (isAdmin) {
+    // Check if admin
+    const currentUser = authService.getCurrentUser();
+    if (currentUser && currentUser.role === 'admin') {
         showAdminView();
     } else {
         showMyPaymentsView();
@@ -120,67 +124,64 @@ function loadUserData() {
 }
 
 async function loadPaymentData() {
-    // In production, this would fetch from API
-    // For demo, generate mock data
-    
-    // My payments (for current logged in user)
-    paymentStore.myPayments = generateMockPayments(15, 'my');
-    
-    // All payments (for admin view)
-    paymentStore.allPayments = generateMockPayments(50, 'all');
-    
-    // Apply initial filters
-    currentState.myView.filtered = [...paymentStore.myPayments];
-    currentState.adminView.filtered = [...paymentStore.allPayments];
-    
-    // Update UI
-    updateMyPaymentsDisplay();
-    updateAdminDisplay();
+    try {
+        console.log('Loading payment data from database...');
+        
+        // Get current user
+        const currentUser = authService.getCurrentUser();
+        if (!currentUser) {
+            console.error('No authenticated user found');
+            showNotification('Please login to view payment history', 'error');
+            return;
+        }
+
+        // Load user's payments
+        try {
+            const myPaymentsData = await paymentService.getByMember(currentUser.id || currentUser._id);
+            paymentStore.myPayments = myPaymentsData.data || myPaymentsData || [];
+            console.log('My payments loaded:', paymentStore.myPayments.length);
+        } catch (error) {
+            console.error('Failed to load user payments:', error);
+            paymentStore.myPayments = [];
+        }
+
+        // Load all payments (admin only)
+        if (currentUser.role === 'admin') {
+            try {
+                const allPaymentsData = await paymentService.getAll();
+                paymentStore.allPayments = allPaymentsData.data || allPaymentsData || [];
+                console.log('All payments loaded:', paymentStore.allPayments.length);
+            } catch (error) {
+                console.error('Failed to load all payments:', error);
+                paymentStore.allPayments = [];
+            }
+        } else {
+            paymentStore.allPayments = [];
+        }
+        
+        // Apply initial filters
+        currentState.myView.filtered = [...paymentStore.myPayments];
+        currentState.adminView.filtered = [...paymentStore.allPayments];
+        
+        // Update UI
+        updateMyPaymentsDisplay();
+        updateAdminDisplay();
+        
+    } catch (error) {
+        console.error('Error loading payment data:', error);
+        showNotification('Failed to load payment data', 'error');
+        
+        // Set empty data on error
+        paymentStore.myPayments = [];
+        paymentStore.allPayments = [];
+        currentState.myView.filtered = [];
+        currentState.adminView.filtered = [];
+        
+        updateMyPaymentsDisplay();
+        updateAdminDisplay();
+    }
 }
 
-function generateMockPayments(count, type) {
-    const payments = [];
-    const categories = Object.keys(CONFIG.categories);
-    const methods = Object.keys(CONFIG.methods);
-    const statuses = ['completed', 'completed', 'completed', 'pending', 'failed'];
-    
-    const names = [
-        'John Doe', 'Mary Atieno', 'Peter Ochieng', 'Grace Wambui', 'James Ooko',
-        'Sarah Nekesa', 'David Otieno', 'Faith Achieng', 'Michael Odhiambo', 'Grace Moraa'
-    ];
-    
-    const studentIds = [
-        'JOO/2024/001', 'JOO/2024/002', 'JOO/2024/003', 'JOO/2024/004', 'JOO/2024/005'
-    ];
-    
-    for (let i = 0; i < count; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() - Math.floor(Math.random() * 90));
-        
-        const amount = [500, 1000, 1500, 2000, 2500, 3000, 5000][Math.floor(Math.random() * 7)];
-        const category = categories[Math.floor(Math.random() * categories.length)];
-        const method = methods[Math.floor(Math.random() * methods.length)];
-        const status = statuses[Math.floor(Math.random() * statuses.length)];
-        
-        const nameIndex = type === 'my' ? 0 : Math.floor(Math.random() * names.length);
-        
-        payments.push({
-            id: `SWA-${date.getFullYear()}-${String(i + 1).padStart(6, '0')}`,
-            date: date.toISOString().split('T')[0],
-            fullName: type === 'my' ? 'Current User' : names[nameIndex],
-            studentId: type === 'my' ? 'JOO/2024/001' : studentIds[Math.floor(Math.random() * studentIds.length)],
-            category,
-            amount,
-            method,
-            status,
-            phone: '2547' + Math.floor(Math.random() * 100000000).toString().padStart(8, '0'),
-            transactionId: status === 'completed' ? 'MPO' + Math.floor(Math.random() * 1000000000) : ''
-        });
-    }
-    
-    // Sort by date descending
-    return payments.sort((a, b) => new Date(b.date) - new Date(a.date));
-}
 
 // =====================
 // VIEW TOGGLE
@@ -230,14 +231,14 @@ function updateMyPaymentsDisplay() {
     
     // Update summary cards
     const total = payments.length;
-    const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalAmount = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
     const completed = payments.filter(p => p.status === 'completed').length;
     const pending = payments.filter(p => p.status === 'pending').length;
     
-    document.getElementById('myTotalPayments').textContent = total;
-    document.getElementById('myTotalAmount').textContent = `Ksh ${totalAmount.toLocaleString()}`;
-    document.getElementById('mySuccessful').textContent = completed;
-    document.getElementById('myPending').textContent = pending;
+    document.getElementById('myTotalPayments').textContent = total || '0';
+    document.getElementById('myTotalAmount').textContent = formatCurrency(totalAmount) || 'Ksh 0';
+    document.getElementById('mySuccessful').textContent = completed || '0';
+    document.getElementById('myPending').textContent = pending || '0';
     
     // Pagination
     const totalPages = Math.ceil(total / CONFIG.itemsPerPage);
@@ -261,24 +262,24 @@ function updateMyPaymentsDisplay() {
 }
 
 function createPaymentRow(payment) {
-    const statusInfo = CONFIG.statuses[payment.status];
-    const categoryName = CONFIG.categories[payment.category];
-    const methodName = CONFIG.methods[payment.method];
+    const statusInfo = CONFIG.statuses[payment.status] || { label: 'Unknown', class: 'status--unknown' };
+    const categoryName = CONFIG.categories[payment.category] || payment.category || 'Other';
+    const methodName = CONFIG.methods[payment.method] || payment.method || 'Unknown';
     
     return `
         <tr>
-            <td>${formatDate(payment.date)}</td>
-            <td><strong>${payment.id}</strong></td>
+            <td>${formatDate(payment.date || payment.createdAt)}</td>
+            <td><strong>${payment.reference || payment.receiptNumber || payment.id || 'N/A'}</strong></td>
             <td>${categoryName}</td>
-            <td><strong>Ksh ${payment.amount.toLocaleString()}</strong></td>
+            <td><strong>${formatCurrency(payment.amount || 0)}</strong></td>
             <td>${methodName}</td>
             <td><span class="status ${statusInfo.class}">${statusInfo.label}</span></td>
             <td>
-                <button class="btn-sm" onclick="viewPaymentDetails('${payment.id}')" title="View Details">
+                <button class="btn-sm" onclick="viewPaymentDetails('${payment.id || payment._id}')" title="View Details">
                     <i class="fas fa-eye"></i>
                 </button>
                 ${payment.status === 'completed' ? `
-                <button class="btn-sm" onclick="downloadReceipt('${payment.id}')" title="Download Receipt">
+                <button class="btn-sm" onclick="downloadReceipt('${payment.id || payment._id}')" title="Download Receipt">
                     <i class="fas fa-download"></i>
                 </button>
                 ` : ''}
@@ -295,16 +296,16 @@ function updateAdminDisplay() {
     
     // Update summary cards
     const total = payments.length;
-    const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalAmount = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
     const completed = payments.filter(p => p.status === 'completed').length;
     const pending = payments.filter(p => p.status === 'pending').length;
     const failed = payments.filter(p => p.status === 'failed').length;
     
-    document.getElementById('adminTotalPayments').textContent = total;
-    document.getElementById('adminTotalAmount').textContent = `Ksh ${totalAmount.toLocaleString()}`;
-    document.getElementById('adminCompleted').textContent = completed;
-    document.getElementById('adminPending').textContent = pending;
-    document.getElementById('adminFailed').textContent = failed;
+    document.getElementById('adminTotalPayments').textContent = total || '0';
+    document.getElementById('adminTotalAmount').textContent = formatCurrency(totalAmount) || 'Ksh 0';
+    document.getElementById('adminCompleted').textContent = completed || '0';
+    document.getElementById('adminPending').textContent = pending || '0';
+    document.getElementById('adminFailed').textContent = failed || '0';
     
     // Update category breakdown
     updateCategoryBreakdown(payments);
@@ -343,26 +344,26 @@ function updateAdminTable() {
 }
 
 function createAdminPaymentRow(payment) {
-    const statusInfo = CONFIG.statuses[payment.status];
-    const categoryName = CONFIG.categories[payment.category];
-    const methodName = CONFIG.methods[payment.method];
+    const statusInfo = CONFIG.statuses[payment.status] || { label: 'Unknown', class: 'status--unknown' };
+    const categoryName = CONFIG.categories[payment.category] || payment.category || 'Other';
+    const methodName = CONFIG.methods[payment.method] || payment.method || 'Unknown';
     
     return `
         <tr>
-            <td>${formatDate(payment.date)}</td>
-            <td><strong>${payment.id}</strong></td>
-            <td>${payment.fullName}</td>
-            <td>${payment.studentId}</td>
+            <td>${formatDate(payment.date || payment.createdAt)}</td>
+            <td><strong>${payment.reference || payment.receiptNumber || payment.id || 'N/A'}</strong></td>
+            <td>${payment.fullName || payment.memberName || payment.payerName || 'N/A'}</td>
+            <td>${payment.studentId || payment.memberId || 'N/A'}</td>
             <td>${categoryName}</td>
-            <td><strong>Ksh ${payment.amount.toLocaleString()}</strong></td>
+            <td><strong>${formatCurrency(payment.amount || 0)}</strong></td>
             <td>${methodName}</td>
             <td><span class="status ${statusInfo.class}">${statusInfo.label}</span></td>
             <td>
-                <button class="btn-sm" onclick="viewPaymentDetails('${payment.id}')" title="View Details">
+                <button class="btn-sm" onclick="viewPaymentDetails('${payment.id || payment._id}')" title="View Details">
                     <i class="fas fa-eye"></i>
                 </button>
                 ${payment.status === 'pending' ? `
-                <button class="btn-sm" onclick="verifyPayment('${payment.id}')" title="Verify">
+                <button class="btn-sm" onclick="verifyPayment('${payment.id || payment._id}')" title="Verify">
                     <i class="fas fa-check"></i>
                 </button>
                 ` : ''}
@@ -381,9 +382,10 @@ function updateCategoryBreakdown(payments) {
     
     // Calculate totals
     payments.forEach(p => {
-        if (breakdown[p.category]) {
-            breakdown[p.category].count++;
-            breakdown[p.category].amount += p.amount;
+        const category = p.category || 'other';
+        if (breakdown[category]) {
+            breakdown[category].count++;
+            breakdown[category].amount += parseFloat(p.amount) || 0;
         }
     });
     
@@ -430,8 +432,8 @@ function updateRecentActivity(payments) {
             <div class="activity-item">
                 <div class="activity-icon"><i class="fas ${statusIcon}"></i></div>
                 <div class="activity-content">
-                    <p><strong>${p.fullName}</strong> made a payment of <strong>Ksh ${p.amount.toLocaleString()}</strong></p>
-                    <span class="activity-time">${formatDate(p.date)}</span>
+                    <p><strong>${p.fullName || p.memberName || p.payerName || 'Unknown'}</strong> made a payment of <strong>${formatCurrency(p.amount || 0)}</strong></p>
+                    <span class="activity-time">${formatDate(p.date || p.createdAt)}</span>
                 </div>
             </div>
         `;
@@ -646,26 +648,45 @@ function changePage(view, direction) {
 // =====================
 // ACTIONS
 // =====================
-function viewPaymentDetails(paymentId) {
-    // Find payment
-    const payment = paymentStore.allPayments.find(p => p.id === paymentId);
-    if (!payment) return;
-    
-    // Show in alert for now (in production, show modal)
-    alert(`
+async function viewPaymentDetails(paymentId) {
+    try {
+        // Find payment in store first
+        let payment = paymentStore.allPayments.find(p => (p.id || p._id) === paymentId);
+        
+        // If not found, fetch from API
+        if (!payment) {
+            payment = await paymentService.getById(paymentId);
+            payment = payment.data || payment;
+        }
+        
+        if (!payment) {
+            showNotification('Payment not found', 'error');
+            return;
+        }
+        
+        const statusInfo = CONFIG.statuses[payment.status] || { label: 'Unknown', class: 'status--unknown' };
+        const categoryName = CONFIG.categories[payment.category] || payment.category || 'Other';
+        const methodName = CONFIG.methods[payment.method] || payment.method || 'Unknown';
+        
+        // Show in alert for now (in production, show modal)
+        alert(`
 Payment Details
 ================
-Reference: ${payment.id}
-Date: ${formatDate(payment.date)}
-Name: ${payment.fullName}
-Student ID: ${payment.studentId}
-Category: ${CONFIG.categories[payment.category]}
-Amount: Ksh ${payment.amount.toLocaleString()}
-Method: ${CONFIG.methods[payment.method]}
-Status: ${CONFIG.statuses[payment.status].label}
-Phone: ${payment.phone}
-Transaction ID: ${payment.transactionId || 'N/A'}
-    `);
+Reference: ${payment.reference || payment.receiptNumber || payment.id || 'N/A'}
+Date: ${formatDate(payment.date || payment.createdAt)}
+Name: ${payment.fullName || payment.memberName || payment.payerName || 'N/A'}
+Student ID: ${payment.studentId || payment.memberId || 'N/A'}
+Category: ${categoryName}
+Amount: ${formatCurrency(payment.amount || 0)}
+Method: ${methodName}
+Status: ${statusInfo.label}
+Phone: ${payment.phone || payment.payerPhone || 'N/A'}
+Transaction ID: ${payment.transactionId || payment.mpesaRef || 'N/A'}
+        `);
+    } catch (error) {
+        console.error('Error viewing payment details:', error);
+        showNotification('Failed to load payment details', 'error');
+    }
 }
 
 function downloadReceipt(paymentId) {
@@ -673,14 +694,27 @@ function downloadReceipt(paymentId) {
     alert(`Downloading receipt for ${paymentId}...`);
 }
 
-function verifyPayment(paymentId) {
-    // In production, verify via API
-    const payment = paymentStore.allPayments.find(p => p.id === paymentId);
-    if (payment) {
-        payment.status = 'completed';
-        paymentStore.myPayments = paymentStore.allPayments.filter(p => p.studentId === 'JOO/2024/001');
-        updateAdminDisplay();
-        alert(`Payment ${paymentId} has been verified and marked as completed.`);
+async function verifyPayment(paymentId) {
+    try {
+        // Verify via API
+        const response = await paymentService.verify(paymentId);
+        
+        if (response.success) {
+            // Update local store
+            const payment = paymentStore.allPayments.find(p => (p.id || p._id) === paymentId);
+            if (payment) {
+                payment.status = 'completed';
+            }
+            
+            // Refresh displays
+            updateAdminDisplay();
+            showNotification(`Payment ${paymentId} has been verified and marked as completed.`, 'success');
+        } else {
+            showNotification('Failed to verify payment', 'error');
+        }
+    } catch (error) {
+        console.error('Error verifying payment:', error);
+        showNotification('Failed to verify payment', 'error');
     }
 }
 
@@ -689,14 +723,14 @@ function exportToCSV() {
     
     const headers = ['Date', 'Reference', 'Name', 'Student ID', 'Category', 'Amount', 'Method', 'Status'];
     const rows = payments.map(p => [
-        p.date,
-        p.id,
-        p.fullName,
-        p.studentId,
-        CONFIG.categories[p.category],
-        p.amount,
-        CONFIG.methods[p.method],
-        CONFIG.statuses[p.status].label
+        formatDate(p.date || p.createdAt),
+        p.reference || p.receiptNumber || p.id || 'N/A',
+        p.fullName || p.memberName || p.payerName || 'N/A',
+        p.studentId || p.memberId || 'N/A',
+        CONFIG.categories[p.category] || p.category || 'Other',
+        p.amount || 0,
+        CONFIG.methods[p.method] || p.method || 'Unknown',
+        CONFIG.statuses[p.status]?.label || p.status || 'Unknown'
     ]);
     
     const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
@@ -713,14 +747,6 @@ function exportToCSV() {
 // =====================
 // UTILITIES
 // =====================
-function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
-}
 
 function debounce(func, wait) {
     let timeout;

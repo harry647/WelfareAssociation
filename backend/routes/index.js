@@ -24,6 +24,7 @@ const contactRoutes = require('./contact');
 const newsRoutes = require('./news');
 const userRoutes = require('./users');
 const bereavementRoutes = require('./bereavement');
+const withdrawalRoutes = require('./withdrawals');
 
 module.exports = (app) => {
     // API Routes
@@ -49,6 +50,7 @@ module.exports = (app) => {
     app.use('/api/contact', contactRoutes);
     app.use('/api/messages', contactRoutes); // Messages alias for contact
     app.use('/api/bereavement', bereavementRoutes);
+    app.use('/api/withdrawals', withdrawalRoutes);
     
     // Health check endpoint
     app.get('/api/health', (req, res) => {

@@ -25,6 +25,7 @@ const Policy = require('./Policy');
 const Gallery = require('./Gallery');
 const Contact = require('./Contact');
 const Newsletter = require('./Newsletter');
+const Withdrawal = require('./Withdrawal');
 
 // Define associations
 // User - Member association (User has memberId pointing to Member)
@@ -63,6 +64,13 @@ Bereavement.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
 Member.hasMany(Volunteer, { foreignKey: 'memberId', as: 'volunteerings' });
 Volunteer.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
 
+// Member - Withdrawal associations
+Member.hasMany(Withdrawal, { foreignKey: 'memberId', as: 'withdrawals' });
+Withdrawal.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
+
+// User - Contribution associations (recordedBy)
+Contribution.belongsTo(User, { foreignKey: 'recordedBy', as: 'recordedBy' });
+
 // User - Loan associations (approvedBy, rejectedBy)
 Loan.belongsTo(User, { foreignKey: 'approvedBy', as: 'approver' });
 Loan.belongsTo(User, { foreignKey: 'rejectedBy', as: 'rejector' });
@@ -84,6 +92,10 @@ Document.belongsTo(User, { foreignKey: 'uploadedBy', as: 'uploader' });
 
 // User - Volunteer associations (reviewedBy)
 Volunteer.belongsTo(User, { foreignKey: 'reviewedBy', as: 'reviewer' });
+
+// User - Withdrawal associations (processedBy)
+Withdrawal.belongsTo(User, { foreignKey: 'processedBy', as: 'processor' });
+Withdrawal.belongsTo(User, { foreignKey: 'recordedBy', as: 'recorder' });
 
 // Event - Gallery associations
 Event.hasMany(Gallery, { foreignKey: 'eventId', as: 'galleries' });
@@ -123,7 +135,8 @@ async function initModels(sequelizeInstance) {
         Policy,
         Gallery,
         Contact,
-        Newsletter
+        Newsletter,
+        Withdrawal
     };
 }
 
@@ -150,5 +163,6 @@ module.exports = {
     Policy,
     Gallery,
     Contact,
-    Newsletter
+    Newsletter,
+    Withdrawal
 };

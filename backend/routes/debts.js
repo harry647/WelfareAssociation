@@ -25,33 +25,44 @@ const validate = (req, res, next) => {
 router.get('/', auth, async (req, res) => {
     try {
         const { status, memberId, page = 1, limit = 10 } = req.query;
-        let query = {};
+        const where = {};
 
         // Non-admin users only see their own debts
         if (!['admin', 'treasurer'].includes(req.user.role)) {
-            const member = await Member.findOne({ userId: req.user._id });
-            if (member) query.member = member._id;
+            const member = await Member.findOne({ where: { userId: req.user.id } });
+            if (member) where.memberId = member.id;
         } else if (memberId) {
-            query.member = memberId;
+            where.memberId = memberId;
         }
 
-        if (status) query.status = status;
+        if (status) where.status = status;
 
-        const debts = await Debt.find(query)
-            .populate('member', 'firstName lastName memberNumber email')
-            .sort({ dueDate: 1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Debt.countDocuments(query);
+        const debts = await Debt.findAndCountAll({
+            where,
+            include: [
+                {
+                    model: Member,
+                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                }
+            ],
+            order: [['dueDate', 'ASC']],
+            limit: parseInt(limit),
+            offset: (parseInt(page) - 1) * parseInt(limit)
+        });
 
         res.json({
             success: true,
-            data: debts,
-            pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / limit) }
+            data: debts.rows,
+            pagination: {
+                total: debts.count,
+                page: parseInt(page),
+                limit: parseInt(limit),
+                pages: Math.ceil(debts.count / parseInt(limit))
+            }
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Error fetching debts' });
+        console.error('Error fetching debts:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch debts' });
     }
 });
 
@@ -94,24 +105,53 @@ router.get('/overdue', auth, authorize('admin', 'treasurer'), async (req, res) =
  * GET /api/debts/statistics
  * Get debt statistics
  */
-router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res) => {
+router.get('/statistics', auth, async (req, res) => {
     try {
-        const total = await Debt.countDocuments();
-        const pending = await Debt.countDocuments({ status: 'pending' });
-        const overdue = await Debt.countDocuments({ status: 'overdue' });
-        const paid = await Debt.countDocuments({ status: 'paid' });
+        const totalOutstanding = await Debt.sum('remainingBalance', {
+            where: { status: ['pending', 'overdue'] }
+        }) || 0;
 
-        const outstanding = await Debt.aggregate([
-            { $match: { status: { $in: ['pending', 'overdue'] } } },
-            { $group: { _id: null, total: { $sum: '$remainingBalance' } } }
-        ]);
+        const totalDebts = await Debt.count({
+            where: { status: ['pending', 'overdue'] }
+        });
+
+        const overdueCount = await Debt.count({
+            where: {
+                status: ['pending', 'overdue'],
+                dueDate: {
+                    [require('sequelize').Op.lt]: new Date()
+                }
+            }
+        });
+
+        const paidThisMonth = await Debt.sum('paidAmount', {
+            where: {
+                status: 'paid',
+                updatedAt: {
+                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                }
+            }
+        }) || 0;
+
+        const membersInDebt = await Debt.count({
+            distinct: true,
+            col: 'memberId',
+            where: { status: ['pending', 'overdue'] }
+        });
 
         res.json({
             success: true,
-            data: { total, pending, overdue, paid, totalOutstanding: outstanding[0]?.total || 0 }
+            data: {
+                totalOutstanding,
+                totalDebts,
+                overdueCount,
+                paidThisMonth,
+                membersInDebt
+            }
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Error fetching statistics' });
+        console.error('Error fetching statistics:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch statistics' });
     }
 });
 
