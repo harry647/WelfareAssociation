@@ -29,10 +29,10 @@ const validate = (req, res, next) => {
  * Register a new user and member
  */
 router.post('/register', [
-    body('email').isEmail().normalizeEmail(),
-    body('password').isLength({ min: 8 }),
-    body('firstName').notEmpty().trim(),
-    body('lastName').notEmpty().trim(),
+    body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email address'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+    body('firstName').notEmpty().trim().withMessage('First name is required'),
+    body('lastName').notEmpty().trim().withMessage('Last name is required'),
     body('phone').optional().trim(),
     body('securityQuestion').optional().trim(),
     body('securityAnswer').optional().trim(),
@@ -42,7 +42,7 @@ router.post('/register', [
         const { email, password, firstName, lastName, phone, securityQuestion, securityAnswer } = req.body;
 
         // Check if user exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -69,9 +69,9 @@ router.post('/register', [
             securityAnswer: hashedSecurityAnswer
         });
 
-        // Create member profile
+        // Create member profile - use user.id (Sequelize uses 'id', not '_id')
         const member = await Member.create({
-            userId: user._id,
+            userId: user.id,
             firstName,
             lastName,
             email,
@@ -80,7 +80,7 @@ router.post('/register', [
         });
 
         // Link member to user
-        user.memberId = member._id;
+        user.memberId = member.id;
         await user.save();
 
         // Generate tokens

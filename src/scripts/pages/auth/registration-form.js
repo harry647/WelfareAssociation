@@ -12,10 +12,16 @@ class RegistrationForm {
     }
 
     init() {
+        console.log('RegistrationForm init called');
+        console.log('Form element:', this.form);
         if (this.form) {
+            console.log('Form found, binding events');
             this.bindEvents();
             this.setupFieldValidation();
             this.generatePassword(); // Generate password on page load
+        } else {
+            console.error('Form element not found! Looking for .registration-form');
+            console.log('All forms on page:', document.querySelectorAll('form'));
         }
     }
 
@@ -76,11 +82,24 @@ class RegistrationForm {
             });
         }
 
-        // Form submission
-        this.form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleSubmit();
-        });
+        // Form submission - use submit event on form
+        if (this.form) {
+            this.form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                console.log('Form submit event triggered');
+                this.handleSubmit();
+            });
+        } else {
+            console.error('Form not found!');
+        }
+
+        // Also add click handler directly to submit button as backup
+        const submitBtn = this.form?.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', (e) => {
+                console.log('Submit button clicked');
+            });
+        }
 
         // Reset button
         const resetBtn = this.form.querySelector('button[type="reset"]');
@@ -251,6 +270,8 @@ class RegistrationForm {
     }
 
     async handleSubmit() {
+        console.log('handleSubmit called');
+        
         // Validate all fields
         const inputs = this.form.querySelectorAll('input, select, textarea');
         let allValid = true;
@@ -302,6 +323,8 @@ class RegistrationForm {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
         submitBtn.disabled = true;
 
+        console.log('Starting registration process for:', registrationData.email);
+
         try {
             // Get the generated password before form reset
             const generatedPassword = document.getElementById('password-display').value;
@@ -321,6 +344,7 @@ class RegistrationForm {
             
             // Now try to register in database
             let dbRegistrationSuccess = false;
+            let dbErrorMessage = '';
             try {
                 const dbResponse = await fetch('/api/auth/register', {
                     method: 'POST',
@@ -345,9 +369,11 @@ class RegistrationForm {
                 } else {
                     const dbError = await dbResponse.json();
                     console.warn('Database registration failed:', dbError);
+                    dbErrorMessage = dbError.message || 'Unknown error';
                 }
             } catch (e) {
                 console.warn('Could not register in database:', e);
+                dbErrorMessage = e.message;
             }
             
             const result = await response.json();
@@ -382,17 +408,20 @@ class RegistrationForm {
                     window.location.href = '../dashboard/member-portal.html';
                 }, 3000);
             } else {
-                // Database registration failed - show error
-                this.showError('Registration was submitted but there was an issue creating your account in our system. Please contact support at swateam@gmail.com or try again later.');
+                // Database registration failed - show error with details
+                const errorMsg = dbErrorMessage ? `: ${dbErrorMessage}` : '';
+                this.showError(`Registration was submitted but there was an issue creating your account in our system${errorMsg}. Please contact support at swateam@gmail.com or try again later.`);
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 return;
             }
 
         } catch (error) {
+            console.error('Registration error:', error);
             this.showError('Registration failed. Please check your internet connection and try again.');
             console.error('Registration error:', error);
         } finally {
+            console.log('Finally block - re-enabling button');
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }
@@ -414,12 +443,9 @@ class RegistrationForm {
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-error';
         alertDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-        alertDiv.style.cssText = 'padding: 15px 20px; margin: 20px auto; max-width: 600px; border-radius: 8px; font-weight: 500; text-align: center;';
+        alertDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; padding: 15px 30px; border-radius: 8px; font-weight: 500; text-align: center; background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
         
-        const container = this.getAlertContainer();
-        if (container) {
-            container.insertBefore(alertDiv, container.firstChild);
-        }
+        document.body.appendChild(alertDiv);
 
         setTimeout(() => this.removeAlerts(), 5000);
     }
@@ -429,12 +455,9 @@ class RegistrationForm {
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-success';
         alertDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-        alertDiv.style.cssText = 'padding: 15px 20px; margin: 20px auto; max-width: 600px; border-radius: 8px; font-weight: 500; text-align: center;';
+        alertDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; padding: 15px 30px; border-radius: 8px; font-weight: 500; text-align: center; background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
         
-        const container = this.getAlertContainer();
-        if (container) {
-            container.insertBefore(alertDiv, container.firstChild);
-        }
+        document.body.appendChild(alertDiv);
     }
 
     showNotification(message, type = 'info') {
@@ -443,12 +466,9 @@ class RegistrationForm {
         alertDiv.className = `alert alert-${type}`;
         const icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
         alertDiv.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
-        alertDiv.style.cssText = 'padding: 15px 20px; margin: 20px auto; max-width: 600px; border-radius: 8px; font-weight: 500; text-align: center;';
+        alertDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; padding: 15px 30px; border-radius: 8px; font-weight: 500; text-align: center; background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
         
-        const container = this.getAlertContainer();
-        if (container) {
-            container.insertBefore(alertDiv, container.firstChild);
-        }
+        document.body.appendChild(alertDiv);
 
         setTimeout(() => this.removeAlerts(), 3000);
     }
