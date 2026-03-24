@@ -222,23 +222,112 @@ class MemberPortal {
     }
 
     loadMemberData() {
-        // Load saved member data if available
+        // First, try to load from backend API
+        this.fetchMemberDataFromAPI();
+        
+        // Also load saved member data as fallback
         const savedData = localStorage.getItem('swa_member_data');
         if (savedData) {
             const data = JSON.parse(savedData);
             this.populateProfile(data);
         }
     }
+    
+    async fetchMemberDataFromAPI() {
+        try {
+            const response = await fetch('/api/auth/profile', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('swa_auth_token')}`
+                }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    // Store the data locally
+                    localStorage.setItem('swa_member_data', JSON.stringify(result));
+                    this.populateProfile(result);
+                    console.log('Loaded member data from API:', result);
+                }
+            } else {
+                console.warn('Failed to fetch member data from API:', response.status);
+            }
+        } catch (error) {
+            console.error('Error fetching member data:', error);
+        }
+    }
 
     populateProfile(data) {
+        // Handle both API response format and localStorage format
+        const memberData = data.member || data;
+        const services = data.services || {};
+        const userData = data.user || {};
+        
         const profileInfo = document.querySelector('.profile-info');
         if (profileInfo) {
-            // Update profile fields if they exist
+            // Update profile fields
             const nameField = profileInfo.querySelector('p:first-child');
-            if (nameField && data.name) {
-                nameField.innerHTML = `<strong>Name:</strong> ${data.name}`;
+            if (nameField && memberData.firstName) {
+                nameField.innerHTML = `<strong>Name:</strong> ${memberData.firstName} ${memberData.lastName || ''}`;
+            }
+            
+            // Add member number if available
+            const memberNumField = profileInfo.querySelector('p:nth-child(2)');
+            if (memberNumField && memberData.memberNumber) {
+                memberNumField.innerHTML = `<strong>Member No:</strong> ${memberData.memberNumber}`;
             }
         }
+        
+        // Update service summaries if they exist on the page
+        this.updateServiceDisplays(services);
+    }
+    
+    updateServiceDisplays(services) {
+        // Update savings display
+        const savingsElements = document.querySelectorAll('[data-service="savings"]');
+        savingsElements.forEach(el => {
+            const amount = services.savings?.total || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        // Update contributions display
+        const contributionElements = document.querySelectorAll('[data-service="contributions"]');
+        contributionElements.forEach(el => {
+            const amount = services.contributions?.total || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        // Update loans display
+        const loanElements = document.querySelectorAll('[data-service="loans"]');
+        loanElements.forEach(el => {
+            const amount = services.loans?.balance || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        // Update fines display
+        const fineElements = document.querySelectorAll('[data-service="fines"]');
+        fineElements.forEach(el => {
+            const amount = services.fines?.balance || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        // Update payments display
+        const paymentElements = document.querySelectorAll('[data-service="payments"]');
+        paymentElements.forEach(el => {
+            const amount = services.payments?.total || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        // Update debts display
+        const debtElements = document.querySelectorAll('[data-service="debts"]');
+        debtElements.forEach(el => {
+            const amount = services.debts?.total || 0;
+            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+        });
+        
+        console.log('Updated service displays with data:', services);
     }
 }
 

@@ -10,6 +10,11 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const Member = require('../models/Member');
+const Loan = require('../models/Loan');
+const Savings = require('../models/Savings');
+const Contribution = require('../models/Contribution');
+const Bereavement = require('../models/Bereavement');
+const Fine = require('../models/Fine');
 const { generateTokens, verifyToken, auth } = require('../middleware/auth');
 
 // Validation middleware
@@ -82,6 +87,10 @@ router.post('/register', [
         // Link member to user
         user.memberId = member.id;
         await user.save();
+
+        // Note: Service records (Loans, Savings, Contributions, etc.) will be created 
+        // on-demand when the member first accesses each service
+        console.log(`Created member profile: ${member.id} for user: ${user.id}`);
 
         // Generate tokens
         const { accessToken, refreshToken } = generateTokens(user._id);
@@ -177,7 +186,7 @@ router.post('/login', [
         await user.save();
 
         // Get member data
-        const member = await Member.findById(user.memberId);
+        const member = await Member.findByPk(user.memberId);
 
         // Generate tokens
         const { accessToken, refreshToken } = generateTokens(user._id);
@@ -241,7 +250,7 @@ router.post('/refresh', async (req, res) => {
         const decoded = verifyToken(refreshToken);
         
         // Check if user exists
-        const user = await User.findById(decoded.userId);
+        const user = await User.findByPk(decoded.userId);
         if (!user || !user.isActive) {
             return res.status(401).json({
                 success: false,
@@ -266,17 +275,56 @@ router.post('/refresh', async (req, res) => {
 
 /**
  * GET /api/auth/profile
- * Get current user profile
+ * Get current user profile with all member data
  */
 router.get('/profile', auth, async (req, res) => {
     try {
         const user = req.user;
-        const member = await Member.findById(user.memberId);
-
+        
+        // Find member by userId using Sequelize
+        const member = await Member.findOne({ where: { userId: user.id } });
+        
+        if (!member) {
+            return res.status(404).json({
+                success: false,
+                message: 'Member profile not found'
+            });
+        }
+        
+        // Get member's service data
+        const Loan = require('../models/Loan');
+        const Savings = require('../models/Savings');
+        const Contribution = require('../models/Contribution');
+        const Fine = require('../models/Fine');
+        const Bereavement = require('../models/Bereavement');
+        const Payment = require('../models/Payment');
+        const Debt = require('../models/Debt');
+        
+        const memberId = member.id;
+        
+        // Fetch service data
+        const [loans, savings, contributions, fines, bereavements, payments, debts] = await Promise.all([
+            Loan.findAll({ where: { memberId } }),
+            Savings.findAll({ where: { memberId } }),
+            Contribution.findAll({ where: { memberId } }),
+            Fine.findAll({ where: { memberId } }),
+            Bereavement.findAll({ where: { memberId } }),
+            Payment.findAll({ where: { memberId } }),
+            Debt.findAll({ where: { memberId } })
+        ]);
+        
+        // Calculate summaries
+        const totalSavings = savings.reduce((sum, s) => sum + parseFloat(s.currentAmount || 0), 0);
+        const totalContributions = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
+        const totalLoanBalance = loans.reduce((sum, l) => sum + parseFloat(l.balance || 0), 0);
+        const totalFines = fines.reduce((sum, f) => sum + parseFloat(f.balance || 0), 0);
+        const totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+        const totalDebts = debts.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0);
+        
         res.json({
             success: true,
             user: {
-                id: user._id,
+                id: user.id,
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -285,9 +333,48 @@ router.get('/profile', auth, async (req, res) => {
                 isEmailVerified: user.isEmailVerified,
                 lastLogin: user.lastLogin
             },
-            member
+            member: {
+                id: member.id,
+                memberNumber: member.memberNumber,
+                firstName: member.firstName,
+                lastName: member.lastName,
+                email: member.email,
+                phone: member.phone,
+                membershipStatus: member.membershipStatus,
+                membershipType: member.membershipType
+            },
+            services: {
+                savings: {
+                    records: savings,
+                    total: totalSavings
+                },
+                contributions: {
+                    records: contributions,
+                    total: totalContributions
+                },
+                loans: {
+                    records: loans,
+                    balance: totalLoanBalance
+                },
+                fines: {
+                    records: fines,
+                    balance: totalFines
+                },
+                bereavement: {
+                    records: bereavements
+                },
+                payments: {
+                    records: payments,
+                    total: totalPayments
+                },
+                debts: {
+                    records: debts,
+                    total: totalDebts
+                }
+            }
         });
     } catch (error) {
+        console.error('Profile fetch error:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching profile'
@@ -317,10 +404,12 @@ router.put('/profile', auth, [
 
         // Update member if exists
         if (user.memberId) {
-            await Member.findByIdAndUpdate(user.memberId, {
+            await Member.update({
                 ...(firstName && { firstName }),
                 ...(lastName && { lastName }),
                 ...(phone && { phone })
+            }, {
+                where: { id: user.memberId }
             });
         }
 
@@ -354,7 +443,7 @@ router.post('/change-password', auth, [
 ], async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
-        const user = await User.findById(req.userId).select('+password');
+        const user = await User.findByPk(req.userId);
 
         // Verify current password
         const isMatch = await user.comparePassword(currentPassword);
