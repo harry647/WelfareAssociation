@@ -24,32 +24,50 @@ const validate = (req, res, next) => {
 router.get('/', async (req, res) => {
     try {
         const { category, search, page = 1, limit = 10 } = req.query;
-        let query = { isActive: true };
+        const where = { isActive: true };
 
-        if (category) query.category = category;
-        if (search) {
-            query.$text = { $search: search };
-        }
+        if (category) where.category = category;
 
-        const faqs = await Faq.find(query)
-            .sort({ order: 1, createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Faq.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: faqs } = await Faq.findAndCountAll({
+            where,
+            order: [['order', 'ASC'], ['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: faqs,
+            data: faqs || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
+        console.error('Error fetching FAQs:', error);
         res.status(500).json({ success: false, message: 'Error fetching FAQs' });
+    }
+});
+
+/**
+ * GET /api/faqs/categories
+ * Get FAQ categories
+ */
+router.get('/categories', async (req, res) => {
+    try {
+        const categories = await Faq.findAll({
+            attributes: ['category'],
+            where: { isActive: true },
+            group: ['category']
+        });
+
+        res.json({ success: true, data: categories.map(c => c.category) });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ success: false, message: 'Error fetching categories' });
     }
 });
 
@@ -59,130 +77,93 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
     try {
-        const faq = await Faq.findById(req.params.id);
+        const faq = await Faq.findByPk(req.params.id);
 
         if (!faq) {
             return res.status(404).json({ success: false, message: 'FAQ not found' });
         }
 
-        // Increment view count
-        faq.viewCount += 1;
-        await faq.save();
-
         res.json({ success: true, data: faq });
     } catch (error) {
+        console.error('Error fetching FAQ:', error);
         res.status(500).json({ success: false, message: 'Error fetching FAQ' });
     }
 });
 
 /**
  * POST /api/faqs
- * Create FAQ (admin only)
+ * Create FAQ (admin)
  */
 router.post('/', auth, authorize('admin', 'secretary'), [
-    body('question').notEmpty().withMessage('Question is required'),
-    body('answer').notEmpty().withMessage('Answer is required')
-], validate, async (req, res) => {
+    body('question').notEmpty(),
+    body('answer').notEmpty(),
+    validate
+], async (req, res) => {
     try {
-        const { question, answer, category, tags, order } = req.body;
+        const { question, answer, category, order } = req.body;
 
-        const faq = new Faq({
+        const faq = await Faq.create({
             question,
             answer,
             category: category || 'general',
-            tags: tags || [],
             order: order || 0,
-            createdBy: req.user._id
+            isActive: true
         });
 
-        await faq.save();
-
-        res.status(201).json({
-            success: true,
-            message: 'FAQ created successfully',
-            data: faq
-        });
+        res.status(201).json({ success: true, message: 'FAQ created', data: faq });
     } catch (error) {
+        console.error('Error creating FAQ:', error);
         res.status(500).json({ success: false, message: 'Error creating FAQ' });
     }
 });
 
 /**
  * PUT /api/faqs/:id
- * Update FAQ (admin only)
+ * Update FAQ (admin)
  */
 router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
     try {
-        const faq = await Faq.findById(req.params.id);
+        const faq = await Faq.findByPk(req.params.id);
 
         if (!faq) {
             return res.status(404).json({ success: false, message: 'FAQ not found' });
         }
 
-        const { question, answer, category, tags, order, isActive } = req.body;
+        const { question, answer, category, order, isActive } = req.body;
 
         if (question) faq.question = question;
         if (answer) faq.answer = answer;
         if (category) faq.category = category;
-        if (tags) faq.tags = tags;
         if (order !== undefined) faq.order = order;
         if (isActive !== undefined) faq.isActive = isActive;
-        faq.updatedBy = req.user._id;
 
         await faq.save();
 
-        res.json({
-            success: true,
-            message: 'FAQ updated successfully',
-            data: faq
-        });
+        res.json({ success: true, message: 'FAQ updated', data: faq });
     } catch (error) {
+        console.error('Error updating FAQ:', error);
         res.status(500).json({ success: false, message: 'Error updating FAQ' });
     }
 });
 
 /**
  * DELETE /api/faqs/:id
- * Delete FAQ (admin only)
+ * Delete FAQ (admin)
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const faq = await Faq.findByIdAndDelete(req.params.id);
+        const faq = await Faq.findByPk(req.params.id);
 
         if (!faq) {
             return res.status(404).json({ success: false, message: 'FAQ not found' });
         }
 
-        res.json({ success: true, message: 'FAQ deleted successfully' });
+        await faq.destroy();
+
+        res.json({ success: true, message: 'FAQ deleted' });
     } catch (error) {
+        console.error('Error deleting FAQ:', error);
         res.status(500).json({ success: false, message: 'Error deleting FAQ' });
-    }
-});
-
-/**
- * POST /api/faqs/:id/feedback
- * Submit feedback on FAQ helpfulness
- */
-router.post('/:id/feedback', async (req, res) => {
-    try {
-        const { helpful } = req.body;
-        const faq = await Faq.findById(req.params.id);
-
-        if (!faq) {
-            return res.status(404).json({ success: false, message: 'FAQ not found' });
-        }
-
-        if (helpful) {
-            faq.helpful += 1;
-        } else {
-            faq.notHelpful += 1;
-        }
-
-        await faq.save();
-
-        res.json({ success: true, message: 'Feedback recorded' });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error recording feedback' });
     }
 });
 

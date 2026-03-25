@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Bereavement = require('../models/Bereavement');
 const Member = require('../models/Member');
 const { auth, authorize } = require('../middleware/auth');
@@ -25,40 +26,45 @@ const validate = (req, res, next) => {
 router.get('/', auth, async (req, res) => {
     try {
         const { status, page = 1, limit = 10 } = req.query;
-        let query = {};
+        const where = {};
 
         // Filter by role
         if (req.user.role === 'member') {
-            const member = await Member.findOne({ userId: req.user._id });
+            const member = await Member.findOne({ where: { userId: req.user.id } });
             if (member) {
-                query.member = member._id;
+                where.memberId = member.id;
             }
         }
 
-        if (status) query.status = status;
+        if (status) where.status = status;
 
-        const cases = await Bereavement.find(query)
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .populate('contributions.contributor', 'firstName lastName memberNumber')
-            .populate('messages.sender', 'firstName lastName memberNumber')
-            .populate('createdBy', 'firstName lastName')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Bereavement.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: cases } = await Bereavement.findAndCountAll({
+            where,
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: cases,
+            data: cases || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
+        console.error('Error fetching bereavement cases:', error);
         res.status(500).json({ success: false, message: 'Error fetching bereavement cases' });
     }
 });
@@ -69,15 +75,25 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/urgent', auth, async (req, res) => {
     try {
-        const cases = await Bereavement.find({ 
-            status: 'active',
-            'deceased.dateOfBurial': { $gte: new Date() }
-        })
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .sort({ 'deceased.dateOfBurial': 1 });
+        const where = { 
+            status: 'active'
+        };
+        
+        const cases = await Bereavement.findAll({
+            where,
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ],
+            order: [['createdAt', 'ASC']]
+        });
 
         res.json({ success: true, data: cases });
     } catch (error) {
+        console.error('Error fetching urgent cases:', error);
         res.status(500).json({ success: false, message: 'Error fetching urgent cases' });
     }
 });
@@ -90,26 +106,33 @@ router.get('/active', auth, async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
         
-        const cases = await Bereavement.find({ status: 'active' })
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .populate('contributions.contributor', 'firstName lastName')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Bereavement.countDocuments({ status: 'active' });
+        const offset = (page - 1) * limit;
+        const { count, rows: cases } = await Bereavement.findAndCountAll({
+            where: { status: 'active' },
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: cases,
+            data: cases || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
+        console.error('Error fetching active cases:', error);
         res.status(500).json({ success: false, message: 'Error fetching active cases' });
     }
 });
@@ -120,22 +143,10 @@ router.get('/active', auth, async (req, res) => {
  */
 router.get('/statistics', auth, authorize('admin', 'treasurer', 'chairman', 'secretary'), async (req, res) => {
     try {
-        const totalCases = await Bereavement.countDocuments();
-        const activeCases = await Bereavement.countDocuments({ status: 'active' });
-        const pendingCases = await Bereavement.countDocuments({ status: 'pending' });
-        const closedCases = await Bereavement.countDocuments({ status: 'closed' });
-
-        const cases = await Bereavement.find({ status: 'active' });
-        const totalContributions = cases.reduce((sum, c) => sum + (c.totalContributions || 0), 0);
-
-        // Cases in the next 7 days
-        const upcomingBurials = await Bereavement.countDocuments({
-            status: 'active',
-            'deceased.dateOfBurial': {
-                $gte: new Date(),
-                $lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-            }
-        });
+        const totalCases = await Bereavement.count();
+        const activeCases = await Bereavement.count({ where: { status: 'active' } });
+        const pendingCases = await Bereavement.count({ where: { status: 'pending' } });
+        const closedCases = await Bereavement.count({ where: { status: 'closed' } });
 
         res.json({
             success: true,
@@ -143,13 +154,11 @@ router.get('/statistics', auth, authorize('admin', 'treasurer', 'chairman', 'sec
                 totalCases,
                 activeCases,
                 pendingCases,
-                closedCases,
-                totalContributions,
-                upcomingBurials,
-                averageContribution: activeCases > 0 ? totalContributions / activeCases : 0
+                closedCases
             }
         });
     } catch (error) {
+        console.error('Error fetching statistics:', error);
         res.status(500).json({ success: false, message: 'Error fetching statistics' });
     }
 });
@@ -160,11 +169,15 @@ router.get('/statistics', auth, authorize('admin', 'treasurer', 'chairman', 'sec
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const bereavement = await Bereavement.findById(req.params.id)
-            .populate('member', 'firstName lastName memberNumber email phone address')
-            .populate('contributions.contributor', 'firstName lastName memberNumber')
-            .populate('messages.sender', 'firstName lastName memberNumber')
-            .populate('createdBy', 'firstName lastName');
+        const bereavement = await Bereavement.findByPk(req.params.id, {
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone', 'address'] 
+                }
+            ]
+        });
 
         if (!bereavement) {
             return res.status(404).json({ success: false, message: 'Bereavement case not found' });
@@ -172,6 +185,7 @@ router.get('/:id', auth, async (req, res) => {
 
         res.json({ success: true, data: bereavement });
     } catch (error) {
+        console.error('Error fetching bereavement case:', error);
         res.status(500).json({ success: false, message: 'Error fetching bereavement case' });
     }
 });
@@ -181,28 +195,34 @@ router.get('/:id', auth, async (req, res) => {
  * Create a new bereavement case
  */
 router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
-    body('deceased.name').notEmpty().withMessage('Deceased name is required'),
-    body('deceased.relationship').notEmpty().withMessage('Relationship is required'),
-    body('deceased.dateOfDeath').isISO8601().withMessage('Date of death is required'),
+    body('deceasedName').notEmpty().withMessage('Deceased name is required'),
+    body('deceasedRelationship').notEmpty().withMessage('Relationship is required'),
     body('memberId').notEmpty().withMessage('Member ID is required')
 ], validate, async (req, res) => {
     try {
-        const { deceased, memberId, notes } = req.body;
+        const { deceasedName, deceasedRelationship, dateOfDeath, dateOfBurial, cause, memberId, notes } = req.body;
 
-        const member = await Member.findById(memberId);
+        const member = await Member.findByPk(memberId);
         if (!member) {
             return res.status(404).json({ success: false, message: 'Member not found' });
         }
 
-        const bereavement = new Bereavement({
-            deceased,
-            member: memberId,
+        // Generate case number
+        const caseCount = await Bereavement.count() + 1;
+        const caseNumber = `BRV${String(caseCount).padStart(6, '0')}`;
+
+        const bereavement = await Bereavement.create({
+            memberId,
+            caseNumber,
+            deceasedName,
+            deceasedRelationship,
+            dateOfDeath,
+            dateOfBurial,
+            cause,
             notes: notes || '',
-            createdBy: req.user._id,
+            createdBy: req.user.id,
             status: 'pending'
         });
-
-        await bereavement.save();
 
         res.status(201).json({
             success: true,
@@ -210,6 +230,7 @@ router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
             data: bereavement
         });
     } catch (error) {
+        console.error('Error creating bereavement case:', error);
         res.status(500).json({ success: false, message: 'Error creating bereavement case' });
     }
 });
@@ -220,22 +241,19 @@ router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
  */
 router.put('/:id', auth, authorize('admin', 'secretary', 'treasurer'), async (req, res) => {
     try {
-        const bereavement = await Bereavement.findById(req.params.id);
+        const bereavement = await Bereavement.findByPk(req.params.id);
 
         if (!bereavement) {
             return res.status(404).json({ success: false, message: 'Bereavement case not found' });
         }
 
-        const { deceased, notes, status } = req.body;
+        const { deceasedName, deceasedRelationship, dateOfDeath, dateOfBurial, cause, notes, status } = req.body;
 
-        if (deceased) {
-            if (deceased.name) bereavement.deceased.name = deceased.name;
-            if (deceased.relationship) bereavement.deceased.relationship = deceased.relationship;
-            if (deceased.dateOfDeath) bereavement.deceased.dateOfDeath = deceased.dateOfDeath;
-            if (deceased.dateOfBurial !== undefined) bereavement.deceased.dateOfBurial = deceased.dateOfBurial;
-            if (deceased.cause !== undefined) bereavement.deceased.cause = deceased.cause;
-        }
-
+        if (deceasedName) bereavement.deceasedName = deceasedName;
+        if (deceasedRelationship) bereavement.deceasedRelationship = deceasedRelationship;
+        if (dateOfDeath) bereavement.dateOfDeath = dateOfDeath;
+        if (dateOfBurial !== undefined) bereavement.dateOfBurial = dateOfBurial;
+        if (cause !== undefined) bereavement.cause = cause;
         if (notes !== undefined) bereavement.notes = notes;
         if (status) bereavement.status = status;
 
@@ -247,6 +265,7 @@ router.put('/:id', auth, authorize('admin', 'secretary', 'treasurer'), async (re
             data: bereavement
         });
     } catch (error) {
+        console.error('Error updating bereavement case:', error);
         res.status(500).json({ success: false, message: 'Error updating bereavement case' });
     }
 });
@@ -259,7 +278,7 @@ router.post('/:id/contribute', auth, [
     body('amount').isNumeric().withMessage('Amount is required'),
 ], validate, async (req, res) => {
     try {
-        const bereavement = await Bereavement.findById(req.params.id);
+        const bereavement = await Bereavement.findByPk(req.params.id);
 
         if (!bereavement) {
             return res.status(404).json({ success: false, message: 'Bereavement case not found' });
@@ -269,25 +288,26 @@ router.post('/:id/contribute', auth, [
             return res.status(400).json({ success: false, message: 'Case is closed, cannot contribute' });
         }
 
-        const { amount, paymentMethod, reference, message } = req.body;
+        const { amount, paymentMethod, reference, message, contributorId } = req.body;
 
-        // Find member
-        const member = await Member.findOne({ userId: req.user._id });
+        // Parse existing contributions or create new array
+        const contributions = typeof bereavement.contributions === 'string' 
+            ? JSON.parse(bereavement.contributions) 
+            : (bereavement.contributions || []);
         
-        if (!member) {
-            return res.status(404).json({ success: false, message: 'Member not found' });
-        }
-
-        bereavement.contributions.push({
-            contributor: member._id,
-            amount,
+        contributions.push({
+            contributorId: contributorId || req.user.id,
+            amount: parseFloat(amount),
             paymentMethod: paymentMethod || 'cash',
             reference: reference || '',
-            message: message || ''
+            message: message || '',
+            date: new Date()
         });
 
         // Update total contributions
-        bereavement.totalContributions = bereavement.contributions.reduce((sum, c) => sum + c.amount, 0);
+        const totalContributions = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+        bereavement.contributions = contributions;
+        bereavement.totalContributions = totalContributions;
 
         // Update status to active if pending
         if (bereavement.status === 'pending') {
@@ -302,69 +322,8 @@ router.post('/:id/contribute', auth, [
             data: bereavement
         });
     } catch (error) {
+        console.error('Error adding contribution:', error);
         res.status(500).json({ success: false, message: 'Error adding contribution' });
-    }
-});
-
-/**
- * GET /api/bereavement/:id/messages
- * Get messages for a bereavement case
- */
-router.get('/:id/messages', auth, async (req, res) => {
-    try {
-        const bereavement = await Bereavement.findById(req.params.id)
-            .populate('messages.sender', 'firstName lastName memberNumber');
-
-        if (!bereavement) {
-            return res.status(404).json({ success: false, message: 'Bereavement case not found' });
-        }
-
-        res.json({ success: true, data: bereavement.messages });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error fetching messages' });
-    }
-});
-
-/**
- * POST /api/bereavement/:id/messages
- * Add a message to a bereavement case
- */
-router.post('/:id/messages', auth, [
-    body('message').notEmpty().withMessage('Message is required')
-], validate, async (req, res) => {
-    try {
-        const bereavement = await Bereavement.findById(req.params.id);
-
-        if (!bereavement) {
-            return res.status(404).json({ success: false, message: 'Bereavement case not found' });
-        }
-
-        const { message } = req.body;
-
-        // Find member
-        const member = await Member.findOne({ userId: req.user._id });
-        
-        if (!member) {
-            return res.status(404).json({ success: false, message: 'Member not found' });
-        }
-
-        bereavement.messages.push({
-            sender: member._id,
-            message
-        });
-
-        await bereavement.save();
-
-        const updatedCase = await Bereavement.findById(req.params.id)
-            .populate('messages.sender', 'firstName lastName memberNumber');
-
-        res.json({
-            success: true,
-            message: 'Message added successfully',
-            data: updatedCase.messages
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error adding message' });
     }
 });
 
@@ -374,14 +333,17 @@ router.post('/:id/messages', auth, [
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const bereavement = await Bereavement.findByIdAndDelete(req.params.id);
+        const bereavement = await Bereavement.findByPk(req.params.id);
 
         if (!bereavement) {
             return res.status(404).json({ success: false, message: 'Bereavement case not found' });
         }
 
+        await bereavement.destroy();
+
         res.json({ success: true, message: 'Bereavement case deleted successfully' });
     } catch (error) {
+        console.error('Error deleting bereavement case:', error);
         res.status(500).json({ success: false, message: 'Error deleting bereavement case' });
     }
 });

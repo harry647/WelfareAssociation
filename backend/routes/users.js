@@ -24,14 +24,33 @@ const validate = (req, res, next) => {
  */
 router.get('/profile', auth, async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-password');
+        // Check if req.user is a Sequelize model instance or a plain object (mock admin)
+        // Plain objects (like the mock admin) don't have the 'get' method
+        const isSequelizeInstance = req.user && typeof req.user.get === 'function';
         
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+        let user;
+        let member = null;
+        
+        if (isSequelizeInstance) {
+            // Regular user - fetch from database
+            user = await User.findByPk(req.user.id, {
+                attributes: { exclude: ['password'] }
+            });
+            
+            if (!user) {
+                return res.status(404).json({ success: false, message: 'User not found' });
+            }
 
-        // Get associated member if exists
-        const member = await Member.findOne({ userId: user._id });
+            // Get associated member if exists
+            member = await Member.findOne({ where: { userId: user.id } });
+        } else {
+            // Mock admin user (plain object) - use directly
+            user = req.user;
+            // Remove password from response if present
+            if (user.password) {
+                delete user.password;
+            }
+        }
 
         res.json({
             success: true,
@@ -41,6 +60,7 @@ router.get('/profile', auth, async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Error fetching profile:', error);
         res.status(500).json({ success: false, message: 'Error fetching profile' });
     }
 });

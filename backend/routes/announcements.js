@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Announcement = require('../models/Announcement');
 const Member = require('../models/Member');
 const { auth, authorize } = require('../middleware/auth');
@@ -25,52 +26,39 @@ const validate = (req, res, next) => {
 router.get('/', auth, async (req, res) => {
     try {
         const { type, priority, status, page = 1, limit = 10 } = req.query;
-        let query = {};
+        const where = {};
 
-        // Filter by visibility
-        if (req.user.role === 'member') {
-            query.$or = [
-                { visibility: { $in: ['all', 'members'] } },
-                { targetAudience: 'all' },
-                { specificMembers: { $in: [req.user._id] } }
-            ];
-        } else if (req.user.role === 'officer') {
-            query.$or = [
-                { visibility: { $in: ['all', 'members', 'officers'] } },
-                { targetAudience: { $in: ['all', 'officers'] } }
-            ];
-        }
-
-        if (type) query.type = type;
-        if (priority) query.priority = priority;
+        if (type) where.type = type;
+        if (priority) where.priority = priority;
+        
         if (status === 'active') {
-            query.isActive = true;
-            query.$or = query.$or || [];
-            query.$or.push(
-                { expiresAt: { $gte: new Date() } },
-                { expiresAt: null }
-            );
+            where.isActive = true;
+            where[Op.or] = [
+                { expiresAt: null },
+                { expiresAt: { [Op.gt]: new Date() } }
+            ];
         }
 
-        const announcements = await Announcement.find(query)
-            .populate('sentBy', 'firstName lastName email')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Announcement.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: announcements } = await Announcement.findAndCountAll({
+            where,
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: announcements,
+            data: announcements || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
+        console.error('Error fetching announcements:', error);
         res.status(500).json({ success: false, message: 'Error fetching announcements' });
     }
 });
@@ -81,19 +69,19 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const announcement = await Announcement.findById(req.params.id)
-            .populate('sentBy', 'firstName lastName email');
+        const announcement = await Announcement.findByPk(req.params.id);
 
         if (!announcement) {
             return res.status(404).json({ success: false, message: 'Announcement not found' });
         }
 
         // Increment view count
-        announcement.viewCount += 1;
+        announcement.viewCount = (announcement.viewCount || 0) + 1;
         await announcement.save();
 
         res.json({ success: true, data: announcement });
     } catch (error) {
+        console.error('Error fetching announcement:', error);
         res.status(500).json({ success: false, message: 'Error fetching announcement' });
     }
 });
@@ -109,18 +97,16 @@ router.post('/', auth, authorize('admin', 'chairman', 'secretary'), [
     try {
         const { title, content, type, priority, targetAudience, specificMembers, expiresAt } = req.body;
 
-        const announcement = new Announcement({
+        const announcement = await Announcement.create({
             title,
             content,
             type: type || 'general',
             priority: priority || 'medium',
             targetAudience: targetAudience || 'all',
             specificMembers: specificMembers || [],
-            sentBy: req.user._id,
+            sentBy: req.user.id,
             expiresAt: expiresAt || null
         });
-
-        await announcement.save();
 
         res.status(201).json({
             success: true,
@@ -128,6 +114,7 @@ router.post('/', auth, authorize('admin', 'chairman', 'secretary'), [
             data: announcement
         });
     } catch (error) {
+        console.error('Error creating announcement:', error);
         res.status(500).json({ success: false, message: 'Error creating announcement' });
     }
 });
@@ -138,7 +125,7 @@ router.post('/', auth, authorize('admin', 'chairman', 'secretary'), [
  */
 router.put('/:id', auth, authorize('admin', 'chairman', 'secretary'), async (req, res) => {
     try {
-        const announcement = await Announcement.findById(req.params.id);
+        const announcement = await Announcement.findByPk(req.params.id);
 
         if (!announcement) {
             return res.status(404).json({ success: false, message: 'Announcement not found' });
@@ -163,6 +150,7 @@ router.put('/:id', auth, authorize('admin', 'chairman', 'secretary'), async (req
             data: announcement
         });
     } catch (error) {
+        console.error('Error updating announcement:', error);
         res.status(500).json({ success: false, message: 'Error updating announcement' });
     }
 });
@@ -173,51 +161,18 @@ router.put('/:id', auth, authorize('admin', 'chairman', 'secretary'), async (req
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const announcement = await Announcement.findByIdAndDelete(req.params.id);
+        const announcement = await Announcement.findByPk(req.params.id);
 
         if (!announcement) {
             return res.status(404).json({ success: false, message: 'Announcement not found' });
         }
+
+        await announcement.destroy();
 
         res.json({ success: true, message: 'Announcement deleted successfully' });
     } catch (error) {
+        console.error('Error deleting announcement:', error);
         res.status(500).json({ success: false, message: 'Error deleting announcement' });
-    }
-});
-
-/**
- * POST /api/announcements/:id/send
- * Send announcement to specific members
- */
-router.post('/:id/send', auth, authorize('admin', 'chairman', 'secretary'), [
-    body('memberIds').isArray().withMessage('Member IDs array is required')
-], validate, async (req, res) => {
-    try {
-        const announcement = await Announcement.findById(req.params.id);
-
-        if (!announcement) {
-            return res.status(404).json({ success: false, message: 'Announcement not found' });
-        }
-
-        const { memberIds } = req.body;
-
-        // Add recipients
-        memberIds.forEach(memberId => {
-            const exists = announcement.recipients.find(r => r.member.toString() === memberId);
-            if (!exists) {
-                announcement.recipients.push({ member: memberId });
-            }
-        });
-
-        announcement.sentAt = new Date();
-        await announcement.save();
-
-        res.json({
-            success: true,
-            message: 'Announcement sent to members successfully'
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error sending announcement' });
     }
 });
 
@@ -227,26 +182,19 @@ router.post('/:id/send', auth, authorize('admin', 'chairman', 'secretary'), [
  */
 router.post('/:id/view', auth, async (req, res) => {
     try {
-        const announcement = await Announcement.findById(req.params.id);
+        const announcement = await Announcement.findByPk(req.params.id);
 
         if (!announcement) {
             return res.status(404).json({ success: false, message: 'Announcement not found' });
         }
 
-        const recipient = announcement.recipients.find(r => r.member && r.member.toString() === req.user._id.toString());
-        
-        if (recipient) {
-            recipient.viewed = true;
-            recipient.viewedAt = new Date();
-        } else {
-            // If not a specific recipient, still track the view
-            announcement.viewCount += 1;
-        }
-
+        // Increment view count
+        announcement.viewCount = (announcement.viewCount || 0) + 1;
         await announcement.save();
 
         res.json({ success: true, message: 'Announcement marked as viewed' });
     } catch (error) {
+        console.error('Error marking announcement as viewed:', error);
         res.status(500).json({ success: false, message: 'Error marking announcement as viewed' });
     }
 });

@@ -7,12 +7,14 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const Report = require('../models/Report');
+const User = require('../models/User');
 const Contribution = require('../models/Contribution');
 const Loan = require('../models/Loan');
 const Member = require('../models/Member');
 const Debt = require('../models/Debt');
 const Bereavement = require('../models/Bereavement');
 const { auth, authorize } = require('../middleware/auth');
+const { Op } = require('sequelize');
 
 const validate = (req, res, next) => {
     const errors = validationResult(req);
@@ -29,27 +31,30 @@ const validate = (req, res, next) => {
 router.get('/', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
         const { type, status, page = 1, limit = 10 } = req.query;
-        let query = {};
+        let where = {};
 
-        if (type) query.type = type;
-        if (status) query.status = status;
+        if (type) where.type = type;
+        if (status) where.status = status;
 
-        const reports = await Report.find(query)
-            .populate('generatedBy', 'firstName lastName email')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Report.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: reports } = await Report.findAndCountAll({
+            where,
+            include: [
+                { model: User, as: 'generator', attributes: ['firstName', 'lastName', 'email'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: reports,
+            data: reports || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
@@ -83,8 +88,11 @@ router.get('/templates', auth, authorize('admin', 'treasurer'), async (req, res)
  */
 router.get('/:id', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const report = await Report.findById(req.params.id)
-            .populate('generatedBy', 'firstName lastName email');
+        const report = await Report.findByPk(req.params.id, {
+            include: [
+                { model: User, as: 'generator', attributes: ['firstName', 'lastName', 'email'] }
+            ]
+        });
 
         if (!report) {
             return res.status(404).json({ success: false, message: 'Report not found' });
@@ -107,24 +115,27 @@ router.get('/:id', auth, authorize('admin', 'treasurer'), async (req, res) => {
 router.get('/type/:type', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
-        const query = { type: req.params.type };
+        const where = { type: req.params.type };
 
-        const reports = await Report.find(query)
-            .populate('generatedBy', 'firstName lastName email')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Report.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: reports } = await Report.findAndCountAll({
+            where,
+            include: [
+                { model: User, as: 'generator', attributes: ['firstName', 'lastName', 'email'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: reports,
+            data: reports || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
@@ -147,7 +158,7 @@ router.post('/generate', auth, authorize('admin', 'treasurer'), [
             name,
             type,
             description: description || '',
-            generatedBy: req.user._id,
+            generatedBy: req.user.id,
             parameters: parameters || {},
             status: 'processing'
         });
@@ -462,7 +473,7 @@ router.post('/schedule', auth, authorize('admin', 'treasurer'), [
             recipients: recipients || [],
             parameters: parameters || {},
             nextRun: calculateNextRun(frequency),
-            createdBy: req.user._id,
+            createdBy: req.user.id,
             createdAt: new Date(),
             isActive: true
         };

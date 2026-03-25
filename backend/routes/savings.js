@@ -25,29 +25,32 @@ const validate = (req, res, next) => {
 router.get('/goals', auth, async (req, res) => {
     try {
         const { status, memberId, page = 1, limit = 10 } = req.query;
-        let query = {};
+        let where = {};
 
         if (!['admin', 'treasurer'].includes(req.user.role)) {
-            const member = await Member.findOne({ userId: req.user._id });
-            if (member) query.member = member._id;
+            const member = await Member.findOne({ where: { userId: req.user.id } });
+            if (member) where.memberId = member.id;
         } else if (memberId) {
-            query.member = memberId;
+            where.memberId = memberId;
         }
 
-        if (status) query.status = status;
+        if (status) where.status = status;
 
-        const goals = await Savings.find(query)
-            .populate('member', 'firstName lastName memberNumber email')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Savings.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: goals } = await Savings.findAndCountAll({
+            where,
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber', 'email'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: goals,
-            pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / limit) }
+            data: goals || [],
+            pagination: { page: parseInt(page), limit: parseInt(limit), total: count || 0, pages: Math.ceil((count || 0) / limit) }
         });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error fetching savings goals' });

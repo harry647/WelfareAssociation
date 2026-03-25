@@ -69,7 +69,7 @@ Member.hasMany(Withdrawal, { foreignKey: 'memberId', as: 'withdrawals' });
 Withdrawal.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
 
 // User - Contribution associations (recordedBy)
-Contribution.belongsTo(User, { foreignKey: 'recordedBy', as: 'recordedBy' });
+Contribution.belongsTo(User, { foreignKey: 'recordedBy', as: 'recorder' });
 
 // User - Loan associations (approvedBy, rejectedBy)
 Loan.belongsTo(User, { foreignKey: 'approvedBy', as: 'approver' });
@@ -81,8 +81,16 @@ Fine.belongsTo(User, { foreignKey: 'issuedBy', as: 'issuer' });
 // User - Notice associations
 Notice.belongsTo(User, { foreignKey: 'author', as: 'authorUser' });
 
+// User - Policy associations
+Policy.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+Policy.belongsTo(User, { foreignKey: 'updatedBy', as: 'updater' });
+Policy.belongsTo(User, { foreignKey: 'reviewedBy', as: 'reviewer' });
+
 // User - News associations
 News.belongsTo(User, { foreignKey: 'author', as: 'authorUser' });
+
+// User - Report associations
+Report.belongsTo(User, { foreignKey: 'generatedBy', as: 'generator' });
 
 // User - Announcement associations
 Announcement.belongsTo(User, { foreignKey: 'sentBy', as: 'sender' });

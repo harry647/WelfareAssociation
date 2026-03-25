@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Notice = require('../models/Notice');
 const { auth, authorize, optionalAuth } = require('../middleware/auth');
 
@@ -25,30 +26,35 @@ router.get('/', optionalAuth, async (req, res) => {
     try {
         const { type, page = 1, limit = 10 } = req.query;
         
-        let query = { isPublished: true };
+        const where = { 
+            [Op.or]: [
+                { expiryDate: null },
+                { expiryDate: { [Op.gt]: new Date() } }
+            ]
+        };
         
-        // Check if notice is expired
-        query.$or = [
-            { expiryDate: { $exists: false } },
-            { expiryDate: { $gt: new Date() } }
-        ];
-        
-        if (type) query.type = type;
+        if (type) where.type = type;
 
-        const notices = await Notice.find(query)
-            .populate('author', 'firstName lastName')
-            .sort({ priority: -1, createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Notice.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: notices } = await Notice.findAndCountAll({
+            where,
+            order: [['priority', 'DESC'], ['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: notices,
-            pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / limit) }
+            data: notices || [],
+            pagination: { 
+                page: parseInt(page), 
+                limit: parseInt(limit), 
+                total: count || 0, 
+                pages: Math.ceil((count || 0) / limit) 
+            }
         });
     } catch (error) {
+        console.error('Error fetching notices:', error);
         res.status(500).json({ success: false, message: 'Error fetching notices' });
     }
 });
@@ -59,19 +65,19 @@ router.get('/', optionalAuth, async (req, res) => {
  */
 router.get('/:id', optionalAuth, async (req, res) => {
     try {
-        const notice = await Notice.findById(req.params.id)
-            .populate('author', 'firstName lastName');
+        const notice = await Notice.findByPk(req.params.id);
         
         if (!notice) {
             return res.status(404).json({ success: false, message: 'Notice not found' });
         }
 
         // Increment views
-        notice.views += 1;
+        notice.views = (notice.views || 0) + 1;
         await notice.save();
 
         res.json({ success: true, data: notice });
     } catch (error) {
+        console.error('Error fetching notice:', error);
         res.status(500).json({ success: false, message: 'Error fetching notice' });
     }
 });
@@ -97,11 +103,12 @@ router.post('/', auth, authorize('admin', 'secretary'), [
             isPublished: isPublished || false,
             publishDate,
             expiryDate,
-            author: req.user._id
+            author: req.user.id
         });
 
         res.status(201).json({ success: true, message: 'Notice created', data: notice });
     } catch (error) {
+        console.error('Error creating notice:', error);
         res.status(500).json({ success: false, message: 'Error creating notice' });
     }
 });
@@ -112,16 +119,27 @@ router.post('/', auth, authorize('admin', 'secretary'), [
  */
 router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
     try {
-        const notice = await Notice.findById(req.params.id);
+        const notice = await Notice.findByPk(req.params.id);
         if (!notice) {
             return res.status(404).json({ success: false, message: 'Notice not found' });
         }
 
-        Object.assign(notice, req.body);
+        const { title, content, type, priority, audience, isPublished, publishDate, expiryDate } = req.body;
+
+        if (title) notice.title = title;
+        if (content) notice.content = content;
+        if (type) notice.type = type;
+        if (priority) notice.priority = priority;
+        if (audience) notice.audience = audience;
+        if (isPublished !== undefined) notice.isPublished = isPublished;
+        if (publishDate) notice.publishDate = publishDate;
+        if (expiryDate) notice.expiryDate = expiryDate;
+
         await notice.save();
 
         res.json({ success: true, message: 'Notice updated', data: notice });
     } catch (error) {
+        console.error('Error updating notice:', error);
         res.status(500).json({ success: false, message: 'Error updating notice' });
     }
 });
@@ -132,9 +150,17 @@ router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        await Notice.findByIdAndDelete(req.params.id);
+        const notice = await Notice.findByPk(req.params.id);
+        
+        if (!notice) {
+            return res.status(404).json({ success: false, message: 'Notice not found' });
+        }
+
+        await notice.destroy();
+        
         res.json({ success: true, message: 'Notice deleted' });
     } catch (error) {
+        console.error('Error deleting notice:', error);
         res.status(500).json({ success: false, message: 'Error deleting notice' });
     }
 });

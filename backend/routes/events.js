@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Event = require('../models/Event');
 const Member = require('../models/Member');
 const { auth, authorize, optionalAuth } = require('../middleware/auth');
@@ -26,27 +27,37 @@ router.get('/', optionalAuth, async (req, res) => {
     try {
         const { type, status, page = 1, limit = 10 } = req.query;
         
-        let query = { status: 'published' };
+        const where = {};
         
-        if (type) query.type = type;
-        if (status && ['admin', 'secretary'].includes(req.user?.role)) {
-            query.status = status;
+        // Default to published for non-admin users
+        if (!['admin', 'secretary'].includes(req.user?.role)) {
+            where.status = 'published';
+        } else if (status) {
+            where.status = status;
         }
+        
+        if (type) where.type = type;
 
-        const events = await Event.find(query)
-            .populate('organizer', 'firstName lastName')
-            .sort({ eventDate: 1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Event.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: events } = await Event.findAndCountAll({
+            where,
+            order: [['eventDate', 'ASC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: events,
-            pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / limit) }
+            data: events || [],
+            pagination: { 
+                page: parseInt(page), 
+                limit: parseInt(limit), 
+                total: count || 0, 
+                pages: Math.ceil((count || 0) / limit) 
+            }
         });
     } catch (error) {
+        console.error('Error fetching events:', error);
         res.status(500).json({ success: false, message: 'Error fetching events' });
     }
 });
@@ -57,9 +68,7 @@ router.get('/', optionalAuth, async (req, res) => {
  */
 router.get('/:id', optionalAuth, async (req, res) => {
     try {
-        const event = await Event.findById(req.params.id)
-            .populate('organizer', 'firstName lastName')
-            .populate('registeredAttendees.member', 'firstName lastName memberNumber');
+        const event = await Event.findByPk(req.params.id);
 
         if (!event) {
             return res.status(404).json({ success: false, message: 'Event not found' });
@@ -67,6 +76,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
 
         res.json({ success: true, data: event });
     } catch (error) {
+        console.error('Error fetching event:', error);
         res.status(500).json({ success: false, message: 'Error fetching event' });
     }
 });
@@ -94,12 +104,13 @@ router.post('/', auth, authorize('admin', 'secretary'), [
             requiresRegistration: requiresRegistration || false,
             maxAttendees,
             image,
-            organizer: req.user._id,
+            organizer: req.user.id,
             status: 'draft'
         });
 
         res.status(201).json({ success: true, message: 'Event created', data: event });
     } catch (error) {
+        console.error('Error creating event:', error);
         res.status(500).json({ success: false, message: 'Error creating event' });
     }
 });
@@ -110,14 +121,30 @@ router.post('/', auth, authorize('admin', 'secretary'), [
  */
 router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
     try {
-        const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const event = await Event.findByPk(req.params.id);
         
         if (!event) {
             return res.status(404).json({ success: false, message: 'Event not found' });
         }
 
+        const { title, description, eventDate, endDate, location, type, requiresRegistration, maxAttendees, image, status } = req.body;
+
+        if (title) event.title = title;
+        if (description) event.description = description;
+        if (eventDate) event.eventDate = eventDate;
+        if (endDate) event.endDate = endDate;
+        if (location) event.location = location;
+        if (type) event.type = type;
+        if (requiresRegistration !== undefined) event.requiresRegistration = requiresRegistration;
+        if (maxAttendees !== undefined) event.maxAttendees = maxAttendees;
+        if (image) event.image = image;
+        if (status) event.status = status;
+
+        await event.save();
+
         res.json({ success: true, message: 'Event updated', data: event });
     } catch (error) {
+        console.error('Error updating event:', error);
         res.status(500).json({ success: false, message: 'Error updating event' });
     }
 });
@@ -128,7 +155,7 @@ router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
  */
 router.post('/:id/register', auth, async (req, res) => {
     try {
-        const event = await Event.findById(req.params.id);
+        const event = await Event.findByPk(req.params.id);
         
         if (!event) {
             return res.status(404).json({ success: false, message: 'Event not found' });
@@ -138,31 +165,37 @@ router.post('/:id/register', auth, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Registration not required for this event' });
         }
 
-        if (event.maxAttendees && event.registeredAttendees.length >= event.maxAttendees) {
+        const registeredAttendees = typeof event.registeredAttendees === 'string' 
+            ? JSON.parse(event.registeredAttendees) 
+            : (event.registeredAttendees || []);
+
+        if (event.maxAttendees && registeredAttendees.length >= event.maxAttendees) {
             return res.status(400).json({ success: false, message: 'Event is full' });
         }
 
-        const member = await Member.findOne({ userId: req.user._id });
+        const member = await Member.findOne({ where: { userId: req.user.id } });
         
         // Check if already registered
-        const alreadyRegistered = event.registeredAttendees.find(
-            r => r.member.toString() === member._id.toString()
+        const alreadyRegistered = registeredAttendees.find(
+            r => r.memberId === member?.id
         );
 
         if (alreadyRegistered) {
             return res.status(400).json({ success: false, message: 'Already registered for this event' });
         }
 
-        event.registeredAttendees.push({
-            member: member._id,
+        registeredAttendees.push({
+            memberId: member?.id,
             registeredAt: new Date(),
             status: 'registered'
         });
 
+        event.registeredAttendees = registeredAttendees;
         await event.save();
 
         res.json({ success: true, message: 'Successfully registered for event' });
     } catch (error) {
+        console.error('Error registering for event:', error);
         res.status(500).json({ success: false, message: 'Error registering for event' });
     }
 });
@@ -173,9 +206,17 @@ router.post('/:id/register', auth, async (req, res) => {
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        await Event.findByIdAndDelete(req.params.id);
+        const event = await Event.findByPk(req.params.id);
+        
+        if (!event) {
+            return res.status(404).json({ success: false, message: 'Event not found' });
+        }
+
+        await event.destroy();
+        
         res.json({ success: true, message: 'Event deleted' });
     } catch (error) {
+        console.error('Error deleting event:', error);
         res.status(500).json({ success: false, message: 'Error deleting event' });
     }
 });

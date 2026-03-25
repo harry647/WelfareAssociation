@@ -152,11 +152,25 @@ const optionalAuth = async (req, res, next) => {
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const token = authHeader.split(' ')[1];
             const decoded = verifyToken(token);
-            const user = await User.findById(decoded.userId).populate('memberId');
             
-            if (user && user.isActive) {
-                req.user = user;
-                req.userId = user._id;
+            try {
+                const user = await User.findByPk(decoded.userId);
+                
+                if (user && user.isActive) {
+                    req.user = user;
+                    req.userId = user.id;
+                }
+            } catch (e) {
+                // Handle admin mock user
+                if (decoded.userId === 'admin') {
+                    req.user = {
+                        id: 'admin',
+                        email: process.env.ADMIN_EMAIL || 'admin@swa.org',
+                        role: 'admin',
+                        isActive: true
+                    };
+                    req.userId = 'admin';
+                }
             }
         }
         

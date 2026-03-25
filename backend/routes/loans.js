@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Loan = require('../models/Loan');
 const Member = require('../models/Member');
 const { auth, authorize } = require('../middleware/auth');
@@ -30,39 +31,47 @@ router.get('/', auth, async (req, res) => {
     try {
         const { status, page = 1, limit = 10 } = req.query;
         
-        let query = {};
+        const where = {};
         
         // Non-admin users only see their own loans
-        if (!['admin', 'treasurer'].includes(req.user.role)) {
-            const member = await Member.findOne({ userId: req.user._id });
+        if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
+            const member = await Member.findOne({ where: { userId: req.user.id } });
             if (member) {
-                query.member = member._id;
+                where.memberId = member.id;
             }
         }
         
         if (status) {
-            query.status = status;
+            where.status = status;
         }
 
-        const loans = await Loan.find(query)
-            .populate('member', 'firstName lastName memberNumber email')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Loan.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: loans } = await Loan.findAndCountAll({
+            where,
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email'] 
+                }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: loans,
+            data: loans || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
+        console.error('Error fetching loans:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching loans'
@@ -74,17 +83,26 @@ router.get('/', auth, async (req, res) => {
  * GET /api/loans/pending
  * Get pending loan applications (admin)
  */
-router.get('/pending', auth, authorize('admin', 'treasurer'), async (req, res) => {
+router.get('/pending', auth, authorize('admin', 'treasurer', 'secretary'), async (req, res) => {
     try {
-        const loans = await Loan.find({ status: 'pending' })
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .sort({ createdAt: -1 });
+        const loans = await Loan.findAll({
+            where: { status: 'pending' },
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ],
+            order: [['createdAt', 'DESC']]
+        });
 
         res.json({
             success: true,
             data: loans
         });
     } catch (error) {
+        console.error('Error fetching pending loans:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching pending loans'
@@ -96,23 +114,21 @@ router.get('/pending', auth, authorize('admin', 'treasurer'), async (req, res) =
  * GET /api/loans/statistics
  * Get loan statistics (admin)
  */
-router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res) => {
+router.get('/statistics', auth, authorize('admin', 'treasurer', 'secretary'), async (req, res) => {
     try {
-        const totalLoans = await Loan.countDocuments();
-        const pending = await Loan.countDocuments({ status: 'pending' });
-        const active = await Loan.countDocuments({ status: 'active' });
-        const overdue = await Loan.countDocuments({ status: 'overdue' });
-        const completed = await Loan.countDocuments({ status: 'completed' });
-
-        const totalAmount = await Loan.aggregate([
-            { $match: { status: { $in: ['active', 'overdue'] } } },
-            { $group: { _id: null, total: { $sum: '$principalAmount' } } }
-        ]);
-
-        const totalOutstanding = await Loan.aggregate([
-            { $match: { status: { $in: ['active', 'overdue'] } } },
-            { $group: { _id: null, total: { $sum: '$remainingBalance' } } }
-        ]);
+        const totalLoans = await Loan.count();
+        const pending = await Loan.count({ where: { status: 'pending' } });
+        const active = await Loan.count({ where: { status: 'active' } });
+        const overdue = await Loan.count({ where: { status: 'overdue' } });
+        const completed = await Loan.count({ where: { status: 'completed' } });
+        
+        const totalDisbursed = await Loan.sum('principalAmount', {
+            where: { status: { [Op.in]: ['active', 'overdue'] } }
+        }) || 0;
+        
+        const totalOutstanding = await Loan.sum('remainingBalance', {
+            where: { status: { [Op.in]: ['active', 'overdue'] } }
+        }) || 0;
 
         res.json({
             success: true,
@@ -122,11 +138,12 @@ router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res
                 active,
                 overdue,
                 completed,
-                totalDisbursed: totalAmount[0]?.total || 0,
-                totalOutstanding: totalOutstanding[0]?.total || 0
+                totalDisbursed,
+                totalOutstanding
             }
         });
     } catch (error) {
+        console.error('Error fetching loan statistics:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching loan statistics'
@@ -140,9 +157,15 @@ router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const loan = await Loan.findById(req.params.id)
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .populate('guarantors.member', 'firstName lastName memberNumber');
+        const loan = await Loan.findByPk(req.params.id, {
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ]
+        });
 
         if (!loan) {
             return res.status(404).json({
@@ -151,14 +174,15 @@ router.get('/:id', auth, async (req, res) => {
             });
         }
 
-        // Check permission
-        const member = await Member.findOne({ userId: req.user._id });
-        if (!['admin', 'treasurer'].includes(req.user.role) && 
-            loan.member._id.toString() !== member?._id.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: 'Access denied'
-            });
+        // Check permission (admin/treasurer can view all, members can only view their own)
+        if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
+            const member = await Member.findOne({ where: { userId: req.user.id } });
+            if (!member || loan.memberId !== member.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access denied'
+                });
+            }
         }
 
         res.json({
@@ -166,6 +190,7 @@ router.get('/:id', auth, async (req, res) => {
             data: loan
         });
     } catch (error) {
+        console.error('Error fetching loan:', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching loan'
@@ -187,7 +212,7 @@ router.post('/apply', auth, [
         const { principalAmount, repaymentPeriod, purpose, purposeDescription, guarantors } = req.body;
 
         // Get member
-        const member = await Member.findOne({ userId: req.user._id });
+        const member = await Member.findOne({ where: { userId: req.user.id } });
         if (!member) {
             return res.status(404).json({
                 success: false,
@@ -197,8 +222,10 @@ router.post('/apply', auth, [
 
         // Check for existing active loans
         const existingLoan = await Loan.findOne({
-            member: member._id,
-            status: { $in: ['pending', 'active', 'overdue'] }
+            where: {
+                memberId: member.id,
+                status: { [Op.in]: ['pending', 'active', 'overdue'] }
+            }
         });
 
         if (existingLoan) {
@@ -211,22 +238,28 @@ router.post('/apply', auth, [
         // Calculate loan details
         const interestRate = 10;
         const interestAmount = (principalAmount * interestRate) / 100;
-        const totalAmount = principalAmount + interestAmount;
+        const totalAmount = parseFloat(principalAmount) + parseFloat(interestAmount);
         const monthlyPayment = totalAmount / repaymentPeriod;
 
         // Calculate due date
         const dueDate = new Date();
         dueDate.setMonth(dueDate.getMonth() + repaymentPeriod);
 
+        // Generate loan number
+        const loanCount = await Loan.count() + 1;
+        const loanNumber = `LN${String(loanCount).padStart(6, '0')}`;
+
         // Create loan
         const loan = await Loan.create({
-            member: member._id,
+            memberId: member.id,
+            loanNumber,
             principalAmount,
             interestRate,
             interestAmount,
             totalAmount,
             repaymentPeriod,
             monthlyPayment,
+            remainingBalance: totalAmount,
             dueDate,
             purpose,
             purposeDescription,
@@ -252,9 +285,9 @@ router.post('/apply', auth, [
  * PATCH /api/loans/:id/approve
  * Approve loan (admin)
  */
-router.patch('/:id/approve', auth, authorize('admin', 'treasurer'), async (req, res) => {
+router.patch('/:id/approve', auth, authorize('admin', 'treasurer', 'secretary'), async (req, res) => {
     try {
-        const loan = await Loan.findById(req.params.id);
+        const loan = await Loan.findByPk(req.params.id);
         
         if (!loan) {
             return res.status(404).json({
@@ -272,7 +305,7 @@ router.patch('/:id/approve', auth, authorize('admin', 'treasurer'), async (req, 
 
         loan.status = 'approved';
         loan.approvalDate = new Date();
-        loan.approvedBy = req.user._id;
+        loan.approvedBy = req.user.id;
         
         // Disburse the loan (in real app, would transfer money)
         loan.disbursementDate = new Date();
@@ -286,6 +319,7 @@ router.patch('/:id/approve', auth, authorize('admin', 'treasurer'), async (req, 
             data: loan
         });
     } catch (error) {
+        console.error('Error approving loan:', error);
         res.status(500).json({
             success: false,
             message: 'Error approving loan'
@@ -297,11 +331,11 @@ router.patch('/:id/approve', auth, authorize('admin', 'treasurer'), async (req, 
  * PATCH /api/loans/:id/reject
  * Reject loan (admin)
  */
-router.patch('/:id/reject', auth, authorize('admin', 'treasurer'), async (req, res) => {
+router.patch('/:id/reject', auth, authorize('admin', 'treasurer', 'secretary'), async (req, res) => {
     try {
         const { rejectionReason } = req.body;
         
-        const loan = await Loan.findById(req.params.id);
+        const loan = await Loan.findByPk(req.params.id);
         
         if (!loan) {
             return res.status(404).json({
@@ -318,7 +352,7 @@ router.patch('/:id/reject', auth, authorize('admin', 'treasurer'), async (req, r
         }
 
         loan.status = 'rejected';
-        loan.rejectedBy = req.user._id;
+        loan.rejectedBy = req.user.id;
         loan.rejectionReason = rejectionReason || 'Not specified';
         
         await loan.save();
@@ -329,6 +363,7 @@ router.patch('/:id/reject', auth, authorize('admin', 'treasurer'), async (req, r
             data: loan
         });
     } catch (error) {
+        console.error('Error rejecting loan:', error);
         res.status(500).json({
             success: false,
             message: 'Error rejecting loan'
@@ -344,7 +379,9 @@ router.post('/:id/payments', auth, async (req, res) => {
     try {
         const { amount, method, reference } = req.body;
 
-        const loan = await Loan.findById(req.params.id);
+        const loan = await Loan.findByPk(req.params.id, {
+            include: [{ model: Member, as: 'member' }]
+        });
         
         if (!loan) {
             return res.status(404).json({
@@ -354,13 +391,14 @@ router.post('/:id/payments', auth, async (req, res) => {
         }
 
         // Verify ownership
-        const member = await Member.findOne({ userId: req.user._id });
-        if (!['admin', 'treasurer'].includes(req.user.role) && 
-            loan.member.toString() !== member?._id.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: 'Access denied'
-            });
+        if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
+            const member = await Member.findOne({ where: { userId: req.user.id } });
+            if (!member || loan.memberId !== member.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access denied'
+                });
+            }
         }
 
         if (loan.status === 'completed') {
@@ -370,16 +408,18 @@ router.post('/:id/payments', auth, async (req, res) => {
             });
         }
 
-        // Add payment
-        loan.payments.push({
+        // Parse existing payments or create new array
+        const payments = typeof loan.payments === 'string' ? JSON.parse(loan.payments) : (loan.payments || []);
+        payments.push({
             date: new Date(),
-            amount,
+            amount: parseFloat(amount),
             method,
             reference
         });
 
-        loan.paidAmount += amount;
-        loan.remainingBalance = loan.totalAmount - loan.paidAmount;
+        loan.paidAmount = (parseFloat(loan.paidAmount) || 0) + parseFloat(amount);
+        loan.remainingBalance = parseFloat(loan.totalAmount) - loan.paidAmount;
+        loan.payments = payments;
 
         // Check if fully paid
         if (loan.remainingBalance <= 0) {
@@ -395,6 +435,7 @@ router.post('/:id/payments', auth, async (req, res) => {
             data: loan
         });
     } catch (error) {
+        console.error('Error recording payment:', error);
         res.status(500).json({
             success: false,
             message: 'Error recording payment'
@@ -404,11 +445,11 @@ router.post('/:id/payments', auth, async (req, res) => {
 
 /**
  * DELETE /api/loans/:id
- * Delete loan (admin)
+ * Delete loan (admin only)
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const loan = await Loan.findById(req.params.id);
+        const loan = await Loan.findByPk(req.params.id);
         
         if (!loan) {
             return res.status(404).json({
@@ -416,14 +457,15 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
                 message: 'Loan not found'
             });
         }
-
-        await Loan.findByIdAndDelete(req.params.id);
-
+        
+        await loan.destroy();
+        
         res.json({
             success: true,
-            message: 'Loan deleted successfully'
+            message: 'Loan deleted'
         });
     } catch (error) {
+        console.error('Error deleting loan:', error);
         res.status(500).json({
             success: false,
             message: 'Error deleting loan'

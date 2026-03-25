@@ -493,6 +493,34 @@
       font-weight: 500;
     }
 
+    /* Empty state / no data message styling */
+    .no-data-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px;
+      color: var(--text3);
+      font-size: 14px;
+      text-align: center;
+      background: transparent;
+      border: none;
+    }
+
+    .no-data-message i {
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    tbody td.no-data-message {
+      padding: 30px 12px;
+    }
+
+    ul.activity-list li.no-data-message {
+      padding: 15px 0;
+      border: none;
+    }
+
     .status.received {
       background: rgba(34,197,94,0.12);
       color: var(--green);

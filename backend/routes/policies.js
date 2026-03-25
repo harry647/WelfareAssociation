@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const Policy = require('../models/Policy');
+const User = require('../models/User');
 const { auth, authorize } = require('../middleware/auth');
 
 const validate = (req, res, next) => {
@@ -24,36 +25,36 @@ const validate = (req, res, next) => {
 router.get('/', async (req, res) => {
     try {
         const { category, status, search, page = 1, limit = 10 } = req.query;
-        let query = {};
+        let where = {};
 
         // Public users can only see active and public policies
         if (!req.user) {
-            query.status = 'active';
-            query.isPublic = true;
+            where.status = 'active';
+            where.isPublic = true;
         }
 
-        if (category) query.category = category;
-        if (status) query.status = status;
-        if (search) {
-            query.$text = { $search: search };
-        }
+        if (category) where.category = category;
+        if (status) where.status = status;
 
-        const policies = await Policy.find(query)
-            .populate('createdBy', 'firstName lastName')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Policy.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: policies } = await Policy.findAndCountAll({
+            where,
+            include: [
+                { model: User, as: 'creator', attributes: ['firstName', 'lastName'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: policies,
+            data: policies || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
+                total: count || 0,
+                pages: Math.ceil((count || 0) / limit)
             }
         });
     } catch (error) {
@@ -67,11 +68,13 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
     try {
-        const policy = await Policy.findById(req.params.id)
-            .populate('createdBy', 'firstName lastName')
-            .populate('updatedBy', 'firstName lastName')
-            .populate('reviewedBy', 'firstName lastName')
-            .populate('relatedPolicies', 'title');
+        const policy = await Policy.findByPk(req.params.id, {
+            include: [
+                { model: User, as: 'creator', attributes: ['firstName', 'lastName'] },
+                { model: User, as: 'updater', attributes: ['firstName', 'lastName'] },
+                { model: User, as: 'reviewer', attributes: ['firstName', 'lastName'] }
+            ]
+        });
 
         if (!policy) {
             return res.status(404).json({ success: false, message: 'Policy not found' });
@@ -114,7 +117,7 @@ router.post('/', auth, authorize('admin', 'chairman', 'secretary'), [
             expiryDate: expiryDate || null,
             isPublic: isPublic || false,
             relatedPolicies: relatedPolicies || [],
-            createdBy: req.user._id,
+            createdBy: req.user.id,
             status: 'draft'
         });
 
@@ -136,7 +139,7 @@ router.post('/', auth, authorize('admin', 'chairman', 'secretary'), [
  */
 router.put('/:id', auth, authorize('admin', 'chairman', 'secretary'), async (req, res) => {
     try {
-        const policy = await Policy.findById(req.params.id);
+        const policy = await Policy.findByPk(req.params.id);
 
         if (!policy) {
             return res.status(404).json({ success: false, message: 'Policy not found' });
@@ -154,7 +157,7 @@ router.put('/:id', auth, authorize('admin', 'chairman', 'secretary'), async (req
         if (relatedPolicies) policy.relatedPolicies = relatedPolicies;
         if (status) policy.status = status;
         
-        policy.updatedBy = req.user._id;
+        policy.updatedBy = req.user.id;
 
         await policy.save();
 
@@ -174,7 +177,7 @@ router.put('/:id', auth, authorize('admin', 'chairman', 'secretary'), async (req
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const policy = await Policy.findByIdAndDelete(req.params.id);
+        const policy = await Policy.findByPk(req.params.id);
 
         if (!policy) {
             return res.status(404).json({ success: false, message: 'Policy not found' });
@@ -192,7 +195,7 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
  */
 router.post('/:id/acknowledge', auth, async (req, res) => {
     try {
-        const policy = await Policy.findById(req.params.id);
+        const policy = await Policy.findByPk(req.params.id);
 
         if (!policy) {
             return res.status(404).json({ success: false, message: 'Policy not found' });
@@ -204,7 +207,7 @@ router.post('/:id/acknowledge', auth, async (req, res) => {
 
         // Check if already acknowledged
         const alreadyAcknowledged = policy.acknowledgments.find(
-            a => a.user.toString() === req.user._id.toString()
+            a => a.user === req.user.id
         );
 
         if (alreadyAcknowledged) {

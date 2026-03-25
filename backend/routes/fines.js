@@ -45,32 +45,46 @@ router.get('/types', (req, res) => {
 router.get('/', auth, async (req, res) => {
     try {
         const { status, memberId, page = 1, limit = 10 } = req.query;
-        let query = {};
+        const where = {};
 
-        if (!['admin', 'treasurer'].includes(req.user.role)) {
-            const member = await Member.findOne({ userId: req.user._id });
-            if (member) query.member = member._id;
+        if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
+            const member = await Member.findOne({ where: { userId: req.user.id } });
+            if (member) {
+                where.memberId = member.id;
+            }
         } else if (memberId) {
-            query.member = memberId;
+            where.memberId = memberId;
         }
 
-        if (status) query.status = status;
+        if (status) where.status = status;
 
-        const fines = await Fine.find(query)
-            .populate('member', 'firstName lastName memberNumber email')
-            .populate('issuedBy', 'firstName lastName')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
-
-        const total = await Fine.countDocuments(query);
+        const offset = (page - 1) * limit;
+        const { count, rows: fines } = await Fine.findAndCountAll({
+            where,
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email'] 
+                }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
         res.json({
             success: true,
-            data: fines,
-            pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / limit) }
+            data: fines || [],
+            pagination: { 
+                page: parseInt(page), 
+                limit: parseInt(limit), 
+                total: count || 0, 
+                pages: Math.ceil((count || 0) / limit) 
+            }
         });
     } catch (error) {
+        console.error('Error fetching fines:', error);
         res.status(500).json({ success: false, message: 'Error fetching fines' });
     }
 });
@@ -81,19 +95,30 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/pending', auth, async (req, res) => {
     try {
-        let query = { status: 'unpaid' };
+        const where = { status: 'unpaid' };
         
-        if (!['admin', 'treasurer'].includes(req.user.role)) {
-            const member = await Member.findOne({ userId: req.user._id });
-            if (member) query.member = member._id;
+        if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
+            const member = await Member.findOne({ where: { userId: req.user.id } });
+            if (member) {
+                where.memberId = member.id;
+            }
         }
 
-        const fines = await Fine.find(query)
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .sort({ dueDate: 1 });
+        const fines = await Fine.findAll({
+            where,
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ],
+            order: [['dueDate', 'ASC']]
+        });
 
         res.json({ success: true, data: fines });
     } catch (error) {
+        console.error('Error fetching pending fines:', error);
         res.status(500).json({ success: false, message: 'Error fetching pending fines' });
     }
 });
@@ -102,22 +127,20 @@ router.get('/pending', auth, async (req, res) => {
  * GET /api/fines/statistics
  * Get fine statistics
  */
-router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res) => {
+router.get('/statistics', auth, authorize('admin', 'treasurer', 'secretary'), async (req, res) => {
     try {
-        const total = await Fine.countDocuments();
-        const unpaid = await Fine.countDocuments({ status: 'unpaid' });
-        const paid = await Fine.countDocuments({ status: 'paid' });
+        const total = await Fine.count();
+        const unpaid = await Fine.count({ where: { status: 'unpaid' } });
+        const paid = await Fine.count({ where: { status: 'paid' } });
 
-        const outstanding = await Fine.aggregate([
-            { $match: { status: 'unpaid' } },
-            { $group: { _id: null, total: { $sum: '$amount' } } }
-        ]);
+        const totalOutstanding = await Fine.sum('amount', { where: { status: 'unpaid' } }) || 0;
 
         res.json({
             success: true,
-            data: { total, unpaid, paid, totalOutstanding: outstanding[0]?.total || 0 }
+            data: { total, unpaid, paid, totalOutstanding }
         });
     } catch (error) {
+        console.error('Error fetching statistics:', error);
         res.status(500).json({ success: false, message: 'Error fetching statistics' });
     }
 });
@@ -126,15 +149,13 @@ router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res
  * GET /api/fines/total
  * Get total outstanding fines
  */
-router.get('/total', auth, authorize('admin', 'treasurer'), async (req, res) => {
+router.get('/total', auth, authorize('admin', 'treasurer', 'secretary'), async (req, res) => {
     try {
-        const result = await Fine.aggregate([
-            { $match: { status: 'unpaid' } },
-            { $group: { _id: null, total: { $sum: '$amount' } } }
-        ]);
+        const result = await Fine.sum('amount', { where: { status: 'unpaid' } });
 
-        res.json({ success: true, data: { total: result[0]?.total || 0 } });
+        res.json({ success: true, data: { total: result || 0 } });
     } catch (error) {
+        console.error('Error fetching total:', error);
         res.status(500).json({ success: false, message: 'Error fetching total' });
     }
 });
@@ -145,9 +166,15 @@ router.get('/total', auth, authorize('admin', 'treasurer'), async (req, res) => 
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const fine = await Fine.findById(req.params.id)
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .populate('issuedBy', 'firstName lastName');
+        const fine = await Fine.findByPk(req.params.id, {
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ]
+        });
 
         if (!fine) {
             return res.status(404).json({ success: false, message: 'Fine not found' });
@@ -155,6 +182,7 @@ router.get('/:id', auth, async (req, res) => {
 
         res.json({ success: true, data: fine });
     } catch (error) {
+        console.error('Error fetching fine:', error);
         res.status(500).json({ success: false, message: 'Error fetching fine' });
     }
 });
@@ -163,7 +191,7 @@ router.get('/:id', auth, async (req, res) => {
  * POST /api/fines
  * Issue fine (admin)
  */
-router.post('/', auth, authorize('admin', 'secretary'), [
+router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
     body('memberId').notEmpty(),
     body('amount').isNumeric(),
     body('dueDate').isISO8601(),
@@ -172,17 +200,23 @@ router.post('/', auth, authorize('admin', 'secretary'), [
     try {
         const { memberId, fineType, amount, dueDate, description } = req.body;
 
+        // Generate fine number
+        const fineCount = await Fine.count() + 1;
+        const fineNumber = `FINE${String(fineCount).padStart(6, '0')}`;
+
         const fine = await Fine.create({
-            member: memberId,
+            memberId,
+            fineNumber,
             fineType: fineType || { name: 'Other', category: 'other' },
             amount,
             dueDate,
             description,
-            issuedBy: req.user._id
+            issuedBy: req.user.id
         });
 
         res.status(201).json({ success: true, message: 'Fine issued', data: fine });
     } catch (error) {
+        console.error('Error issuing fine:', error);
         res.status(500).json({ success: false, message: 'Error issuing fine' });
     }
 });
@@ -194,7 +228,7 @@ router.post('/', auth, authorize('admin', 'secretary'), [
 router.patch('/:id/pay', auth, async (req, res) => {
     try {
         const { method, reference } = req.body;
-        const fine = await Fine.findById(req.params.id);
+        const fine = await Fine.findByPk(req.params.id);
 
         if (!fine) {
             return res.status(404).json({ success: false, message: 'Fine not found' });
@@ -209,6 +243,7 @@ router.patch('/:id/pay', auth, async (req, res) => {
 
         res.json({ success: true, message: 'Fine paid', data: fine });
     } catch (error) {
+        console.error('Error processing payment:', error);
         res.status(500).json({ success: false, message: 'Error processing payment' });
     }
 });
@@ -219,17 +254,29 @@ router.patch('/:id/pay', auth, async (req, res) => {
  */
 router.post('/:id/remind', auth, authorize('admin'), async (req, res) => {
     try {
-        const fine = await Fine.findById(req.params.id).populate('member');
+        const fine = await Fine.findByPk(req.params.id, {
+            include: [
+                { model: Member, as: 'member' }
+            ]
+        });
 
         if (!fine) {
             return res.status(404).json({ success: false, message: 'Fine not found' });
         }
 
-        fine.remindersSent.push({ date: new Date(), sentBy: req.user._id });
+        // Parse existing reminders or create new array
+        const remindersSent = typeof fine.remindersSent === 'string' 
+            ? JSON.parse(fine.remindersSent) 
+            : (fine.remindersSent || []);
+        
+        remindersSent.push({ date: new Date(), sentBy: req.user.id });
+        fine.remindersSent = remindersSent;
+
         await fine.save();
 
         res.json({ success: true, message: 'Reminder sent' });
     } catch (error) {
+        console.error('Error sending reminder:', error);
         res.status(500).json({ success: false, message: 'Error sending reminder' });
     }
 });
@@ -241,14 +288,14 @@ router.post('/:id/remind', auth, authorize('admin'), async (req, res) => {
 router.patch('/:id/waive', auth, authorize('admin'), async (req, res) => {
     try {
         const { reason } = req.body;
-        const fine = await Fine.findById(req.params.id);
+        const fine = await Fine.findByPk(req.params.id);
 
         if (!fine) {
             return res.status(404).json({ success: false, message: 'Fine not found' });
         }
 
         fine.status = 'waived';
-        fine.waivedBy = req.user._id;
+        fine.waivedBy = req.user.id;
         fine.waiverReason = reason;
         fine.waivedAt = new Date();
 
@@ -256,6 +303,7 @@ router.patch('/:id/waive', auth, authorize('admin'), async (req, res) => {
 
         res.json({ success: true, message: 'Fine waived', data: fine });
     } catch (error) {
+        console.error('Error waiving fine:', error);
         res.status(500).json({ success: false, message: 'Error waiving fine' });
     }
 });
@@ -266,9 +314,17 @@ router.patch('/:id/waive', auth, authorize('admin'), async (req, res) => {
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        await Fine.findByIdAndDelete(req.params.id);
+        const fine = await Fine.findByPk(req.params.id);
+        
+        if (!fine) {
+            return res.status(404).json({ success: false, message: 'Fine not found' });
+        }
+        
+        await fine.destroy();
+        
         res.json({ success: true, message: 'Fine deleted' });
     } catch (error) {
+        console.error('Error deleting fine:', error);
         res.status(500).json({ success: false, message: 'Error deleting fine' });
     }
 });

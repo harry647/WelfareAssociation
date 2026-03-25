@@ -30,12 +30,14 @@ router.get('/', auth, authorize('admin', 'secretary'), async (req, res) => {
         if (priority) query.priority = priority;
         if (category) query.category = category;
 
-        const contacts = await Contact.find(query)
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
+        const contacts = await Contact.findAll({
+            where: query,
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: (page - 1) * limit
+        });
 
-        const total = await Contact.countDocuments(query);
+        const total = await Contact.count({ where: query });
 
         res.json({
             success: true,
@@ -58,7 +60,7 @@ router.get('/', auth, authorize('admin', 'secretary'), async (req, res) => {
  */
 router.get('/unread', auth, authorize('admin', 'secretary'), async (req, res) => {
     try {
-        const count = await Contact.countDocuments({ status: 'new' });
+        const count = await Contact.count({ where: { status: 'new' } });
         res.json({ success: true, data: { unread: count } });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error fetching unread count' });
@@ -71,7 +73,7 @@ router.get('/unread', auth, authorize('admin', 'secretary'), async (req, res) =>
  */
 router.get('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
     try {
-        const contact = await Contact.findById(req.params.id);
+        const contact = await Contact.findByPk(req.params.id);
 
         if (!contact) {
             return res.status(404).json({ success: false, message: 'Contact not found' });
@@ -81,7 +83,7 @@ router.get('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
         if (!contact.isRead) {
             contact.isRead = true;
             contact.readAt = new Date();
-            contact.readBy = req.user._id;
+            contact.readBy = req.user.id;
             await contact.save();
         }
 
@@ -132,7 +134,7 @@ router.post('/', [
  */
 router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
     try {
-        const contact = await Contact.findById(req.params.id);
+        const contact = await Contact.findByPk(req.params.id);
 
         if (!contact) {
             return res.status(404).json({ success: false, message: 'Contact not found' });
@@ -164,7 +166,7 @@ router.post('/:id/reply', auth, authorize('admin', 'secretary'), [
     body('reply').notEmpty().withMessage('Reply message is required')
 ], validate, async (req, res) => {
     try {
-        const contact = await Contact.findById(req.params.id);
+        const contact = await Contact.findByPk(req.params.id);
 
         if (!contact) {
             return res.status(404).json({ success: false, message: 'Contact not found' });
@@ -173,7 +175,7 @@ router.post('/:id/reply', auth, authorize('admin', 'secretary'), [
         // In a real application, you would send an email here
         // For now, just update the status
         contact.status = 'replied';
-        contact.repliedBy = req.user._id;
+        contact.repliedBy = req.user.id;
         contact.repliedAt = new Date();
         
         await contact.save();
@@ -193,11 +195,13 @@ router.post('/:id/reply', auth, authorize('admin', 'secretary'), [
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const contact = await Contact.findByIdAndDelete(req.params.id);
+        const contact = await Contact.findByPk(req.params.id);
 
         if (!contact) {
             return res.status(404).json({ success: false, message: 'Contact not found' });
         }
+
+        await contact.destroy();
 
         res.json({ success: true, message: 'Contact deleted successfully' });
     } catch (error) {
@@ -218,12 +222,14 @@ router.get('/messages', auth, authorize('admin', 'secretary'), async (req, res) 
         if (priority) query.priority = priority;
         if (category) query.category = category;
 
-        const contacts = await Contact.find(query)
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
+        const contacts = await Contact.findAll({
+            where: query,
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: (page - 1) * limit
+        });
 
-        const total = await Contact.countDocuments(query);
+        const total = await Contact.count({ where: query });
 
         res.json({
             success: true,

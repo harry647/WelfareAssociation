@@ -28,12 +28,14 @@ router.get('/', auth, authorize('admin'), async (req, res) => {
 
         if (isActive !== undefined) query.isActive = isActive === 'true';
 
-        const subscribers = await Newsletter.find(query)
-            .sort({ subscribedAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
+        const subscribers = await Newsletter.findAll({
+            where: query,
+            order: [['subscribedAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: (page - 1) * limit
+        });
 
-        const total = await Newsletter.countDocuments(query);
+        const total = await Newsletter.count({ where: query });
 
         res.json({
             success: true,
@@ -102,7 +104,7 @@ router.post('/', [
  */
 router.delete('/:id', auth, async (req, res) => {
     try {
-        const subscriber = await Newsletter.findById(req.params.id);
+        const subscriber = await Newsletter.findByPk(req.params.id);
 
         if (!subscriber) {
             return res.status(404).json({ success: false, message: 'Subscriber not found' });

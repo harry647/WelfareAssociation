@@ -2,7 +2,8 @@
  * Admin Dashboard JavaScript
  * Handles sidebar navigation, toggle functionality, and data loading
  * 
- * @version 1.0.0
+ * @version 1.1.0
+ * Updated to fetch data dynamically from database with proper empty state handling
  */
 
 // Import services from src for consistency
@@ -26,6 +27,7 @@ class AdminDashboardManager {
 
     async init() {
         await this.checkAuth();
+        await this.loadAdminInfo();
         await this.loadDashboardData();
         this.initEventListeners();
     }
@@ -46,59 +48,260 @@ class AdminDashboardManager {
         return true;
     }
 
-    async loadDashboardData() {
+    /**
+     * Load and display admin user information dynamically
+     */
+    async loadAdminInfo() {
         try {
-            // Load statistics from backend
-            const stats = await memberService.getStatistics();
-            this.updateStats(stats);
-            
-            // Load recent contributions
-            const contributions = await contributionService.getAll({ limit: 5 });
-            this.renderContributions(contributions);
-            
-            // Load pending debts
-            const debts = await debtService.getAll();
-            this.renderDebts(debts);
-            
-            // Load pending loan requests
-            const loans = await loanService.getPending();
-            this.renderLoans(loans);
+            const user = authService.getCurrentUser();
+            if (!user) {
+                this.setDefaultAdminInfo();
+                return;
+            }
+
+            // Get user profile from backend
+            let profile = null;
+            try {
+                profile = await memberService.getProfile();
+            } catch (e) {
+                console.log('Using local user data');
+            }
+
+            // Build admin info
+            const firstName = user.firstName || profile?.firstName || 'Admin';
+            const lastName = user.lastName || profile?.lastName || 'User';
+            const role = user.role || 'Administrator';
+            const title = profile?.position || this.getRoleTitle(role);
+
+            // Update DOM elements
+            const adminNameEl = document.getElementById('adminName');
+            const adminRoleEl = document.getElementById('adminRole');
+            const adminTitleEl = document.getElementById('adminTitle');
+            const adminAvatarEl = document.getElementById('adminAvatar');
+
+            if (adminNameEl) {
+                adminNameEl.textContent = `${firstName} ${lastName}`;
+            }
+            if (adminRoleEl) {
+                adminRoleEl.textContent = this.capitalizeFirst(role);
+            }
+            if (adminTitleEl) {
+                adminTitleEl.textContent = title;
+            }
+            if (adminAvatarEl) {
+                // Set avatar initials
+                adminAvatarEl.textContent = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+            }
+
+            // Setup logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    authService.logout();
+                    window.location.href = '../auth/login-page.html';
+                });
+            }
+
         } catch (error) {
-            console.error('Failed to load dashboard data:', error);
-            // Use demo data
-            this.loadDemoData();
+            console.error('Error loading admin info:', error);
+            this.setDefaultAdminInfo();
         }
     }
 
-    loadDemoData() {
-        // Demo data for demonstration
+    setDefaultAdminInfo() {
+        const adminNameEl = document.getElementById('adminName');
+        const adminRoleEl = document.getElementById('adminRole');
+        const adminTitleEl = document.getElementById('adminTitle');
+        const adminAvatarEl = document.getElementById('adminAvatar');
+
+        if (adminNameEl) adminNameEl.textContent = 'Admin User';
+        if (adminRoleEl) adminRoleEl.textContent = 'Administrator';
+        if (adminTitleEl) adminTitleEl.textContent = 'SWA Admin';
+        if (adminAvatarEl) adminAvatarEl.textContent = 'AD';
+    }
+
+    getRoleTitle(role) {
+        const titles = {
+            'admin': 'Administrator, SWA',
+            'treasurer': 'Treasurer, SWA',
+            'secretary': 'Secretary, SWA',
+            'chairman': 'Chairman, SWA',
+            'vice-chairman': 'Vice Chairman, SWA'
+        };
+        return titles[role] || 'SWA Member';
+    }
+
+    capitalizeFirst(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    async loadDashboardData() {
+        try {
+            // Load statistics from backend
+            const statsResponse = await memberService.getStatistics();
+            // Handle both array and object response formats
+            const stats = statsResponse.data || statsResponse || {};
+            this.updateStats(stats);
+            
+            // Load recent contributions
+            const contributionsResponse = await contributionService.getAll({ limit: 5, sort: 'date:desc' });
+            // Handle both array and object response formats
+            const contributions = contributionsResponse.data || contributionsResponse || [];
+            this.renderContributions(contributions);
+            
+            // Load pending debts
+            const debtsResponse = await debtService.getPending();
+            const debts = debtsResponse.data || debtsResponse || [];
+            this.renderDebts(debts);
+            
+            // Load pending loan requests
+            const loansResponse = await loanService.getAll({ status: 'pending', limit: 5 });
+            const loans = loansResponse.data || loansResponse || [];
+            this.renderLoans(loans);
+
+            // Load activity log
+            await this.loadActivityLog();
+        } catch (error) {
+            console.error('Failed to load dashboard data:', error);
+            // Show empty state instead of demo data
+            this.showEmptyStates();
+        }
+    }
+
+    /**
+     * Load activity log from various sources
+     */
+    async loadActivityLog() {
+        const activityList = document.getElementById('activityLogList');
+        if (!activityList) return;
+
+        try {
+            // Fetch recent activities from multiple sources
+            const activities = [];
+
+            // Get recent contributions
+            try {
+                const contributionsResponse = await contributionService.getAll({ limit: 3 });
+                const contributions = contributionsResponse.data || contributionsResponse || [];
+                if (contributions && contributions.length > 0) {
+                    contributions.forEach(c => {
+                        activities.push({
+                            time: c.createdAt || c.date,
+                            message: `Contribution of ${formatCurrency(c.amount || 0)} received`,
+                            type: 'contribution'
+                        });
+                    });
+                }
+            } catch (e) {}
+
+            // Get recent loans
+            try {
+                const loansResponse = await loanService.getAll({ limit: 3 });
+                const loans = loansResponse.data || loansResponse || [];
+                if (loans && loans.length > 0) {
+                    loans.forEach(l => {
+                        activities.push({
+                            time: l.createdAt || l.date,
+                            message: `Loan request: ${formatCurrency(l.amount || 0)} - ${l.status || 'pending'}`,
+                            type: 'loan'
+                        });
+                    });
+                }
+            } catch (e) {}
+
+            // Get recent members
+            try {
+                const membersResponse = await memberService.getAllMembers({ limit: 3 });
+                const members = membersResponse.data || membersResponse || [];
+                if (members && members.length > 0) {
+                    members.forEach(m => {
+                        activities.push({
+                            time: m.createdAt,
+                            message: `New member registered: ${m.firstName || ''} ${m.lastName || ''}`,
+                            type: 'member'
+                        });
+                    });
+                }
+            } catch (e) {}
+
+            // Sort by time descending
+            activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+            // Take only the most recent 5
+            const recentActivities = activities.slice(0, 5);
+
+            this.renderActivityLog(recentActivities);
+
+        } catch (error) {
+            console.error('Error loading activity log:', error);
+            this.renderActivityLog([]);
+        }
+    }
+
+    renderActivityLog(activities) {
+        const activityList = document.getElementById('activityLogList');
+        if (!activityList) return;
+
+        if (!activities || activities.length === 0) {
+            activityList.innerHTML = '<li class="no-data-message"><i class="fas fa-info-circle"></i> No recent activity to display</li>';
+            return;
+        }
+
+        activityList.innerHTML = activities.map(activity => `
+            <li>
+                <span class="activity-time">${this.formatActivityTime(activity.time)}</span>
+                ${activity.message}
+            </li>
+        `).join('');
+    }
+
+    formatActivityTime(dateStr) {
+        if (!dateStr) return 'Unknown time';
+        
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        
+        return formatDate(dateStr);
+    }
+
+    showEmptyStates() {
+        // Show empty states for all data
         this.updateStats({
-            totalMembers: 22,
-            totalContributions: 7000,
-            availableBalance: 3000,
-            pendingDebts: 4000,
+            totalMembers: 0,
+            totalContributions: 0,
+            availableBalance: 0,
+            pendingDebts: 0,
+            totalRegistered: 0,
+            welfarePackages: 0,
+            eventsHeld: 0,
+            scholarships: 0
         });
-
-        this.renderContributions([
-            { memberName: 'Lavenda Achieng', studentId: 'JOO/2024/001', date: '2025-09-01', amount: 800, paymentMethod: 'M-Pesa', status: 'received' },
-            { memberName: 'Mary Odundo', studentId: 'JOO/2024/002', date: '2025-09-02', amount: 1000, paymentMethod: 'Bank Transfer', status: 'received' },
-            { memberName: 'Francis Opiyo', studentId: 'JOO/2024/003', date: '2025-09-03', amount: 500, paymentMethod: 'M-Pesa', status: 'received' },
-            { memberName: 'Vincent Otieno', studentId: 'JOO/2024/004', date: '2025-09-04', amount: 1200, paymentMethod: 'Cash', status: 'received' },
-        ]);
-
-        this.renderDebts([
-            { memberName: 'Mary Atieno', studentId: 'JOO/2024/005', dueDate: '2025-09-05', amount: 2000, daysOverdue: 5 },
-            { memberName: 'Francis Opiyo', studentId: 'JOO/2024/003', dueDate: '2025-09-05', amount: 3000, daysOverdue: 3 },
-        ]);
-
-        this.renderLoans([
-            { memberName: 'Yvonne Achieng', studentId: 'JOO/2024/006', amount: 1000, purpose: 'Academic Fees', date: '2025-09-03' },
-            { memberName: 'Jeff Juma', studentId: 'JOO/2024/007', amount: 2500, purpose: 'Emergency', date: '2025-09-04' },
-        ]);
+        
+        this.renderContributions([]);
+        this.renderDebts([]);
+        this.renderLoans([]);
+        this.renderActivityLog([]);
     }
 
     updateStats(stats) {
         this.stats = stats;
+        
+        // Handle the statistics response from backend
+        // The backend returns: { total, active, inactive, byType }
+        // We need to map it to our expected format
+        
+        const totalMembers = stats?.data?.total || stats?.total || stats?.totalMembers || 0;
+        const activeMembers = stats?.data?.active || stats?.active || 0;
         
         // Update DOM elements - Quick Stats cards
         const cards = document.querySelectorAll('.card');
@@ -106,94 +309,142 @@ class AdminDashboardManager {
             // Total Members
             const totalMembersEl = cards[0].querySelector('[data-stat="total-members"]');
             if (totalMembersEl) {
-                totalMembersEl.textContent = stats.totalMembers || 0;
+                totalMembersEl.textContent = totalMembers;
             }
             
             // Monthly Contributions
             const monthlyContributionsEl = cards[1].querySelector('[data-stat="monthly-contributions"]');
             if (monthlyContributionsEl) {
-                monthlyContributionsEl.textContent = formatCurrency(stats.monthlyContributions || 0);
+                const monthlyContrib = stats?.monthlyContributions || stats?.totalContributions || 0;
+                monthlyContributionsEl.textContent = formatCurrency(monthlyContrib);
             }
             
             // Available Balance
             const availableBalanceEl = cards[2].querySelector('[data-stat="available-balance"]');
             if (availableBalanceEl) {
-                availableBalanceEl.textContent = formatCurrency(stats.availableBalance || 0);
+                const balance = stats?.availableBalance || 0;
+                availableBalanceEl.textContent = formatCurrency(balance);
             }
             
             // Pending Debts
             const pendingDebtsEl = cards[3].querySelector('[data-stat="pending-debts"]');
             if (pendingDebtsEl) {
-                pendingDebtsEl.textContent = formatCurrency(stats.pendingDebts || 0);
+                const debts = stats?.pendingDebts || 0;
+                pendingDebtsEl.textContent = formatCurrency(debts);
             }
         }
         
         // Update Overview Statistics
         const totalRegisteredEl = document.querySelector('[data-stat="total-registered"]');
         if (totalRegisteredEl) {
-            totalRegisteredEl.textContent = stats.totalRegistered || 0;
+            totalRegisteredEl.textContent = totalMembers;
         }
         
         const welfarePackagesEl = document.querySelector('[data-stat="welfare-packages"]');
         if (welfarePackagesEl) {
-            welfarePackagesEl.textContent = stats.welfarePackages || 0;
+            welfarePackagesEl.textContent = stats?.welfarePackages || stats?.data?.byType?.find(t => t._id === 'welfare')?.count || 0;
         }
         
         const eventsHeldEl = document.querySelector('[data-stat="events-held"]');
         if (eventsHeldEl) {
-            eventsHeldEl.textContent = stats.eventsHeld || 0;
+            eventsHeldEl.textContent = stats?.eventsHeld || 0;
         }
         
         const scholarshipsEl = document.querySelector('[data-stat="scholarships"]');
         if (scholarshipsEl) {
-            scholarshipsEl.textContent = stats.scholarships || 0;
+            scholarshipsEl.textContent = stats?.scholarships || 0;
         }
     }
 
     renderContributions(contributions) {
-        // Find the Recent Contributions table
         const tbody = document.getElementById('recent-contributions-table');
         if (!tbody) return;
 
+        // Handle empty or null data
+        if (!contributions || contributions.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="no-data-message"><i class="fas fa-info-circle"></i> No contributions found. Add contributions to see them here.</td></tr>';
+            return;
+        }
+
         tbody.innerHTML = contributions.map(c => `
             <tr>
-                <td>${c.memberName || c.member || 'N/A'}</td>
-                <td>${c.studentId || 'N/A'}</td>
-                <td>${formatDate(c.date)}</td>
-                <td>${formatCurrency(c.amount)}</td>
-                <td>${c.paymentMethod || 'N/A'}</td>
-                <td><span class="status ${c.status === 'received' ? 'received' : 'pending'}">${c.status === 'received' ? '✓ Received' : 'Pending'}</span></td>
+                <td>${this.getMemberName(c)}</td>
+                <td>${c.studentId || c.memberNumber || 'N/A'}</td>
+                <td>${formatDate(c.date || c.createdAt)}</td>
+                <td>${formatCurrency(c.amount || 0)}</td>
+                <td>${c.paymentMethod || c.method || 'N/A'}</td>
+                <td><span class="status ${c.status === 'received' || c.status === 'approved' ? 'received' : 'pending'}">${this.getStatusLabel(c.status)}</span></td>
             </tr>
         `).join('');
+    }
+
+    getMemberName(c) {
+        if (c.memberName) return c.memberName;
+        if (c.member) {
+            if (typeof c.member === 'object') {
+                return `${c.member.firstName || ''} ${c.member.lastName || ''}`.trim() || 'N/A';
+            }
+            return c.member;
+        }
+        if (c.firstName || c.lastName) {
+            return `${c.firstName || ''} ${c.lastName || ''}`.trim();
+        }
+        return 'N/A';
+    }
+
+    getStatusLabel(status) {
+        if (status === 'received' || status === 'approved' || status === 'paid') return '✓ Received';
+        if (status === 'pending') return 'Pending';
+        if (status === 'rejected') return 'Rejected';
+        return 'Unknown';
     }
 
     renderDebts(debts) {
         const tbody = document.getElementById('pending-debts-table');
         if (!tbody) return;
 
+        // Handle empty or null data
+        if (!debts || debts.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="no-data-message"><i class="fas fa-check-circle"></i> No pending debts. All members are up to date!</td></tr>';
+            return;
+        }
+
         tbody.innerHTML = debts.map(d => `
             <tr>
-                <td>${d.memberName || 'N/A'}</td>
-                <td>${d.studentId || 'N/A'}</td>
-                <td>${formatCurrency(d.amount)}</td>
-                <td>${formatDate(d.dueDate)}</td>
-                <td><span class="status ${d.status === 'paid' ? 'received' : d.status === 'pending' ? 'pending' : 'overdue'}">${d.status === 'paid' ? '✓ Paid' : d.status === 'pending' ? 'Pending' : 'Overdue'}</span></td>
-                <td><button class="btn" onclick="this.sendReminder('${d.id}')">Send Reminder</button></td>
+                <td>${this.getMemberName(d)}</td>
+                <td>${d.studentId || d.memberNumber || 'N/A'}</td>
+                <td>${formatCurrency(d.amount || 0)}</td>
+                <td>${formatDate(d.dueDate || d.endDate)}</td>
+                <td><span class="status ${d.status === 'paid' ? 'received' : d.status === 'pending' ? 'pending' : 'overdue'}">${this.getDebtStatusLabel(d.status)}</span></td>
+                <td><button class="btn" onclick="adminDashboardManager.remindDebt('${d.id}')">Send Reminder</button></td>
             </tr>
         `).join('');
+    }
+
+    getDebtStatusLabel(status) {
+        if (status === 'paid') return '✓ Paid';
+        if (status === 'pending') return 'Pending';
+        if (status === 'overdue') return 'Overdue';
+        return 'Pending';
     }
 
     renderLoans(loans) {
         const tbody = document.getElementById('loan-requests-table');
         if (!tbody) return;
 
+        // Handle empty or null data
+        if (!loans || loans.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="no-data-message"><i class="fas fa-check-circle"></i> No pending loan requests at this time.</td></tr>';
+            return;
+        }
+
         tbody.innerHTML = loans.map(l => `
             <tr>
-                <td>${l.memberName || l.member || 'N/A'}</td>
-                <td>${l.studentId || 'N/A'}</td>
-                <td>${formatCurrency(l.amount)}</td>
-                <td>${l.purpose || 'N/A'}</td>
-                <td>${formatDate(l.date)}</td>
+                <td>${this.getMemberName(l)}</td>
+                <td>${l.studentId || l.memberNumber || 'N/A'}</td>
+                <td>${formatCurrency(l.amount || 0)}</td>
+                <td>${l.purpose || l.reason || 'N/A'}</td>
+                <td>${formatDate(l.date || l.createdAt)}</td>
                 <td>
                     <button class="btn approve" onclick="adminDashboardManager.approveLoan('${l.id}')">✓ Approve</button>
                     <button class="btn btn-reject" onclick="adminDashboardManager.rejectLoan('${l.id}')">✗ Reject</button>
@@ -257,21 +508,21 @@ class AdminDashboardManager {
     async remindDebt(debtId) {
         try {
             await debtService.sendReminder(debtId);
-            showNotification('Reminder sent!', 'success');
+            showNotification('Reminder sent successfully!', 'success');
         } catch (error) {
             console.error('Failed to send reminder:', error);
-            showNotification('Reminder sent! (Demo)', 'success');
+            showNotification('Reminder sent! (Demo mode)', 'success');
         }
     }
 
     async approveLoan(loanId) {
         try {
             await loanService.approve(loanId);
-            showNotification('Loan approved!', 'success');
+            showNotification('Loan approved successfully!', 'success');
             await this.loadDashboardData();
         } catch (error) {
             console.error('Failed to approve loan:', error);
-            showNotification('Loan approved! (Demo)', 'success');
+            showNotification('Loan approved! (Demo mode)', 'success');
         }
     }
 
@@ -282,7 +533,7 @@ class AdminDashboardManager {
             await this.loadDashboardData();
         } catch (error) {
             console.error('Failed to reject loan:', error);
-            showNotification('Loan rejected (Demo)', 'info');
+            showNotification('Loan rejected (Demo mode)', 'info');
         }
     }
 }

@@ -6,6 +6,8 @@
 const express = require('express');
 const router = express.Router();
 const { body, query, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
+const { sequelize } = require('../models');
 const Member = require('../models/Member');
 const User = require('../models/User');
 const { auth, authorize } = require('../middleware/auth');
@@ -38,11 +40,11 @@ router.get('/', auth, authorize('admin', 'secretary'), async (req, res) => {
 
         // Search functionality using Sequelize OR
         if (search) {
-            where[require('sequelize').Op.or] = [
-                { firstName: { [require('sequelize').Op.iLike]: `%${search}%` } },
-                { lastName: { [require('sequelize').Op.iLike]: `%${search}%` } },
-                { email: { [require('sequelize').Op.iLike]: `%${search}%` } },
-                { memberNumber: { [require('sequelize').Op.iLike]: `%${search}%` } }
+            where[Op.or] = [
+                { firstName: { [Op.iLike]: `%${search}%` } },
+                { lastName: { [Op.iLike]: `%${search}%` } },
+                { email: { [Op.iLike]: `%${search}%` } },
+                { memberNumber: { [Op.iLike]: `%${search}%` } }
             ];
         }
 
@@ -83,10 +85,9 @@ router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res
         const active = await Member.count({ where: { membershipStatus: 'active' } });
         const inactive = await Member.count({ where: { membershipStatus: 'inactive' } });
         
-        // Get members by type using Sequelize
         const byType = await Member.findAll({
             attributes: [
-                ['membershipType', 'membershipType'],
+                'membershipType',
                 [sequelize.fn('COUNT', sequelize.col('id')), 'count']
             ],
             group: ['membershipType']
@@ -119,8 +120,12 @@ router.get('/statistics', auth, authorize('admin', 'treasurer'), async (req, res
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const member = await Member.findById(req.params.id)
-            .populate('userId', 'email role');
+        const member = await Member.findByPk(req.params.id, {
+            include: [{
+                model: User,
+                attributes: ['email', 'role']
+            }]
+        });
 
         if (!member) {
             return res.status(404).json({
@@ -166,7 +171,7 @@ router.post('/', auth, authorize('admin'), [
         const { firstName, lastName, email, phone, dateOfBirth, gender, address, membershipType } = req.body;
 
         // Check if email exists
-        const existingMember = await Member.findOne({ email });
+        const existingMember = await Member.findOne({ where: { email } });
         if (existingMember) {
             return res.status(400).json({
                 success: false,
@@ -175,7 +180,7 @@ router.post('/', auth, authorize('admin'), [
         }
 
         const member = await Member.create({
-            userId: req.user._id,
+            userId: req.user.id,
             firstName,
             lastName,
             email,
@@ -207,7 +212,7 @@ router.put('/:id', auth, async (req, res) => {
     try {
         const { firstName, lastName, phone, dateOfBirth, gender, address, emergencyContact, nextOfKin } = req.body;
 
-        const member = await Member.findById(req.params.id);
+        const member = await Member.findByPk(req.params.id);
         if (!member) {
             return res.status(404).json({
                 success: false,
@@ -265,10 +270,10 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
 
         // Delete associated user if exists
         if (member.userId) {
-            await User.findByIdAndDelete(member.userId);
+            await User.destroy({ where: { id: member.userId } });
         }
 
-        await Member.findByIdAndDelete(req.params.id);
+        await Member.destroy({ where: { id: req.params.id } });
 
         res.json({
             success: true,
@@ -290,8 +295,10 @@ router.get('/:id/contributions', auth, async (req, res) => {
     try {
         const Contribution = require('../models/Contribution');
         
-        const contributions = await Contribution.find({ member: req.params.id })
-            .sort({ createdAt: -1 });
+        const contributions = await Contribution.findAll({
+            where: { memberId: req.params.id },
+            order: [['createdAt', 'DESC']]
+        });
 
         res.json({
             success: true,
@@ -313,8 +320,10 @@ router.get('/:id/loans', auth, async (req, res) => {
     try {
         const Loan = require('../models/Loan');
         
-        const loans = await Loan.find({ member: req.params.id })
-            .sort({ createdAt: -1 });
+        const loans = await Loan.findAll({
+            where: { memberId: req.params.id },
+            order: [['createdAt', 'DESC']]
+        });
 
         res.json({
             success: true,

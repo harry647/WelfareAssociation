@@ -24,7 +24,8 @@ router.get('/', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
-                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
                 }
             ],
             order: [['requestDate', 'DESC']],

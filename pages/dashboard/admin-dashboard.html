@@ -102,14 +102,14 @@
     <div class="admin-header">
       <div class="admin-info">
         <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-        <div class="admin-avatar">VO</div>
+        <div class="admin-avatar" id="adminAvatar">?</div>
         <div class="admin-details">
-          <h3>Vincent Otieno</h3>
-          <p>Administrator</p>
-          <span class="admin-role">Chairman, SWA</span>
+          <h3 id="adminName">Loading...</h3>
+          <p id="adminRole">Loading...</p>
+          <span class="admin-role" id="adminTitle"></span>
         </div>
       </div>
-      <button type="button" class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      <button type="button" class="logout-btn-header" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <!-- Dashboard Section -->
@@ -254,27 +254,8 @@
         <!-- Recent Activity Log -->
         <section class="activity-log">
           <h2><i class="fas fa-history"></i> Recent Activity Log</h2>
-          <ul class="activity-list">
-            <li>
-              <span class="activity-time">Today, 10:30 AM</span>
-              New member registration: Sarah Kemunto
-            </li>
-            <li>
-              <span class="activity-time">Today, 09:15 AM</span>
-              Contribution received: Ksh 800 from Lavenda Achieng
-            </li>
-            <li>
-              <span class="activity-time">Yesterday, 4:45 PM</span>
-              Loan approved: Ksh 1,000 for Yvonne Achieng
-            </li>
-            <li>
-              <span class="activity-time">Yesterday, 2:30 PM</span>
-              Event created: Wellness Workshop — September 15
-            </li>
-            <li>
-              <span class="activity-time">Sep 3, 2025</span>
-              Payment reminder sent to Mary Atieno
-            </li>
+          <ul class="activity-list" id="activityLogList">
+            <li class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading activity...</li>
           </ul>
         </section>
 

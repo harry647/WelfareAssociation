@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Debt = require('../models/Debt');
 const Member = require('../models/Member');
 const { auth, authorize } = require('../middleware/auth');
@@ -42,7 +43,8 @@ router.get('/', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
-                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
                 }
             ],
             order: [['dueDate', 'ASC']],
@@ -72,12 +74,21 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/pending', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const debts = await Debt.find({ status: 'pending' })
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .sort({ dueDate: 1 });
+        const debts = await Debt.findAll({
+            where: { status: 'pending' },
+            include: [
+                {
+                    model: Member,
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
+                }
+            ],
+            order: [['dueDate', 'ASC']]
+        });
 
         res.json({ success: true, data: debts });
     } catch (error) {
+        console.error('Error fetching pending debts:', error);
         res.status(500).json({ success: false, message: 'Error fetching pending debts' });
     }
 });
@@ -88,15 +99,26 @@ router.get('/pending', auth, authorize('admin', 'treasurer'), async (req, res) =
  */
 router.get('/overdue', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const debts = await Debt.find({ 
-            status: { $in: ['pending', 'overdue'] },
-            dueDate: { $lt: new Date() }
-        })
-            .populate('member', 'firstName lastName memberNumber email phone')
-            .sort({ dueDate: 1 });
+        const debts = await Debt.findAll({
+            where: {
+                status: { [Op.in]: ['pending', 'overdue'] },
+                dueDate: {
+                    [Op.lt]: new Date()
+                }
+            },
+            include: [
+                {
+                    model: Member,
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
+                }
+            ],
+            order: [['dueDate', 'ASC']]
+        });
 
         res.json({ success: true, data: debts });
     } catch (error) {
+        console.error('Error fetching overdue debts:', error);
         res.status(500).json({ success: false, message: 'Error fetching overdue debts' });
     }
 });
@@ -107,19 +129,21 @@ router.get('/overdue', auth, authorize('admin', 'treasurer'), async (req, res) =
  */
 router.get('/statistics', auth, async (req, res) => {
     try {
+        const { Op } = require('sequelize');
+        
         const totalOutstanding = await Debt.sum('remainingBalance', {
-            where: { status: ['pending', 'overdue'] }
+            where: { status: { [Op.in]: ['pending', 'overdue'] } }
         }) || 0;
 
         const totalDebts = await Debt.count({
-            where: { status: ['pending', 'overdue'] }
+            where: { status: { [Op.in]: ['pending', 'overdue'] } }
         });
 
         const overdueCount = await Debt.count({
             where: {
-                status: ['pending', 'overdue'],
+                status: { [Op.in]: ['pending', 'overdue'] },
                 dueDate: {
-                    [require('sequelize').Op.lt]: new Date()
+                    [Op.lt]: new Date()
                 }
             }
         });
@@ -128,7 +152,7 @@ router.get('/statistics', auth, async (req, res) => {
             where: {
                 status: 'paid',
                 updatedAt: {
-                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                    [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
                 }
             }
         }) || 0;
@@ -136,7 +160,7 @@ router.get('/statistics', auth, async (req, res) => {
         const membersInDebt = await Debt.count({
             distinct: true,
             col: 'memberId',
-            where: { status: ['pending', 'overdue'] }
+            where: { status: { [Op.in]: ['pending', 'overdue'] } }
         });
 
         res.json({
@@ -161,13 +185,15 @@ router.get('/statistics', auth, async (req, res) => {
  */
 router.get('/total', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const result = await Debt.aggregate([
-            { $match: { status: { $in: ['pending', 'overdue'] } } },
-            { $group: { _id: null, total: { $sum: '$remainingBalance' } } }
-        ]);
+        const result = await Debt.sum('remainingBalance', {
+            where: {
+                status: { [Op.in]: ['pending', 'overdue'] }
+            }
+        });
 
-        res.json({ success: true, data: { total: result[0]?.total || 0 } });
+        res.json({ success: true, data: { total: result || 0 } });
     } catch (error) {
+        console.error('Error fetching total:', error);
         res.status(500).json({ success: false, message: 'Error fetching total' });
     }
 });
@@ -178,8 +204,15 @@ router.get('/total', auth, authorize('admin', 'treasurer'), async (req, res) => 
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const debt = await Debt.findById(req.params.id)
-            .populate('member', 'firstName lastName memberNumber email phone');
+        const debt = await Debt.findByPk(req.params.id, {
+            include: [
+                {
+                    model: Member,
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
+                }
+            ]
+        });
 
         if (!debt) {
             return res.status(404).json({ success: false, message: 'Debt not found' });
@@ -187,6 +220,7 @@ router.get('/:id', auth, async (req, res) => {
 
         res.json({ success: true, data: debt });
     } catch (error) {
+        console.error('Error fetching debt:', error);
         res.status(500).json({ success: false, message: 'Error fetching debt' });
     }
 });
@@ -206,7 +240,7 @@ router.post('/', auth, authorize('admin', 'treasurer'), [
         const { memberId, amount, dueDate, type, description, relatedTo } = req.body;
 
         const debt = await Debt.create({
-            member: memberId,
+            memberId,
             amount,
             dueDate,
             type: type || 'other',
@@ -228,15 +262,19 @@ router.post('/', auth, authorize('admin', 'treasurer'), [
 router.patch('/:id/pay', auth, async (req, res) => {
     try {
         const { amount, method, reference } = req.body;
-        const debt = await Debt.findById(req.params.id);
+        const debt = await Debt.findByPk(req.params.id);
 
         if (!debt) {
             return res.status(404).json({ success: false, message: 'Debt not found' });
         }
 
-        debt.payments.push({ date: new Date(), amount, method, reference });
-        debt.paidAmount += amount;
-        debt.remainingBalance = debt.amount - debt.paidAmount;
+        // Parse existing payments or create new array
+        const payments = typeof debt.payments === 'string' ? JSON.parse(debt.payments) : (debt.payments || []);
+        payments.push({ date: new Date(), amount, method, reference });
+        
+        debt.paidAmount = (parseFloat(debt.paidAmount) || 0) + parseFloat(amount);
+        debt.remainingBalance = parseFloat(debt.amount) - debt.paidAmount;
+        debt.payments = payments;
 
         if (debt.remainingBalance <= 0) {
             debt.status = 'paid';
@@ -247,6 +285,7 @@ router.patch('/:id/pay', auth, async (req, res) => {
 
         res.json({ success: true, message: 'Payment recorded', data: debt });
     } catch (error) {
+        console.error('Error recording payment:', error);
         res.status(500).json({ success: false, message: 'Error recording payment' });
     }
 });
@@ -257,19 +296,26 @@ router.patch('/:id/pay', auth, async (req, res) => {
  */
 router.post('/:id/remind', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const debt = await Debt.findById(req.params.id).populate('member');
+        const debt = await Debt.findByPk(req.params.id, {
+            include: [{ model: Member, as: 'member' }]
+        });
 
         if (!debt) {
             return res.status(404).json({ success: false, message: 'Debt not found' });
         }
 
-        debt.remindersSent.push({ date: new Date(), method: 'email', sentBy: req.user._id });
+        // Parse existing reminders or create new array
+        const remindersSent = typeof debt.remindersSent === 'string' ? JSON.parse(debt.remindersSent) : (debt.remindersSent || []);
+        remindersSent.push({ date: new Date(), method: 'email', sentBy: req.user.id });
+        debt.remindersSent = remindersSent;
+        
         await debt.save();
 
         // In production, send actual email/SMS here
 
         res.json({ success: true, message: 'Reminder sent' });
     } catch (error) {
+        console.error('Error sending reminder:', error);
         res.status(500).json({ success: false, message: 'Error sending reminder' });
     }
 });
@@ -281,14 +327,14 @@ router.post('/:id/remind', auth, authorize('admin', 'treasurer'), async (req, re
 router.patch('/:id/waive', auth, authorize('admin'), async (req, res) => {
     try {
         const { reason } = req.body;
-        const debt = await Debt.findById(req.params.id);
+        const debt = await Debt.findByPk(req.params.id);
 
         if (!debt) {
             return res.status(404).json({ success: false, message: 'Debt not found' });
         }
 
         debt.status = 'waived';
-        debt.waivedBy = req.user._id;
+        debt.waivedBy = req.user.id;
         debt.waiverReason = reason;
         debt.waivedAt = new Date();
 
@@ -296,6 +342,7 @@ router.patch('/:id/waive', auth, authorize('admin'), async (req, res) => {
 
         res.json({ success: true, message: 'Debt waived', data: debt });
     } catch (error) {
+        console.error('Error waiving debt:', error);
         res.status(500).json({ success: false, message: 'Error waiving debt' });
     }
 });
@@ -306,9 +353,16 @@ router.patch('/:id/waive', auth, authorize('admin'), async (req, res) => {
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        await Debt.findByIdAndDelete(req.params.id);
+        const debt = await Debt.findByPk(req.params.id);
+        
+        if (!debt) {
+            return res.status(404).json({ success: false, message: 'Debt not found' });
+        }
+        
+        await debt.destroy();
         res.json({ success: true, message: 'Debt deleted' });
     } catch (error) {
+        console.error('Error deleting debt:', error);
         res.status(500).json({ success: false, message: 'Error deleting debt' });
     }
 });
