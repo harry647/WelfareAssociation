@@ -1,3 +1,5 @@
+import { newsService } from '../../../services/index.js';
+
 /**
  * News Page Script
  * Handles news page functionality including newsletter signup
@@ -36,7 +38,7 @@ class NewsPage {
 
     async handleNewsletterSignup() {
         const emailInput = this.newsletterForm.querySelector('input[type="email"]');
-        const email = emailInput?.value?.trim();
+        const email = emailInput?.value?.trim().toLowerCase();
 
         if (!email) {
             alert('Please enter your email address');
@@ -49,19 +51,22 @@ class NewsPage {
             return;
         }
 
+        // Show loading
+        const submitBtn = this.newsletterForm.querySelector('button');
+        this.originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Subscribing...';
+        submitBtn.disabled = true;
+
         try {
-            // Show loading
-            const submitBtn = this.newsletterForm.querySelector('button');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Subscribing...';
-            submitBtn.disabled = true;
+            // Call the actual API
+            const response = await newsService.subscribe(email);
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Show success
-            alert('Thank you for subscribing! You will receive our latest news and updates.');
-            this.newsletterForm.reset();
+            if (response.success) {
+                alert('Thank you for subscribing! You will receive our latest news and updates.');
+                this.newsletterForm.reset();
+            } else {
+                alert(response.message || 'Failed to subscribe. Please try again.');
+            }
 
         } catch (error) {
             console.error('Newsletter signup error:', error);
@@ -69,7 +74,7 @@ class NewsPage {
         } finally {
             const submitBtn = this.newsletterForm.querySelector('button');
             if (submitBtn) {
-                submitBtn.textContent = originalText;
+                submitBtn.textContent = this.originalText;
                 submitBtn.disabled = false;
             }
         }

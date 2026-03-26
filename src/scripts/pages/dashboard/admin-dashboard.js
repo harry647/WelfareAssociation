@@ -26,11 +26,13 @@ class AdminDashboardManager {
     }
 
     async init() {
+        console.log('[Admin] Initializing AdminDashboardManager...');
         await this.checkAuth();
         await this.loadAdminInfo();
         await this.loadDashboardData();
         await this.loadUnreadMessagesCount();
         this.initEventListeners();
+        console.log('[Admin] AdminDashboardManager initialized');
     }
 
     /**
@@ -481,6 +483,7 @@ class AdminDashboardManager {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const section = this.dataset.section;
+                console.log('[Admin] Section clicked:', section);
 
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
@@ -489,6 +492,7 @@ class AdminDashboardManager {
                 const target = document.getElementById('section-' + section);
                 if (target) {
                     target.classList.add('active');
+                    console.log('[Admin] Activated section:', 'section-' + section);
                     
                     // Load messages when messages section is shown
                     if (section === 'messages') {
@@ -496,6 +500,7 @@ class AdminDashboardManager {
                     }
                     // Load pages when pages section is shown
                     if (section === 'pages') {
+                        console.log('[Admin] Loading pages...');
                         window.adminDashboardManager.loadPages();
                         window.adminDashboardManager.initPageContentListeners();
                     }
@@ -779,15 +784,32 @@ class AdminDashboardManager {
      */
     async loadPages() {
         try {
+            console.log('[Admin] Loading pages...');
             const response = await pageContentService.getPages();
+            console.log('[Admin] Pages response:', response);
             const pages = response.data || [];
+            console.log('[Admin] Pages list:', pages);
             this.renderPageSelector(pages);
         } catch (error) {
-            console.error('Failed to load pages:', error);
-            const grid = document.getElementById('pageSelectorGrid');
-            if (grid) {
-                grid.innerHTML = '<div class="error-message">Failed to load pages. Please try again.</div>';
-            }
+            console.error('[Admin] Failed to load pages:', error);
+            // Show default pages even on error
+            const defaultPages = [
+                { identifier: 'welcome-page', name: 'Welcome Page' },
+                { identifier: 'about-us', name: 'About Us' },
+                { identifier: 'contact-information', name: 'Contact Information' },
+                { identifier: 'our-team', name: 'Our Team' },
+                { identifier: 'events', name: 'Events' },
+                { identifier: 'news', name: 'News' },
+                { identifier: 'faqs', name: 'FAQs' },
+                { identifier: 'policies', name: 'Policies' },
+                { identifier: 'terms-conditions', name: 'Terms & Conditions' },
+                { identifier: 'volunteer', name: 'Volunteer' },
+                { identifier: 'donations', name: 'Donations' },
+                { identifier: 'gallery', name: 'Gallery' },
+                { identifier: 'portals', name: 'Portals' },
+                { identifier: 'resources', name: 'Resources' }
+            ];
+            this.renderPageSelector(defaultPages);
         }
     }
 
@@ -795,8 +817,12 @@ class AdminDashboardManager {
      * Render page selector cards
      */
     renderPageSelector(pages) {
+        console.log('[Admin] renderPageSelector called with:', pages);
         const grid = document.getElementById('pageSelectorGrid');
-        if (!grid) return;
+        if (!grid) {
+            console.error('[Admin] pageSelectorGrid element not found!');
+            return;
+        }
 
         if (!pages || pages.length === 0) {
             // Show default pages if none in database
@@ -821,18 +847,27 @@ class AdminDashboardManager {
         }
 
         grid.innerHTML = pages.map(page => `
-            <div class="page-card" onclick="adminDashboardManager.selectPage('${page.identifier}', '${page.name}')">
+            <div class="page-card" data-identifier="${page.identifier}" data-name="${this.escapeHtml(page.name)}">
                 <div class="page-card-icon"><i class="fas fa-file-alt"></i></div>
                 <div class="page-card-name">${this.escapeHtml(page.name)}</div>
                 <div class="page-card-desc">Click to edit content</div>
             </div>
         `).join('');
+        
+        // Add click listeners using event delegation
+        grid.querySelectorAll('.page-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                console.log('[Admin] Page card clicked:', card.dataset.identifier, card.dataset.name);
+                this.selectPage(card.dataset.identifier, card.dataset.name);
+            });
+        });
     }
 
     /**
      * Select a page and load its content
      */
     async selectPage(identifier, name) {
+        console.log('[Admin] selectPage called:', identifier, name);
         this.currentPageIdentifier = identifier;
         
         // Update UI
@@ -840,10 +875,13 @@ class AdminDashboardManager {
         const selectedPageName = document.getElementById('selectedPageName');
         
         if (editorSection) {
+            console.log('[Admin] Showing editor section');
             editorSection.style.display = 'block';
             if (selectedPageName) {
                 selectedPageName.textContent = name;
             }
+        } else {
+            console.error('[Admin] Editor section not found!');
         }
 
         // Load content for this page
@@ -854,9 +892,12 @@ class AdminDashboardManager {
      * Load page content
      */
     async loadPageContent(identifier) {
+        console.log('[Admin] loadPageContent called with:', identifier);
         try {
             const response = await pageContentService.getAll({ page: identifier });
+            console.log('[Admin] Page content response:', response);
             const contents = response.data || [];
+            console.log('[Admin] Page content list:', contents);
             this.renderContentItems(contents);
         } catch (error) {
             console.error('Failed to load page content:', error);
@@ -871,8 +912,12 @@ class AdminDashboardManager {
      * Render content items list
      */
     renderContentItems(contents) {
+        console.log('[Admin] renderContentItems called with:', contents);
         const list = document.getElementById('contentItemsList');
-        if (!list) return;
+        if (!list) {
+            console.error('[Admin] contentItemsList element not found!');
+            return;
+        }
 
         if (!contents || contents.length === 0) {
             list.innerHTML = '<div class="no-data-message"><i class="fas fa-info-circle"></i> No content yet. Click "Add Content Section" to add content.</div>';
@@ -1032,10 +1077,18 @@ class AdminDashboardManager {
      * Initialize page content event listeners
      */
     initPageContentListeners() {
+        console.log('[Admin] initPageContentListeners called');
+        
         // Add content button
         const addBtn = document.getElementById('addContentBtn');
         if (addBtn) {
-            addBtn.addEventListener('click', () => this.openAddContentModal());
+            console.log('[Admin] Found addContentBtn, adding listener');
+            addBtn.addEventListener('click', () => {
+                console.log('[Admin] Add content button clicked');
+                this.openAddContentModal();
+            });
+        } else {
+            console.error('[Admin] addContentBtn element not found!');
         }
 
         // Form submit

@@ -82,7 +82,7 @@ router.post('/', [
         }
 
         const subscriber = new Newsletter({
-            email,
+            email: email.toLowerCase(),
             name: name || '',
             source: 'website'
         });

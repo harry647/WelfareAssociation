@@ -42,10 +42,7 @@ export const API_CONFIG = {
         events: '/events',
         eventRegister: '/events/register',
         newsletter: '/newsletter',
-        
-        // News
-        news: '/news',
-        newsSubscribe: '/news/subscribe',
+        newsSubscribe: '/newsletter',
         
         // Bereavement
         bereavement: '/bereavement',

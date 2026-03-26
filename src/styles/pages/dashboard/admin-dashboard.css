@@ -851,6 +851,11 @@
         cursor: pointer;
         transition: all 0.2s;
         text-align: center;
+        pointer-events: auto;
+    }
+    
+    .page-card * {
+        pointer-events: none;
     }
     
     .page-card:hover {
