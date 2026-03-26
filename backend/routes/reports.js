@@ -24,6 +24,229 @@ const validate = (req, res, next) => {
     next();
 };
 
+// Specific routes must come BEFORE /:id parameter route
+// to prevent :id from matching static path segments like 'contributions', 'loans', etc.
+
+/**
+ * GET /api/reports/templates
+ * Get report templates
+ */
+router.get('/templates', auth, authorize('admin', 'treasurer'), async (req, res) => {
+    try {
+        const templates = [
+            { id: 1, name: 'Monthly Contribution Summary', type: 'contribution', description: 'Summary of all contributions for a month' },
+            { id: 2, name: 'Loan Status Report', type: 'loan', description: 'Overview of all loan statuses' },
+            { id: 3, name: 'Member Growth Report', type: 'membership', description: 'Track member registration and attrition' },
+            { id: 4, name: 'Financial Summary', type: 'financial', description: 'Overall financial status' },
+            { id: 5, name: 'Bereavement Support Report', type: 'bereavement', description: 'Bereavement cases and contributions' }
+        ];
+
+        res.json({ success: true, data: templates });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching templates' });
+    }
+});
+
+/**
+ * GET /api/reports/contributions
+ * Get contribution report data
+ */
+router.get('/contributions', auth, authorize('admin', 'treasurer'), async (req, res) => {
+    try {
+        const { startDate, endDate, limit } = req.query;
+        const where = {};
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
+        }
+
+        const contributions = await Contribution.findAll({
+            where,
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: limit ? parseInt(limit) : undefined
+        });
+
+        const totalAmount = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
+
+        res.json({
+            success: true,
+            data: {
+                contributions: contributions || [],
+                summary: {
+                    total: contributions?.length || 0,
+                    totalAmount: totalAmount || 0,
+                    averageAmount: contributions?.length > 0 ? totalAmount / contributions.length : 0
+                }
+            },
+            message: contributions?.length === 0 ? 'No contribution records found' : null
+        });
+    } catch (error) {
+        console.error('Error fetching contribution report:', error);
+        res.status(500).json({ success: false, message: 'Error fetching contribution report' });
+    }
+});
+
+/**
+ * GET /api/reports/loans
+ * Get loan report data
+ */
+router.get('/loans', auth, authorize('admin', 'treasurer'), async (req, res) => {
+    try {
+        const { startDate, endDate, status, limit } = req.query;
+        const where = {};
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
+        }
+        if (status) where.status = status;
+
+        const loans = await Loan.findAll({
+            where,
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: limit ? parseInt(limit) : undefined
+        });
+
+        const totalDisbursed = loans?.filter(l => l.status === 'approved' || l.status === 'active')
+            .reduce((sum, l) => sum + parseFloat(l.principalAmount || 0), 0) || 0;
+
+        res.json({
+            success: true,
+            data: {
+                loans: loans || [],
+                summary: {
+                    total: loans?.length || 0,
+                    pending: loans?.filter(l => l.status === 'pending').length || 0,
+                    approved: loans?.filter(l => l.status === 'approved').length || 0,
+                    active: loans?.filter(l => l.status === 'active').length || 0,
+                    rejected: loans?.filter(l => l.status === 'rejected').length || 0,
+                    totalDisbursed: totalDisbursed || 0
+                }
+            },
+            message: loans?.length === 0 ? 'No loan records found' : null
+        });
+    } catch (error) {
+        console.error('Error fetching loan report:', error);
+        res.status(500).json({ success: false, message: 'Error fetching loan report' });
+    }
+});
+
+/**
+ * GET /api/reports/bereavement
+ * Get bereavement report data
+ */
+router.get('/bereavement', auth, authorize('admin', 'treasurer'), async (req, res) => {
+    try {
+        const cases = await Bereavement.findAll({
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+            ],
+            order: [['createdAt', 'DESC']]
+        });
+
+        // Process cases to add computed fields
+        const processedCases = cases?.map(c => {
+            const contributions = typeof c.contributions === 'string' 
+                ? JSON.parse(c.contributions) 
+                : (c.contributions || []);
+            
+            // Get unique contributors count
+            const uniqueContributors = new Set(
+                contributions.map(c => c.contributorId || c.contributorId?.toString())
+            ).size;
+            
+            // Get death type from deceased object
+            const deceased = typeof c.deceased === 'string' 
+                ? JSON.parse(c.deceased) 
+                : (c.deceased || {});
+            
+            return {
+                ...c.toJSON(),
+                deathType: deceased.relationship || 'Other',
+                contributorCount: uniqueContributors
+            };
+        }) || [];
+
+        const totalContributions = processedCases.reduce((sum, c) => sum + parseFloat(c.totalContributions || 0), 0);
+        const activeCount = processedCases.filter(c => c.status === 'active' || c.status === 'urgent').length;
+        const totalContributors = new Set(
+            processedCases.flatMap(c => {
+                const contributions = c.contributions || [];
+                return contributions.map(con => con.contributorId || con.contributorId?.toString());
+            }).filter(Boolean)
+        ).size;
+
+        res.json({
+            success: true,
+            data: {
+                cases: processedCases,
+                summary: {
+                    total: processedCases.length,
+                    active: activeCount,
+                    closed: processedCases.filter(c => c.status === 'closed').length,
+                    totalContributions: totalContributions,
+                    totalContributors: totalContributors
+                }
+            },
+            message: processedCases.length === 0 ? 'No bereavement cases found' : null
+        });
+    } catch (error) {
+        console.error('Error fetching bereavement report:', error);
+        res.status(500).json({ success: false, message: 'Error fetching bereavement report' });
+    }
+});
+
+/**
+ * GET /api/reports/membership
+ * Get membership report data
+ */
+router.get('/membership', auth, authorize('admin', 'treasurer'), async (req, res) => {
+    try {
+        const { startDate, endDate, status } = req.query;
+        const where = {};
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
+        }
+        if (status) where.membershipStatus = status;
+
+        const members = await Member.findAll({
+            where,
+            order: [['createdAt', 'DESC']]
+        });
+
+        const activeCount = members?.filter(m => m.membershipStatus === 'active').length || 0;
+        const inactiveCount = members?.filter(m => m.membershipStatus === 'inactive').length || 0;
+
+        res.json({
+            success: true,
+            data: {
+                members: members || [],
+                summary: {
+                    total: members?.length || 0,
+                    active: activeCount,
+                    inactive: inactiveCount
+                }
+            },
+            message: members?.length === 0 ? 'No member records found' : null
+        });
+    } catch (error) {
+        console.error('Error fetching membership report:', error);
+        res.status(500).json({ success: false, message: 'Error fetching membership report' });
+    }
+});
+
 /**
  * GET /api/reports
  * Get all reports
@@ -59,26 +282,6 @@ router.get('/', auth, authorize('admin', 'treasurer'), async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error fetching reports' });
-    }
-});
-
-/**
- * GET /api/reports/templates
- * Get report templates
- */
-router.get('/templates', auth, authorize('admin', 'treasurer'), async (req, res) => {
-    try {
-        const templates = [
-            { id: 1, name: 'Monthly Contribution Summary', type: 'contribution', description: 'Summary of all contributions for a month' },
-            { id: 2, name: 'Loan Status Report', type: 'loan', description: 'Overview of all loan statuses' },
-            { id: 3, name: 'Member Growth Report', type: 'membership', description: 'Track member registration and attrition' },
-            { id: 4, name: 'Financial Summary', type: 'financial', description: 'Overall financial status' },
-            { id: 5, name: 'Bereavement Support Report', type: 'bereavement', description: 'Bereavement cases and contributions' }
-        ];
-
-        res.json({ success: true, data: templates });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error fetching templates' });
     }
 });
 
@@ -199,176 +402,6 @@ router.post('/generate', auth, authorize('admin', 'treasurer'), [
         res.status(500).json({ success: false, message: 'Error generating report' });
     }
 });
-
-/**
- * GET /api/reports/contributions
- * Get contribution report data
- */
-router.get('/contributions', auth, authorize('admin', 'treasurer'), async (req, res) => {
-    try {
-        const { startDate, endDate, limit } = req.query;
-        const where = {};
-
-        if (startDate || endDate) {
-            where.createdAt = {};
-            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
-            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
-        }
-
-        const contributions = await Contribution.findAll({
-            where,
-            include: [
-                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
-            ],
-            order: [['createdAt', 'DESC']],
-            limit: limit ? parseInt(limit) : undefined
-        });
-
-        const totalAmount = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
-
-        res.json({
-            success: true,
-            data: {
-                contributions: contributions || [],
-                summary: {
-                    total: contributions?.length || 0,
-                    totalAmount: totalAmount || 0,
-                    averageAmount: contributions?.length > 0 ? totalAmount / contributions.length : 0
-                }
-            },
-            message: contributions?.length === 0 ? 'No contribution records found' : null
-        });
-    } catch (error) {
-        console.error('Error fetching contribution report:', error);
-        res.status(500).json({ success: false, message: 'Error fetching contribution report' });
-    }
-});
-
-/**
- * GET /api/reports/loans
- * Get loan report data
- */
-router.get('/loans', auth, authorize('admin', 'treasurer'), async (req, res) => {
-    try {
-        const { startDate, endDate, status, limit } = req.query;
-        const where = {};
-
-        if (startDate || endDate) {
-            where.createdAt = {};
-            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
-            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
-        }
-        if (status) where.status = status;
-
-        const loans = await Loan.findAll({
-            where,
-            include: [
-                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
-            ],
-            order: [['createdAt', 'DESC']],
-            limit: limit ? parseInt(limit) : undefined
-        });
-
-        const totalDisbursed = loans?.filter(l => l.status === 'approved' || l.status === 'active')
-            .reduce((sum, l) => sum + parseFloat(l.principalAmount || 0), 0) || 0;
-
-        res.json({
-            success: true,
-            data: {
-                loans: loans || [],
-                summary: {
-                    total: loans?.length || 0,
-                    pending: loans?.filter(l => l.status === 'pending').length || 0,
-                    approved: loans?.filter(l => l.status === 'approved').length || 0,
-                    active: loans?.filter(l => l.status === 'active').length || 0,
-                    rejected: loans?.filter(l => l.status === 'rejected').length || 0,
-                    totalDisbursed: totalDisbursed || 0
-                }
-            },
-            message: loans?.length === 0 ? 'No loan records found' : null
-        });
-    } catch (error) {
-        console.error('Error fetching loan report:', error);
-        res.status(500).json({ success: false, message: 'Error fetching loan report' });
-    }
-});
-
-/**
- * GET /api/reports/bereavement
- * Get bereavement report data
- */
-router.get('/bereavement', auth, authorize('admin', 'treasurer'), async (req, res) => {
-    try {
-        const cases = await Bereavement.findAll({
-            include: [
-                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
-            ],
-            order: [['createdAt', 'DESC']]
-        });
-
-        const totalContributions = cases?.reduce((sum, c) => sum + parseFloat(c.totalContributions || 0), 0) || 0;
-
-        res.json({
-            success: true,
-            data: {
-                cases: cases || [],
-                summary: {
-                    total: cases?.length || 0,
-                    active: cases?.filter(c => c.status === 'active').length || 0,
-                    closed: cases?.filter(c => c.status === 'closed').length || 0,
-                    totalContributions: totalContributions || 0
-                }
-            },
-            message: cases?.length === 0 ? 'No bereavement cases found' : null
-        });
-    } catch (error) {
-        console.error('Error fetching bereavement report:', error);
-        res.status(500).json({ success: false, message: 'Error fetching bereavement report' });
-    }
-});
-
-/**
- * GET /api/reports/membership
- * Get membership report data
- */
-router.get('/membership', auth, authorize('admin', 'treasurer'), async (req, res) => {
-    try {
-        const { startDate, endDate, status } = req.query;
-        const where = {};
-
-        if (startDate || endDate) {
-            where.createdAt = {};
-            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
-            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
-        }
-        if (status) where.membershipStatus = status;
-
-        const members = await Member.findAll({
-            where,
-            order: [['createdAt', 'DESC']]
-        });
-
-        const activeCount = members?.filter(m => m.membershipStatus === 'active').length || 0;
-        const inactiveCount = members?.filter(m => m.membershipStatus === 'inactive').length || 0;
-
-        res.json({
-            success: true,
-            data: {
-                members: members || [],
-                summary: {
-                    total: members?.length || 0,
-                    active: activeCount,
-                    inactive: inactiveCount
-                }
-            },
-            message: members?.length === 0 ? 'No member records found' : null
-        });
-    } catch (error) {
-        console.error('Error fetching membership report:', error);
-        res.status(500).json({ success: false, message: 'Error fetching membership report' });
-    }
-});
-
 /**
  * GET /api/reports/export
  * Export report data
