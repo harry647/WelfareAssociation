@@ -81,22 +81,22 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-newspaper"></i> Total Notices</h3>
-            <p class="stat-number">45</p>
+            <p class="stat-number" id="totalNotices">0</p>
             <p class="stat-label">Published</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-paper-plane"></i> Sent This Month</h3>
-            <p class="stat-number">8</p>
+            <p class="stat-number" id="sentThisMonth">0</p>
             <p class="stat-label">Announcements</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-envelope-open-text"></i> Read Rate</h3>
-            <p class="stat-number">78%</p>
+            <p class="stat-number" id="readRate">0%</p>
             <p class="stat-label">Average</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-drafting-compass"></i> Drafts</h3>
-            <p class="stat-number">3</p>
+            <p class="stat-number" id="totalDrafts">0</p>
             <p class="stat-label">Pending</p>
           </div>
         </div>
@@ -107,22 +107,22 @@
           <div class="stats-grid">
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-calendar-alt"></i></span>
-              <span class="stat-value">15</span>
+              <span class="stat-value" id="categoryEvents">0</span>
               <span class="stat-desc">Events</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-money-bill-wave"></i></span>
-              <span class="stat-value">10</span>
+              <span class="stat-value" id="categoryFinancial">0</span>
               <span class="stat-desc">Financial</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-exclamation-circle"></i></span>
-              <span class="stat-value">8</span>
+              <span class="stat-value" id="categoryUrgent">0</span>
               <span class="stat-desc">Urgent</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-info-circle"></i></span>
-              <span class="stat-value">12</span>
+              <span class="stat-value" id="categoryGeneral">0</span>
               <span class="stat-desc">General</span>
             </div>
           </div>
@@ -145,70 +145,11 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Monthly General Meeting - September 2025</td>
-                  <td>Events</td>
-                  <td>2025-09-01</td>
-                  <td>2025-09-30</td>
-                  <td>45</td>
-                  <td><span style="color: red;">High</span></td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Contribution Deadline Reminder</td>
-                  <td>Financial</td>
-                  <td>2025-09-05</td>
-                  <td>2025-09-20</td>
-                  <td>38</td>
-                  <td><span style="color: orange;">Medium</span></td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Wellness Workshop Registration Open</td>
-                  <td>Events</td>
-                  <td>2025-09-03</td>
-                  <td>2025-09-15</td>
-                  <td>52</td>
-                  <td><span style="color: green;">Normal</span></td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Emergency: System Maintenance Notice</td>
-                  <td>Urgent</td>
-                  <td>2025-09-10</td>
-                  <td>2025-09-12</td>
-                  <td>28</td>
-                  <td><span style="color: red;">Urgent</span></td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>New Member Orientation Schedule</td>
-                  <td>General</td>
-                  <td>2025-08-28</td>
-                  <td>2025-10-01</td>
-                  <td>67</td>
-                  <td><span style="color: green;">Normal</span></td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
+              <tbody id="publishedNoticesTable">
+                <tr class="loading-row">
+                  <td colspan="8" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading notices...
                   </td>
                 </tr>
               </tbody>
@@ -232,29 +173,11 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>October Contribution Due Notice</td>
-                  <td>Financial</td>
-                  <td>2025-10-01</td>
-                  <td>All Members</td>
-                  <td><span style="color: orange;">Medium</span></td>
-                  <td><span class="status pending">Scheduled</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-reject">Cancel</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Annual General Meeting Notice</td>
-                  <td>Events</td>
-                  <td>2025-10-15</td>
-                  <td>All Members</td>
-                  <td><span style="color: red;">High</span></td>
-                  <td><span class="status pending">Scheduled</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-reject">Cancel</button>
+              <tbody id="scheduledNoticesTable">
+                <tr class="loading-row">
+                  <td colspan="7" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading scheduled notices...
                   </td>
                 </tr>
               </tbody>
@@ -278,29 +201,11 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Scholarship Application Open</td>
-                  <td>General</td>
-                  <td>2025-09-09</td>
-                  <td>Secretary</td>
-                  <td><span style="color: green;">Normal</span></td>
-                  <td><span class="status pending">Draft</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn approve">Publish</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Holiday Savings Program</td>
-                  <td>Financial</td>
-                  <td>2025-09-08</td>
-                  <td>Treasurer</td>
-                  <td><span style="color: orange;">Medium</span></td>
-                  <td><span class="status pending">Draft</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn approve">Publish</button>
+              <tbody id="draftNoticesTable">
+                <tr class="loading-row">
+                  <td colspan="7" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading draft notices...
                   </td>
                 </tr>
               </tbody>
@@ -323,30 +228,12 @@
                   <th>Click Rate</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Monthly General Meeting</td>
-                  <td>Email + SMS</td>
-                  <td>22</td>
-                  <td>22 (100%)</td>
-                  <td>18 (82%)</td>
-                  <td>45%</td>
-                </tr>
-                <tr>
-                  <td>Contribution Deadline</td>
-                  <td>Email + SMS + App</td>
-                  <td>22</td>
-                  <td>21 (95%)</td>
-                  <td>16 (76%)</td>
-                  <td>38%</td>
-                </tr>
-                <tr>
-                  <td>Wellness Workshop</td>
-                  <td>Email + Social</td>
-                  <td>22</td>
-                  <td>20 (91%)</td>
-                  <td>15 (68%)</td>
-                  <td>52%</td>
+              <tbody id="deliveryStatsTable">
+                <tr class="loading-row">
+                  <td colspan="6" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading delivery statistics...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -371,6 +258,6 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/notices.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/notices.js"></script>
 </body>
 </html>

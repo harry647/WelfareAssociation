@@ -68,6 +68,8 @@ export const API_CONFIG = {
         
         // Documents
         documents: '/documents',
+        documentsDashboard: '/documents/dashboard',
+        documentsStatistics: '/documents/statistics',
         
         // FAQs & Policies
         faqs: '/faqs',

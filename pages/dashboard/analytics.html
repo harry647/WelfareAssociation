@@ -81,23 +81,23 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-users"></i> Total Members</h3>
-            <p class="stat-number">22</p>
-            <p class="stat-label">+3 this month</p>
+            <p class="stat-number" id="totalMembers">0</p>
+            <p class="stat-label" id="membersGrowth">+0 this month</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-money-bill-wave"></i> Revenue</h3>
-            <p class="stat-number">Ksh 45,000</p>
-            <p class="stat-label">+12% growth</p>
+            <p class="stat-number" id="totalRevenue">Ksh 0</p>
+            <p class="stat-label" id="revenueGrowth">+0% growth</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-hand-holding-usd"></i> Loans Issued</h3>
-            <p class="stat-number">Ksh 28,000</p>
-            <p class="stat-label">8 active</p>
+            <p class="stat-number" id="totalLoans">Ksh 0</p>
+            <p class="stat-label" id="activeLoans">0 active</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-percentage"></i> Collection Rate</h3>
-            <p class="stat-number">92%</p>
-            <p class="stat-label">+5% improvement</p>
+            <p class="stat-number" id="collectionRate">0%</p>
+            <p class="stat-label" id="collectionGrowth">+0% improvement</p>
           </div>
         </div>
 
@@ -107,22 +107,22 @@
           <div class="stats-grid">
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-wallet"></i></span>
-              <span class="stat-value">Ksh 120,000</span>
+              <span class="stat-value" id="totalAssets">Ksh 0</span>
               <span class="stat-desc">Total Assets</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-credit-card"></i></span>
-              <span class="stat-value">Ksh 35,000</span>
+              <span class="stat-value" id="totalLiabilities">Ksh 0</span>
               <span class="stat-desc">Liabilities</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
-              <span class="stat-value">+18%</span>
+              <span class="stat-value" id="yoyGrowth">0%</span>
               <span class="stat-desc">YoY Growth</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-piggy-bank"></i></span>
-              <span class="stat-value">Ksh 85,000</span>
+              <span class="stat-value" id="netWorth">Ksh 0</span>
               <span class="stat-desc">Net Worth</span>
             </div>
           </div>
@@ -144,51 +144,12 @@
                   <th>Growth %</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>September 2025</td>
-                  <td>Ksh 45,000</td>
-                  <td>Ksh 28,000</td>
-                  <td>Ksh 15,000</td>
-                  <td>Ksh 12,000</td>
-                  <td style="color: green;">+Ksh 20,000</td>
-                  <td style="color: green;">+15%</td>
-                </tr>
-                <tr>
-                  <td>August 2025</td>
-                  <td>Ksh 38,000</td>
-                  <td>Ksh 22,000</td>
-                  <td>Ksh 12,000</td>
-                  <td>Ksh 10,500</td>
-                  <td style="color: green;">+Ksh 17,500</td>
-                  <td style="color: green;">+12%</td>
-                </tr>
-                <tr>
-                  <td>July 2025</td>
-                  <td>Ksh 35,000</td>
-                  <td>Ksh 18,000</td>
-                  <td>Ksh 10,000</td>
-                  <td>Ksh 9,800</td>
-                  <td style="color: green;">+Ksh 17,200</td>
-                  <td style="color: green;">+10%</td>
-                </tr>
-                <tr>
-                  <td>June 2025</td>
-                  <td>Ksh 32,000</td>
-                  <td>Ksh 20,000</td>
-                  <td>Ksh 9,500</td>
-                  <td>Ksh 11,200</td>
-                  <td style="color: orange;">+Ksh 10,300</td>
-                  <td style="color: green;">+8%</td>
-                </tr>
-                <tr>
-                  <td>May 2025</td>
-                  <td>Ksh 30,000</td>
-                  <td>Ksh 15,000</td>
-                  <td>Ksh 8,200</td>
-                  <td>Ksh 8,500</td>
-                  <td style="color: green;">+Ksh 14,700</td>
-                  <td style="color: green;">+11%</td>
+              <tbody id="monthlyTrendsTable">
+                <tr class="loading-row">
+                  <td colspan="7" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading trends data...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -210,38 +171,12 @@
                   <th>Avg. Contribution</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Full Members</td>
-                  <td>18</td>
-                  <td>4</td>
-                  <td>2</td>
-                  <td>92%</td>
-                  <td>Ksh 1,500</td>
-                </tr>
-                <tr>
-                  <td>Associate Members</td>
-                  <td>4</td>
-                  <td>1</td>
-                  <td>1</td>
-                  <td>85%</td>
-                  <td>Ksh 800</td>
-                </tr>
-                <tr>
-                  <td>Honorary Members</td>
-                  <td>2</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>100%</td>
-                  <td>Ksh 2,000</td>
-                </tr>
-                <tr>
-                  <td><strong>Total</strong></td>
-                  <td><strong>24</strong></td>
-                  <td><strong>5</strong></td>
-                  <td><strong>3</strong></td>
-                  <td><strong>90%</strong></td>
-                  <td><strong>Ksh 1,400</strong></td>
+              <tbody id="memberAnalyticsTable">
+                <tr class="loading-row">
+                  <td colspan="6" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading member analytics...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -260,41 +195,15 @@
                   <th>Active</th>
                   <th>Fully Repaid</th>
                   <th>Default Rate</th>
-                  <th>Avg. Interest</td>
+                  <th>Avg. Interest</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Emergency Loans</td>
-                  <td>Ksh 45,000</td>
-                  <td>5</td>
-                  <td>12</td>
-                  <td>2%</td>
-                  <td>8%</td>
-                </tr>
-                <tr>
-                  <td>Education Loans</td>
-                  <td>Ksh 30,000</td>
-                  <td>3</td>
-                  <td>8</td>
-                  <td>0%</td>
-                  <td>5%</td>
-                </tr>
-                <tr>
-                  <td>Business Loans</td>
-                  <td>Ksh 25,000</td>
-                  <td>2</td>
-                  <td>5</td>
-                  <td>5%</td>
-                  <td>10%</td>
-                </tr>
-                <tr>
-                  <td><strong>Total</strong></td>
-                  <td><strong>Ksh 100,000</strong></td>
-                  <td><strong>10</strong></td>
-                  <td><strong>25</strong></td>
-                  <td><strong>2.5%</strong></td>
-                  <td><strong>7.5%</strong></td>
+              <tbody id="loanAnalyticsTable">
+                <tr class="loading-row">
+                  <td colspan="6" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading loan analytics...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -316,38 +225,12 @@
                   <th>Satisfaction</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Wellness Workshop</td>
-                  <td>2025-09-15</td>
-                  <td>30</td>
-                  <td>25</td>
-                  <td>83%</td>
-                  <td>4.5/5</td>
-                </tr>
-                <tr>
-                  <td>Career Guidance Seminar</td>
-                  <td>2025-08-20</td>
-                  <td>45</td>
-                  <td>38</td>
-                  <td>84%</td>
-                  <td>4.7/5</td>
-                </tr>
-                <tr>
-                  <td>Team Building Retreat</td>
-                  <td>2025-07-10</td>
-                  <td>22</td>
-                  <td>20</td>
-                  <td>91%</td>
-                  <td>4.8/5</td>
-                </tr>
-                <tr>
-                  <td>Health Screening Camp</td>
-                  <td>2025-06-15</td>
-                  <td>50</td>
-                  <td>42</td>
-                  <td>84%</td>
-                  <td>4.3/5</td>
+              <tbody id="eventAnalyticsTable">
+                <tr class="loading-row">
+                  <td colspan="6" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading event analytics...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -369,46 +252,12 @@
                   <th>Attendance</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><i class="fas fa-medal" style="color: gold;"></i> 1st</td>
-                  <td>Vincent Otieno</td>
-                  <td>JOO/2024/004</td>
-                  <td>Ksh 18,000</td>
-                  <td>Ksh 25,000</td>
-                  <td>95%</td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-medal" style="color: silver;"></i> 2nd</td>
-                  <td>Mary Odundo</td>
-                  <td>JOO/2024/002</td>
-                  <td>Ksh 15,500</td>
-                  <td>Ksh 22,000</td>
-                  <td>90%</td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-medal" style="color: #cd7f32;"></i> 3rd</td>
-                  <td>Lavenda Achieng</td>
-                  <td>JOO/2024/001</td>
-                  <td>Ksh 14,000</td>
-                  <td>Ksh 20,000</td>
-                  <td>88%</td>
-                </tr>
-                <tr>
-                  <td>4th</td>
-                  <td>Francis Opiyo</td>
-                  <td>JOO/2024/003</td>
-                  <td>Ksh 12,500</td>
-                  <td>Ksh 18,500</td>
-                  <td>85%</td>
-                </tr>
-                <tr>
-                  <td>5th</td>
-                  <td>Yvonne Achieng</td>
-                  <td>JOO/2024/006</td>
-                  <td>Ksh 11,000</td>
-                  <td>Ksh 16,000</td>
-                  <td>82%</td>
+              <tbody id="topContributorsTable">
+                <tr class="loading-row">
+                  <td colspan="6" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading top contributors...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -433,6 +282,6 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/analytics.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/analytics.js"></script>
 </body>
 </html>

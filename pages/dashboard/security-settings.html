@@ -81,22 +81,22 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-user-shield"></i> Active Users</h3>
-            <p class="stat-number">8</p>
+            <p class="stat-number" id="activeUsersCount">0</p>
             <p class="stat-label">Logged In</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-key"></i> 2FA Enabled</h3>
-            <p class="stat-number">5</p>
+            <p class="stat-number" id="twoFactorEnabledCount">0</p>
             <p class="stat-label">Users</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-exclamation-triangle"></i> Failed Logins</h3>
-            <p class="stat-number">3</p>
+            <p class="stat-number" id="failedLoginsCount">0</p>
             <p class="stat-label">Today</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-lock"></i> Last Audit</h3>
-            <p class="stat-number">2</p>
+            <p class="stat-number" id="lastAuditDays">0</p>
             <p class="stat-label">Days Ago</p>
           </div>
         </div>
@@ -205,38 +205,12 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="userAccessTableBody">
                 <tr>
-                  <td>Vincent Otieno</td>
-                  <td>Super Admin</td>
-                  <td>Today, 10:30 AM</td>
-                  <td>192.168.1.100</td>
-                  <td><span class="status active"><i class="fas fa-check"></i> Enabled</span></td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
-                </tr>
-                <tr>
-                  <td>Mary Odundo</td>
-                  <td>Treasurer</td>
-                  <td>Today, 09:15 AM</td>
-                  <td>192.168.1.105</td>
-                  <td><span class="status active"><i class="fas fa-check"></i> Enabled</span></td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
-                </tr>
-                <tr>
-                  <td>Lavenda Achieng</td>
-                  <td>Secretary</td>
-                  <td>Yesterday, 4:45 PM</td>
-                  <td>192.168.1.110</td>
-                  <td><span class="status pending"><i class="fas fa-times"></i> Disabled</span></td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
-                </tr>
-                <tr>
-                  <td>Francis Opiyo</td>
-                  <td>Committee Head</td>
-                  <td>Sep 10, 2025</td>
-                  <td>192.168.1.115</td>
-                  <td><span class="status pending"><i class="fas fa-times"></i> Disabled</span></td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
+                  <td colspan="6" style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #666;"></i>
+                    <p style="color: #666; margin-top: 10px;">Loading user data...</p>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -258,46 +232,12 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="auditLogTableBody">
                 <tr>
-                  <td>2025-09-12 10:30:45</td>
-                  <td>Login Successful</td>
-                  <td>Vincent Otieno</td>
-                  <td>192.168.1.100</td>
-                  <td>Dashboard Access</td>
-                  <td><span class="status active">Success</span></td>
-                </tr>
-                <tr>
-                  <td>2025-09-12 10:15:22</td>
-                  <td>Failed Login</td>
-                  <td>Unknown</td>
-                  <td>192.168.1.200</td>
-                  <td>Invalid Password</td>
-                  <td><span class="status overdue">Failed</span></td>
-                </tr>
-                <tr>
-                  <td>2025-09-12 09:45:10</td>
-                  <td>Password Changed</td>
-                  <td>Mary Odundo</td>
-                  <td>192.168.1.105</td>
-                  <td>Password Updated</td>
-                  <td><span class="status active">Success</span></td>
-                </tr>
-                <tr>
-                  <td>2025-09-11 16:30:00</td>
-                  <td>Permission Changed</td>
-                  <td>Vincent Otieno</td>
-                  <td>192.168.1.100</td>
-                  <td>Role Updated</td>
-                  <td><span class="status active">Success</span></td>
-                </tr>
-                <tr>
-                  <td>2025-09-11 14:20:15</td>
-                  <td>Suspicious Activity</td>
-                  <td>Unknown</td>
-                  <td>203.45.67.89</td>
-                  <td>Multiple Failed Attempts</td>
-                  <td><span class="status pending">Alert</span></td>
+                  <td colspan="6" style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #666;"></i>
+                    <p style="color: #666; margin-top: 10px;">Loading audit logs...</p>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -416,6 +356,6 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/security-settings.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/security-settings.js"></script>
 </body>
 </html>

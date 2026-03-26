@@ -140,6 +140,86 @@ router.get('/statistics', auth, authorize('admin', 'secretary'), async (req, res
 });
 
 /**
+ * GET /api/documents/dashboard
+ * Get documentation dashboard data (summary for admin documentation page)
+ */
+router.get('/dashboard', auth, authorize('admin', 'secretary'), async (req, res) => {
+    try {
+        // Get total documents
+        const totalDocuments = await Document.count({ where: { isArchived: false } });
+        
+        // Get active policies count
+        const { Policy } = require('../models');
+        const activePolicies = await Policy.count({ where: { status: 'active' } });
+        
+        // Get categories breakdown
+        const categories = await Document.findAll({
+            attributes: ['category', [Document.sequelize.fn('COUNT', Document.sequelize.col('id')), 'count']],
+            where: { isArchived: false },
+            group: ['category']
+        });
+        
+        // Get recent documents
+        const recentDocuments = await Document.findAll({
+            where: { isArchived: false },
+            order: [['updatedAt', 'DESC']],
+            limit: 10,
+            attributes: ['id', 'name', 'category', 'mimeType', 'size', 'version', 'updatedAt']
+        });
+        
+        // Get document access requests
+        const DocumentRequest = require('../models/DocumentRequest');
+        const User = require('../models/User');
+        const Member = require('../models/Member');
+        
+        const documentRequests = await DocumentRequest.findAll({
+            include: [
+                { model: User, as: 'requester', attributes: ['firstName', 'lastName'] },
+                { model: Document, as: 'document', attributes: ['name'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: 10
+        });
+        
+        // Calculate total downloads this month
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+        
+        const documentsThisMonth = await Document.sum('downloadCount', {
+            where: {
+                isArchived: false,
+                updatedAt: {
+                    [Op.gte]: startOfMonth
+                }
+            }
+        });
+        
+        // Format category data
+        const categoryStats = {};
+        categories.forEach(cat => {
+            categoryStats[cat.category] = parseInt(cat.dataValues.count) || 0;
+        });
+        
+        res.json({
+            success: true,
+            data: {
+                totalDocuments: totalDocuments || 0,
+                activePolicies: activePolicies || 0,
+                documentsThisMonth: documentsThisMonth || 0,
+                categories: categoryStats,
+                recentDocuments: recentDocuments || [],
+                documentRequests: documentRequests || [],
+                recentUpdates: [] // Could be populated from a separate tracking system
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching documentation dashboard:', error);
+        res.status(500).json({ success: false, message: 'Error fetching documentation data' });
+    }
+});
+
+/**
  * GET /api/documents/:id
  * Get document by ID
  */
@@ -248,3 +328,36 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
 });
 
 module.exports = router;
+
+/**
+ * POST /api/documents/requests/:id
+ * Approve or reject document access request
+ */
+router.post('/requests/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
+    try {
+        const { status, responseNote } = req.body;
+        const DocumentRequest = require('../models/DocumentRequest');
+        
+        const request = await DocumentRequest.findByPk(req.params.id);
+        
+        if (!request) {
+            return res.status(404).json({ success: false, message: 'Request not found' });
+        }
+        
+        if (!['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status' });
+        }
+        
+        request.status = status;
+        request.responseNote = responseNote || '';
+        request.reviewedBy = req.user.id;
+        request.reviewedAt = new Date();
+        
+        await request.save();
+        
+        res.json({ success: true, message: `Request ${status} successfully`, data: request });
+    } catch (error) {
+        console.error('Error processing request:', error);
+        res.status(500).json({ success: false, message: 'Error processing request' });
+    }
+});

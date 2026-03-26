@@ -18,6 +18,7 @@ const Fine = require('./Fine');
 const Savings = require('./Savings');
 const Announcement = require('./Announcement');
 const Document = require('./Document');
+const DocumentRequest = require('./DocumentRequest');
 const Report = require('./Report');
 const Volunteer = require('./Volunteer');
 const Faq = require('./Faq');
@@ -138,6 +139,7 @@ async function initModels(sequelizeInstance) {
         Savings,
         Announcement,
         Document,
+        DocumentRequest,
         Report,
         Volunteer,
         Faq,
@@ -167,6 +169,7 @@ module.exports = {
     Savings,
     Announcement,
     Document,
+    DocumentRequest,
     Report,
     Volunteer,
     Faq,

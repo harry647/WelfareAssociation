@@ -21,6 +21,27 @@ class DocumentService {
     }
 
     /**
+     * Get documentation dashboard data
+     */
+    async getDashboard() {
+        return apiService.get(API_CONFIG.endpoints.documentsDashboard, {}, true);
+    }
+
+    /**
+     * Update document request status
+     * @param {string} requestId - Request ID
+     * @param {string} status - New status (approved/rejected)
+     * @param {string} responseNote - Optional note
+     */
+    async updateRequestStatus(requestId, status, responseNote = '') {
+        return apiService.post(
+            `${API_CONFIG.endpoints.documents}/requests/${requestId}`,
+            { status, responseNote },
+            true
+        );
+    }
+
+    /**
      * Get document by ID
      * @param {string|number} id - Document ID
      */
