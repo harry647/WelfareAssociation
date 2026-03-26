@@ -174,6 +174,63 @@ router.get('/', auth, authorize('admin'), async (req, res) => {
 });
 
 /**
+ * GET /api/users/executive-team
+ * Get all executive team members (users with admin roles)
+ */
+router.get('/executive-team', auth, authorize('admin', 'secretary', 'treasurer', 'chairman'), async (req, res) => {
+    try {
+        // Get users with executive roles
+        const executives = await User.findAll({
+            where: {
+                role: {
+                    [require('sequelize').Op.in]: ['admin', 'chairman', 'treasurer', 'secretary']
+                },
+                isActive: true
+            },
+            attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'role', 'memberId', 'isActive', 'createdAt'],
+            order: [
+                ['role', 'ASC'],
+                ['firstName', 'ASC']
+            ]
+        });
+
+        // Get associated member details for each executive
+        const executiveMembers = await Promise.all(
+            executives.map(async (user) => {
+                let memberInfo = null;
+                if (user.memberId) {
+                    memberInfo = await Member.findOne({
+                        where: { id: user.memberId },
+                        attributes: ['id', 'memberNumber', 'firstName', 'lastName', 'email', 'phone', 'institution']
+                    });
+                }
+                return {
+                    userId: user.id,
+                    memberId: user.memberId,
+                    role: user.role,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    phone: user.phone,
+                    isActive: user.isActive,
+                    createdAt: user.createdAt,
+                    memberNumber: memberInfo?.memberNumber || null,
+                    studentId: memberInfo?.institution?.studentId || null
+                };
+            })
+        );
+
+        res.json({
+            success: true,
+            data: executiveMembers
+        });
+    } catch (error) {
+        console.error('Error fetching executive team:', error);
+        res.status(500).json({ success: false, message: 'Error fetching executive team' });
+    }
+});
+
+/**
  * GET /api/users/:id
  * Get user by ID (admin only)
  */

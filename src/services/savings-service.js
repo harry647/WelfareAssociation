@@ -2,7 +2,8 @@
  * Savings Service
  * Handles savings goals and operations
  * 
- * @version 1.0.0
+ * @version 1.1.0
+ * Updated for dynamic data loading
  */
 
 import { apiService } from './api-service.js';
@@ -12,6 +13,14 @@ import { API_CONFIG } from '../config/app-config.js';
  * Savings Service - Savings operations
  */
 class SavingsService {
+    /**
+     * Get all savings (for admin dashboard)
+     * @param {Object} params - Query parameters
+     */
+    async getAll(params = {}) {
+        return apiService.get(API_CONFIG.endpoints.savings, params, true);
+    }
+
     /**
      * Get all savings goals
      * @param {Object} params - Query parameters
@@ -139,6 +148,18 @@ class SavingsService {
         return apiService.get(
             `${API_CONFIG.endpoints.savings}/statistics`,
             {},
+            true
+        );
+    }
+
+    /**
+     * Get recent transactions (Admin only)
+     * @param {number} limit - Number of transactions to fetch
+     */
+    async getTransactions(limit = 20) {
+        return apiService.get(
+            `${API_CONFIG.endpoints.savings}/transactions`,
+            { limit },
             true
         );
     }

@@ -81,24 +81,36 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-user-check"></i> Total Active</h3>
-            <p class="stat-number">22</p>
+            <p class="stat-number" id="total-active">0</p>
             <p class="stat-label">Members</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-money-bill-wave"></i> This Month</h3>
-            <p class="stat-number">18</p>
+            <p class="stat-number" id="this-month-paid">0</p>
             <p class="stat-label">Paid</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-percentage"></i> Activity Rate</h3>
-            <p class="stat-number">82%</p>
+            <p class="stat-number" id="activity-rate">0%</p>
             <p class="stat-label">Active</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-star"></i> Fully Paid</h3>
-            <p class="stat-number">15</p>
+            <p class="stat-number" id="fully-paid">0</p>
             <p class="stat-label">Members</p>
           </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" style="display: none; text-align: center; padding: 40px;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #4a90d9;"></i>
+          <p style="margin-top: 10px;">Loading active members...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" style="display: none; text-align: center; padding: 20px; background: #fee; border-left: 4px solid #e74c3c; margin: 10px 0;">
+          <i class="fas fa-exclamation-circle"></i>
+          <span></span>
         </div>
 
         <!-- Active Members Table -->
@@ -118,65 +130,11 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="active-members-table">
                 <tr>
-                  <td>ACT/001</td>
-                  <td>Lavenda Achieng</td>
-                  <td>JOO/2024/001</td>
-                  <td>lavenda@student.jou.ac.ke</td>
-                  <td>2025-09-01</td>
-                  <td>Ksh 8,500</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>ACT/002</td>
-                  <td>Mary Odundo</td>
-                  <td>JOO/2024/002</td>
-                  <td>mary@student.jou.ac.ke</td>
-                  <td>2025-09-02</td>
-                  <td>Ksh 7,000</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>ACT/003</td>
-                  <td>Francis Opiyo</td>
-                  <td>JOO/2024/003</td>
-                  <td>francis@student.jou.ac.ke</td>
-                  <td>2025-09-03</td>
-                  <td>Ksh 6,500</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>ACT/004</td>
-                  <td>Vincent Otieno</td>
-                  <td>JOO/2024/004</td>
-                  <td>vincent@student.jou.ac.ke</td>
-                  <td>2025-09-04</td>
-                  <td>Ksh 9,200</td>
-                  <td><span class="status received">Active</span></td>
-                  <td>
-                    <button class="btn">View</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>ACT/005</td>
-                  <td>Sarah Kemunto</td>
-                  <td>JOO/2024/006</td>
-                  <td>sarah@student.jou.ac.ke</td>
-                  <td>2025-08-28</td>
-                  <td>Ksh 5,000</td>
-                  <td><span style="background: rgba(245,158,11,0.12); color: #f59e0b; padding: 3px 10px; border-radius: 20px; font-size: 11.5px;">Due Soon</span></td>
-                  <td>
-                    <button class="btn">View</button>
+                  <td colspan="8" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: #4a90d9;"></i>
+                    <p style="margin-top: 10px;">Loading active members...</p>
                   </td>
                 </tr>
               </tbody>
@@ -199,6 +157,6 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/active-members.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/active-members.js"></script>
 </body>
 </html>

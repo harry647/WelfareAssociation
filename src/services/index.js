@@ -29,6 +29,7 @@ import { reportService } from './report-service.js';
 import { documentService } from './document-service.js';
 import { withdrawalService } from './withdrawal-service.js';
 import { pageContentService } from './page-content-service.js';
+import { userService } from './user-service.js';
 
 // Re-export all services for named imports
 export {
@@ -55,7 +56,8 @@ export {
     reportService,
     documentService,
     withdrawalService,
-    pageContentService
+    pageContentService,
+    userService
 };
 
 // Default export for convenience

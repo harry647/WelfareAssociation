@@ -58,11 +58,11 @@
     <div class="admin-header">
       <div class="admin-info">
         <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-        <div class="admin-avatar">VO</div>
+        <div class="admin-avatar" id="adminAvatar">--</div>
         <div class="admin-details">
-          <h3>Vincent Otieno</h3>
-          <p>Administrator</p>
-          <span class="admin-role">Chairman, SWA</span>
+          <h3 id="adminName">Loading...</h3>
+          <p id="adminRole">Loading...</p>
+          <span class="admin-role" id="adminTitle">--</span>
         </div>
       </div>
       <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -81,22 +81,22 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-users"></i> Total Members</h3>
-            <p class="stat-number">22</p>
+            <p class="stat-number" id="totalMembersCount">0</p>
             <p class="stat-label">With Savings</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-money-bill-wave"></i> Total Savings</h3>
-            <p class="stat-number">Ksh 245,000</p>
+            <p class="stat-number" id="totalSavingsAmount">Ksh 0</p>
             <p class="stat-label">Current Balance</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-arrow-up"></i> Deposits</h3>
-            <p class="stat-number">Ksh 45,000</p>
+            <p class="stat-number" id="monthDeposits">Ksh 0</p>
             <p class="stat-label">This Month</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-arrow-down"></i> Withdrawals</h3>
-            <p class="stat-number">Ksh 12,000</p>
+            <p class="stat-number" id="monthWithdrawals">Ksh 0</p>
             <p class="stat-label">This Month</p>
           </div>
         </div>
@@ -107,22 +107,22 @@
           <div class="stats-grid">
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
-              <span class="stat-value">+18%</span>
+              <span class="stat-value" id="growthRate">--</span>
               <span class="stat-desc">Growth Rate</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-percentage"></i></span>
-              <span class="stat-value">5%</span>
+              <span class="stat-value" id="interestRate">--</span>
               <span class="stat-desc">Interest Rate</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-hand-holding-usd"></i></span>
-              <span class="stat-value">Ksh 5,000</span>
+              <span class="stat-value" id="avgSavings">--</span>
               <span class="stat-desc">Avg. Savings</span>
             </div>
             <div class="stat-item">
               <span class="stat-icon"><i class="fas fa-trophy"></i></span>
-              <span class="stat-value">Ksh 25,000</span>
+              <span class="stat-value" id="topSaver">--</span>
               <span class="stat-desc">Top Saver</span>
             </div>
           </div>
@@ -145,56 +145,11 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="individualSavingsTable">
                 <tr>
-                  <td>Lavenda Achieng</td>
-                  <td>JOO/2024/001</td>
-                  <td>2024-01-15</td>
-                  <td>Ksh 15,000</td>
-                  <td>Ksh 3,000</td>
-                  <td>Ksh 600</td>
-                  <td><strong>Ksh 12,600</strong></td>
-                  <td><button class="btn">View</button></td>
-                </tr>
-                <tr>
-                  <td>Mary Odundo</td>
-                  <td>JOO/2024/002</td>
-                  <td>2024-02-20</td>
-                  <td>Ksh 20,000</td>
-                  <td>Ksh 5,000</td>
-                  <td>Ksh 750</td>
-                  <td><strong>Ksh 15,750</strong></td>
-                  <td><button class="btn">View</button></td>
-                </tr>
-                <tr>
-                  <td>Francis Opiyo</td>
-                  <td>JOO/2024/003</td>
-                  <td>2024-03-10</td>
-                  <td>Ksh 12,000</td>
-                  <td>Ksh 2,000</td>
-                  <td>Ksh 500</td>
-                  <td><strong>Ksh 10,500</strong></td>
-                  <td><button class="btn">View</button></td>
-                </tr>
-                <tr>
-                  <td>Vincent Otieno</td>
-                  <td>JOO/2024/004</td>
-                  <td>2024-01-05</td>
-                  <td>Ksh 25,000</td>
-                  <td>Ksh 8,000</td>
-                  <td>Ksh 850</td>
-                  <td><strong>Ksh 17,850</strong></td>
-                  <td><button class="btn">View</button></td>
-                </tr>
-                <tr>
-                  <td>Yvonne Achieng</td>
-                  <td>JOO/2024/006</td>
-                  <td>2024-04-15</td>
-                  <td>Ksh 10,000</td>
-                  <td>Ksh 1,500</td>
-                  <td>Ksh 425</td>
-                  <td><strong>Ksh 8,925</strong></td>
-                  <td><button class="btn">View</button></td>
+                  <td colspan="8" class="no-data-message">
+                    <i class="fas fa-spinner fa-spin"></i> Loading savings data...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -217,42 +172,11 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="recentTransactionsTable">
                 <tr>
-                  <td>2025-09-10</td>
-                  <td>Sarah Kemunto</td>
-                  <td>Deposit</td>
-                  <td>+Ksh 2,000</td>
-                  <td>Ksh 7,500</td>
-                  <td>Admin</td>
-                  <td><span class="status received">✓ Complete</span></td>
-                </tr>
-                <tr>
-                  <td>2025-09-09</td>
-                  <td>Jeff Juma</td>
-                  <td>Withdrawal</td>
-                  <td>-Ksh 3,000</td>
-                  <td>Ksh 4,200</td>
-                  <td>Admin</td>
-                  <td><span class="status received">✓ Complete</span></td>
-                </tr>
-                <tr>
-                  <td>2025-09-08</td>
-                  <td>Emily Akinyi</td>
-                  <td>Deposit</td>
-                  <td>+Ksh 1,500</td>
-                  <td>Ksh 9,800</td>
-                  <td>Admin</td>
-                  <td><span class="status received">✓ Complete</span></td>
-                </tr>
-                <tr>
-                  <td>2025-09-07</td>
-                  <td>John Ochieng</td>
-                  <td>Deposit</td>
-                  <td>+Ksh 3,000</td>
-                  <td>Ksh 11,200</td>
-                  <td>Admin</td>
-                  <td><span class="status received">✓ Complete</span></td>
+                  <td colspan="7" class="no-data-message">
+                    <i class="fas fa-spinner fa-spin"></i> Loading transactions...
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -275,50 +199,14 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="savingsGoalsTable">
                 <tr>
-                  <td>Lavenda Achieng</td>
-                  <td>Emergency Fund</td>
-                  <td>Ksh 20,000</td>
-                  <td>Ksh 12,600</td>
-                  <td>
-                    <div style="background: var(--light-gray); border-radius: 10px; height: 20px; width: 100px; overflow: hidden;">
-                      <div style="background: var(--primary); height: 100%; width: 63%;"></div>
-                    </div>
-                    <small>63%</small>
+                  <td colspan="7" class="no-data-message">
+                    <i class="fas fa-spinner fa-spin"></i> Loading savings goals...
                   </td>
-                  <td>2025-12-31</td>
-                  <td><span class="status pending">In Progress</span></td>
-                </tr>
-                <tr>
-                  <td>Mary Odundo</td>
-                  <td>Education Fund</td>
-                  <td>Ksh 30,000</td>
-                  <td>Ksh 15,750</td>
-                  <td>
-                    <div style="background: var(--light-gray); border-radius: 10px; height: 20px; width: 100px; overflow: hidden;">
-                      <div style="background: var(--primary); height: 100%; width: 52%;"></div>
-                    </div>
-                    <small>52%</small>
-                  </td>
-                  <td>2026-06-30</td>
-                  <td><span class="status pending">In Progress</span></td>
-                </tr>
-                <tr>
-                  <td>Vincent Otieno</td>
-                  <td>Business Fund</td>
-                  <td>Ksh 50,000</td>
-                  <td>Ksh 17,850</td>
-                  <td>
-                    <div style="background: var(--light-gray); border-radius: 10px; height: 20px; width: 100px; overflow: hidden;">
-                      <div style="background: var(--amber); height: 100%; width: 36%;"></div>
-                    </div>
-                    <small>36%</small>
-                  </td>
-                  <td>2026-12-31</td>
-                  <td><span class="status pending">In Progress</span></td>
                 </tr>
               </tbody>
+            </table>
             </table>
           </div>
         </section>
@@ -341,6 +229,6 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/members-savings.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/members-savings.js"></script>
 </body>
 </html>

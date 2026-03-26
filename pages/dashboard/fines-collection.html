@@ -81,24 +81,36 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-exclamation-circle"></i> Total Fines</h3>
-            <p class="stat-number" id="totalFinesCount">12</p>
+            <p class="stat-number" id="totalFinesCount">0</p>
             <p class="stat-label">Active Fines</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-money-bill-wave"></i> Total Amount</h3>
-            <p class="stat-number" id="totalFinesAmount">Ksh 15,000</p>
+            <p class="stat-number" id="totalFinesAmount">Ksh 0</p>
             <p class="stat-label">Outstanding</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-check-circle"></i> Collected</h3>
-            <p class="stat-number" id="collectedFines">Ksh 8,500</p>
+            <p class="stat-number" id="collectedFines">Ksh 0</p>
             <p class="stat-label">This Month</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-clock"></i> Pending</h3>
-            <p class="stat-number" id="pendingFines">Ksh 6,500</p>
+            <p class="stat-number" id="pendingFines">Ksh 0</p>
             <p class="stat-label">Awaiting Payment</p>
           </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" style="display: none; text-align: center; padding: 40px;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #4a90d9;"></i>
+          <p style="margin-top: 10px;">Loading fines...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" style="display: none; text-align: center; padding: 20px; background: #fee; border-left: 4px solid #e74c3c; margin: 10px 0;">
+          <i class="fas fa-exclamation-circle"></i>
+          <span></span>
         </div>
 
         <!-- Outstanding Fines -->
@@ -120,44 +132,10 @@
               </thead>
               <tbody id="outstandingFinesTable">
                 <tr>
-                  <td>Mary Atieno</td>
-                  <td>JOO/2024/005</td>
-                  <td>Late Payment</td>
-                  <td>Ksh 500</td>
-                  <td>2025-09-01</td>
-                  <td>2025-09-15</td>
-                  <td><span class="status pending">Pending</span></td>
-                  <td><button class="btn">Send Reminder</button></td>
-                </tr>
-                <tr>
-                  <td>Francis Opiyo</td>
-                  <td>JOO/2024/003</td>
-                  <td>Missing Event</td>
-                  <td>Ksh 1,000</td>
-                  <td>2025-08-28</td>
-                  <td>2025-09-10</td>
-                  <td><span class="status overdue">Overdue</span></td>
-                  <td><button class="btn">Send Reminder</button></td>
-                </tr>
-                <tr>
-                  <td>Yvonne Achieng</td>
-                  <td>JOO/2024/006</td>
-                  <td>Late Payment</td>
-                  <td>Ksh 500</td>
-                  <td>2025-09-05</td>
-                  <td>2025-09-20</td>
-                  <td><span class="status pending">Pending</span></td>
-                  <td><button class="btn">Send Reminder</button></td>
-                </tr>
-                <tr>
-                  <td>Jeff Juma</td>
-                  <td>JOO/2024/007</td>
-                  <td>Policy Violation</td>
-                  <td>Ksh 2,000</td>
-                  <td>2025-09-02</td>
-                  <td>2025-09-16</td>
-                  <td><span class="status pending">Pending</span></td>
-                  <td><button class="btn">Send Reminder</button></td>
+                  <td colspan="8" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: #4a90d9;"></i>
+                    <p style="margin-top: 10px;">Loading outstanding fines...</p>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -180,33 +158,12 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="collectedFinesTable">
                 <tr>
-                  <td>Sarah Kemunto</td>
-                  <td>JOO/2024/008</td>
-                  <td>Late Payment</td>
-                  <td>Ksh 500</td>
-                  <td>2025-09-10</td>
-                  <td>M-Pesa</td>
-                  <td><span class="status received">✓ Paid</span></td>
-                </tr>
-                <tr>
-                  <td>John Ochieng</td>
-                  <td>JOO/2024/009</td>
-                  <td>Missing Report</td>
-                  <td>Ksh 750</td>
-                  <td>2025-09-08</td>
-                  <td>Bank Transfer</td>
-                  <td><span class="status received">✓ Paid</span></td>
-                </tr>
-                <tr>
-                  <td>Emily Akinyi</td>
-                  <td>JOO/2024/010</td>
-                  <td>Late Payment</td>
-                  <td>Ksh 500</td>
-                  <td>2025-09-07</td>
-                  <td>Cash</td>
-                  <td><span class="status received">✓ Paid</span></td>
+                  <td colspan="7" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: #4a90d9;"></i>
+                    <p style="margin-top: 10px;">Loading collected fines...</p>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -314,7 +271,7 @@
     </div>
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/fines-collection.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/fines-collection.js"></script>
   <script type="module">
     import { fineService, DEFAULT_FINE_TYPES } from '../../src/services/fine-service.js';
     

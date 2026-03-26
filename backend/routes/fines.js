@@ -90,6 +90,40 @@ router.get('/', auth, async (req, res) => {
 });
 
 /**
+ * GET /api/fines/paid
+ * Get paid fines
+ */
+router.get('/paid', auth, async (req, res) => {
+    try {
+        const where = { status: 'paid' };
+        
+        if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
+            const member = await Member.findOne({ where: { userId: req.user.id } });
+            if (member) {
+                where.memberId = member.id;
+            }
+        }
+
+        const fines = await Fine.findAll({
+            where,
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                }
+            ],
+            order: [['paidDate', 'DESC']]
+        });
+
+        res.json({ success: true, data: fines });
+    } catch (error) {
+        console.error('Error fetching paid fines:', error);
+        res.status(500).json({ success: false, message: 'Error fetching paid fines' });
+    }
+});
+
+/**
  * GET /api/fines/pending
  * Get pending fines
  */

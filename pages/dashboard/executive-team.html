@@ -81,24 +81,35 @@
         <div class="cards">
           <div class="card">
             <h3><i class="fas fa-users"></i> Total Officers</h3>
-            <p class="stat-number">8</p>
+            <p class="stat-number" id="total-officers">0</p>
             <p class="stat-label">Team Members</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-user-tie"></i> Executives</h3>
-            <p class="stat-number">5</p>
+            <p class="stat-number" id="total-executives">0</p>
             <p class="stat-label">Core Team</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-user-friends"></i> Committee Heads</h3>
-            <p class="stat-number">3</p>
+            <p class="stat-number" id="committee-heads">0</p>
             <p class="stat-label">Active</p>
           </div>
           <div class="card">
             <h3><i class="fas fa-calendar-check"></i> Term Ends</h3>
-            <p class="stat-number">2026</p>
+            <p class="stat-number" id="term-end">N/A</p>
             <p class="stat-label">Current Term</p>
           </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" style="display: none; text-align: center; padding: 20px;">
+          <i class="fas fa-spinner fa-spin fa-2x"></i>
+          <p>Loading executive team data...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-message" style="display: none; padding: 15px; background: #fee; color: #c00; border-radius: 5px; margin: 10px 0;">
+          <i class="fas fa-exclamation-circle"></i> <span></span>
         </div>
 
         <!-- Executive Members -->
@@ -119,77 +130,8 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Chairman</strong></td>
-                  <td>Vincent Otieno</td>
-                  <td>JOO/2024/004</td>
-                  <td>+254 712 345 678</td>
-                  <td>vincent.otieno@students.jous.ac.ke</td>
-                  <td>2025-01-01</td>
-                  <td>2026-12-31</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn"><i class="fas fa-envelope"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Vice Chairman</strong></td>
-                  <td>Mary Odundo</td>
-                  <td>JOO/2024/002</td>
-                  <td>+254 723 456 789</td>
-                  <td>mary.odundo@students.jous.ac.ke</td>
-                  <td>2025-01-01</td>
-                  <td>2026-12-31</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn"><i class="fas fa-envelope"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Secretary General</strong></td>
-                  <td>Lavenda Achieng</td>
-                  <td>JOO/2024/001</td>
-                  <td>+254 734 567 890</td>
-                  <td>lavenda.achieng@students.jous.ac.ke</td>
-                  <td>2025-01-01</td>
-                  <td>2026-12-31</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn"><i class="fas fa-envelope"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Treasurer</strong></td>
-                  <td>Francis Opiyo</td>
-                  <td>JOO/2024/003</td>
-                  <td>+254 745 678 901</td>
-                  <td>francis.opiyo@students.jous.ac.ke</td>
-                  <td>2025-01-01</td>
-                  <td>2026-12-31</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn"><i class="fas fa-envelope"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Public Relations Officer</strong></td>
-                  <td>Yvonne Achieng</td>
-                  <td>JOO/2024/006</td>
-                  <td>+254 756 789 012</td>
-                  <td>yvonne.achieng@students.jous.ac.ke</td>
-                  <td>2025-01-01</td>
-                  <td>2026-12-31</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                    <button class="btn"><i class="fas fa-envelope"></i></button>
-                  </td>
-                </tr>
+              <tbody id="executives-table-body">
+                <!-- Dynamic content loaded here -->
               </tbody>
             </table>
           </div>
@@ -212,46 +154,8 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Finance Committee</td>
-                  <td>Jeff Juma</td>
-                  <td>JOO/2024/007</td>
-                  <td>4</td>
-                  <td>+254 767 890 123</td>
-                  <td>Monday</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Events Committee</td>
-                  <td>Sarah Kemunto</td>
-                  <td>JOO/2024/008</td>
-                  <td>6</td>
-                  <td>+254 778 901 234</td>
-                  <td>Wednesday</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Welfare Committee</td>
-                  <td>Emily Akinyi</td>
-                  <td>JOO/2024/010</td>
-                  <td>5</td>
-                  <td>+254 789 012 345</td>
-                  <td>Friday</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-edit"></i></button>
-                  </td>
-                </tr>
+              <tbody id="committee-table-body">
+                <!-- Dynamic content loaded here -->
               </tbody>
             </table>
           </div>
@@ -273,47 +177,13 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Super Admin</strong></td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
-                </tr>
-                <tr>
-                  <td><strong>Treasurer</strong></td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> View</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-times-circle" style="color: red;"></i> None</td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
-                </tr>
-                <tr>
-                  <td><strong>Secretary</strong></td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-minus-circle" style="color: orange;"></i> View Only</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Full</td>
-                  <td><i class="fas fa-minus-circle" style="color: orange;"></i> Limited</td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
-                </tr>
-                <tr>
-                  <td><strong>Committee Head</strong></td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Partial</td>
-                  <td><i class="fas fa-minus-circle" style="color: orange;"></i> View</td>
-                  <td><i class="fas fa-times-circle" style="color: red;"></i> None</td>
-                  <td><i class="fas fa-check-circle" style="color: green;"></i> Partial</td>
-                  <td><i class="fas fa-times-circle" style="color: red;"></i> None</td>
-                  <td><button class="btn"><i class="fas fa-cog"></i></button></td>
-                </tr>
+              <tbody id="roles-table-body">
+                <!-- Dynamic content loaded here -->
               </tbody>
             </table>
           </div>
         </section>
+
 
         <!-- Meeting Schedule -->
         <section class="data-section">
@@ -331,34 +201,8 @@
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Executive Meeting</td>
-                  <td>Weekly</td>
-                  <td>Monday</td>
-                  <td>4:00 PM</td>
-                  <td>Student Center</td>
-                  <td>2025-09-15</td>
-                  <td><button class="btn"><i class="fas fa-calendar-plus"></i></button></td>
-                </tr>
-                <tr>
-                  <td>General Assembly</td>
-                  <td>Monthly</td>
-                  <td>Last Friday</td>
-                  <td>2:00 PM</td>
-                  <td>Main Hall</td>
-                  <td>2025-09-27</td>
-                  <td><button class="btn"><i class="fas fa-calendar-plus"></i></button></td>
-                </tr>
-                <tr>
-                  <td>Finance Review</td>
-                  <td>Bi-weekly</td>
-                  <td>Wednesday</td>
-                  <td>3:00 PM</td>
-                  <td>Finance Office</td>
-                  <td>2025-09-18</td>
-                  <td><button class="btn"><i class="fas fa-calendar-plus"></i></button></td>
-                </tr>
+              <tbody id="meetings-table-body">
+                <!-- Dynamic content loaded here -->
               </tbody>
             </table>
           </div>
@@ -382,6 +226,6 @@
 
   </div>
 
-  <script src="../../src/scripts/pages/dashboard/executive-team.js"></script>
+  <script type="module" src="../../src/scripts/pages/dashboard/executive-team.js"></script>
 </body>
 </html>
