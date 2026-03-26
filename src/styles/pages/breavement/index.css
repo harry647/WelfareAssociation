@@ -48,6 +48,119 @@
 }
 
 /* ============================================
+   Loading & Empty State Styles
+   ============================================ */
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  color: var(--bereavement-text-muted);
+  text-align: center;
+}
+
+.loading-state i {
+  font-size: 32px;
+  color: var(--bereavement-accent);
+  animation: spin 1.5s linear infinite;
+}
+
+.loading-state p {
+  font-size: 15px;
+  margin: 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* No Data / Empty State Message */
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  background: linear-gradient(135deg, var(--bereavement-bg) 0%, #f0f2f5 100%);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--bereavement-border);
+  margin: 16px 0;
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.no-data-message:hover {
+  border-color: var(--bereavement-accent-muted);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.no-data-message i {
+  font-size: 48px;
+  color: var(--bereavement-accent-muted);
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.no-data-message h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--bereavement-text);
+  margin: 0 0 8px 0;
+}
+
+.no-data-message p {
+  font-size: 14px;
+  color: var(--bereavement-text-muted);
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* Specific styling for bereavement section */
+.bereaved-members .no-data-message i {
+  color: var(--bereavement-accent);
+  opacity: 0.6;
+}
+
+/* Messages display no-data */
+#messagesDisplay .no-data-message i {
+  color: var(--bereavement-text-light);
+}
+
+/* Contributions section no-data */
+.contributions-section .no-data-message i {
+  color: var(--bereavement-success);
+}
+
+/* No Results Message */
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--bereavement-text-muted);
+}
+
+.no-results i {
+  font-size: 36px;
+  color: var(--bereavement-text-light);
+}
+
+.no-results p {
+  font-size: 15px;
+  margin: 0;
+}
+
+/* ============================================
    Page Header
    ============================================ */
 .bereavement-header {
@@ -1395,3 +1508,4 @@
     width: 100%;
   }
 }
+  

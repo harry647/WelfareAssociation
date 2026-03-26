@@ -365,3 +365,31 @@
         font-size: 1.5rem;
     }
 }
+
+/* Empty State / No Data */
+.empty-state {
+    text-align: center;
+    padding: var(--loans-spacing-xl);
+    background: var(--loans-gray-50);
+    border-radius: var(--loans-radius-lg);
+    border: 2px dashed var(--loans-gray-300);
+    margin: var(--loans-spacing-md) 0;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--loans-gray-400);
+    margin-bottom: var(--loans-spacing-sm);
+    display: block;
+}
+
+.empty-state h3 {
+    color: var(--loans-gray-600);
+    font-size: 1.25rem;
+    margin-bottom: var(--loans-spacing-xs);
+}
+
+.empty-state p {
+    color: var(--loans-gray-500);
+    font-size: 0.9375rem;
+}

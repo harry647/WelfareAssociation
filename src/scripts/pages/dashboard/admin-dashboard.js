@@ -7,7 +7,7 @@
  */
 
 // Import services from src for consistency
-import { authService, memberService, contributionService, loanService, debtService, paymentService, noticeService } from '../../../services/index.js';
+import { authService, memberService, contributionService, loanService, debtService, paymentService, noticeService, contactService, pageContentService } from '../../../services/index.js';
 
 // Import utility functions
 import { showNotification, formatCurrency, formatDate } from '../../../utils/utility-functions.js';
@@ -29,7 +29,29 @@ class AdminDashboardManager {
         await this.checkAuth();
         await this.loadAdminInfo();
         await this.loadDashboardData();
+        await this.loadUnreadMessagesCount();
         this.initEventListeners();
+    }
+
+    /**
+     * Load unread messages count for the badge
+     */
+    async loadUnreadMessagesCount() {
+        try {
+            const response = await contactService.getUnreadCount();
+            const count = response.data?.unread || 0;
+            const badge = document.getElementById('messages-badge');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        } catch (error) {
+            console.log('Could not load unread messages count');
+        }
     }
 
     async checkAuth() {
@@ -465,7 +487,19 @@ class AdminDashboardManager {
 
                 document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
                 const target = document.getElementById('section-' + section);
-                if (target) target.classList.add('active');
+                if (target) {
+                    target.classList.add('active');
+                    
+                    // Load messages when messages section is shown
+                    if (section === 'messages') {
+                        window.adminDashboardManager.loadMessages();
+                    }
+                    // Load pages when pages section is shown
+                    if (section === 'pages') {
+                        window.adminDashboardManager.loadPages();
+                        window.adminDashboardManager.initPageContentListeners();
+                    }
+                }
 
                 // Close sidebar on mobile
                 if (window.innerWidth <= 768) {
@@ -536,10 +570,508 @@ class AdminDashboardManager {
             showNotification('Loan rejected (Demo mode)', 'info');
         }
     }
+
+    /**
+     * Load messages from the backend
+     */
+    async loadMessages() {
+        const tbody = document.getElementById('messages-table');
+        if (!tbody) return;
+
+        try {
+            const response = await contactService.getMessages({ limit: 50 });
+            const messages = response.data || response || [];
+            this.renderMessages(messages);
+            this.initMessageActions();
+        } catch (error) {
+            console.error('Failed to load messages:', error);
+            tbody.innerHTML = '<tr><td colspan="7" class="no-data-message"><i class="fas fa-exclamation-circle"></i> Failed to load messages</td></tr>';
+        }
+    }
+
+    /**
+     * Initialize event listeners for dynamic content
+     */
+    initMessageActions() {
+        // Use event delegation for dynamic message action buttons
+        const messagesTable = document.getElementById('messages-table');
+        if (!messagesTable) return;
+
+        messagesTable.addEventListener('click', async (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+
+            const action = btn.dataset.action;
+            const id = btn.dataset.id;
+
+            if (action === 'view') {
+                await this.viewMessage(id);
+            } else if (action === 'delete') {
+                await this.deleteMessage(id);
+            }
+        });
+    }
+
+    /**
+     * Render messages in the table
+     */
+    renderMessages(messages) {
+        const tbody = document.getElementById('messages-table');
+        if (!tbody) return;
+
+        if (!messages || messages.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="no-data-message"><i class="fas fa-inbox"></i> No messages found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = messages.map(msg => `
+            <tr>
+                <td>${this.escapeHtml(msg.name || 'N/A')}</td>
+                <td>${this.escapeHtml(msg.email || 'N/A')}</td>
+                <td>${this.getSubjectLabel(msg.subject)}</td>
+                <td class="message-cell" title="${this.escapeHtml(msg.message || '')}">${this.truncate(this.escapeHtml(msg.message || ''), 50)}</td>
+                <td>${formatDate(msg.createdAt)}</td>
+                <td><span class="status ${msg.status === 'new' ? 'pending' : msg.status === 'read' ? 'received' : msg.status}">${this.getStatusLabel(msg.status)}</span></td>
+                <td>
+                    <button class="btn" data-action="view" data-id="${msg.id}"><i class="fas fa-eye"></i> View</button>
+                    <button class="btn btn-reject" data-action="delete" data-id="${msg.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    /**
+     * Get human-readable subject label
+     */
+    getSubjectLabel(subject) {
+        const labels = {
+            'membership': 'Membership',
+            'loan': 'Loan',
+            'welfare': 'Welfare',
+            'volunteer': 'Volunteer',
+            'partnership': 'Partnership',
+            'feedback': 'Feedback',
+            'complaint': 'Complaint',
+            'other': 'Other'
+        };
+        return labels[subject] || this.capitalizeFirst(subject) || 'N/A';
+    }
+
+    /**
+     * Get status label
+     */
+    getStatusLabel(status) {
+        if (status === 'new') return 'New';
+        if (status === 'read') return 'Read';
+        if (status === 'replied') return 'Replied';
+        if (status === 'resolved') return 'Resolved';
+        if (status === 'closed') return 'Closed';
+        return 'Unknown';
+    }
+
+    /**
+     * View message details
+     */
+    async viewMessage(id) {
+        try {
+            const response = await contactService.getMessageById(id);
+            const msg = response.data || response;
+            
+            // Build a nice modal or alert with message details
+            const modal = document.createElement('div');
+            modal.className = 'message-modal';
+            modal.innerHTML = `
+                <div class="message-modal-content">
+                    <div class="message-modal-header">
+                        <h3>Message Details</h3>
+                        <button class="close-modal" onclick="this.closest('.message-modal').remove()">&times;</button>
+                    </div>
+                    <div class="message-modal-body">
+                        <p><strong>Name:</strong> ${this.escapeHtml(msg.name || 'N/A')}</p>
+                        <p><strong>Email:</strong> ${this.escapeHtml(msg.email || 'N/A')}</p>
+                        <p><strong>Phone:</strong> ${this.escapeHtml(msg.phone || 'N/A')}</p>
+                        <p><strong>Subject:</strong> ${this.getSubjectLabel(msg.subject)}</p>
+                        <p><strong>Status:</strong> ${this.getStatusLabel(msg.status)}</p>
+                        <p><strong>Date:</strong> ${formatDate(msg.createdAt)}</p>
+                        <hr>
+                        <p><strong>Message:</strong></p>
+                        <p style="white-space: pre-wrap;">${this.escapeHtml(msg.message || 'No message content')}</p>
+                    </div>
+                    <div class="message-modal-footer">
+                        <button class="btn" onclick="this.closest('.message-modal').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Note: The backend marks message as read when viewing
+        } catch (error) {
+            console.error('Failed to load message:', error);
+            // Try to show more specific error
+            const errorMsg = error.message || 'Failed to load message details';
+            showNotification(errorMsg, 'error');
+        }
+    }
+
+    /**
+     * Delete a message
+     */
+    async deleteMessage(id) {
+        if (!confirm('Are you sure you want to delete this message?')) return;
+        
+        try {
+            await contactService.deleteMessage(id);
+            showNotification('Message deleted successfully', 'success');
+            await this.loadMessages();
+        } catch (error) {
+            console.error('Failed to delete message:', error);
+            showNotification('Failed to delete message', 'error');
+        }
+    }
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /**
+     * Truncate text
+     */
+    truncate(text, length) {
+        if (!text) return '';
+        return text.length > length ? text.substring(0, length) + '...' : text;
+    }
+
+    // =====================
+    // Page Content Management
+    // =====================
+
+    /**
+     * Page identifier mapping
+     */
+    getPageName(identifier) {
+        const names = {
+            'welcome-page': 'Welcome Page',
+            'about-us': 'About Us',
+            'contact-information': 'Contact Information',
+            'our-team': 'Our Team',
+            'events': 'Events',
+            'news': 'News',
+            'faqs': 'FAQs',
+            'policies': 'Policies',
+            'terms-conditions': 'Terms & Conditions',
+            'volunteer': 'Volunteer',
+            'donations': 'Donations',
+            'gallery': 'Gallery',
+            'portals': 'Portals',
+            'resources': 'Resources'
+        };
+        return names[identifier] || identifier;
+    }
+
+    /**
+     * Load available pages for management
+     */
+    async loadPages() {
+        try {
+            const response = await pageContentService.getPages();
+            const pages = response.data || [];
+            this.renderPageSelector(pages);
+        } catch (error) {
+            console.error('Failed to load pages:', error);
+            const grid = document.getElementById('pageSelectorGrid');
+            if (grid) {
+                grid.innerHTML = '<div class="error-message">Failed to load pages. Please try again.</div>';
+            }
+        }
+    }
+
+    /**
+     * Render page selector cards
+     */
+    renderPageSelector(pages) {
+        const grid = document.getElementById('pageSelectorGrid');
+        if (!grid) return;
+
+        if (!pages || pages.length === 0) {
+            // Show default pages if none in database
+            const defaultPages = [
+                { identifier: 'welcome-page', name: 'Welcome Page' },
+                { identifier: 'about-us', name: 'About Us' },
+                { identifier: 'contact-information', name: 'Contact Information' },
+                { identifier: 'our-team', name: 'Our Team' },
+                { identifier: 'events', name: 'Events' },
+                { identifier: 'news', name: 'News' },
+                { identifier: 'faqs', name: 'FAQs' },
+                { identifier: 'policies', name: 'Policies' },
+                { identifier: 'terms-conditions', name: 'Terms & Conditions' },
+                { identifier: 'volunteer', name: 'Volunteer' },
+                { identifier: 'donations', name: 'Donations' },
+                { identifier: 'gallery', name: 'Gallery' },
+                { identifier: 'portals', name: 'Portals' },
+                { identifier: 'resources', name: 'Resources' }
+            ];
+            this.renderPageSelector(defaultPages);
+            return;
+        }
+
+        grid.innerHTML = pages.map(page => `
+            <div class="page-card" onclick="adminDashboardManager.selectPage('${page.identifier}', '${page.name}')">
+                <div class="page-card-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="page-card-name">${this.escapeHtml(page.name)}</div>
+                <div class="page-card-desc">Click to edit content</div>
+            </div>
+        `).join('');
+    }
+
+    /**
+     * Select a page and load its content
+     */
+    async selectPage(identifier, name) {
+        this.currentPageIdentifier = identifier;
+        
+        // Update UI
+        const editorSection = document.getElementById('pageContentEditor');
+        const selectedPageName = document.getElementById('selectedPageName');
+        
+        if (editorSection) {
+            editorSection.style.display = 'block';
+            if (selectedPageName) {
+                selectedPageName.textContent = name;
+            }
+        }
+
+        // Load content for this page
+        await this.loadPageContent(identifier);
+    }
+
+    /**
+     * Load page content
+     */
+    async loadPageContent(identifier) {
+        try {
+            const response = await pageContentService.getAll({ page: identifier });
+            const contents = response.data || [];
+            this.renderContentItems(contents);
+        } catch (error) {
+            console.error('Failed to load page content:', error);
+            const list = document.getElementById('contentItemsList');
+            if (list) {
+                list.innerHTML = '<div class="error-message">Failed to load content. Please try again.</div>';
+            }
+        }
+    }
+
+    /**
+     * Render content items list
+     */
+    renderContentItems(contents) {
+        const list = document.getElementById('contentItemsList');
+        if (!list) return;
+
+        if (!contents || contents.length === 0) {
+            list.innerHTML = '<div class="no-data-message"><i class="fas fa-info-circle"></i> No content yet. Click "Add Content Section" to add content.</div>';
+            return;
+        }
+
+        list.innerHTML = contents.map(item => `
+            <div class="content-item" data-id="${item.id}">
+                <div class="content-item-header">
+                    <span class="content-section-id">${this.escapeHtml(item.sectionIdentifier || 'N/A')}</span>
+                    <span class="content-status ${item.isActive ? 'active' : 'inactive'}">${item.isActive ? 'Active' : 'Inactive'}</span>
+                </div>
+                <div class="content-item-title">${this.escapeHtml(item.title || 'No title')}</div>
+                <div class="content-item-preview">${this.truncate(this.stripHtml(item.content || ''), 100)}</div>
+                <div class="content-item-actions">
+                    <button class="btn btn-sm" onclick="adminDashboardManager.editContent('${item.id}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-sm btn-reject" onclick="adminDashboardManager.deleteContent('${item.id}')"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    /**
+     * Strip HTML tags for preview
+     */
+    stripHtml(html) {
+        if (!html) return '';
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || '';
+    }
+
+    /**
+     * Open modal for adding new content
+     */
+    openAddContentModal() {
+        const modal = document.getElementById('contentModal');
+        if (!modal) return;
+
+        // Reset form
+        const form = document.getElementById('contentForm');
+        if (form) form.reset();
+
+        // Clear hidden fields
+        const contentId = document.getElementById('contentId');
+        if (contentId) contentId.value = '';
+
+        // Update modal title
+        const modalTitle = document.getElementById('modalTitle');
+        if (modalTitle) modalTitle.textContent = 'Add Content';
+
+        // Show modal
+        modal.style.display = 'flex';
+    }
+
+    /**
+     * Edit existing content
+     */
+    async editContent(id) {
+        try {
+            const response = await pageContentService.getById(id);
+            const content = response.data;
+
+            if (!content) {
+                showNotification('Content not found', 'error');
+                return;
+            }
+
+            // Populate form
+            document.getElementById('contentId').value = content.id;
+            document.getElementById('sectionIdentifier').value = content.sectionIdentifier || '';
+            document.getElementById('contentTitle').value = content.title || '';
+            document.getElementById('contentSubtitle').value = content.subtitle || '';
+            document.getElementById('contentText').value = content.content || '';
+            document.getElementById('displayOrder').value = content.displayOrder || 0;
+            document.getElementById('isActive').checked = content.isActive !== false;
+
+            // Update modal title
+            document.getElementById('modalTitle').textContent = 'Edit Content';
+
+            // Show modal
+            const modal = document.getElementById('contentModal');
+            if (modal) modal.style.display = 'flex';
+
+        } catch (error) {
+            console.error('Failed to load content for editing:', error);
+            showNotification('Failed to load content', 'error');
+        }
+    }
+
+    /**
+     * Save content (create or update)
+     */
+    async saveContent(event) {
+        event.preventDefault();
+
+        const contentId = document.getElementById('contentId').value;
+        const data = {
+            pageIdentifier: this.currentPageIdentifier,
+            sectionIdentifier: document.getElementById('sectionIdentifier').value,
+            title: document.getElementById('contentTitle').value,
+            subtitle: document.getElementById('contentSubtitle').value,
+            content: document.getElementById('contentText').value,
+            displayOrder: parseInt(document.getElementById('displayOrder').value) || 0,
+            isActive: document.getElementById('isActive').checked
+        };
+
+        try {
+            if (contentId) {
+                // Update existing
+                await pageContentService.update(contentId, data);
+                showNotification('Content updated successfully', 'success');
+            } else {
+                // Create new
+                await pageContentService.create(data);
+                showNotification('Content created successfully', 'success');
+            }
+
+            // Close modal
+            const modal = document.getElementById('contentModal');
+            if (modal) modal.style.display = 'none';
+
+            // Reload content
+            await this.loadPageContent(this.currentPageIdentifier);
+
+        } catch (error) {
+            console.error('Failed to save content:', error);
+            showNotification('Failed to save content', 'error');
+        }
+    }
+
+    /**
+     * Delete content
+     */
+    async deleteContent(id) {
+        if (!confirm('Are you sure you want to delete this content?')) return;
+
+        try {
+            await pageContentService.delete(id);
+            showNotification('Content deleted successfully', 'success');
+            await this.loadPageContent(this.currentPageIdentifier);
+        } catch (error) {
+            console.error('Failed to delete content:', error);
+            showNotification('Failed to delete content', 'error');
+        }
+    }
+
+    /**
+     * Close modal
+     */
+    closeModal() {
+        const modal = document.getElementById('contentModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    /**
+     * Initialize page content event listeners
+     */
+    initPageContentListeners() {
+        // Add content button
+        const addBtn = document.getElementById('addContentBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', () => this.openAddContentModal());
+        }
+
+        // Form submit
+        const form = document.getElementById('contentForm');
+        if (form) {
+            form.addEventListener('submit', (e) => this.saveContent(e));
+        }
+
+        // Modal close buttons
+        const closeBtn = document.getElementById('closeModal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeModal());
+        }
+
+        const cancelBtn = document.getElementById('cancelContentBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => this.closeModal());
+        }
+
+        // Close modal on outside click
+        const modal = document.getElementById('contentModal');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeModal();
+                }
+            });
+        }
+    }
 }
 
 // Create global instance
 const adminDashboardManager = new AdminDashboardManager();
+
+// Make available globally for onclick handlers
+window.adminDashboardManager = adminDashboardManager;
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {

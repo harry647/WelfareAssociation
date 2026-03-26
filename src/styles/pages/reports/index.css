@@ -439,3 +439,31 @@
         padding: var(--reports-spacing-md);
     }
 }
+
+/* Empty State / No Data */
+.empty-state {
+    text-align: center;
+    padding: var(--reports-spacing-xl);
+    background: var(--reports-gray-50);
+    border-radius: var(--reports-radius-lg);
+    border: 2px dashed var(--reports-gray-300);
+    margin: var(--reports-spacing-md) 0;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--reports-gray-400);
+    margin-bottom: var(--reports-spacing-sm);
+    display: block;
+}
+
+.empty-state h3 {
+    color: var(--reports-gray-600);
+    font-size: 1.25rem;
+    margin-bottom: var(--reports-spacing-xs);
+}
+
+.empty-state p {
+    color: var(--reports-gray-500);
+    font-size: 0.9375rem;
+}

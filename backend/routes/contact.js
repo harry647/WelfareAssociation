@@ -68,6 +68,43 @@ router.get('/unread', auth, authorize('admin', 'secretary'), async (req, res) =>
 });
 
 /**
+ * GET /api/messages
+ * Get all messages (alias for /api/contact)
+ */
+router.get('/messages', auth, authorize('admin', 'secretary'), async (req, res) => {
+    try {
+        const { status, priority, category, page = 1, limit = 10 } = req.query;
+        let query = {};
+
+        if (status) query.status = status;
+        if (priority) query.priority = priority;
+        if (category) query.category = category;
+
+        const contacts = await Contact.findAll({
+            where: query,
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: (page - 1) * limit
+        });
+
+        const total = await Contact.count({ where: query });
+
+        res.json({
+            success: true,
+            data: contacts,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching messages' });
+    }
+});
+
+/**
  * GET /api/contact/:id
  * Get contact by ID
  */
@@ -83,12 +120,16 @@ router.get('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
         if (!contact.isRead) {
             contact.isRead = true;
             contact.readAt = new Date();
-            contact.readBy = req.user.id;
+            // Only set readBy if it's a valid UUID format
+            if (req.user && req.user.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(req.user.id)) {
+                contact.readBy = req.user.id;
+            }
             await contact.save();
         }
 
-        res.json({ success: true, data: contact });
+        res.json({ success: true, data: contact.get({ plain: true }) });
     } catch (error) {
+        console.error('Error fetching contact:', error);
         res.status(500).json({ success: false, message: 'Error fetching contact' });
     }
 });
@@ -206,43 +247,6 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
         res.json({ success: true, message: 'Contact deleted successfully' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error deleting contact' });
-    }
-});
-
-/**
- * GET /api/messages
- * Get all messages (alias for /api/contact)
- */
-router.get('/messages', auth, authorize('admin', 'secretary'), async (req, res) => {
-    try {
-        const { status, priority, category, page = 1, limit = 10 } = req.query;
-        let query = {};
-
-        if (status) query.status = status;
-        if (priority) query.priority = priority;
-        if (category) query.category = category;
-
-        const contacts = await Contact.findAll({
-            where: query,
-            order: [['createdAt', 'DESC']],
-            limit: parseInt(limit),
-            offset: (page - 1) * limit
-        });
-
-        const total = await Contact.count({ where: query });
-
-        res.json({
-            success: true,
-            data: contacts,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total,
-                pages: Math.ceil(total / limit)
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Error fetching messages' });
     }
 });
 

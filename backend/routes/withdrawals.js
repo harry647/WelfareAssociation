@@ -5,6 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
+const { Op } = require('sequelize');
 const Withdrawal = require('../models/Withdrawal');
 const Member = require('../models/Member');
 const User = require('../models/User');
@@ -53,6 +54,64 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
+// Get withdrawal summary
+router.get('/summary', auth, async (req, res) => {
+    try {
+        const totalWithdrawn = await Withdrawal.sum('amount', {
+            where: { status: 'approved' }
+        }) || 0;
+
+        const thisMonthWithdrawn = await Withdrawal.sum('amount', {
+            where: {
+                status: 'approved',
+                processedDate: {
+                    [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                }
+            }
+        }) || 0;
+
+        const pendingCount = await Withdrawal.count({
+            where: { status: 'pending' }
+        });
+
+        const approvedThisMonth = await Withdrawal.count({
+            where: {
+                status: 'approved',
+                processedDate: {
+                    [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                }
+            }
+        });
+
+        const rejectedThisMonth = await Withdrawal.count({
+            where: {
+                status: 'rejected',
+                processedDate: {
+                    [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                }
+            }
+        });
+
+        res.json({
+            success: true,
+            data: {
+                totalWithdrawn,
+                thisMonthWithdrawn,
+                pendingCount,
+                approvedThisMonth,
+                rejectedThisMonth
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching withdrawal summary:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch withdrawal summary',
+            error: error.message
+        });
+    }
+});
+
 // Get withdrawal by ID
 router.get('/:id', auth, async (req, res) => {
     try {
@@ -60,7 +119,8 @@ router.get('/:id', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
-                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
                 }
             ]
         });
@@ -74,7 +134,7 @@ router.get('/:id', auth, async (req, res) => {
 
         res.json({
             success: true,
-            data: withdrawal
+            data: withdrawal.get({ plain: true })
         });
     } catch (error) {
         console.error('Error fetching withdrawal:', error);
@@ -116,14 +176,15 @@ router.post('/', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
-                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
                 }
             ]
         });
 
         res.status(201).json({
             success: true,
-            data: withdrawalWithMember,
+            data: withdrawalWithMember.get({ plain: true }),
             message: 'Withdrawal request created successfully'
         });
     } catch (error) {
@@ -154,6 +215,7 @@ router.put('/:id', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
+                    as: 'member',
                     attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
                 }
             ]
@@ -161,7 +223,7 @@ router.put('/:id', auth, async (req, res) => {
 
         res.json({
             success: true,
-            data: updatedWithdrawal,
+            data: updatedWithdrawal.get({ plain: true }),
             message: 'Withdrawal updated successfully'
         });
     } catch (error) {
@@ -210,7 +272,8 @@ router.get('/pending/list', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
-                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
                 }
             ],
             order: [['requestDate', 'DESC']]
@@ -264,14 +327,15 @@ router.post('/:id/approve', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
-                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
                 }
             ]
         });
 
         res.json({
             success: true,
-            data: updatedWithdrawal,
+            data: updatedWithdrawal.get({ plain: true }),
             message: 'Withdrawal approved successfully'
         });
     } catch (error) {
@@ -316,14 +380,15 @@ router.post('/:id/reject', auth, async (req, res) => {
             include: [
                 {
                     model: Member,
-                    attributes: ['id', 'firstName', 'lastName', 'studentId', 'email', 'phone']
+                    as: 'member',
+                    attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'email', 'phone']
                 }
             ]
         });
 
         res.json({
             success: true,
-            data: updatedWithdrawal,
+            data: updatedWithdrawal.get({ plain: true }),
             message: 'Withdrawal rejected successfully'
         });
     } catch (error) {
@@ -347,7 +412,7 @@ router.get('/summary/stats', auth, async (req, res) => {
             where: {
                 status: 'approved',
                 processedDate: {
-                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                    [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
                 }
             }
         }) || 0;
@@ -360,7 +425,7 @@ router.get('/summary/stats', auth, async (req, res) => {
             where: {
                 status: 'approved',
                 processedDate: {
-                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                    [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
                 }
             }
         });
@@ -369,65 +434,7 @@ router.get('/summary/stats', auth, async (req, res) => {
             where: {
                 status: 'rejected',
                 processedDate: {
-                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                }
-            }
-        });
-
-        res.json({
-            success: true,
-            data: {
-                totalWithdrawn,
-                thisMonthWithdrawn,
-                pendingCount,
-                approvedThisMonth,
-                rejectedThisMonth
-            }
-        });
-    } catch (error) {
-        console.error('Error fetching withdrawal summary:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch withdrawal summary',
-            error: error.message
-        });
-    }
-});
-
-// Get withdrawal summary (alternative endpoint)
-router.get('/summary', auth, async (req, res) => {
-    try {
-        const totalWithdrawn = await Withdrawal.sum('amount', {
-            where: { status: 'approved' }
-        }) || 0;
-
-        const thisMonthWithdrawn = await Withdrawal.sum('amount', {
-            where: {
-                status: 'approved',
-                processedDate: {
-                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                }
-            }
-        }) || 0;
-
-        const pendingCount = await Withdrawal.count({
-            where: { status: 'pending' }
-        });
-
-        const approvedThisMonth = await Withdrawal.count({
-            where: {
-                status: 'approved',
-                processedDate: {
-                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                }
-            }
-        });
-
-        const rejectedThisMonth = await Withdrawal.count({
-            where: {
-                status: 'rejected',
-                processedDate: {
-                    [require('sequelize').Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                    [Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
                 }
             }
         });

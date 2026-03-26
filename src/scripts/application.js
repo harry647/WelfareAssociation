@@ -160,10 +160,15 @@ class Application {
      */
     async handleContactFormSubmit(form) {
         const formData = new FormData(form);
+        const firstName = formData.get('first-name') || formData.get('name') || '';
+        const lastName = formData.get('last-name') || '';
+        const name = [firstName, lastName].filter(Boolean).join(' ').trim();
+        
         const data = {
-            name: formData.get('name'),
+            name: name,
             email: formData.get('email'),
             phone: formData.get('phone'),
+            subject: formData.get('subject'),
             message: formData.get('message'),
         };
 

@@ -464,6 +464,34 @@
     }
 }
 
+/* Empty State / No Data */
+.empty-state {
+    text-align: center;
+    padding: var(--bereave-spacing-xl);
+    background: var(--bereave-gray-50);
+    border-radius: var(--bereave-radius-lg);
+    border: 2px dashed var(--bereave-gray-300);
+    margin: var(--bereave-spacing-md) 0;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--bereave-gray-400);
+    margin-bottom: var(--bereave-spacing-sm);
+    display: block;
+}
+
+.empty-state h3 {
+    color: var(--bereave-gray-600);
+    font-size: 1.25rem;
+    margin-bottom: var(--bereave-spacing-xs);
+}
+
+.empty-state p {
+    color: var(--bereave-gray-500);
+    font-size: 0.9375rem;
+}
+
 /* ===================================================================
    Additional Styles from Bereavement Index (for new features)
    =================================================================== */

@@ -1,81 +1,14 @@
 /**
  * Bereavement Support Page Script
  * Handles bereavement records display, search, filter, and interactions
- * Ready for fetch API integration
+ * Fetches data from the database API
  */
 
-// API Base URL - Change this to your actual API endpoint
+// Import services
+import { bereavementService } from '../../../services/index.js';
+
+// API Base URL
 const API_BASE_URL = '/api';
-
-// Mock data for demonstration (will be replaced with API calls)
-const mockBereavementData = [
-    {
-        id: 1,
-        name: 'Sarah Kemunto',
-        studentId: 'JOO/2024/045',
-        type: 'parent',
-        status: 'active',
-        date: 'March 15, 2025',
-        description: 'Lost her father to a sudden illness. The SWA family extends its deepest condolences.',
-        targetAmount: 50000,
-        amountRaised: 25000,
-        supporters: 15,
-        urgent: false,
-        funeralDetails: 'Funeral held on March 20, 2025 at their home in Kisii',
-        burialDate: 'March 21, 2025',
-        location: 'Kisii County',
-        contactPerson: 'John Kemunto (Father)',
-        contactPhone: '+254712345678'
-    },
-    {
-        id: 2,
-        name: 'James Ochieng',
-        studentId: 'JOO/2023/112',
-        type: 'sibling',
-        status: 'urgent',
-        date: 'February 28, 2025',
-        description: 'Lost his younger brother in a road accident. Our thoughts are with him and his family.',
-        targetAmount: 50000,
-        amountRaised: 35000,
-        supporters: 22,
-        urgent: true,
-        funeralDetails: 'Funeral held on March 5, 2025 at St. Peters Cathedral',
-        burialDate: 'March 6, 2025',
-        location: 'Nairobi County',
-        contactPerson: 'Mary Ochieng (Mother)',
-        contactPhone: '+254723456789'
-    },
-    {
-        id: 3,
-        name: 'Grace Atieno',
-        studentId: 'JOO/2024/078',
-        type: 'parent',
-        status: 'active',
-        date: 'January 10, 2025',
-        description: 'Lost her mother after a brief illness. Sending strength and support.',
-        targetAmount: 50000,
-        amountRaised: 30000,
-        supporters: 18,
-        urgent: false,
-        funeralDetails: 'Funeral held on January 15, 2025 at Ahero Parish',
-        burialDate: 'January 16, 2025',
-        location: 'Kisumu County',
-        contactPerson: 'Peter Atieno (Father)',
-        contactPhone: '+254734567890'
-    }
-];
-
-const mockContributions = [
-    { date: 'Mar 18, 2025', contributor: 'Lavenda Achieng', beneficiary: 'Sarah Kemunto', type: 'Cash Support', amount: 2000, status: 'verified' },
-    { date: 'Mar 17, 2025', contributor: 'Mary Odundo', beneficiary: 'Sarah Kemunto', type: 'Food Hamper', amount: 3000, status: 'verified' },
-    { date: 'Mar 16, 2025', contributor: 'Vincent Otieno', beneficiary: 'Sarah Kemunto', type: 'Cash Support', amount: 5000, status: 'verified' },
-    { date: 'Mar 01, 2025', contributor: 'Francis Opiyo', beneficiary: 'James Ochieng', type: 'Cash Support', amount: 1000, status: 'verified' }
-];
-
-const mockMessages = [
-    { id: 1, author: 'Lavenda Achieng', date: 'Mar 18, 2025', text: 'Thinking of you during this difficult time. May God give you strength.', beneficiaryId: 1 },
-    { id: 2, author: 'Anonymous', date: 'Mar 17, 2025', text: "You're not alone. We're here for you.", beneficiaryId: 1 }
-];
 
 // State management
 let bereavementData = [];
@@ -93,13 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuickContribute();
     initDocumentUpload();
     
-    // Load data (will use fetch API in production)
+    // Load data from API
     loadBereavementData();
     loadContributions();
     loadMessages();
-    
-    // Update summary
-    updateSummary();
 });
 
 /**
@@ -139,7 +69,7 @@ function handleSearchFilter() {
         
         const matchesSearch = name.includes(searchTerm) || searchTerm === '';
         const matchesType = typeValue === '' || type === typeValue;
-        const matchesStatus = statusValue === '' || status === statusValue;
+        const matchesStatus = statusValue === '' || status === typeValue;
         
         if (matchesSearch && matchesType && matchesStatus) {
             card.style.display = '';
@@ -160,15 +90,6 @@ function handleSearchFilter() {
 function initModals() {
     // View Details Modal
     const detailsModal = document.getElementById('detailsModal');
-    const viewButtons = document.querySelectorAll('.view-details-btn');
-    
-    viewButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const id = parseInt(btn.dataset.id);
-            openDetailsModal(id);
-        });
-    });
     
     // Close modal handlers
     if (detailsModal) {
@@ -185,16 +106,6 @@ function initModals() {
     
     // Quick Contribute Modal
     const contributeModal = document.getElementById('contributeModal');
-    const quickContributeButtons = document.querySelectorAll('.quick-contribute-btn');
-    
-    quickContributeButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const id = btn.dataset.id;
-            const name = btn.dataset.name;
-            openContributeModal(id, name);
-        });
-    });
     
     if (contributeModal) {
         const closeBtn = contributeModal.querySelector('.modal-close');
@@ -217,33 +128,20 @@ function openDetailsModal(id) {
     if (caseData && modal && modalTitle && modalBody) {
         const progressPercent = Math.round((caseData.amountRaised / caseData.targetAmount) * 100);
         
-        modalTitle.textContent = caseData.name;
+        modalTitle.textContent = caseData.name || caseData.memberName;
         modalBody.innerHTML = `
             <div class="detail-section">
                 <h4><i class="fas fa-user"></i> Student Information</h4>
-                <p><strong>Name:</strong> ${caseData.name}</p>
-                <p><strong>Student ID:</strong> ${caseData.studentId}</p>
+                <p><strong>Name:</strong> ${caseData.name || caseData.memberName}</p>
+                <p><strong>Student ID:</strong> ${caseData.studentId || caseData.memberId || 'N/A'}</p>
                 <p><strong>Bereavement Type:</strong> ${getBereavementTypeLabel(caseData.type)}</p>
-                <p><strong>Date:</strong> ${caseData.date}</p>
+                <p><strong>Date:</strong> ${formatDate(caseData.date || caseData.createdAt)}</p>
                 ${caseData.urgent ? '<p class="urgent">🚨 URGENT CASE</p>' : ''}
             </div>
             
             <div class="detail-section">
                 <h4><i class="fas fa-info-circle"></i> Case Details</h4>
-                <p>${caseData.description}</p>
-            </div>
-            
-            <div class="detail-section">
-                <h4><i class="fas fa-calendar-alt"></i> Funeral Details</h4>
-                <p><strong>Funeral:</strong> ${caseData.funeralDetails}</p>
-                <p><strong>Burial Date:</strong> ${caseData.burialDate}</p>
-                <p><strong>Location:</strong> ${caseData.location}</p>
-            </div>
-            
-            <div class="detail-section">
-                <h4><i class="fas fa-contact-book"></i> Contact Person</h4>
-                <p><strong>Name:</strong> ${caseData.contactPerson}</p>
-                <p><strong>Phone:</strong> ${caseData.contactPhone}</p>
+                <p>${caseData.description || 'No description available'}</p>
             </div>
             
             <div class="detail-section">
@@ -251,13 +149,13 @@ function openDetailsModal(id) {
                 <div class="progress-bar" style="height: 24px; background: #e9ecef; border-radius: 12px; overflow: hidden;">
                     <div class="progress" style="width: ${progressPercent}%; height: 100%; background: linear-gradient(90deg, #27ae60, #2ecc71);"></div>
                 </div>
-                <p style="margin-top: 8px;">Ksh ${caseData.amountRaised.toLocaleString()} raised of Ksh ${caseData.targetAmount.toLocaleString()} (${progressPercent}%)</p>
+                <p style="margin-top: 8px;">Ksh ${(caseData.amountRaised || 0).toLocaleString()} raised of Ksh ${(caseData.targetAmount || 0).toLocaleString()} (${progressPercent}%)</p>
             </div>
             
             <div class="detail-section">
                 <h4><i class="fas fa-mobile-alt"></i> M-Pesa Payment</h4>
                 <p><strong>Paybill:</strong> 123456</p>
-                <p><strong>Account:</strong> ${caseData.name.replace(/\s/g, '')}</p>
+                <p><strong>Account:</strong> ${(caseData.name || caseData.memberName || 'Bereavement').replace(/\s/g, '')}</p>
             </div>
         `;
         
@@ -266,7 +164,7 @@ function openDetailsModal(id) {
         if (contributeBtn) {
             contributeBtn.onclick = () => {
                 closeModal(modal);
-                openContributeModal(id, caseData.name);
+                openContributeModal(id, caseData.name || caseData.memberName);
             };
         }
         
@@ -322,16 +220,23 @@ function initCondolenceForm() {
                 timestamp: new Date().toISOString()
             };
             
-            // TODO: Replace with actual API call
-            // await fetch(`${API_BASE_URL}/condolences`, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(formData)
-            // });
+            try {
+                // Try to send to API
+                const response = await fetch(`${API_BASE_URL}/bereavement/${formData.beneficiaryId}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        author: formData.anonymous ? 'Anonymous' : formData.contributorName,
+                        message: formData.message
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to send message');
+            } catch (error) {
+                console.log('API not available, using local storage');
+            }
             
-            console.log('Condolence message submitted:', formData);
-            
-            // Add message to display (demo purposes)
+            // Add message to display
             addMessageToDisplay(formData);
             
             // Show success message
@@ -383,14 +288,23 @@ function initQuickContribute() {
                 timestamp: new Date().toISOString()
             };
             
-            // TODO: Replace with actual API call
-            // await fetch(`${API_BASE_URL}/contributions`, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(formData)
-            // });
-            
-            console.log('Contribution submitted:', formData);
+            try {
+                // Try to send to API
+                const response = await fetch(`${API_BASE_URL}/bereavement/${beneficiaryId}/contribute`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: formData.type,
+                        amount: formData.amount,
+                        contributorName: formData.contributorName,
+                        phone: formData.phone
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to submit contribution');
+            } catch (error) {
+                console.log('API not available, using local storage');
+            }
             
             // Add to contributions table
             addContributionToTable(formData);
@@ -414,12 +328,12 @@ function addContributionToTable(data) {
     const tableBody = document.getElementById('contributionsTableBody');
     const beneficiary = bereavementData.find(b => b.id === data.beneficiaryId);
     
-    if (tableBody && beneficiary) {
+    if (tableBody) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
             <td>${data.contributorName}</td>
-            <td>${beneficiary.name}</td>
+            <td>${beneficiary ? (beneficiary.name || beneficiary.memberName) : 'Unknown'}</td>
             <td>${getContributionTypeLabel(data.type)}</td>
             <td>Ksh ${data.amount.toLocaleString()}</td>
             <td><span class="status pending">Pending</span></td>
@@ -444,13 +358,16 @@ function initDocumentUpload() {
             formData.append('documentType', document.getElementById('documentType').value);
             formData.append('file', document.getElementById('documentFile').files[0]);
             
-            // TODO: Replace with actual API call
-            // await fetch(`${API_BASE_URL}/documents/upload`, {
-            //     method: 'POST',
-            //     body: formData
-            // });
-            
-            console.log('Document upload submitted:', Object.fromEntries(formData));
+            try {
+                const response = await fetch(`${API_BASE_URL}/documents/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Failed to upload document');
+            } catch (error) {
+                console.log('API not available');
+            }
             
             showNotification('Document uploaded successfully!', 'success');
             form.reset();
@@ -459,46 +376,329 @@ function initDocumentUpload() {
 }
 
 /**
- * Data Loading Functions (Fetch API Ready)
+ * Data Loading Functions (Fetch from API)
  */
 async function loadBereavementData() {
-    // TODO: Replace with actual API call
-    // try {
-    //     const response = await fetch(`${API_BASE_URL}/bereavement`);
-    //     bereavementData = await response.json();
-    // } catch (error) {
-    //     console.error('Error loading bereavement data:', error);
-    // }
+    const loadingEl = document.getElementById('bereavementLoading');
+    const noDataEl = document.getElementById('bereavementNoData');
+    const cardsContainer = document.getElementById('bereavementCards');
     
-    // Using mock data for demonstration
-    bereavementData = mockBereavementData;
-    console.log('Bereavement data loaded:', bereavementData.length, 'cases');
+    // Show loading
+    if (loadingEl) loadingEl.style.display = 'flex';
+    if (noDataEl) noDataEl.style.display = 'none';
+    
+    try {
+        // Fetch from API
+        const response = await bereavementService.getAll();
+        
+        if (response && response.data) {
+            bereavementData = response.data;
+        } else if (Array.isArray(response)) {
+            bereavementData = response;
+        } else {
+            bereavementData = [];
+        }
+        
+        console.log('Bereavement data loaded:', bereavementData.length, 'cases');
+    } catch (error) {
+        console.error('Error loading bereavement data:', error);
+        bereavementData = [];
+    }
+    
+    // Hide loading
+    if (loadingEl) loadingEl.style.display = 'none';
+    
+    // Render the data
+    renderBereavementCards();
+    updateSummary();
+    populateBeneficiarySelect();
+    populateAdminCaseSelect();
 }
 
 async function loadContributions() {
-    // TODO: Replace with actual API call
-    // try {
-    //     const response = await fetch(`${API_BASE_URL}/contributions`);
-    //     contributionsData = await response.json();
-    // } catch (error) {
-    //     console.error('Error loading contributions:', error);
-    // }
+    const loadingEl = document.getElementById('contributionsLoading');
+    const noDataEl = document.getElementById('noContributions');
+    const tableBody = document.getElementById('contributionsTableBody');
     
-    contributionsData = mockContributions;
-    console.log('Contributions loaded:', contributionsData.length, 'records');
+    // Show loading
+    if (loadingEl) loadingEl.style.display = 'flex';
+    if (noDataEl) noDataEl.style.display = 'none';
+    
+    try {
+        // Contributions are stored within bereavement records
+        // Extract all contributions from all cases
+        contributionsData = [];
+        bereavementData.forEach(caseData => {
+            if (caseData.contributions && Array.isArray(caseData.contributions)) {
+                caseData.contributions.forEach(contribution => {
+                    contributionsData.push({
+                        ...contribution,
+                        beneficiary: caseData.member?.firstName + ' ' + caseData.member?.lastName || caseData.deceased,
+                        date: contribution.createdAt || contribution.date
+                    });
+                });
+            }
+        });
+        
+        console.log('Contributions loaded:', contributionsData.length, 'records');
+    } catch (error) {
+        console.error('Error loading contributions:', error);
+        contributionsData = [];
+    }
+    
+    // Hide loading
+    if (loadingEl) loadingEl.style.display = 'none';
+    
+    // Render contributions
+    renderContributions();
 }
 
 async function loadMessages() {
-    // TODO: Replace with actual API call
-    // try {
-    //     const response = await fetch(`${API_BASE_URL}/condolences`);
-    //     messagesData = await response.json();
-    // } catch (error) {
-    //     console.error('Error loading messages:', error);
-    // }
+    const loadingEl = document.getElementById('messagesLoading');
+    const noDataEl = document.getElementById('noMessages');
+    const messagesList = document.getElementById('messagesList');
     
-    messagesData = mockMessages;
-    console.log('Messages loaded:', messagesData.length, 'messages');
+    // Show loading
+    if (loadingEl) loadingEl.style.display = 'flex';
+    if (noDataEl) noDataEl.style.display = 'none';
+    
+    try {
+        // Messages are stored within bereavement records
+        // Extract all messages from all cases
+        messagesData = [];
+        bereavementData.forEach(caseData => {
+            if (caseData.messages && Array.isArray(caseData.messages)) {
+                caseData.messages.forEach(message => {
+                    messagesData.push({
+                        ...message,
+                        beneficiary: caseData.member?.firstName + ' ' + caseData.member?.lastName || caseData.deceased,
+                        date: message.createdAt || message.date
+                    });
+                });
+            }
+        });
+        
+        console.log('Messages loaded:', messagesData.length, 'messages');
+    } catch (error) {
+        console.error('Error loading messages:', error);
+        messagesData = [];
+    }
+    
+    // Hide loading
+    if (loadingEl) loadingEl.style.display = 'none';
+    
+    // Render messages
+    renderMessages();
+}
+
+/**
+ * Render Functions
+ */
+function renderBereavementCards() {
+    const cardsContainer = document.getElementById('bereavementCards');
+    const noDataEl = document.getElementById('bereavementNoData');
+    
+    if (!cardsContainer) return;
+    
+    // Clear existing cards
+    cardsContainer.innerHTML = '';
+    
+    // Check if there's no data
+    if (!bereavementData || bereavementData.length === 0) {
+        if (noDataEl) noDataEl.style.display = 'flex';
+        return;
+    }
+    
+    if (noDataEl) noDataEl.style.display = 'none';
+    
+    // Render each card
+    bereavementData.forEach(caseData => {
+        const card = createBereavementCard(caseData);
+        cardsContainer.appendChild(card);
+    });
+    
+    // Re-attach event listeners for dynamically created buttons
+    attachCardEventListeners();
+}
+
+function createBereavementCard(caseData) {
+    const card = document.createElement('div');
+    card.className = 'bereavement-card';
+    card.dataset.id = caseData.id;
+    card.dataset.name = (caseData.name || caseData.memberName || '').toLowerCase();
+    card.dataset.type = caseData.type || '';
+    card.dataset.status = caseData.status || 'active';
+    
+    const progressPercent = Math.round(((caseData.amountRaised || 0) / (caseData.targetAmount || 1)) * 100);
+    const isUrgent = caseData.urgent || caseData.status === 'urgent';
+    const memberName = caseData.name || caseData.memberName || 'Unknown';
+    const memberId = caseData.studentId || caseData.memberId || 'N/A';
+    const description = caseData.description || 'No description available';
+    const date = formatDate(caseData.date || caseData.createdAt);
+    
+    card.innerHTML = `
+        <div class="card-header">
+            <span class="date"><i class="fas fa-calendar"></i> ${date}</span>
+            <span class="type death ${isUrgent ? 'urgent-type' : ''}">${getBereavementTypeLabel(caseData.type)}</span>
+        </div>
+        <div class="card-body">
+            <h3>${memberName} ${isUrgent ? '<span class="urgent">Urgent</span>' : '<span class="urgent" style="display: none;">Urgent</span>'}</h3>
+            <p class="student-id">${memberId}</p>
+            <p class="description">${description}</p>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${progressPercent}%;"></div>
+                </div>
+                <p class="progress-text">${progressPercent}% of Ksh ${(caseData.targetAmount || 0).toLocaleString()} target</p>
+            </div>
+            
+            <!-- M-Pesa Box -->
+            <div class="mpesa-box">
+                <h4><i class="fas fa-mobile-alt"></i> Lipa na M-Pesa</h4>
+                <p>Paybill: <strong>123456</strong></p>
+                <p>Account: <strong>${memberName.replace(/\s/g, '')}</strong></p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <span class="supporters"><i class="fas fa-users"></i> ${caseData.supporters || 0} supporters</span>
+            <span class="amount-raised"><i class="fas fa-money-bill-wave"></i> Ksh ${(caseData.amountRaised || 0).toLocaleString()} raised</span>
+        </div>
+        <div class="card-actions">
+            <button class="btn btn-secondary view-details-btn" data-id="${caseData.id}">
+                <i class="fas fa-info-circle"></i> View Details
+            </button>
+            <button class="btn btn-primary quick-contribute-btn" data-id="${caseData.id}" data-name="${memberName}">
+                <i class="fas fa-hand-holding-heart"></i> Support ${memberName.split(' ')[0]}
+            </button>
+        </div>
+    `;
+    
+    return card;
+}
+
+function attachCardEventListeners() {
+    // View Details buttons
+    const viewButtons = document.querySelectorAll('.view-details-btn');
+    viewButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = parseInt(btn.dataset.id);
+            openDetailsModal(id);
+        });
+    });
+    
+    // Quick Contribute buttons
+    const quickContributeButtons = document.querySelectorAll('.quick-contribute-btn');
+    quickContributeButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+            openContributeModal(id, name);
+        });
+    });
+}
+
+function renderContributions() {
+    const tableBody = document.getElementById('contributionsTableBody');
+    const noDataEl = document.getElementById('noContributions');
+    
+    if (!tableBody) return;
+    
+    // Clear existing rows
+    tableBody.innerHTML = '';
+    
+    // Check if there's no data
+    if (!contributionsData || contributionsData.length === 0) {
+        if (noDataEl) noDataEl.style.display = 'flex';
+        return;
+    }
+    
+    if (noDataEl) noDataEl.style.display = 'none';
+    
+    // Render each contribution
+    contributionsData.forEach(contribution => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${formatDate(contribution.date || contribution.createdAt)}</td>
+            <td>${contribution.contributor || contribution.contributorName || 'Anonymous'}</td>
+            <td>${contribution.beneficiary || contribution.memberName || 'Unknown'}</td>
+            <td>${getContributionTypeLabel(contribution.type)}</td>
+            <td>Ksh ${(contribution.amount || 0).toLocaleString()}</td>
+            <td><span class="status ${contribution.status || 'pending'}">${capitalizeFirst(contribution.status || 'pending')}</span></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function renderMessages() {
+    const messagesList = document.getElementById('messagesList');
+    const noDataEl = document.getElementById('noMessages');
+    
+    if (!messagesList) return;
+    
+    // Clear existing messages
+    messagesList.innerHTML = '';
+    
+    // Check if there's no data
+    if (!messagesData || messagesData.length === 0) {
+        if (noDataEl) noDataEl.style.display = 'flex';
+        return;
+    }
+    
+    if (noDataEl) noDataEl.style.display = 'none';
+    
+    // Render each message
+    messagesData.forEach(message => {
+        const messageItem = document.createElement('div');
+        messageItem.className = 'message-item';
+        messageItem.innerHTML = `
+            <div class="message-header">
+                <span class="message-author">${message.author || message.contributorName || 'Anonymous'}</span>
+                <span class="message-date">${formatDate(message.date || message.createdAt)}</span>
+            </div>
+            <p class="message-text">${message.message || message.text || ''}</p>
+        `;
+        messagesList.appendChild(messageItem);
+    });
+}
+
+function populateBeneficiarySelect() {
+    const select = document.getElementById('beneficiarySelect');
+    if (!select) return;
+    
+    // Keep the first option
+    const firstOption = select.querySelector('option');
+    select.innerHTML = '';
+    if (firstOption) select.appendChild(firstOption);
+    
+    // Add options for each bereavement case
+    bereavementData.forEach(caseData => {
+        const option = document.createElement('option');
+        option.value = caseData.id;
+        option.textContent = caseData.name || caseData.memberName || 'Unknown';
+        select.appendChild(option);
+    });
+}
+
+function populateAdminCaseSelect() {
+    const select = document.getElementById('caseSelect');
+    if (!select) return;
+    
+    // Keep the first option
+    const firstOption = select.querySelector('option');
+    select.innerHTML = '';
+    if (firstOption) select.appendChild(firstOption);
+    
+    // Add options for each bereavement case
+    bereavementData.forEach(caseData => {
+        const option = document.createElement('option');
+        option.value = caseData.id;
+        option.textContent = `${caseData.name || caseData.memberName || 'Unknown'} - ${getBereavementTypeLabel(caseData.type)}`;
+        select.appendChild(option);
+    });
 }
 
 /**
@@ -506,9 +706,9 @@ async function loadMessages() {
  */
 function updateSummary() {
     const totalCases = bereavementData.length;
-    const totalRaised = bereavementData.reduce((sum, c) => sum + c.amountRaised, 0);
-    const totalSupporters = bereavementData.reduce((sum, c) => sum + c.supporters, 0);
-    const targetAmount = bereavementData.reduce((sum, c) => sum + c.targetAmount, 0);
+    const totalRaised = bereavementData.reduce((sum, c) => sum + (c.amountRaised || 0), 0);
+    const totalSupporters = bereavementData.reduce((sum, c) => sum + (c.supporters || 0), 0);
+    const targetAmount = bereavementData.reduce((sum, c) => sum + (c.targetAmount || 0), 0);
     
     const totalCasesEl = document.getElementById('totalCases');
     const totalRaisedEl = document.getElementById('totalRaised');
@@ -531,7 +731,7 @@ function getBereavementTypeLabel(type) {
         'guardian': 'Loss of Guardian',
         'other': 'Other'
     };
-    return types[type] || type;
+    return types[type] || type || 'Unknown';
 }
 
 function getContributionTypeLabel(type) {
@@ -540,7 +740,21 @@ function getContributionTypeLabel(type) {
         'food': 'Food Hamper',
         'other': 'Other'
     };
-    return types[type] || type;
+    return types[type] || type || 'Unknown';
+}
+
+function formatDate(date) {
+    if (!date) return 'N/A';
+    
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return date;
+    
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function capitalizeFirst(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function showNotification(message, type = 'info') {

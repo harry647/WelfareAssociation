@@ -91,8 +91,10 @@
     <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
     <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
     <a href="notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
+    <a href="#" class="nav-link" data-section="messages"><i class="fas fa-envelope"></i> Messages <span class="badge" id="messages-badge" style="display:none;">0</span></a>
     <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
     <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
+    <a href="#" class="nav-link" data-section="pages"><i class="fas fa-file-alt"></i> Pages</a>
   </div>
 
   <!-- Main Content -->
@@ -326,11 +328,114 @@
     <div class="content-section" id="section-notices">
       <div class="page-body"><div class="section-placeholder"><i class="fas fa-bullhorn"></i><h2>Notices</h2><p>Coming soon.</p></div></div>
     </div>
+    <div class="content-section" id="section-messages">
+      <div class="page-body">
+        <div class="page-header">
+          <h1><i class="fas fa-envelope"></i> Messages</h1>
+          <p>View and manage contact form submissions</p>
+        </div>
+        
+        <!-- Messages Table -->
+        <section class="data-section">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Subject</th>
+                  <th>Message</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="messages-table">
+                <tr><td colspan="7" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading messages...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
     <div class="content-section" id="section-analytics">
       <div class="page-body"><div class="section-placeholder"><i class="fas fa-chart-line"></i><h2>Analytics</h2><p>Coming soon.</p></div></div>
     </div>
     <div class="content-section" id="section-security">
       <div class="page-body"><div class="section-placeholder"><i class="fas fa-shield-alt"></i><h2>Security Settings</h2><p>Coming soon.</p></div></div>
+    </div>
+
+    <!-- Pages Management Section -->
+    <div class="content-section" id="section-pages">
+      <div class="page-body">
+        <div class="page-header">
+          <h1><i class="fas fa-file-alt"></i> Manage Pages</h1>
+          <p>Manage content for public pages</p>
+        </div>
+
+        <!-- Page Selection -->
+        <section class="data-section">
+          <h2><i class="fas fa-list"></i> Available Pages</h2>
+          <div class="page-selector-grid" id="pageSelectorGrid">
+            <!-- Page cards will be loaded dynamically -->
+            <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading pages...</div>
+          </div>
+        </section>
+
+        <!-- Page Content Editor -->
+        <section class="data-section" id="pageContentEditor" style="display:none;">
+          <h2><i class="fas fa-edit"></i> Edit Content: <span id="selectedPageName"></span></h2>
+          <div class="content-items-list" id="contentItemsList">
+            <!-- Content items will be loaded here -->
+          </div>
+          <button class="btn add-content-btn" id="addContentBtn"><i class="fas fa-plus"></i> Add Content Section</button>
+        </section>
+
+        <!-- Add/Edit Content Modal -->
+        <div class="modal" id="contentModal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="modalTitle">Add Content</h3>
+              <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form id="contentForm">
+                <input type="hidden" id="contentId">
+                <div class="form-group">
+                  <label for="sectionIdentifier">Section Identifier</label>
+                  <input type="text" id="sectionIdentifier" name="sectionIdentifier" placeholder="e.g., hero, about, mission" required>
+                </div>
+                <div class="form-group">
+                  <label for="contentTitle">Title</label>
+                  <input type="text" id="contentTitle" name="title" placeholder="Content title">
+                </div>
+                <div class="form-group">
+                  <label for="contentSubtitle">Subtitle</label>
+                  <input type="text" id="contentSubtitle" name="subtitle" placeholder="Optional subtitle">
+                </div>
+                <div class="form-group">
+                  <label for="contentText">Content (HTML allowed)</label>
+                  <textarea id="contentText" name="content" rows="8" placeholder="Enter content... HTML allowed"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="displayOrder">Display Order</label>
+                  <input type="number" id="displayOrder" name="displayOrder" value="0" min="0">
+                </div>
+                <div class="form-group">
+                  <label>
+                    <input type="checkbox" id="isActive" name="isActive" checked>
+                    Active
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary">Save Content</button>
+                  <button type="button" class="btn btn-secondary" id="cancelContentBtn">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>

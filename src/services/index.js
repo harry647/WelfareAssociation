@@ -28,6 +28,7 @@ import { noticeService } from './notice-service.js';
 import { reportService } from './report-service.js';
 import { documentService } from './document-service.js';
 import { withdrawalService } from './withdrawal-service.js';
+import { pageContentService } from './page-content-service.js';
 
 // Re-export all services for named imports
 export {
@@ -53,7 +54,8 @@ export {
     noticeService,
     reportService,
     documentService,
-    withdrawalService
+    withdrawalService,
+    pageContentService
 };
 
 // Default export for convenience
@@ -79,6 +81,7 @@ export default {
     policyService,
     galleryService,
     publicService,
+    pageContentService,
     
     // Support
     bereavementService,

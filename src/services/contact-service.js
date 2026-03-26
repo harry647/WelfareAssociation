@@ -29,7 +29,7 @@ class ContactService {
      * @param {Object} params - Query parameters
      */
     async getMessages(params = {}) {
-        return apiService.get(API_CONFIG.endpoints.messages, params, true);
+        return apiService.get(API_CONFIG.endpoints.contact, params, true);
     }
 
     /**
@@ -37,7 +37,7 @@ class ContactService {
      * @param {string|number} id - Message ID
      */
     async getMessageById(id) {
-        return apiService.get(`${API_CONFIG.endpoints.messages}/${id}`, {}, true);
+        return apiService.get(`${API_CONFIG.endpoints.contact}/${id}`, {}, true);
     }
 
     /**
@@ -46,8 +46,8 @@ class ContactService {
      */
     async markAsRead(id) {
         return apiService.patch(
-            `${API_CONFIG.endpoints.messages}/${id}/read`,
-            {},
+            `${API_CONFIG.endpoints.contact}/${id}`,
+            { isRead: true },
             true
         );
     }
@@ -58,7 +58,7 @@ class ContactService {
      */
     async deleteMessage(id) {
         return apiService.delete(
-            `${API_CONFIG.endpoints.messages}/${id}`,
+            `${API_CONFIG.endpoints.contact}/${id}`,
             true
         );
     }
@@ -68,7 +68,7 @@ class ContactService {
      */
     async getUnreadCount() {
         return apiService.get(
-            `${API_CONFIG.endpoints.messages}/unread/count`,
+            `${API_CONFIG.endpoints.contact}/unread`,
             {},
             true
         );

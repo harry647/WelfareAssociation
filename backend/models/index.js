@@ -26,6 +26,7 @@ const Gallery = require('./Gallery');
 const Contact = require('./Contact');
 const Newsletter = require('./Newsletter');
 const Withdrawal = require('./Withdrawal');
+const PageContent = require('./PageContent');
 
 // Define associations
 // User - Member association (User has memberId pointing to Member)
@@ -144,7 +145,8 @@ async function initModels(sequelizeInstance) {
         Gallery,
         Contact,
         Newsletter,
-        Withdrawal
+        Withdrawal,
+        PageContent
     };
 }
 
@@ -172,5 +174,6 @@ module.exports = {
     Gallery,
     Contact,
     Newsletter,
-    Withdrawal
+    Withdrawal,
+    PageContent
 };

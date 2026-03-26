@@ -206,33 +206,40 @@ router.post('/generate', auth, authorize('admin', 'treasurer'), [
  */
 router.get('/contributions', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const { startDate, endDate } = req.query;
-        const query = {};
+        const { startDate, endDate, limit } = req.query;
+        const where = {};
 
         if (startDate || endDate) {
-            query.createdAt = {};
-            if (startDate) query.createdAt.$gte = new Date(startDate);
-            if (endDate) query.createdAt.$lte = new Date(endDate);
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
         }
 
-        const contributions = await Contribution.find(query)
-            .populate('member', 'firstName lastName memberNumber')
-            .sort({ createdAt: -1 });
+        const contributions = await Contribution.findAll({
+            where,
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: limit ? parseInt(limit) : undefined
+        });
 
-        const totalAmount = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+        const totalAmount = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
 
         res.json({
             success: true,
             data: {
-                contributions,
+                contributions: contributions || [],
                 summary: {
-                    total: contributions.length,
-                    totalAmount,
-                    averageAmount: contributions.length > 0 ? totalAmount / contributions.length : 0
+                    total: contributions?.length || 0,
+                    totalAmount: totalAmount || 0,
+                    averageAmount: contributions?.length > 0 ? totalAmount / contributions.length : 0
                 }
-            }
+            },
+            message: contributions?.length === 0 ? 'No contribution records found' : null
         });
     } catch (error) {
+        console.error('Error fetching contribution report:', error);
         res.status(500).json({ success: false, message: 'Error fetching contribution report' });
     }
 });
@@ -243,38 +250,45 @@ router.get('/contributions', auth, authorize('admin', 'treasurer'), async (req, 
  */
 router.get('/loans', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const { startDate, endDate, status } = req.query;
-        const query = {};
+        const { startDate, endDate, status, limit } = req.query;
+        const where = {};
 
         if (startDate || endDate) {
-            query.createdAt = {};
-            if (startDate) query.createdAt.$gte = new Date(startDate);
-            if (endDate) query.createdAt.$lte = new Date(endDate);
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
         }
-        if (status) query.status = status;
+        if (status) where.status = status;
 
-        const loans = await Loan.find(query)
-            .populate('member', 'firstName lastName memberNumber')
-            .sort({ createdAt: -1 });
+        const loans = await Loan.findAll({
+            where,
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: limit ? parseInt(limit) : undefined
+        });
 
-        const totalDisbursed = loans.filter(l => l.status === 'approved' || l.status === 'active')
-            .reduce((sum, l) => sum + (l.principal || 0), 0);
+        const totalDisbursed = loans?.filter(l => l.status === 'approved' || l.status === 'active')
+            .reduce((sum, l) => sum + parseFloat(l.principalAmount || 0), 0) || 0;
 
         res.json({
             success: true,
             data: {
-                loans,
+                loans: loans || [],
                 summary: {
-                    total: loans.length,
-                    pending: loans.filter(l => l.status === 'pending').length,
-                    approved: loans.filter(l => l.status === 'approved').length,
-                    active: loans.filter(l => l.status === 'active').length,
-                    rejected: loans.filter(l => l.status === 'rejected').length,
-                    totalDisbursed
+                    total: loans?.length || 0,
+                    pending: loans?.filter(l => l.status === 'pending').length || 0,
+                    approved: loans?.filter(l => l.status === 'approved').length || 0,
+                    active: loans?.filter(l => l.status === 'active').length || 0,
+                    rejected: loans?.filter(l => l.status === 'rejected').length || 0,
+                    totalDisbursed: totalDisbursed || 0
                 }
-            }
+            },
+            message: loans?.length === 0 ? 'No loan records found' : null
         });
     } catch (error) {
+        console.error('Error fetching loan report:', error);
         res.status(500).json({ success: false, message: 'Error fetching loan report' });
     }
 });
@@ -285,25 +299,30 @@ router.get('/loans', auth, authorize('admin', 'treasurer'), async (req, res) => 
  */
 router.get('/bereavement', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
-        const cases = await Bereavement.find()
-            .populate('member', 'firstName lastName memberNumber')
-            .sort({ createdAt: -1 });
+        const cases = await Bereavement.findAll({
+            include: [
+                { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+            ],
+            order: [['createdAt', 'DESC']]
+        });
 
-        const totalContributions = cases.reduce((sum, c) => sum + (c.totalContributions || 0), 0);
+        const totalContributions = cases?.reduce((sum, c) => sum + parseFloat(c.totalContributions || 0), 0) || 0;
 
         res.json({
             success: true,
             data: {
-                cases,
+                cases: cases || [],
                 summary: {
-                    total: cases.length,
-                    active: cases.filter(c => c.status === 'active').length,
-                    closed: cases.filter(c => c.status === 'closed').length,
-                    totalContributions
+                    total: cases?.length || 0,
+                    active: cases?.filter(c => c.status === 'active').length || 0,
+                    closed: cases?.filter(c => c.status === 'closed').length || 0,
+                    totalContributions: totalContributions || 0
                 }
-            }
+            },
+            message: cases?.length === 0 ? 'No bereavement cases found' : null
         });
     } catch (error) {
+        console.error('Error fetching bereavement report:', error);
         res.status(500).json({ success: false, message: 'Error fetching bereavement report' });
     }
 });
@@ -315,32 +334,37 @@ router.get('/bereavement', auth, authorize('admin', 'treasurer'), async (req, re
 router.get('/membership', auth, authorize('admin', 'treasurer'), async (req, res) => {
     try {
         const { startDate, endDate, status } = req.query;
-        const query = {};
+        const where = {};
 
         if (startDate || endDate) {
-            query.createdAt = {};
-            if (startDate) query.createdAt.$gte = new Date(startDate);
-            if (endDate) query.createdAt.$lte = new Date(endDate);
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
         }
-        if (status) query.status = status;
+        if (status) where.membershipStatus = status;
 
-        const members = await Member.find(query).sort({ createdAt: -1 });
+        const members = await Member.findAll({
+            where,
+            order: [['createdAt', 'DESC']]
+        });
 
-        const activeCount = members.filter(m => m.status === 'active').length;
-        const inactiveCount = members.filter(m => m.status === 'inactive').length;
+        const activeCount = members?.filter(m => m.membershipStatus === 'active').length || 0;
+        const inactiveCount = members?.filter(m => m.membershipStatus === 'inactive').length || 0;
 
         res.json({
             success: true,
             data: {
-                members,
+                members: members || [],
                 summary: {
-                    total: members.length,
+                    total: members?.length || 0,
                     active: activeCount,
                     inactive: inactiveCount
                 }
-            }
+            },
+            message: members?.length === 0 ? 'No member records found' : null
         });
     } catch (error) {
+        console.error('Error fetching membership report:', error);
         res.status(500).json({ success: false, message: 'Error fetching membership report' });
     }
 });
@@ -359,60 +383,71 @@ router.get('/export', auth, authorize('admin', 'treasurer'), async (req, res) =>
         switch (type) {
             case 'contributions':
                 reportName = 'Contributions Report';
-                const contribQuery = {};
+                const contribWhere = {};
                 if (startDate || endDate) {
-                    contribQuery.createdAt = {};
-                    if (startDate) contribQuery.createdAt.$gte = new Date(startDate);
-                    if (endDate) contribQuery.createdAt.$lte = new Date(endDate);
+                    contribWhere.createdAt = {};
+                    if (startDate) contribWhere.createdAt[Op.gte] = new Date(startDate);
+                    if (endDate) contribWhere.createdAt[Op.lte] = new Date(endDate);
                 }
-                const contributions = await Contribution.find(contribQuery)
-                    .populate('member', 'firstName lastName memberNumber');
-                data.contributions = contributions;
+                const contributions = await Contribution.findAll({
+                    where: contribWhere,
+                    include: [
+                        { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+                    ]
+                });
+                data.contributions = contributions || [];
                 data.summary = {
-                    total: contributions.length,
-                    totalAmount: contributions.reduce((sum, c) => sum + (c.amount || 0), 0)
+                    total: contributions?.length || 0,
+                    totalAmount: contributions?.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0) || 0
                 };
                 break;
                 
             case 'loans':
                 reportName = 'Loans Report';
-                const loanQuery = {};
+                const loanWhere = {};
                 if (startDate || endDate) {
-                    loanQuery.createdAt = {};
-                    if (startDate) loanQuery.createdAt.$gte = new Date(startDate);
-                    if (endDate) loanQuery.createdAt.$lte = new Date(endDate);
+                    loanWhere.createdAt = {};
+                    if (startDate) loanWhere.createdAt[Op.gte] = new Date(startDate);
+                    if (endDate) loanWhere.createdAt[Op.lte] = new Date(endDate);
                 }
-                const loans = await Loan.find(loanQuery)
-                    .populate('member', 'firstName lastName memberNumber');
-                data.loans = loans;
+                const loans = await Loan.findAll({
+                    where: loanWhere,
+                    include: [
+                        { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+                    ]
+                });
+                data.loans = loans || [];
                 data.summary = {
-                    total: loans.length,
-                    pending: loans.filter(l => l.status === 'pending').length,
-                    active: loans.filter(l => l.status === 'active').length,
-                    totalDisbursed: loans.filter(l => l.status === 'active').reduce((sum, l) => sum + (l.principal || 0), 0)
+                    total: loans?.length || 0,
+                    pending: loans?.filter(l => l.status === 'pending').length || 0,
+                    active: loans?.filter(l => l.status === 'active').length || 0,
+                    totalDisbursed: loans?.filter(l => l.status === 'active').reduce((sum, l) => sum + parseFloat(l.principalAmount || 0), 0) || 0
                 };
                 break;
                 
             case 'membership':
                 reportName = 'Membership Report';
-                const members = await Member.find();
-                data.members = members;
+                const members = await Member.findAll();
+                data.members = members || [];
                 data.summary = {
-                    total: members.length,
-                    active: members.filter(m => m.status === 'active').length,
-                    inactive: members.filter(m => m.status === 'inactive').length
+                    total: members?.length || 0,
+                    active: members?.filter(m => m.membershipStatus === 'active').length || 0,
+                    inactive: members?.filter(m => m.membershipStatus === 'inactive').length || 0
                 };
                 break;
                 
             case 'bereavement':
                 reportName = 'Bereavement Report';
-                const cases = await Bereavement.find()
-                    .populate('member', 'firstName lastName memberNumber');
-                data.cases = cases;
+                const cases = await Bereavement.findAll({
+                    include: [
+                        { model: Member, as: 'member', attributes: ['firstName', 'lastName', 'memberNumber'] }
+                    ]
+                });
+                data.cases = cases || [];
                 data.summary = {
-                    total: cases.length,
-                    active: cases.filter(c => c.status === 'active').length,
-                    totalContributions: cases.reduce((sum, c) => sum + (c.totalContributions || 0), 0)
+                    total: cases?.length || 0,
+                    active: cases?.filter(c => c.status === 'active').length || 0,
+                    totalContributions: cases?.reduce((sum, c) => sum + parseFloat(c.totalContributions || 0), 0) || 0
                 };
                 break;
                 
@@ -430,12 +465,12 @@ router.get('/export', auth, authorize('admin', 'treasurer'), async (req, res) =>
             } else if (type === 'loans') {
                 csv = 'Member,Principal,Status,Date\n';
                 data.loans.forEach(l => {
-                    csv += `${l.member?.firstName} ${l.member?.lastName},${l.principal},${l.status},${l.createdAt}\n`;
+                    csv += `${l.member?.firstName} ${l.member?.lastName},${l.principalAmount},${l.status},${l.createdAt}\n`;
                 });
             } else if (type === 'membership') {
                 csv = 'Name,Email,Status,Joined Date\n';
                 data.members.forEach(m => {
-                    csv += `${m.firstName} ${m.lastName},${m.email},${m.status},${m.createdAt}\n`;
+                    csv += `${m.firstName} ${m.lastName},${m.email},${m.membershipStatus},${m.joinDate}\n`;
                 });
             }
             
@@ -448,9 +483,11 @@ router.get('/export', auth, authorize('admin', 'treasurer'), async (req, res) =>
             success: true,
             reportName,
             generatedAt: new Date().toISOString(),
-            data
+            data,
+            message: (data[type]?.length || 0) === 0 ? `No ${type} records found` : null
         });
     } catch (error) {
+        console.error('Error exporting report:', error);
         res.status(500).json({ success: false, message: 'Error exporting report' });
     }
 });
