@@ -282,7 +282,8 @@ body {
     /* Ensure hamburger is visible */
     .hamburger-icon {
         display: flex !important;
-        visibility: visible;
+        visibility: visible !important;
+        z-index: 100001 !important;
     }
     
     .dropdown {

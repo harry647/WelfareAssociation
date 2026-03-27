@@ -2,7 +2,7 @@
 <!-- Include this in all public pages -->
 <header class="header-section">
     <img src="/images/Welfarelogo.webp" alt="SWA Logo - Student Welfare Association" class="img-logo">
-    <div id="hamburger-icon" class="hamburger-icon" onclick="document.getElementById('nav-menu').classList.toggle('active'); this.classList.toggle('active');"></div>
+    <div id="hamburger-icon" class="hamburger-icon" onclick="console.log('Hamburger clicked'); var menu = document.getElementById('nav-menu'); if (menu) { menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex'; menu.classList.toggle('active'); } this.classList.toggle('active');"></div>
     <div class="links-wrpper" id="nav-menu">
         <ul class="nav-links">
             <li><a href="/index.html"><i class="fas fa-home"></i> Home</a></li>
@@ -40,6 +40,7 @@ window.toggleMenu = function() {
     var hamburger = document.querySelector('.hamburger-icon');
     if (menu) menu.classList.toggle('active');
     if (hamburger) hamburger.classList.toggle('active');
+    console.log('Toggle menu clicked, menu:', menu, 'hamburger:', hamburger);
 };
 
 // Toggle dropdown function
@@ -104,6 +105,14 @@ document.addEventListener('click', function(e) {
                 dd.classList.remove('active');
             });
         }
+    }
+});
+
+// Debug: log when hamburger is clicked
+document.addEventListener('click', function(e) {
+    var hamburger = e.target.closest('.hamburger-icon');
+    if (hamburger) {
+        console.log('Hamburger clicked!');
     }
 });
 </script>

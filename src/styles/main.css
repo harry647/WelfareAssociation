@@ -213,3 +213,34 @@ input:focus, textarea:focus, select:focus {
     h1 { font-size: 2em; }
     h2 { font-size: 1.5em; }
 }
+
+/* Hamburger menu fix for index.html */
+@media (max-width: 900px) {
+    /* Hamburger icon visibility */
+    .hamburger-icon {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        z-index: 100001 !important;
+        position: relative !important;
+    }
+    
+    /* Make sure no overlay covers the hamburger */
+    .header-section {
+        position: relative !important;
+    }
+    
+    /* Nav menu styling */
+    #nav-menu,
+    .links-wrpper {
+        background-color: #2a2a2a !important;
+        border: 3px solid red !important;
+    }
+    
+    /* Ensure ul displays properly */
+    #nav-menu ul,
+    .links-wrpper ul {
+        flex-direction: column !important;
+    }
+}
