@@ -9,7 +9,7 @@
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
   
   <!-- Immediate auth check - hide body until verified -->
   <script>
@@ -23,7 +23,7 @@
       
       if (!authToken || !userData) {
         // Not authenticated, redirect immediately
-        window.location.replace('../auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
         return;
       }
       
@@ -31,7 +31,7 @@
       const user = JSON.parse(userData);
       if (user.role !== 'admin') {
         // Not admin, redirect to member portal
-        window.location.replace('../dashboard/member-portal.html');
+        window.location.replace('../member/member-portal.html');
         return;
       }
       
@@ -45,14 +45,14 @@
       const userData = localStorage.getItem('swa_user');
       
       if (!authToken || !userData) {
-        window.location.replace('../auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
         return;
       }
       
       // Check if user is admin
       const user = JSON.parse(userData);
       if (user.role !== 'admin') {
-        window.location.replace('../dashboard/member-portal.html');
+        window.location.replace('../member/member-portal.html');
       }
     });
   </script>

@@ -38,7 +38,7 @@ class RegisteredMembers {
      */
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../../pages/auth/login-page.html?redirect=../../pages/dashboard/registered-members.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../admin/registered-members.html';
             return false;
         }
         

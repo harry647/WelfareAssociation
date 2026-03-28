@@ -36,7 +36,7 @@ class FinesCollection {
      */
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../../pages/auth/login-page.html?redirect=../../pages/dashboard/fines-collection.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../admin/fines-collection.html';
             return false;
         }
         

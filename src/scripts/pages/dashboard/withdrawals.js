@@ -26,13 +26,13 @@ class Withdrawals {
 
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../../auth/login-page.html';
+            window.location.href = '../../../auth/login-page.html';
             return false;
         }
         
         const user = authService.getCurrentUser();
         if (!user || user.role !== 'admin') {
-            window.location.href = '../../auth/login-page.html';
+            window.location.href = '../../../auth/login-page.html';
             return false;
         }
         return true;

@@ -38,7 +38,7 @@ class MemberPortal {
         if (!isAuth) {
             // Not logged in, redirect to login page
             console.log('User not authenticated, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-portal.html';
             return false;
         }
         
@@ -46,7 +46,7 @@ class MemberPortal {
         console.log('Current user:', user);
         if (!user) {
             console.log('No current user found, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-portal.html';
             return false;
         }
         console.log('Authentication check passed');
@@ -292,7 +292,7 @@ class MemberPortal {
                 localStorage.removeItem('swa_auth_token');
                 localStorage.removeItem('swa_refresh_token');
                 localStorage.removeItem('swa_user');
-                window.location.href = '../auth/login-page.html?redirect=../dashboard/member-portal.html';
+                window.location.href = '../../../auth/login-page.html?redirect=../member/member-portal.html';
                 return;
             }
             console.warn('Failed to fetch member data from API:', error.status || error.message);

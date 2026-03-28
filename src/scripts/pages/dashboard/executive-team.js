@@ -36,7 +36,7 @@ class ExecutiveTeam {
      */
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../../pages/auth/login-page.html?redirect=../../pages/dashboard/executive-team.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../admin/executive-team.html';
             return false;
         }
         

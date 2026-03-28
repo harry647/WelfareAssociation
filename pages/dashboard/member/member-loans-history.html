@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="SWA Member Loan History - View your loan applications, status, and repayment history">
   <title>Loan History - Student Welfare Association | JOOUST</title>
-  <link rel="stylesheet" href="../../src/styles/main.css">
-  <link rel="stylesheet" href="../../src/styles/original/header.css">
-  <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
-  <link rel="stylesheet" href="../../src/styles/original/footer.css">
-  <link rel="stylesheet" href="../../src/styles/pages/dashboard/member-portal.css">
+  <link rel="stylesheet" href="../../../src/styles/main.css">
+  <link rel="stylesheet" href="../../../src/styles/original/header.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/shared/navigation.css">
+  <link rel="stylesheet" href="../../../src/styles/original/footer.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/member-portal.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
@@ -24,7 +24,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-loans-history.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member-loans-history.html');
         return;
       }
       document.documentElement.style.visibility = 'visible';
@@ -33,17 +33,17 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-loans-history.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member-loans-history.html');
       }
     });
   </script>
 </head>
 <body>
 
-  <div w3-include-html="../../shared/header.html"></div>
+  <div w3-include-html="../../../pages/shared/header.html"></div>
 
   <!-- Member Header Component -->
-  <div w3-include-html="../../components/header-member.html"></div>
+  <div w3-include-html="../components/header-member.html"></div>
 
   <div class="page-body">
 
@@ -54,10 +54,10 @@
         <p>Track all your loan applications, status updates, and repayment progress</p>
       </div>
       <div class="page-actions">
-        <a href="../member-portal.html" class="btn secondary-btn">
+        <a href="member-portal.html" class="btn secondary-btn">
           <i class="fas fa-arrow-left"></i> Back to Portal
         </a>
-        <a href="../../loans/apply.html" class="btn submit-btn">
+        <a href="../../../pages/loans/apply.html" class="btn submit-btn">
           <i class="fas fa-plus"></i> Apply for Loan
         </a>
       </div>
@@ -120,7 +120,7 @@
           </div>
         </div>
         <div class="eligibility-actions">
-          <a href="../../loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
+          <a href="../../../pages/loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
             <i class="fas fa-paper-plane"></i> Apply for Loan
           </a>
           <button type="button" class="btn secondary-btn" onclick="memberLoanHistory.refreshEligibility()">
@@ -208,9 +208,9 @@
 
   </div><!-- /page-body -->
 
-  <div w3-include-html="../../components/footer-member.html"></div>
+  <div w3-include-html="../components/footer-member.html"></div>
 
   <script>w3.includeHTML();</script>
-  <script type="module" src="../../src/scripts/pages/dashboard/member-loans-history.js"></script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/member-loans-history.js"></script>
 </body>
 </html>

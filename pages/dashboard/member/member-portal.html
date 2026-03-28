@@ -24,7 +24,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../../../auth/login-page.html?redirect=../dashboard/member-portal.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member-portal.html');
         return;
       }
       document.documentElement.style.visibility = 'visible';
@@ -33,7 +33,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../../../auth/login-page.html?redirect=../dashboard/member-portal.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member-portal.html');
       }
     });
   </script>
@@ -183,7 +183,7 @@
               <i class="fas fa-info-circle"></i> No contribution history found
             </div>
           </div>
-          <a href="../member/member-contribution-history.html" class="view-all">View All Contribution Details →</a>
+          <a href="member-contribution-history.html" class="view-all">View All Contribution Details →</a>
         </section>
 
         <!-- Make Contribution -->
@@ -295,7 +295,7 @@
               <i class="fas fa-info-circle"></i> No loan history found
             </div>
           </div>
-          <a href="../member/member-loans-history.html" class="view-all">View All Loan Details →</a>
+          <a href="member-loans-history.html" class="view-all">View All Loan Details →</a>
         </section>
 
         <!-- Payment History -->
@@ -349,7 +349,7 @@
               <i class="fas fa-info-circle"></i> No payment history found
             </div>
           </div>
-          <a href="../member/member-payments-history.html" class="view-all">View All Payment Details →</a>
+          <a href="member-payments-history.html" class="view-all">View All Payment Details →</a>
         </section>
 
       </div><!-- /portal-grid -->
@@ -378,7 +378,7 @@
           <p><strong>Member Since:</strong> <span id="profile-member-since">Loading...</span></p>
           <p><strong>Status:</strong> <span id="profile-status" class="status active">Active</span></p>
         </div>
-        <a href="../../pages/auth/profile.html" class="btn">
+        <a href="../../../auth/profile.html" class="btn">
           <i class="fas fa-edit"></i> Edit Profile
         </a>
       </section>

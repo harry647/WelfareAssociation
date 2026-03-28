@@ -36,7 +36,7 @@ class ActiveMembers {
      */
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../../pages/auth/login-page.html?redirect=../../pages/dashboard/active-members.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../admin/active-members.html';
             return false;
         }
         
