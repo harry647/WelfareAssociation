@@ -191,15 +191,41 @@
     <!-- Loan Request -->
     <section class="loan-section">
       <h2><i class="fas fa-hand-holding-usd"></i> Loan Request</h2>
-      <div class="eligibility">
+      <div class="eligibility" id="loanEligibility">
         <h3>Your Eligibility</h3>
-        <ul>
-          <li><i class="fas fa-check-circle"></i> Active member: 4 months ✓</li>
-          <li><i class="fas fa-check-circle"></i> Contribution history: Good ✓</li>
-          <li><i class="fas fa-check-circle"></i> Max loan amount: Ksh 9,000</li>
-        </ul>
+        <div id="eligibilityLoading">
+          <p><i class="fas fa-spinner fa-spin"></i> Calculating your loan eligibility...</p>
+        </div>
+        <div id="eligibilityContent" style="display: none;">
+          <div class="eligibility-summary">
+            <div class="eligibility-status" id="eligibilityStatus">
+              <span class="status-icon"></span>
+              <span class="status-text"></span>
+            </div>
+            <div class="max-loan-display">
+              <p class="max-loan-label">Your Maximum Loan Limit</p>
+              <p class="max-loan-amount" id="maxLoanAmount">Ksh 0</p>
+            </div>
+            <div class="member-score">
+              <p class="score-label">Member Score</p>
+              <p class="score-value" id="memberScore">0</p>
+            </div>
+          </div>
+          <div class="eligibility-reasons" id="eligibilityReasons">
+            <h4>Score Breakdown</h4>
+            <ul id="reasonsList">
+              <!-- Dynamic reasons will be inserted here -->
+            </ul>
+          </div>
+          <div class="loan-progress" id="loanProgress">
+            <p><i class="fas fa-info-circle"></i> <span id="loanProgressText">Loan progress: First loan</span></p>
+          </div>
+        </div>
+        <div id="eligibilityError" style="display: none;">
+          <p><i class="fas fa-exclamation-triangle"></i> Unable to calculate eligibility. Please try again later.</p>
+        </div>
       </div>
-      <a href="../loans/apply.html" class="btn submit-btn">
+      <a href="../loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
         <i class="fas fa-paper-plane"></i> Apply for Loan
       </a>
     </section>

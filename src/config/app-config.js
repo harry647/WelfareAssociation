@@ -31,6 +31,7 @@ export const API_CONFIG = {
         // Loans
         loans: '/loans',
         applyLoan: '/loans/apply',
+        loanEligibility: '/loans/eligibility',
         
         // Payments
         payments: '/payments',

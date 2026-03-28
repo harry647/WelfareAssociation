@@ -29,6 +29,14 @@ class LoanService {
     }
 
     /**
+     * Get member's loan eligibility
+     * @returns {Object} Loan eligibility data
+     */
+    async getEligibility() {
+        return apiService.get(API_CONFIG.endpoints.loanEligibility, {}, true);
+    }
+
+    /**
      * Apply for a loan
      * @param {Object} loanData - Loan application data
      */

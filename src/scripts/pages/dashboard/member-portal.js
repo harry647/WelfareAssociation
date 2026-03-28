@@ -466,7 +466,102 @@ class MemberPortal {
         // Populate notifications
         this.populateNotifications(services.notices?.records || []);
         
+        // Load loan eligibility
+        this.loadLoanEligibility();
+        
         console.log('Updated service displays with data:', services);
+    }
+    
+    /**
+     * Load and display loan eligibility
+     */
+    async loadLoanEligibility() {
+        const loadingEl = document.getElementById('eligibilityLoading');
+        const contentEl = document.getElementById('eligibilityContent');
+        const errorEl = document.getElementById('eligibilityError');
+        const applyBtn = document.getElementById('applyLoanBtn');
+        
+        if (!loadingEl || !contentEl || !errorEl) return;
+        
+        try {
+            const result = await loanService.getEligibility();
+            
+            if (result.success && result.data) {
+                const eligibility = result.data;
+                
+                // Hide loading, show content
+                loadingEl.style.display = 'none';
+                contentEl.style.display = 'block';
+                errorEl.style.display = 'none';
+                
+                // Update eligibility status
+                const statusEl = document.getElementById('eligibilityStatus');
+                if (eligibility.eligible) {
+                    statusEl.className = 'eligibility-status eligible';
+                    statusEl.innerHTML = '<i class="fas fa-check-circle status-icon"></i><span class="status-text">You are eligible to apply for a loan</span>';
+                    applyBtn.style.display = 'inline-block';
+                } else {
+                    statusEl.className = 'eligibility-status not-eligible';
+                    statusEl.innerHTML = '<i class="fas fa-times-circle status-icon"></i><span class="status-text">Not eligible to apply</span>';
+                    // Check if there's a specific restriction
+                    if (eligibility.restrictions?.hasActiveLoan) {
+                        statusEl.innerHTML = '<i class="fas fa-times-circle status-icon"></i><span class="status-text">You have an active loan to settle first</span>';
+                    }
+                    applyBtn.style.display = 'none';
+                }
+                
+                // Update max loan amount
+                const maxLoanEl = document.getElementById('maxLoanAmount');
+                if (maxLoanEl) {
+                    maxLoanEl.textContent = `Ksh ${eligibility.maxLoan.toLocaleString()}`;
+                }
+                
+                // Update member score
+                const scoreEl = document.getElementById('memberScore');
+                if (scoreEl) {
+                    scoreEl.textContent = eligibility.score;
+                }
+                
+                // Update reasons list
+                const reasonsList = document.getElementById('reasonsList');
+                if (reasonsList && eligibility.reasons) {
+                    reasonsList.innerHTML = eligibility.reasons.map(reason => {
+                        const scoreClass = reason.score >= 0 ? 'score-positive' : 'score-negative';
+                        const scorePrefix = reason.score >= 0 ? '+' : '';
+                        return `
+                            <li>
+                                <span>${reason.description}</span>
+                                <span class="${scoreClass}">${scorePrefix}${reason.score}</span>
+                            </li>
+                        `;
+                    }).join('');
+                }
+                
+                // Update loan progress
+                const progressEl = document.getElementById('loanProgressText');
+                if (progressEl) {
+                    const loanNum = eligibility.loanCount || 0;
+                    let progressText = '';
+                    if (loanNum === 0) {
+                        progressText = 'This will be your first loan';
+                    } else if (loanNum === 1) {
+                        progressText = 'This will be your 2nd loan (After successful repayment)';
+                    } else if (loanNum === 2) {
+                        progressText = 'This will be your 3rd loan (Established borrower)';
+                    } else {
+                        progressText = `You have completed ${loanNum} loans successfully`;
+                    }
+                    progressEl.textContent = progressText;
+                }
+            } else {
+                throw new Error(result.message || 'Failed to load eligibility');
+            }
+        } catch (error) {
+            console.error('Error loading loan eligibility:', error);
+            loadingEl.style.display = 'none';
+            contentEl.style.display = 'none';
+            errorEl.style.display = 'block';
+        }
     }
     
     /**

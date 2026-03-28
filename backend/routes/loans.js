@@ -9,6 +9,8 @@ const { body, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const Loan = require('../models/Loan');
 const Member = require('../models/Member');
+const Contribution = require('../models/Contribution');
+const Fine = require('../models/Fine');
 const { auth, authorize } = require('../middleware/auth');
 
 // Validation middleware
@@ -106,6 +108,77 @@ router.get('/pending', auth, authorize('admin', 'treasurer', 'secretary'), async
         res.status(500).json({
             success: false,
             message: 'Error fetching pending loans'
+        });
+    }
+});
+
+/**
+ * GET /api/loans/eligibility
+ * Get member's loan eligibility based on score system
+ * NOTE: This route must be defined BEFORE /:id to avoid 'eligibility' being treated as an ID
+ */
+router.get('/eligibility', auth, async (req, res) => {
+    try {
+        // Handle admin user case - admin cannot apply for loans
+        if (req.user.id === 'admin') {
+            return res.json({
+                success: true,
+                data: {
+                    eligible: false,
+                    maxLoan: 0,
+                    score: 0,
+                    message: 'Admin accounts are not eligible for loans',
+                    reasons: [],
+                    loanCount: 0,
+                    restrictions: {}
+                }
+            });
+        }
+        
+        // Get member
+        const member = await Member.findOne({ where: { userId: req.user.id } });
+        if (!member) {
+            return res.status(404).json({
+                success: false,
+                message: 'Member profile not found'
+            });
+        }
+        
+        // Calculate eligibility
+        const eligibility = await calculateMemberScore(member.id);
+        
+        // Check restrictions
+        const activeLoan = await Loan.findOne({
+            where: {
+                memberId: member.id,
+                status: { [Op.in]: ['pending', 'active', 'overdue'] }
+            }
+        });
+        
+        const canApply = !activeLoan && eligibility.maxLoan >= 500;
+        
+        res.json({
+            success: true,
+            data: {
+                eligible: canApply,
+                maxLoan: eligibility.maxLoan,
+                score: eligibility.score,
+                reasons: eligibility.reasons,
+                loanCount: eligibility.loanCount,
+                membershipMonths: eligibility.membershipMonths,
+                totalContributions: eligibility.totalContributions,
+                unpaidFines: eligibility.unpaidFines,
+                restrictions: {
+                    hasActiveLoan: !!activeLoan,
+                    message: activeLoan ? 'You have an active loan that needs to be settled first' : null
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error calculating loan eligibility:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error calculating loan eligibility'
         });
     }
 });
@@ -235,6 +308,31 @@ router.post('/apply', auth, [
             });
         }
 
+        // Calculate eligibility to validate requested amount
+        const eligibility = await calculateMemberScore(member.id);
+        
+        // Validate requested amount against eligibility
+        if (parseFloat(principalAmount) > eligibility.maxLoan) {
+            return res.status(400).json({
+                success: false,
+                message: `The requested amount exceeds your maximum loan limit of Ksh ${eligibility.maxLoan.toLocaleString()}`,
+                data: {
+                    maxLoan: eligibility.maxLoan,
+                    requestedAmount: principalAmount,
+                    score: eligibility.score,
+                    reasons: eligibility.reasons
+                }
+            });
+        }
+
+        // Check for unpaid fines - can still apply but warn
+        const unpaidFines = await Fine.sum('amount', {
+            where: { 
+                memberId: member.id,
+                status: 'unpaid'
+            }
+        }) || 0;
+
         // Calculate loan details
         const interestRate = 10;
         const interestAmount = (principalAmount * interestRate) / 100;
@@ -270,7 +368,15 @@ router.post('/apply', auth, [
         res.status(201).json({
             success: true,
             message: 'Loan application submitted successfully',
-            data: loan
+            data: {
+                loan,
+                eligibility: {
+                    maxLoan: eligibility.maxLoan,
+                    score: eligibility.score,
+                    reasons: eligibility.reasons
+                },
+                warnings: unpaidFines > 0 ? [`You have unpaid fines of Ksh ${unpaidFines.toLocaleString()}`] : []
+            }
         });
     } catch (error) {
         console.error('Loan application error:', error);

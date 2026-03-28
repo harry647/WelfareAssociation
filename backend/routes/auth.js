@@ -129,14 +129,17 @@ router.post('/login', [
 ], async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log('=== LOGIN START ===');
+        console.log('Email received:', email);
 
         // Check if this is an admin login (from .env)
         const adminEmail = process.env.ADMIN_EMAIL || 'admin@swa.org';
         const adminPassword = process.env.ADMIN_PASSWORD || 'SWAAdmin2024!';
         
         if (email.toLowerCase() === adminEmail.toLowerCase() && password === adminPassword) {
-            // Admin login - return success without database lookup
+            console.log('Admin login detected');
             const { accessToken, refreshToken } = generateTokens('admin');
+            console.log('Admin tokens generated');
             
             return res.json({
                 success: true,
@@ -154,12 +157,15 @@ router.post('/login', [
         }
 
         // Find user with password using Sequelize
+        console.log('Looking up user in database...');
         const user = await User.findOne({
             where: { email },
-            attributes: ['id', 'email', 'firstName', 'lastName', 'phone', 'role', 'isEmailVerified', 'lastLogin', 'createdAt', 'member']
+            attributes: ['id', 'email', 'firstName', 'lastName', 'phone', 'role', 'isEmailVerified', 'lastLogin', 'createdAt', 'memberId', 'password', 'isActive']
         });
         
+        console.log('User found:', user ? 'YES' : 'NO');
         if (!user) {
+            console.log('User not found, returning 401');
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
@@ -167,8 +173,11 @@ router.post('/login', [
         }
 
         // Check password
+        console.log('Comparing password...');
         const isMatch = await user.comparePassword(password);
+        console.log('Password match:', isMatch);
         if (!isMatch) {
+            console.log('Password mismatch, returning 401');
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
@@ -176,7 +185,9 @@ router.post('/login', [
         }
 
         // Check if active
+        console.log('User isActive:', user.isActive);
         if (!user.isActive) {
+            console.log('User not active, returning 401');
             return res.status(401).json({
                 success: false,
                 message: 'Account is deactivated'
@@ -184,15 +195,21 @@ router.post('/login', [
         }
 
         // Update last login
+        console.log('Updating last login...');
         user.lastLogin = new Date();
         await user.save();
 
         // Get member data
-        const member = await Member.findByPk(user.memberId);
+        console.log('User memberId:', user.memberId);
+        const member = user.memberId ? await Member.findByPk(user.memberId) : null;
+        console.log('Member found:', member ? 'YES' : 'NO');
 
         // Generate tokens
+        console.log('Generating tokens for:', user.id);
         const { accessToken, refreshToken } = generateTokens(user.id);
+        console.log('Tokens generated');
 
+        console.log('=== SENDING SUCCESS RESPONSE ===');
         res.json({
             success: true,
             message: 'Login successful',
@@ -282,6 +299,28 @@ router.post('/refresh', async (req, res) => {
 router.get('/profile', auth, async (req, res) => {
     try {
         const user = req.user;
+        
+        // Handle admin user case - return admin profile data
+        if (user.id === 'admin') {
+            return res.json({
+                success: true,
+                data: {
+                    id: 'admin',
+                    userId: 'admin',
+                    memberNumber: 'ADMIN001',
+                    firstName: 'Admin',
+                    lastName: 'User',
+                    email: process.env.ADMIN_EMAIL || 'admin@swa.org',
+                    phone: process.env.ADMIN_PHONE || '+254700000000',
+                    membershipType: 'staff',
+                    membershipStatus: 'active',
+                    totalContributions: 0,
+                    totalLoans: 0,
+                    totalSavings: 0,
+                    isAdmin: true
+                }
+            });
+        }
         
         // Find member by userId using Sequelize
         const member = await Member.findOne({ where: { userId: user.id } });
