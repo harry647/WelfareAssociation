@@ -26,6 +26,120 @@ const validate = (req, res, next) => {
 };
 
 /**
+ * Calculate member eligibility score for loans
+ * @param {string} memberId - Member ID
+ * @returns {Object} Eligibility details
+ */
+async function calculateMemberScore(memberId) {
+    try {
+        const member = await Member.findByPk(memberId);
+        if (!member) {
+            throw new Error('Member not found');
+        }
+
+        // Get member's financial history
+        const [contributions, fines, existingLoans] = await Promise.all([
+            Contribution.findAll({ where: { memberId } }),
+            Fine.findAll({ where: { memberId, status: 'unpaid' } }),
+            Loan.findAll({ where: { memberId } })
+        ]);
+
+        // Calculate metrics
+        const totalContributions = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
+        const unpaidFines = fines.reduce((sum, f) => sum + parseFloat(f.amount || 0), 0);
+        const membershipMonths = Math.max(1, Math.floor((new Date() - new Date(member.joinDate)) / (1000 * 60 * 60 * 24 * 30)));
+        
+        // Base score calculation
+        let score = 0;
+        let maxLoan = 500; // Base minimum
+        
+        // Contribution history (40% of score)
+        if (totalContributions >= 10000) {
+            score += 40;
+            maxLoan += 5000;
+        } else if (totalContributions >= 5000) {
+            score += 30;
+            maxLoan += 3000;
+        } else if (totalContributions >= 2000) {
+            score += 20;
+            maxLoan += 1500;
+        } else if (totalContributions >= 500) {
+            score += 10;
+            maxLoan += 500;
+        }
+        
+        // Membership duration (30% of score)
+        if (membershipMonths >= 12) {
+            score += 30;
+            maxLoan += 2000;
+        } else if (membershipMonths >= 6) {
+            score += 20;
+            maxLoan += 1000;
+        } else if (membershipMonths >= 3) {
+            score += 10;
+            maxLoan += 500;
+        }
+        
+        // Loan history (20% of score)
+        const completedLoans = existingLoans.filter(loan => loan.status === 'completed').length;
+        const defaultedLoans = existingLoans.filter(loan => loan.status === 'defaulted').length;
+        
+        if (completedLoans >= 3 && defaultedLoans === 0) {
+            score += 20;
+            maxLoan += 3000;
+        } else if (completedLoans >= 1 && defaultedLoans === 0) {
+            score += 15;
+            maxLoan += 2000;
+        } else if (defaultedLoans > 0) {
+            score -= 10;
+            maxLoan = Math.max(500, maxLoan - 1000);
+        }
+        
+        // Unpaid fines (10% of score)
+        if (unpaidFines === 0) {
+            score += 10;
+        } else if (unpaidFines <= 500) {
+            score += 5;
+        } else {
+            score -= 5;
+            maxLoan = Math.max(500, maxLoan - unpaidFines);
+        }
+        
+        // Generate reasons based on score
+        const reasons = [];
+        if (totalContributions < 500) reasons.push('Low contribution history');
+        if (membershipMonths < 3) reasons.push('Recent member');
+        if (unpaidFines > 0) reasons.push('Has unpaid fines');
+        if (defaultedLoans > 0) reasons.push('Previous loan defaults');
+        if (completedLoans === 0) reasons.push('No loan history');
+        
+        // Cap maximum loan
+        maxLoan = Math.min(maxLoan, 50000);
+        
+        return {
+            score: Math.max(0, Math.min(100, score)),
+            maxLoan,
+            reasons,
+            loanCount: existingLoans.length,
+            membershipMonths,
+            totalContributions,
+            unpaidFines
+        };
+    } catch (error) {
+        console.error('Error calculating member score:', error);
+        return {
+            score: 0,
+            maxLoan: 500,
+            reasons: ['Unable to calculate eligibility'],
+            loanCount: 0,
+            membershipMonths: 0,
+            totalContributions: 0,
+            unpaidFines: 0
+        };
+    }
+}
+
+/**
  * GET /api/loans
  * Get all loans (admin) or user's loans
  */

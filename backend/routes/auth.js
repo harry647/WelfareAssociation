@@ -8,6 +8,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const User = require('../models/User');
 const Member = require('../models/Member');
 const Loan = require('../models/Loan');
@@ -355,7 +356,7 @@ router.get('/profile', auth, async (req, res) => {
             Notice.findAll({ 
                 where: { 
                     isPublished: true,
-                    audience: { $in: ['all', 'members', 'students'] }
+                    audience: { [Op.in]: ['all', 'members', 'students'] }
                 },
                 order: [['priority', 'DESC'], ['createdAt', 'DESC']],
                 limit: 5

@@ -230,6 +230,130 @@
       </a>
     </section>
 
+    <!-- Loan History -->
+    <section class="loan-history-section">
+      <h2><i class="fas fa-history"></i> My Loan History</h2>
+      <div class="loan-summary-cards">
+        <div class="summary-card active-loans">
+          <div class="card-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+          <div class="card-content">
+            <h3>Active Loans</h3>
+            <p class="card-value" id="activeLoansCount">0</p>
+            <p class="card-label">Current loans</p>
+          </div>
+        </div>
+        <div class="summary-card total-borrowed">
+          <div class="card-icon">
+            <i class="fas fa-coins"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Borrowed</h3>
+            <p class="card-value" id="totalBorrowed">Ksh 0</p>
+            <p class="card-label">All time</p>
+          </div>
+        </div>
+        <div class="summary-card outstanding-balance">
+          <div class="card-icon">
+            <i class="fas fa-balance-scale"></i>
+          </div>
+          <div class="card-content">
+            <h3>Outstanding Balance</h3>
+            <p class="card-value" id="outstandingBalance">Ksh 0</p>
+            <p class="card-label">Total due</p>
+          </div>
+        </div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Loan Number</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Applied Date</th>
+              <th>Due Date</th>
+              <th>Balance</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="loansTableBody">
+            <!-- Loans will be loaded dynamically from API -->
+          </tbody>
+        </table>
+        <div class="loading-indicator" id="loansLoading">
+          <i class="fas fa-spinner fa-spin"></i> Loading loan history...
+        </div>
+        <div class="no-data" id="loansNoData" style="display: none;">
+          <i class="fas fa-info-circle"></i> No loan history found
+        </div>
+      </div>
+      <a href="../loans/history.html" class="view-all">View All Loan Details</a>
+    </section>
+
+    <!-- Payments History -->
+    <section class="payments-history-section">
+      <h2><i class="fas fa-receipt"></i> My Payment History</h2>
+      <div class="payment-summary-cards">
+        <div class="summary-card total-payments">
+          <div class="card-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Payments</h3>
+            <p class="card-value" id="totalPayments">Ksh 0</p>
+            <p class="card-label">All time</p>
+          </div>
+        </div>
+        <div class="summary-card this-month">
+          <div class="card-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="card-content">
+            <h3>This Month</h3>
+            <p class="card-value" id="thisMonthPayments">Ksh 0</p>
+            <p class="card-label">Payments</p>
+          </div>
+        </div>
+        <div class="summary-card pending-payments">
+          <div class="card-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="card-content">
+            <h3>Pending</h3>
+            <p class="card-value" id="pendingPayments">0</p>
+            <p class="card-label">Payments</p>
+          </div>
+        </div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Payment ID</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsTableBody">
+            <!-- Payments will be loaded dynamically from API -->
+          </tbody>
+        </table>
+        <div class="loading-indicator" id="paymentsLoading">
+          <i class="fas fa-spinner fa-spin"></i> Loading payment history...
+        </div>
+        <div class="no-data" id="paymentsNoData" style="display: none;">
+          <i class="fas fa-info-circle"></i> No payment history found
+        </div>
+      </div>
+      <a href="../payments/history.html" class="view-all">View All Payment Details</a>
+    </section>
+
     <!-- Quick Links -->
     <section class="quick-links-section">
       <h2><i class="fas fa-link"></i> Quick Links</h2>

@@ -469,6 +469,12 @@ class MemberPortal {
         // Load loan eligibility
         this.loadLoanEligibility();
         
+        // Load loan history
+        this.loadLoanHistory();
+        
+        // Load payments history  
+        this.loadPaymentsHistory();
+        
         console.log('Updated service displays with data:', services);
     }
     
@@ -519,22 +525,30 @@ class MemberPortal {
                 // Update member score
                 const scoreEl = document.getElementById('memberScore');
                 if (scoreEl) {
-                    scoreEl.textContent = eligibility.score;
+                    const score = eligibility.score || 0;
+                    scoreEl.textContent = score;
+                    console.log('Score updated:', score, 'Eligibility data:', eligibility);
                 }
                 
                 // Update reasons list
                 const reasonsList = document.getElementById('reasonsList');
                 if (reasonsList && eligibility.reasons) {
-                    reasonsList.innerHTML = eligibility.reasons.map(reason => {
-                        const scoreClass = reason.score >= 0 ? 'score-positive' : 'score-negative';
-                        const scorePrefix = reason.score >= 0 ? '+' : '';
-                        return `
+                    if (eligibility.reasons.length === 0) {
+                        reasonsList.innerHTML = '<li><span>Great! You meet all eligibility criteria</span><span class="score-positive">✓</span></li>';
+                    } else {
+                        reasonsList.innerHTML = eligibility.reasons.map(reason => `
                             <li>
-                                <span>${reason.description}</span>
-                                <span class="${scoreClass}">${scorePrefix}${reason.score}</span>
+                                <span>${reason}</span>
+                                <span class="score-negative">!</span>
                             </li>
-                        `;
-                    }).join('');
+                        `).join('');
+                    }
+                } else {
+                    // Handle case where reasons might be undefined
+                    const reasonsList = document.getElementById('reasonsList');
+                    if (reasonsList) {
+                        reasonsList.innerHTML = '<li><span>Eligibility information not available</span><span class="score-negative">?</span></li>';
+                    }
                 }
                 
                 // Update loan progress
@@ -708,6 +722,245 @@ class MemberPortal {
     handleLogout() {
         if (confirm('Are you sure you want to logout?')) {
             authService.logout();
+        }
+    }
+
+    /**
+     * Load loan history
+     */
+    async loadLoanHistory() {
+        const loadingEl = document.getElementById('loansLoading');
+        const tbody = document.getElementById('loansTableBody');
+        const noDataEl = document.getElementById('loansNoData');
+        
+        if (!loadingEl || !tbody) return;
+
+        try {
+            loadingEl.style.display = 'block';
+            tbody.innerHTML = '';
+            if (noDataEl) noDataEl.style.display = 'none';
+
+            const result = await loanService.getLoans();
+            
+            if (result.success && result.data) {
+                const loans = result.data;
+                
+                if (loans.length === 0) {
+                    if (noDataEl) noDataEl.style.display = 'block';
+                    this.updateLoanSummary([]);
+                } else {
+                    this.populateLoansTable(loans);
+                    this.updateLoanSummary(loans);
+                }
+            } else {
+                throw new Error(result.message || 'Failed to load loan history');
+            }
+        } catch (error) {
+            console.error('Error loading loan history:', error);
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #dc2626;">Error loading loan history</td></tr>';
+        } finally {
+            loadingEl.style.display = 'none';
+        }
+    }
+
+    /**
+     * Populate loans table
+     */
+    populateLoansTable(loans) {
+        const tbody = document.getElementById('loansTableBody');
+        if (!tbody) return;
+
+        tbody.innerHTML = loans.slice(0, 5).map(loan => `
+            <tr>
+                <td><strong>${loan.loanNumber || loan.loan_number || 'N/A'}</strong></td>
+                <td>Ksh ${parseFloat(loan.amount || loan.principalAmount || 0).toLocaleString()}</td>
+                <td><span class="status ${this.getLoanStatusClass(loan.status)}">
+                    ${this.formatLoanStatus(loan.status)}
+                </span></td>
+                <td>${new Date(loan.applicationDate || loan.createdAt).toLocaleDateString()}</td>
+                <td>${loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : 'N/A'}</td>
+                <td>Ksh ${parseFloat(loan.remainingBalance || loan.balance || 0).toLocaleString()}</td>
+                <td>
+                    <button onclick="window.location.href='../loans/details.html?id=${loan.id}'" class="btn-small">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    /**
+     * Update loan summary cards
+     */
+    updateLoanSummary(loans) {
+        const activeLoans = loans.filter(loan => ['pending', 'active', 'overdue'].includes(loan.status));
+        const totalBorrowed = loans.reduce((sum, loan) => sum + parseFloat(loan.amount || loan.principalAmount || 0), 0);
+        const outstandingBalance = activeLoans.reduce((sum, loan) => sum + parseFloat(loan.remainingBalance || loan.balance || 0), 0);
+
+        this.updateElement('activeLoansCount', activeLoans.length);
+        this.updateElement('totalBorrowed', `Ksh ${totalBorrowed.toLocaleString()}`);
+        this.updateElement('outstandingBalance', `Ksh ${outstandingBalance.toLocaleString()}`);
+    }
+
+    /**
+     * Load payments history
+     */
+    async loadPaymentsHistory() {
+        const loadingEl = document.getElementById('paymentsLoading');
+        const tbody = document.getElementById('paymentsTableBody');
+        const noDataEl = document.getElementById('paymentsNoData');
+        
+        if (!loadingEl || !tbody) return;
+
+        try {
+            loadingEl.style.display = 'block';
+            tbody.innerHTML = '';
+            if (noDataEl) noDataEl.style.display = 'none';
+
+            const result = await paymentService.getPayments();
+            
+            if (result.success && result.data) {
+                const payments = result.data;
+                
+                if (payments.length === 0) {
+                    if (noDataEl) noDataEl.style.display = 'block';
+                    this.updatePaymentsSummary([]);
+                } else {
+                    this.populatePaymentsTable(payments);
+                    this.updatePaymentsSummary(payments);
+                }
+            } else {
+                throw new Error(result.message || 'Failed to load payment history');
+            }
+        } catch (error) {
+            console.error('Error loading payment history:', error);
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #dc2626;">Error loading payment history</td></tr>';
+        } finally {
+            loadingEl.style.display = 'none';
+        }
+    }
+
+    /**
+     * Populate payments table
+     */
+    populatePaymentsTable(payments) {
+        const tbody = document.getElementById('paymentsTableBody');
+        if (!tbody) return;
+
+        tbody.innerHTML = payments.slice(0, 5).map(payment => `
+            <tr>
+                <td><strong>${payment.paymentNumber || payment.payment_id || payment.id}</strong></td>
+                <td>${this.formatPaymentType(payment.type)}</td>
+                <td>Ksh ${parseFloat(payment.amount || 0).toLocaleString()}</td>
+                <td>${this.formatPaymentMethod(payment.method)}</td>
+                <td>${new Date(payment.paymentDate || payment.date || payment.createdAt).toLocaleDateString()}</td>
+                <td><span class="status ${this.getPaymentStatusClass(payment.status)}">
+                    ${this.formatPaymentStatus(payment.status)}
+                </span></td>
+                <td>${payment.reference || payment.transactionId || 'N/A'}</td>
+            </tr>
+        `).join('');
+    }
+
+    /**
+     * Update payments summary cards
+     */
+    updatePaymentsSummary(payments) {
+        const totalPayments = payments.reduce((sum, payment) => sum + parseFloat(payment.amount || 0), 0);
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const thisMonthPayments = payments
+            .filter(payment => {
+                const paymentDate = new Date(payment.paymentDate || payment.date || payment.createdAt);
+                return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, payment) => sum + parseFloat(payment.amount || 0), 0);
+        const pendingPayments = payments.filter(payment => payment.status === 'pending').length;
+
+        this.updateElement('totalPayments', `Ksh ${totalPayments.toLocaleString()}`);
+        this.updateElement('thisMonthPayments', `Ksh ${thisMonthPayments.toLocaleString()}`);
+        this.updateElement('pendingPayments', pendingPayments);
+    }
+
+    /**
+     * Helper methods for formatting
+     */
+    getLoanStatusClass(status) {
+        const statusMap = {
+            'completed': 'received',
+            'active': 'pending',
+            'pending': 'pending',
+            'overdue': 'unpaid',
+            'rejected': 'unpaid',
+            'defaulted': 'unpaid'
+        };
+        return statusMap[status] || 'pending';
+    }
+
+    formatLoanStatus(status) {
+        const statusMap = {
+            'completed': '✓ Completed',
+            'active': '🔄 Active',
+            'pending': '⏳ Pending',
+            'overdue': '⚠ Overdue',
+            'rejected': '✗ Rejected',
+            'defaulted': '⚠ Defaulted'
+        };
+        return statusMap[status] || status;
+    }
+
+    getPaymentStatusClass(status) {
+        const statusMap = {
+            'completed': 'received',
+            'verified': 'received',
+            'success': 'received',
+            'pending': 'pending',
+            'processing': 'pending',
+            'failed': 'unpaid',
+            'cancelled': 'unpaid'
+        };
+        return statusMap[status] || 'pending';
+    }
+
+    formatPaymentStatus(status) {
+        const statusMap = {
+            'completed': '✓ Completed',
+            'verified': '✓ Verified',
+            'success': '✓ Success',
+            'pending': '⏳ Pending',
+            'processing': '🔄 Processing',
+            'failed': '✗ Failed',
+            'cancelled': '✗ Cancelled'
+        };
+        return statusMap[status] || status;
+    }
+
+    formatPaymentType(type) {
+        const typeMap = {
+            'contribution': 'Contribution',
+            'loan_payment': 'Loan Payment',
+            'fine_payment': 'Fine Payment',
+            'membership_fee': 'Membership Fee',
+            'other': 'Other'
+        };
+        return typeMap[type] || type;
+    }
+
+    formatPaymentMethod(method) {
+        const methodMap = {
+            'mpesa': 'M-Pesa',
+            'bank_transfer': 'Bank Transfer',
+            'cash': 'Cash',
+            'cheque': 'Cheque',
+            'card': 'Card'
+        };
+        return methodMap[method] || method;
+    }
+
+    updateElement(id, value) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
         }
     }
 }

@@ -125,7 +125,8 @@ class LoginPage {
                 localStorage.setItem('swa_refresh_token', result.refreshToken);
             }
             
-            // Store user data
+            // Store user data - clear old member data first
+            localStorage.removeItem('swa_member_data');  // Clear old cached data
             localStorage.setItem('swa_user', JSON.stringify(result.user));
 
             // Show success and redirect
