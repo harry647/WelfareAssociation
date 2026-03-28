@@ -41,3 +41,282 @@
     </button>
   </div>
 </header>
+
+<style>
+/* ===== Header Styles ===== */
+.admin-header {
+  position: fixed;
+  top: 0;
+  left: 240px;
+  right: 0;
+  z-index: 999;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  padding: 0 28px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+}
+
+/* Header Left */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sidebar-toggle {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.sidebar-toggle i {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(45, 124, 91, 0.3) !important;
+}
+
+.sidebar-toggle:hover i {
+  color: #4ade80;
+}
+
+.header-title h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f8fafc !important;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.header-title p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+/* Header Right */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Notification Bell */
+.notification-bell {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.notification-bell i {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.notification-bell:hover {
+  background: rgba(45, 124, 91, 0.3) !important;
+}
+
+.notification-bell:hover i {
+  color: #4ade80;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Quick Actions Button */
+.header-action-btn {
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: linear-gradient(135deg, rgba(45, 124, 91, 0.2) 0%, rgba(30, 92, 63, 0.1) 100%);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.header-action-btn i {
+  font-size: 16px;
+  color: #4ade80;
+}
+
+.header-action-btn span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+.header-action-btn:hover {
+  background: linear-gradient(135deg, #2d7c5b 0%, #1e5c3f 100%);
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(45, 124, 91, 0.4);
+}
+
+.header-action-btn:hover i,
+.header-action-btn:hover span {
+  color: white;
+}
+
+/* User Profile */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.user-profile:hover {
+  background: rgba(45, 124, 91, 0.2) !important;
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc !important;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.user-profile > i {
+  font-size: 11px;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.user-profile:hover > i {
+  color: #4ade80;
+  transform: translateY(2px);
+}
+
+/* Logout Button */
+.logout-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.logout-btn i {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.logout-btn:hover i {
+  color: #f87171;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .admin-header {
+    left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 0 16px;
+    height: 64px;
+  }
+  
+  .header-title h1 {
+    font-size: 18px;
+  }
+  
+  .header-title p {
+    display: none;
+  }
+  
+  .header-action-btn span {
+    display: none;
+  }
+  
+  .header-action-btn {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  
+  .user-info {
+    display: none;
+  }
+  
+  .user-profile {
+    padding: 8px;
+  }
+}
+</style>

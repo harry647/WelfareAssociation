@@ -16,41 +16,310 @@
 
   <div class="sidebar-nav">
     <div class="sidebar-section-label">Main</div>
-    <a href="../../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-    <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-    <a href="../shared/members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
-    <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
-    <a href="../../../pages/contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
-    <a href="../shared/debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
-    <a href="../../../pages/payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
-    <a href="../../../pages/loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
-    <a href="../../../pages/reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
-    <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+    <a href="/index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="/pages/dashboard/admin/admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="/pages/dashboard/shared/members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
+    <a href="/pages/dashboard/admin/withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
+    <a href="/pages/contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
+    <a href="/pages/dashboard/shared/debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
+    <a href="/pages/payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
+    <a href="/pages/loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+    <a href="/pages/reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
+    <a href="/pages/dashboard/admin/settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
 
     <hr class="sidebar-divider">
 
     <div class="sidebar-section-label">More</div>
-    <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
-    <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
-    <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
-    <a href="issue-fine.html" class="nav-link"><i class="fas fa-gavel"></i> Issue Fine</a>
-    <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
-    <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
-    <a href="add-officer.html" class="nav-link"><i class="fas fa-user-plus"></i> Add Officer</a>
-    <a href="edit-member.html" class="nav-link"><i class="fas fa-user-edit"></i> Edit Member</a>
-    <a href="member-details.html" class="nav-link"><i class="fas fa-user"></i> Member Details</a>
-    <a href="send-announcement.html" class="nav-link"><i class="fas fa-bullhorn"></i> Send Announcement</a>
-    <a href="send-sms.html" class="nav-link"><i class="fas fa-sms"></i> Send SMS</a>
-    <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
-    <a href="upload-document.html" class="nav-link"><i class="fas fa-upload"></i> Upload Document</a>
-    <a href="edit-document.html" class="nav-link"><i class="fas fa-edit"></i> Edit Document</a>
-    <a href="archive-docs.html" class="nav-link"><i class="fas fa-archive"></i> Archive Documents</a>
-    <a href="create-folder.html" class="nav-link"><i class="fas fa-folder-plus"></i> Create Folder</a>
-    <a href="create-notice.html" class="nav-link"><i class="fas fa-sticky-note"></i> Create Notice</a>
-    <a href="../shared/notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
-    <a href="#" class="nav-link" data-section="messages"><i class="fas fa-envelope"></i> Messages <span class="badge" id="messages-badge" style="display:none;">0</span></a>
-    <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
-    <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
-    <a href="#" class="nav-link" data-section="pages"><i class="fas fa-file-alt"></i> Pages</a>
+    
+    <!-- Members Dropdown -->
+    <div class="sidebar-dropdown">
+      <button class="nav-link dropdown-toggle"><i class="fas fa-users"></i> Members <span class="dropdown-arrow"><i class="fas fa-chevron-right"></i></span></button>
+      <div class="dropdown-menu">
+        <a href="/pages/dashboard/admin/registered-members.html" class="dropdown-item"><i class="fas fa-user-plus"></i> Registered Members</a>
+        <a href="/pages/dashboard/admin/active-members.html" class="dropdown-item"><i class="fas fa-user-check"></i> Active Members</a>
+        <a href="/pages/dashboard/admin/edit-member.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Edit Member</a>
+        <a href="/pages/dashboard/admin/member-details.html" class="dropdown-item"><i class="fas fa-user"></i> Member Details</a>
+        <a href="/pages/dashboard/admin/members-savings.html" class="dropdown-item"><i class="fas fa-piggy-bank"></i> Members Savings</a>
+      </div>
+    </div>
+    
+    <!-- Fines Dropdown -->
+    <div class="sidebar-dropdown">
+      <button class="nav-link dropdown-toggle"><i class="fas fa-file-invoice-dollar"></i> Fines <span class="dropdown-arrow"><i class="fas fa-chevron-right"></i></span></button>
+      <div class="dropdown-menu">
+        <a href="/pages/dashboard/admin/fines-collection.html" class="dropdown-item"><i class="fas fa-list"></i> Fines Collection</a>
+        <a href="/pages/dashboard/admin/issue-fine.html" class="dropdown-item"><i class="fas fa-gavel"></i> Issue Fine</a>
+      </div>
+    </div>
+    
+    <!-- Documents Dropdown -->
+    <div class="sidebar-dropdown">
+      <button class="nav-link dropdown-toggle"><i class="fas fa-folder-open"></i> Documents <span class="dropdown-arrow"><i class="fas fa-chevron-right"></i></span></button>
+      <div class="dropdown-menu">
+        <a href="/pages/dashboard/admin/upload-document.html" class="dropdown-item"><i class="fas fa-upload"></i> Upload Document</a>
+        <a href="/pages/dashboard/admin/edit-document.html" class="dropdown-item"><i class="fas fa-edit"></i> Edit Document</a>
+        <a href="/pages/dashboard/admin/archive-docs.html" class="dropdown-item"><i class="fas fa-archive"></i> Archive Documents</a>
+        <a href="/pages/dashboard/admin/create-folder.html" class="dropdown-item"><i class="fas fa-folder-plus"></i> Create Folder</a>
+      </div>
+    </div>
+    
+    <!-- Communications Dropdown -->
+    <div class="sidebar-dropdown">
+      <button class="nav-link dropdown-toggle"><i class="fas fa-bullhorn"></i> Communications <span class="dropdown-arrow"><i class="fas fa-chevron-right"></i></span></button>
+      <div class="dropdown-menu">
+        <a href="/pages/dashboard/admin/send-announcement.html" class="dropdown-item"><i class="fas fa-bullhorn"></i> Send Announcement</a>
+        <a href="/pages/dashboard/admin/send-sms.html" class="dropdown-item"><i class="fas fa-sms"></i> Send SMS</a>
+        <a href="/pages/dashboard/admin/create-notice.html" class="dropdown-item"><i class="fas fa-sticky-note"></i> Create Notice</a>
+        <a href="/pages/dashboard/shared/notices.html" class="dropdown-item"><i class="fas fa-list"></i> View Notices</a>
+      </div>
+    </div>
+    
+    <!-- Officers Dropdown -->
+    <div class="sidebar-dropdown">
+      <button class="nav-link dropdown-toggle"><i class="fas fa-user-tie"></i> Officers <span class="dropdown-arrow"><i class="fas fa-chevron-right"></i></span></button>
+      <div class="dropdown-menu">
+        <a href="/pages/dashboard/admin/add-officer.html" class="dropdown-item"><i class="fas fa-user-plus"></i> Add Officer</a>
+        <a href="/pages/dashboard/admin/executive-team.html" class="dropdown-item"><i class="fas fa-users-cog"></i> Executive Team</a>
+      </div>
+    </div>
+    
+    <!-- System Dropdown -->
+    <div class="sidebar-dropdown">
+      <button class="nav-link dropdown-toggle"><i class="fas fa-cogs"></i> System <span class="dropdown-arrow"><i class="fas fa-chevron-right"></i></span></button>
+      <div class="dropdown-menu">
+        <a href="/pages/dashboard/admin/documentation.html" class="dropdown-item"><i class="fas fa-book"></i> Documentation</a>
+        <a href="/pages/dashboard/admin/analytics.html" class="dropdown-item"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="/pages/dashboard/admin/security-settings.html" class="dropdown-item"><i class="fas fa-shield-alt"></i> Security Settings</a>
+        <a href="#" class="dropdown-item" data-section="pages"><i class="fas fa-file-alt"></i> Pages</a>
+        <a href="#" class="dropdown-item" data-section="messages"><i class="fas fa-envelope"></i> Messages <span class="badge" id="messages-badge" style="display:none;">0</span></a>
+      </div>
+    </div>
   </div>
 </div>
+
+<style>
+/* ===== Sidebar Base Styles ===== */
+.sidebar {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  color: #e2e8f0;
+  border-right: none;
+}
+
+.sidebar-brand {
+  background: linear-gradient(135deg, rgba(45, 124, 91, 0.15) 0%, rgba(30, 92, 63, 0.1) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-brand .brand-icon {
+  background: linear-gradient(135deg, #2d7c5b 0%, #1e5c3f 100%) !important;
+  box-shadow: 0 4px 12px rgba(45, 124, 91, 0.4);
+}
+
+.sidebar-brand h2 {
+  color: #f8fafc !important;
+  font-weight: 700;
+}
+
+.sidebar-brand p {
+  color: #94a3b8 !important;
+}
+
+.sidebar-section-label {
+  color: #64748b !important;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 11px;
+  padding: 20px 20px 8px;
+}
+
+/* ===== Nav Links ===== */
+.sidebar a.nav-link {
+  color: #cbd5e1 !important;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin: 4px 10px;
+  transition: all 0.25s ease;
+}
+
+.sidebar a.nav-link i {
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+.sidebar a.nav-link:hover {
+  color: #f1f5f9 !important;
+  background: rgba(45, 124, 91, 0.25) !important;
+}
+
+.sidebar a.nav-link:hover i {
+  color: #4ade80;
+}
+
+.sidebar a.nav-link.active {
+  background: linear-gradient(135deg, rgba(45, 124, 91, 0.4) 0%, rgba(30, 92, 63, 0.3) 100%) !important;
+  color: #4ade80 !important;
+  box-shadow: 0 4px 12px rgba(45, 124, 91, 0.3);
+}
+
+.sidebar a.nav-link.active i {
+  color: #4ade80 !important;
+}
+
+.sidebar a.nav-link.active::before {
+  display: none;
+}
+
+.sidebar-divider {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  margin: 15px 20px !important;
+}
+
+/* ===== Dropdown Styles ===== */
+.sidebar-dropdown {
+  position: relative;
+}
+
+.sidebar-dropdown .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% - 20px);
+  margin: 4px 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #cbd5e1 !important;
+  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.sidebar-dropdown .dropdown-toggle i:first-child {
+  color: #94a3b8;
+  font-size: 15px;
+  width: 20px;
+  margin-right: 12px;
+}
+
+.sidebar-dropdown .dropdown-toggle .dropdown-arrow {
+  color: #64748b;
+  font-size: 11px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-dropdown:hover .dropdown-toggle,
+.sidebar-dropdown .dropdown-toggle.active {
+  color: #f1f5f9 !important;
+  background: rgba(45, 124, 91, 0.25) !important;
+}
+
+.sidebar-dropdown:hover .dropdown-toggle i:first-child,
+.sidebar-dropdown .dropdown-toggle.active i:first-child {
+  color: #4ade80;
+}
+
+.sidebar-dropdown:hover .dropdown-arrow,
+.sidebar-dropdown .dropdown-toggle.active .dropdown-arrow {
+  color: #4ade80;
+  transform: rotate(90deg);
+}
+
+/* Dropdown Menu */
+.sidebar-dropdown .dropdown-menu {
+  display: none;
+  padding: 8px 0;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 10px;
+  margin: 4px 20px 8px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-dropdown:hover .dropdown-menu,
+.sidebar-dropdown .dropdown-menu.show {
+  display: block;
+}
+
+.sidebar-dropdown .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  font-size: 13px;
+  color: #94a3b8 !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin: 2px 8px;
+}
+
+.sidebar-dropdown .dropdown-item i {
+  color: #64748b;
+  font-size: 12px;
+  width: 16px;
+}
+
+.sidebar-dropdown .dropdown-item:hover {
+  color: #f1f5f9 !important;
+  background: rgba(45, 124, 91, 0.2) !important;
+}
+
+.sidebar-dropdown .dropdown-item:hover i {
+  color: #4ade80;
+}
+
+/* Active dropdown item */
+.sidebar-dropdown .dropdown-item.active {
+  color: #4ade80 !important;
+  background: rgba(45, 124, 91, 0.25) !important;
+}
+
+.sidebar-dropdown .dropdown-item.active i {
+  color: #4ade80 !important;
+}
+
+/* Badge */
+.sidebar .badge {
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(45, 124, 91, 0.4);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 124, 91, 0.6);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+}
+</style>

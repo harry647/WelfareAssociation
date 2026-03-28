@@ -23,7 +23,7 @@
     </div>
 
     <!-- Profile Link -->
-    <a href="../../../auth/profile.html" class="profile-link" title="View Profile">
+    <a href="/pages/auth/profile.html" class="profile-link" title="View Profile">
       <i class="fas fa-user-circle"></i>
     </a>
 
@@ -40,3 +40,243 @@
   <span id="fineAlertText">You have unpaid fines of Ksh 0</span>
   <a href="#fines-section" class="alert-link">View Details</a>
 </div>
+
+<style>
+/* ===== Member Header Styles ===== */
+.member-header {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.member-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.back-btn i {
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+.back-btn:hover {
+  background: rgba(45, 124, 91, 0.3) !important;
+}
+
+.back-btn:hover i {
+  color: #4ade80;
+}
+
+.member-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+}
+
+.member-header-left > div h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #f8fafc !important;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.member-header-left > div h1 i {
+  color: #4ade80;
+  font-size: 20px;
+}
+
+.member-header-left > div p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 6px 0 0 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-bell {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.notification-bell i {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.notification-bell:hover {
+  background: rgba(45, 124, 91, 0.3) !important;
+}
+
+.notification-bell:hover i {
+  color: #4ade80;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+.profile-link {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.profile-link i {
+  font-size: 20px;
+  color: #94a3b8;
+}
+
+.profile-link:hover {
+  background: rgba(45, 124, 91, 0.3) !important;
+}
+
+.profile-link:hover i {
+  color: #4ade80;
+}
+
+.logout-btn {
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.logout-btn i {
+  font-size: 16px;
+  color: #f87171;
+}
+
+.logout-btn span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f87171;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: transparent;
+}
+
+/* Fine Alert */
+.alert-warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  border-radius: 10px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 32px;
+}
+
+.alert-warning i {
+  color: #f59e0b;
+  font-size: 18px;
+}
+
+.alert-warning span {
+  color: #fef3c7;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.alert-warning .alert-link {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.alert-warning .alert-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .member-header {
+    padding: 16px;
+  }
+  
+  .member-header-left > div h1 {
+    font-size: 18px;
+  }
+  
+  .member-header-left > div p {
+    display: none;
+  }
+  
+  .logout-btn span {
+    display: none;
+  }
+  
+  .logout-btn {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+</style>

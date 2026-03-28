@@ -14,19 +14,126 @@
     </div>
   </div>
 
-  <div class="sidebar-section-label">Main</div>
-  <a href="../../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-  <a href="../member/member-portal.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-  <a href="../../../pages/payments/make-payment.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Make Payment</a>
-  <a href="../../../pages/loans/apply.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Apply for Loan</a>
-  <a href="../../../pages/loans/history.html" class="nav-link"><i class="fas fa-file-contract"></i> My Loans</a>
-  <a href="../shared/savings-goal.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Savings Goal</a>
+  <div class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="/index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+    <a href="/pages/dashboard/member/member-portal.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="/pages/payments/make-payment.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Make Payment</a>
+    <a href="/pages/loans/apply.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Apply for Loan</a>
+    <a href="/pages/loans/history.html" class="nav-link"><i class="fas fa-file-contract"></i> My Loans</a>
+    <a href="/pages/dashboard/shared/savings-goal.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Savings Goal</a>
 
-  <hr class="sidebar-divider">
+    <hr class="sidebar-divider">
 
-  <div class="sidebar-section-label">Account</div>
-  <a href="../member/member-contribution-history.html" class="nav-link"><i class="fas fa-chart-line"></i> Contribution History</a>
-  <a href="../member/member-payments-history.html" class="nav-link"><i class="fas fa-receipt"></i> Payment History</a>
-  <a href="../member/member-loans-history.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Loan History</a>
-  <a href="../member/student-portal.html" class="nav-link"><i class="fas fa-graduation-cap"></i> Student Portal</a>
+    <div class="sidebar-section-label">Account</div>
+    <a href="/pages/dashboard/member/member-contribution-history.html" class="nav-link"><i class="fas fa-chart-line"></i> Contribution History</a>
+    <a href="/pages/dashboard/member/member-payments-history.html" class="nav-link"><i class="fas fa-receipt"></i> Payment History</a>
+    <a href="/pages/dashboard/member/member-loans-history.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Loan History</a>
+    <a href="/pages/dashboard/member/student-portal.html" class="nav-link"><i class="fas fa-graduation-cap"></i> Student Portal</a>
+  </div>
 </div>
+
+<style>
+/* ===== Member Sidebar Styles ===== */
+.sidebar {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  color: #e2e8f0;
+  border-right: none;
+}
+
+.sidebar-brand {
+  background: linear-gradient(135deg, rgba(45, 124, 91, 0.15) 0%, rgba(30, 92, 63, 0.1) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-brand .brand-icon {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+}
+
+.sidebar-brand .brand-icon i {
+  color: #0f172a !important;
+}
+
+.sidebar-brand h2 {
+  color: #f8fafc !important;
+  font-weight: 700;
+}
+
+.sidebar-brand p {
+  color: #94a3b8 !important;
+}
+
+.sidebar-section-label {
+  color: #64748b !important;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 11px;
+  padding: 20px 20px 8px;
+}
+
+.sidebar a.nav-link {
+  color: #cbd5e1 !important;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin: 4px 10px;
+  transition: all 0.25s ease;
+}
+
+.sidebar a.nav-link i {
+  color: #94a3b8;
+  font-size: 15px;
+  width: 20px;
+}
+
+.sidebar a.nav-link:hover {
+  color: #f1f5f9 !important;
+  background: rgba(45, 124, 91, 0.25) !important;
+}
+
+.sidebar a.nav-link:hover i {
+  color: #4ade80;
+}
+
+.sidebar a.nav-link.active {
+  background: linear-gradient(135deg, rgba(45, 124, 91, 0.4) 0%, rgba(30, 92, 63, 0.3) 100%) !important;
+  color: #4ade80 !important;
+  box-shadow: 0 4px 12px rgba(45, 124, 91, 0.3);
+}
+
+.sidebar a.nav-link.active i {
+  color: #4ade80 !important;
+}
+
+.sidebar-divider {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  margin: 15px 20px !important;
+}
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(45, 124, 91, 0.4);
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+}
+</style>
