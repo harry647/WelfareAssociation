@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="SWA Member Portal - Manage contributions, loans, and member services">
   <title>Member Portal - Student Welfare Association | JOOUST</title>
-  <link rel="stylesheet" href="../../src/styles/main.css">
-  <link rel="stylesheet" href="../../src/styles/original/header.css">
-  <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
-  <link rel="stylesheet" href="../../src/styles/original/footer.css">
-  <link rel="stylesheet" href="../../src/styles/pages/dashboard/member-portal.css">
+  <link rel="stylesheet" href="../../../src/styles/main.css">
+  <link rel="stylesheet" href="../../../src/styles/original/header.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/shared/navigation.css">
+  <link rel="stylesheet" href="../../../src/styles/original/footer.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/member-portal.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
@@ -24,7 +24,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-portal.html');
+        window.location.replace('../../../auth/login-page.html?redirect=../dashboard/member-portal.html');
         return;
       }
       document.documentElement.style.visibility = 'visible';
@@ -33,7 +33,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-portal.html');
+        window.location.replace('../../../auth/login-page.html?redirect=../dashboard/member-portal.html');
       }
     });
   </script>
@@ -41,25 +41,12 @@
 </head>
 <body>
 
-  <div w3-include-html="../shared/header.html"></div>
+  <div w3-include-html="../../shared/header.html"></div>
 
-  <!-- Member Top Bar -->
-  <header class="member-header">
-    <div class="member-header-left">
-      <div class="member-avatar">M</div>
-      <div>
-        <h1 id="welcome-message"><i class="fas fa-user-circle"></i> Welcome, Member</h1>
-        <p>Manage your SWA account, contributions, and loans</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <button type="button" class="logout-btn">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
-    </div>
-  </header>
+  <!-- Member Top Bar Component -->
+  <div w3-include-html="../components/header-member.html"></div>
 
-  <!-- Fine Alert -->
+  <!-- Fine Alert (moved to component) -->
   <div id="fineAlert" class="alert alert-warning" style="display: none;">
     <i class="fas fa-exclamation-triangle"></i>
     <span id="fineAlertText">You have unpaid fines of Ksh 0</span>
@@ -196,14 +183,14 @@
               <i class="fas fa-info-circle"></i> No contribution history found
             </div>
           </div>
-          <a href="member-contribution-history.html" class="view-all">View All Contribution Details →</a>
+          <a href="../member/member-contribution-history.html" class="view-all">View All Contribution Details →</a>
         </section>
 
         <!-- Make Contribution -->
         <section class="action-card">
           <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> Make Contribution</h2>
           <p>Make your monthly contribution easily through our secure payment system.</p>
-          <a href="../payments/make-payment.html" class="btn submit-btn">
+          <a href="../../../pages/payments/make-payment.html" class="btn submit-btn">
             <i class="fas fa-credit-card"></i> Go to Payment Page
           </a>
         </section>
@@ -212,7 +199,7 @@
         <section class="pay-fines-section" id="payFinesSection" style="display: none;">
           <h2 class="section-title" style="color: #f87171;"><i class="fas fa-credit-card"></i> Pay Outstanding Fines</h2>
           <p>You have unpaid fines. Click below to make payment.</p>
-          <a href="../payments/make-payment.html?category=fine" class="btn submit-btn" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">
+          <a href="../../../pages/payments/make-payment.html?category=fine" class="btn submit-btn" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">
             <i class="fas fa-money-bill-wave"></i> Pay Fines Now
           </a>
         </section>
@@ -252,7 +239,7 @@
               <p><i class="fas fa-exclamation-triangle"></i> Unable to calculate eligibility. Please try again later.</p>
             </div>
           </div>
-          <a href="../loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
+          <a href="../../../pages/loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
             <i class="fas fa-paper-plane"></i> Apply for Loan
           </a>
         </section>
@@ -308,7 +295,7 @@
               <i class="fas fa-info-circle"></i> No loan history found
             </div>
           </div>
-          <a href="member-loans-history.html" class="view-all">View All Loan Details →</a>
+          <a href="../member/member-loans-history.html" class="view-all">View All Loan Details →</a>
         </section>
 
         <!-- Payment History -->
@@ -362,7 +349,7 @@
               <i class="fas fa-info-circle"></i> No payment history found
             </div>
           </div>
-          <a href="member-payments-history.html" class="view-all">View All Payment Details →</a>
+          <a href="../member/member-payments-history.html" class="view-all">View All Payment Details →</a>
         </section>
 
       </div><!-- /portal-grid -->
@@ -371,12 +358,12 @@
       <section class="quick-links-section">
         <h2 class="section-title"><i class="fas fa-link"></i> Quick Links</h2>
         <div class="quick-links">
-          <a href="../public/policies.html" class="quick-link"><i class="fas fa-file-alt"></i> View Policies</a>
-          <a href="../public/events.html" class="quick-link"><i class="fas fa-calendar-alt"></i> Upcoming Events</a>
-          <a href="../public/news.html" class="quick-link"><i class="fas fa-newspaper"></i> Latest News</a>
-          <a href="../public/contact-information.html" class="quick-link"><i class="fas fa-envelope"></i> Contact Support</a>
-          <a href="../public/our-team.html" class="quick-link"><i class="fas fa-users"></i> Executive Team</a>
-          <a href="../public/faqs.html" class="quick-link"><i class="fas fa-question-circle"></i> FAQs</a>
+          <a href="../../../pages/public/policies.html" class="quick-link"><i class="fas fa-file-alt"></i> View Policies</a>
+          <a href="../../../pages/public/events.html" class="quick-link"><i class="fas fa-calendar-alt"></i> Upcoming Events</a>
+          <a href="../../../pages/public/news.html" class="quick-link"><i class="fas fa-newspaper"></i> Latest News</a>
+          <a href="../../../pages/public/contact-information.html" class="quick-link"><i class="fas fa-envelope"></i> Contact Support</a>
+          <a href="../../../pages/public/our-team.html" class="quick-link"><i class="fas fa-users"></i> Executive Team</a>
+          <a href="../../../pages/public/faqs.html" class="quick-link"><i class="fas fa-question-circle"></i> FAQs</a>
         </div>
       </section>
 
@@ -391,7 +378,7 @@
           <p><strong>Member Since:</strong> <span id="profile-member-since">Loading...</span></p>
           <p><strong>Status:</strong> <span id="profile-status" class="status active">Active</span></p>
         </div>
-        <a href="../auth/profile.html" class="btn">
+        <a href="../../pages/auth/profile.html" class="btn">
           <i class="fas fa-edit"></i> Edit Profile
         </a>
       </section>
@@ -407,12 +394,12 @@
 
   </div><!-- /page-body -->
 
-  <div w3-include-html="../shared/footer.html"></div>
+  <div w3-include-html="../components/footer-member.html"></div>
 
   <script>w3.includeHTML();</script>
 
   <script type="module">
-    import { fineService } from '../../src/services/fine-service.js';
+    import { fineService } from '../../../src/services/fine-service.js';
     window.fineService = fineService;
 
     const profileKey = 'swa_member_profile';
@@ -499,7 +486,7 @@
               </span>
             </td>
             <td>
-              ${fine.status !== 'paid' ? `<a href="../payments/make-payment.html?category=fine&fineId=${fine.id}" class="btn" style="padding:5px 10px;font-size:12px;"><i class="fas fa-credit-card"></i> Pay</a>` : '<span style="color:var(--text3);">—</span>'}
+              ${fine.status !== 'paid' ? `<a href="../../../pages/payments/make-payment.html?category=fine&fineId=${fine.id}" class="btn" style="padding:5px 10px;font-size:12px;"><i class="fas fa-credit-card"></i> Pay</a>` : '<span style="color:var(--text3);">—</span>'}
             </td>
           </tr>
         `).join('');
@@ -512,6 +499,10 @@
       }
     }
   </script>
-  <script type="module" src="../../src/scripts/pages/dashboard/member-portal.js"></script>
+  
+
+  <!-- W3.js component loader (already in head) -->
+
+  <script type="module" src="../../../src/scripts/pages/dashboard/member-portal.js"></script>
 </body>
 </html>

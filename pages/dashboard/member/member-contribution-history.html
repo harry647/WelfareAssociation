@@ -40,23 +40,10 @@
 </head>
 <body>
 
-  <div w3-include-html="../shared/header.html"></div>
+  <div w3-include-html="../../shared/header.html"></div>
 
-  <!-- Member Top Bar -->
-  <header class="member-header">
-    <div class="member-header-left">
-      <div class="member-avatar">M</div>
-      <div>
-        <h1 id="welcome-message"><i class="fas fa-user-circle"></i> Welcome, Member</h1>
-        <p>View your contribution history and payment records</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <button type="button" class="logout-btn">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
-    </div>
-  </header>
+  <!-- Member Header Component -->
+  <div w3-include-html="../../components/header-member.html"></div>
 
   <div class="page-body">
 
@@ -67,10 +54,10 @@
         <p>Track all your contributions and payment records over time</p>
       </div>
       <div class="page-actions">
-        <a href="member-portal.html" class="btn secondary-btn">
+        <a href="../member-portal.html" class="btn secondary-btn">
           <i class="fas fa-arrow-left"></i> Back to Portal
         </a>
-        <a href="../payments/make-payment.html" class="btn submit-btn">
+        <a href="../../payments/make-payment.html" class="btn submit-btn">
           <i class="fas fa-plus"></i> Make Contribution
         </a>
       </div>
@@ -195,7 +182,7 @@
 
   </div><!-- /page-body -->
 
-  <div w3-include-html="../shared/footer.html"></div>
+  <div w3-include-html="../../components/footer-member.html"></div>
 
   <script>w3.includeHTML();</script>
   <script type="module" src="../../src/scripts/pages/dashboard/member-contribution-history.js"></script>

@@ -139,7 +139,7 @@ class LoginPage {
             
             if (!redirectUrl) {
                 // Default redirect based on user type
-                redirectUrl = result.user?.role === 'admin' ? '../dashboard/admin-dashboard.html' : '../dashboard/member-portal.html';
+                redirectUrl = result.user?.role === 'admin' ? '../dashboard/admin/admin-dashboard.html' : '../dashboard/member/member-portal.html';
             }
             
             // Redirect after short delay

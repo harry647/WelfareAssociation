@@ -1,3 +1,55 @@
+/* Portal Links Styles */
+.portal-links {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--auth-gray-200);
+    text-align: center;
+}
+
+.portal-links p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: var(--auth-gray-600);
+}
+
+.portal-links__buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.portal-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: var(--auth-radius);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.portal-btn.admin-btn {
+    background-color: #4F46E5;
+    color: white;
+}
+
+.portal-btn.admin-btn:hover {
+    background-color: #4338CA;
+}
+
+.portal-btn.member-btn {
+    background-color: #10B981;
+    color: white;
+}
+
+.portal-btn.member-btn:hover {
+    background-color: #059669;
+}
+
 /* Login Page Styles - Modern UI/UX Design */
 
 /* ========================================

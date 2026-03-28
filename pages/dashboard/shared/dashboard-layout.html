@@ -19,85 +19,41 @@
 </head>
 
 <body>
-  <!-- Shared Header -->
-  <div w3-include-html="../shared/header.html"></div>
 
-  <div class="dashboard-container">
+  <!-- Top Bar (Header Component) -->
+  <div w3-include-html="../components/header-shared.html"></div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-      <div class="logo">
-        <img src="../images/Welfarelogo.webp" alt="SWA Logo">
-        <span>SWA Dashboard</span>
-        <button id="toggleBtn" class="toggle-btn">☰</button>
-      </div>
-
-      <nav>
-        <ul>
-          <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-          <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
-          <li><a href="#"><i class="fas fa-users"></i> Members</a></li>
-          <li><a href="#"><i class="fas fa-money-bill-wave"></i> Contributions</a></li>
-          <li><a href="#"><i class="fas fa-hand-holding-usd"></i> Loans</a></li>
-          <li><a href="#"><i class="fas fa-calendar-alt"></i> Events</a></li>
-          <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-        </ul>
-      </nav>
-
-      <div class="more-nav">
-        <label>Quick Links</label>
-        <select onchange="window.location.href=this.value;">
-          <option value="">Select...</option>
-          <option value="../index.html">Home</option>
-          <option value="about-us.html">About Us</option>
-          <option value="events.html">Events</option>
-          <option value="news.html">News</option>
-        </select>
-      </div>
-
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="content">
-
-      <header class="topbar">
-        <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
-        <p>Welcome to the SWA Admin Dashboard</p>
-      </header>
-
-      <section class="main-content">
-        <h2>Welcome</h2>
-        <p>This is your main dashboard content area.</p>
-        <p>You can add sections, cards, articles, or data tables here to manage SWA operations.</p>
-        
-        <div class="stats-grid">
-          <div class="stat-card">
-            <h3><i class="fas fa-users"></i> 22</h3>
-            <p>Total Members</p>
-          </div>
-          <div class="stat-card">
-            <h3><i class="fas fa-money-bill-wave"></i> Ksh 7,000</h3>
-            <p>Contributions</p>
-          </div>
-          <div class="stat-card">
-            <h3><i class="fas fa-hand-holding-usd"></i> 5</h3>
-            <p>Loan Applications</p>
-          </div>
+  <!-- Main Content -->
+  <main class="content">
+    <section class="main-content">
+      <h2>Welcome</h2>
+      <p>This is your main dashboard content area.</p>
+      <p>You can add sections, cards, articles, or data tables here to manage SWA operations.</p>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3><i class="fas fa-users"></i> 22</h3>
+          <p>Total Members</p>
         </div>
-      </section>
+        <div class="stat-card">
+          <h3><i class="fas fa-money-bill-wave"></i> Ksh 7,000</h3>
+          <p>Contributions</p>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-hand-holding-usd"></i> 5</h3>
+          <p>Loan Applications</p>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    </main>
+  <!-- Footer Component -->
+  <div w3-include-html="../components/footer-shared.html"></div>
 
-  </div>
-
-  <!-- Shared Footer -->
-  <div w3-include-html="../shared/footer.html"></div>
-
-    <!-- W3 Schools HTML Includes Script -->
-    <script>
-        w3.includeHTML();
-    </script>
+  <!-- W3 Schools HTML Includes Script -->
+  <script>
+      w3.includeHTML();
+  </script>
 
   <script src="../../src/scripts/pages/dashboard/dashboard-layout.js"></script>
 </body>

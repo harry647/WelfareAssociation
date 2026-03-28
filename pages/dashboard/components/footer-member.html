@@ -1,0 +1,28 @@
+<!-- Member Footer Component -->
+<!-- Include this in all member dashboard pages using: <div w3-include-html="../components/footer-member.html"></div> -->
+<!-- Then call w3.includeHTML() after including the script -->
+
+<footer class="dashboard-footer">
+  <div class="footer-left">
+    <p>&copy; <span id="currentYear"></span> Student Welfare Association (SWA) - JOOUST</p>
+  </div>
+  
+  <div class="footer-center">
+    <a href="../../../pages/public/about-us.html">About</a>
+    <span class="footer-divider">|</span>
+    <a href="../../../pages/public/policies.html">Policies</a>
+    <span class="footer-divider">|</span>
+    <a href="../../../pages/public/contact-information.html">Contact</a>
+    <span class="footer-divider">|</span>
+    <a href="member-portal.html">My Portal</a>
+  </div>
+  
+  <div class="footer-right">
+    <p>Version <span id="appVersion">1.0.0</span></p>
+  </div>
+</footer>
+
+<script>
+  // Set current year dynamically
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
