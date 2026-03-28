@@ -29,10 +29,207 @@
             <p>Manage member savings accounts</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-piggy-bank"></i>
-            <h2>Members Savings</h2>
-            <p>This section is under construction.</p>
+          <!-- Statistics Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalMembersCount">0</h3>
+                <p>Total Members</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-piggy-bank"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalSavingsAmount">Ksh 0</h3>
+                <p>Total Savings</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-arrow-down"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="monthDeposits">Ksh 0</h3>
+                <p>Month Deposits</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-arrow-up"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="monthWithdrawals">Ksh 0</h3>
+                <p>Month Withdrawals</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="growthRate">0%</h3>
+                <p>Growth Rate</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-percentage"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="interestRate">5%</h3>
+                <p>Interest Rate</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-calculator"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="avgSavings">--</h3>
+                <p>Avg Savings</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="topSaver">--</h3>
+                <p>Top Saver</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading Indicator -->
+          <div id="loading-indicator" class="loading-indicator" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading savings data...</p>
+          </div>
+          
+          <!-- Error Message -->
+          <div id="error-message" class="error-message" style="display: none;"></div>
+
+          <!-- Individual Savings Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-list"></i> Individual Savings Accounts</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='savings-goal.html'">
+                  <i class="fas fa-plus"></i> New Savings Goal
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Name</th>
+                    <th>Member Number</th>
+                    <th>Opening Date</th>
+                    <th>Deposits</th>
+                    <th>Withdrawals</th>
+                    <th>Interest</th>
+                    <th>Current Balance</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="individualSavingsTable">
+                  <tr>
+                    <td colspan="8" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading savings accounts...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recent Transactions Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-exchange-alt"></i> Recent Transactions</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='../payments/history.html'">
+                  <i class="fas fa-plus"></i> Add Transaction
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Member Name</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Balance</th>
+                    <th>Recorded By</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recentTransactionsTable">
+                  <tr>
+                    <td colspan="7" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading recent transactions...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Savings Goals Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-bullseye"></i> Savings Goals</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='savings-goal.html'">
+                  <i class="fas fa-plus"></i> Create Goal
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Name</th>
+                    <th>Goal Name</th>
+                    <th>Target Amount</th>
+                    <th>Current Amount</th>
+                    <th>Progress</th>
+                    <th>Target Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="savingsGoalsTable">
+                  <tr>
+                    <td colspan="7" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading savings goals...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -44,56 +241,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Members Savings';
-      if (pageSubtitle) pageSubtitle.textContent = 'Manage member savings accounts';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/members-savings.js"></script>
 </body>
 </html>

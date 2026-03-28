@@ -29,10 +29,113 @@
             <p>Manage archived documents and records</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-archive"></i>
-            <h2>Archive Documents</h2>
-            <p>This section is under construction.</p>
+          <!-- Search and Filter Section -->
+          <div class="search-filter-section">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search archived documents...">
+            </div>
+            <div class="filter-buttons">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="meeting-minutes">Meeting Minutes</button>
+              <button class="filter-btn" data-filter="financial">Financial</button>
+              <button class="filter-btn" data-filter="policies">Policies</button>
+              <button class="filter-btn" data-filter="other">Other</button>
+            </div>
+          </div>
+
+          <!-- Archive Statistics -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-archive"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalArchived">0</h3>
+                <p>Total Archived</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="thisMonth">0</h3>
+                <p>This Month</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-database"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="storageUsed">0 MB</h3>
+                <p>Storage Used</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="oldestArchive">--</h3>
+                <p>Oldest Archive</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Archived Documents Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-list"></i> Archived Documents</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='documentation.html'">
+                  <i class="fas fa-folder"></i> Active Documents
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Document Title</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Archived Date</th>
+                    <th>Archived By</th>
+                    <th>File Size</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="archivedDocumentsTable">
+                  <tr>
+                    <td colspan="7" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading archived documents...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bulk Actions -->
+          <div class="bulk-actions" id="bulkActions" style="display: none;">
+            <div class="bulk-actions-content">
+              <span class="selected-count">0 documents selected</span>
+              <div class="bulk-buttons">
+                <button class="btn btn-secondary" onclick="restoreSelected()">
+                  <i class="fas fa-undo"></i> Restore Selected
+                </button>
+                <button class="btn btn-danger" onclick="deleteSelected()">
+                  <i class="fas fa-trash"></i> Delete Permanently
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -44,56 +147,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Archive Documents';
-      if (pageSubtitle) pageSubtitle.textContent = 'Manage archived documents and records';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/archive-docs.js"></script>
 </body>
 </html>

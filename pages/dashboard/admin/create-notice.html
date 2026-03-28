@@ -29,10 +29,118 @@
             <p>Create and publish notices for members</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-sticky-note"></i>
-            <h2>Create Notice</h2>
-            <p>This section is under construction.</p>
+          <!-- Create Notice Form -->
+          <div class="form-container">
+            <form id="createNoticeForm" class="form-grid">
+              <!-- Notice Information -->
+              <div class="form-section">
+                <h3><i class="fas fa-sticky-note"></i> Notice Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="title">Notice Title *</label>
+                    <input type="text" id="title" name="title" required placeholder="Enter notice title...">
+                  </div>
+                  <div class="form-group">
+                    <label for="priority">Priority Level *</label>
+                    <select id="priority" name="priority" required>
+                      <option value="">Select priority...</option>
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="content">Notice Content *</label>
+                  <textarea id="content" name="content" rows="6" required placeholder="Write the notice content here..."></textarea>
+                  <div class="char-counter">
+                    <span id="charCount">0</span> / 1000 characters
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notice Settings -->
+              <div class="form-section">
+                <h3><i class="fas fa-cog"></i> Notice Settings</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="expiryDate">Expiry Date</label>
+                    <input type="date" id="expiryDate" name="expiryDate">
+                    <small>Leave empty for no expiry</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="targetAudience">Target Audience</label>
+                    <select id="targetAudience" name="targetAudience">
+                      <option value="all">All Members</option>
+                      <option value="active">Active Members Only</option>
+                      <option value="executive">Executive Team Only</option>
+                      <option value="admin">Admin Only</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendEmail" name="sendEmail" checked>
+                      <span class="checkmark"></span>
+                      Send email notification to members
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendSMS" name="sendSMS">
+                      <span class="checkmark"></span>
+                      Send SMS notification to members
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="pinNotice" name="pinNotice">
+                      <span class="checkmark"></span>
+                      Pin this notice to the top
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="allowComments" name="allowComments">
+                      <span class="checkmark"></span>
+                      Allow members to comment on this notice
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notice Preview -->
+              <div class="form-section">
+                <h3><i class="fas fa-eye"></i> Notice Preview</h3>
+                <div class="notice-preview">
+                  <div class="notice-card">
+                    <div class="notice-header">
+                      <h4 id="previewTitle">Notice Title</h4>
+                      <span class="priority-badge" id="previewPriority">Medium</span>
+                    </div>
+                    <div class="notice-content">
+                      <p id="previewContent">Notice content will appear here...</p>
+                    </div>
+                    <div class="notice-footer">
+                      <small>Posted: <span id="previewDate">Today</span></small>
+                      <small>Expires: <span id="previewExpiry">Never</span></small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-paper-plane"></i> Publish Notice
+                </button>
+                <button type="button" class="btn btn-secondary" id="saveDraft">
+                  <i class="fas fa-save"></i> Save Draft
+                </button>
+                <button type="button" class="btn btn-outline cancel-btn">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='notices.html'">
+                  <i class="fas fa-list"></i> View Notices
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -44,56 +152,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Create Notice';
-      if (pageSubtitle) pageSubtitle.textContent = 'Create and publish notices for members';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/create-notice.js"></script>
 </body>
 </html>

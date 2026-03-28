@@ -29,10 +29,136 @@
             <p>Update member information and details</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-user-edit"></i>
-            <h2>Edit Member</h2>
-            <p>This section is under construction.</p>
+          <!-- Edit Member Form -->
+          <div class="form-container">
+            <form id="editMemberForm" class="form-grid">
+              <!-- Personal Information -->
+              <div class="form-section">
+                <h3><i class="fas fa-user"></i> Personal Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="firstName">First Name *</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="lastName">Last Name *</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="dateOfBirth">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" name="dateOfBirth">
+                  </div>
+                  <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender">
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="address">Address</label>
+                  <textarea id="address" name="address" rows="3"></textarea>
+                </div>
+              </div>
+
+              <!-- Membership Information -->
+              <div class="form-section">
+                <h3><i class="fas fa-id-card"></i> Membership Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="memberNumber">Member Number</label>
+                    <input type="text" id="memberNumber" name="memberNumber" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="membershipType">Membership Type</label>
+                    <select id="membershipType" name="membershipType">
+                      <option value="Regular">Regular</option>
+                      <option value="Student">Student</option>
+                      <option value="Staff">Staff</option>
+                      <option value="Alumni">Alumni</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="membershipStatus">Membership Status</label>
+                    <select id="membershipStatus" name="membershipStatus">
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                      <option value="suspended">Suspended</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="joinDate">Join Date</label>
+                    <input type="date" id="joinDate" name="joinDate" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Emergency Contact -->
+              <div class="form-section">
+                <h3><i class="fas fa-phone-alt"></i> Emergency Contact</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="emergencyName">Contact Name</label>
+                    <input type="text" id="emergencyName" name="emergencyName">
+                  </div>
+                  <div class="form-group">
+                    <label for="emergencyPhone">Contact Phone</label>
+                    <input type="tel" id="emergencyPhone" name="emergencyPhone">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="emergencyRelationship">Relationship</label>
+                  <input type="text" id="emergencyRelationship" name="emergencyRelationship" placeholder="e.g., Mother, Father, Sister">
+                </div>
+              </div>
+
+              <!-- Next of Kin -->
+              <div class="form-section">
+                <h3><i class="fas fa-user-friends"></i> Next of Kin</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="kinName">Kin Name</label>
+                    <input type="text" id="kinName" name="kinName">
+                  </div>
+                  <div class="form-group">
+                    <label for="kinPhone">Kin Phone</label>
+                    <input type="tel" id="kinPhone" name="kinPhone">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="kinRelationship">Relationship</label>
+                  <input type="text" id="kinRelationship" name="kinRelationship" placeholder="e.g., Father, Mother, Guardian">
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Update Member
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -44,56 +170,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Edit Member';
-      if (pageSubtitle) pageSubtitle.textContent = 'Update member information and details';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/edit-member.js"></script>
 </body>
 </html>

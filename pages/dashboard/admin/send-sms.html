@@ -29,10 +29,231 @@
             <p>Send SMS messages to members</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-sms"></i>
-            <h2>Send SMS</h2>
-            <p>This section is under construction.</p>
+          <!-- SMS Statistics -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="stat-content">
+                <h3>0</h3>
+                <p>Total SMS Sent</p>
+                <span class="stat-change">This month</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-content">
+                <h3>0</h3>
+                <p>Scheduled SMS</p>
+                <span class="stat-change">Pending</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-content">
+                <h3>0</h3>
+                <p>Delivered</p>
+                <span class="stat-change">Success rate</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+              </div>
+              <div class="stat-content">
+                <h3>0</h3>
+                <p>Failed</p>
+                <span class="stat-change">Last 7 days</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Send SMS Form -->
+          <div class="form-container">
+            <form id="sendSMSForm" class="form-grid">
+              <!-- Recipient Selection -->
+              <div class="form-section">
+                <h3><i class="fas fa-users"></i> Recipients</h3>
+                <div class="form-group">
+                  <label for="recipients">Send To *</label>
+                  <select id="recipients" name="recipients" required>
+                    <option value="">Select recipients...</option>
+                    <option value="all">All Members</option>
+                    <option value="active">Active Members Only</option>
+                    <option value="executive">Executive Team</option>
+                    <option value="committee">Committee Heads</option>
+                    <option value="custom">Custom Selection</option>
+                  </select>
+                </div>
+                <div class="form-group" id="customRecipients" style="display: none;">
+                  <label>Custom Recipients</label>
+                  <div class="recipient-selection">
+                    <div class="recipient-search">
+                      <input type="text" placeholder="Search members by name or phone...">
+                      <button type="button" class="btn btn-secondary">Search</button>
+                    </div>
+                    <div class="recipient-list">
+                      <div class="checkbox-group">
+                        <label class="checkbox-label">
+                          <input type="checkbox" name="customMember" value="member1">
+                          <span class="checkmark"></span>
+                          John Doe - +254712345678
+                        </label>
+                        <label class="checkbox-label">
+                          <input type="checkbox" name="customMember" value="member2">
+                          <span class="checkmark"></span>
+                          Jane Smith - +254723456789
+                        </label>
+                        <label class="checkbox-label">
+                          <input type="checkbox" name="customMember" value="member3">
+                          <span class="checkmark"></span>
+                          Mike Johnson - +254734567890
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="phoneNumbers">Phone Numbers (Custom)</label>
+                  <textarea id="phoneNumbers" name="phoneNumbers" rows="3" placeholder="Enter phone numbers separated by commas...&#10;Example: +254712345678, +254723456789"></textarea>
+                  <small>Use this field for recipients not in the member list</small>
+                </div>
+              </div>
+
+              <!-- Message Composition -->
+              <div class="form-section">
+                <h3><i class="fas fa-comment-alt"></i> Message Composition</h3>
+                <div class="form-group">
+                  <label for="message">Message *</label>
+                  <textarea id="message" name="message" rows="6" required placeholder="Type your SMS message here..." maxlength="160"></textarea>
+                  <div class="sms-counter">
+                    <span id="charCount">0</span> / 160 characters
+                    <span id="messageCount" class="message-count">1 SMS</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Quick Templates</label>
+                  <div class="template-buttons">
+                    <button type="button" class="btn btn-outline template-btn" data-template="meeting">Meeting Reminder</button>
+                    <button type="button" class="btn btn-outline template-btn" data-template="payment">Payment Reminder</button>
+                    <button type="button" class="btn btn-outline template-btn" data-template="event">Event Update</button>
+                    <button type="button" class="btn btn-outline template-btn" data-template="urgent">Urgent Notice</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sending Options -->
+              <div class="form-section">
+                <h3><i class="fas fa-cog"></i> Sending Options</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="senderId">Sender ID</label>
+                    <select id="senderId" name="senderId">
+                      <option value="SWA">SWA</option>
+                      <option value="JOOUST">JOOUST</option>
+                      <option value="WELFARE">WELFARE</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="scheduledTime">Schedule Time</label>
+                    <input type="datetime-local" id="scheduledTime" name="scheduledTime">
+                    <small>Leave empty to send immediately</small>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendCopy" name="sendCopy">
+                      <span class="checkmark"></span>
+                      Send copy to my phone
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="trackDelivery" name="trackDelivery" checked>
+                      <span class="checkmark"></span>
+                      Track delivery status
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="allowReplies" name="allowReplies">
+                      <span class="checkmark"></span>
+                      Allow replies
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="excludeOptedOut" name="excludeOptedOut" checked>
+                      <span class="checkmark"></span>
+                      Exclude opted-out numbers
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Preview -->
+              <div class="form-section">
+                <h3><i class="fas fa-eye"></i> Message Preview</h3>
+                <div class="sms-preview">
+                  <div class="preview-header">
+                    <span class="sender-id">From: SWA</span>
+                    <span class="timestamp">Now</span>
+                  </div>
+                  <div class="preview-content">
+                    <p id="previewMessage">Your SMS message will appear here...</p>
+                  </div>
+                  <div class="preview-footer">
+                    <small id="previewRecipientCount">0 recipients</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cost Estimation -->
+              <div class="form-section">
+                <h3><i class="fas fa-calculator"></i> Cost Estimation</h3>
+                <div class="cost-breakdown">
+                  <div class="cost-item">
+                    <span>Number of Recipients:</span>
+                    <span id="recipientCount">0</span>
+                  </div>
+                  <div class="cost-item">
+                    <span>Messages per Recipient:</span>
+                    <span id="messagesPerRecipient">1</span>
+                  </div>
+                  <div class="cost-item">
+                    <span>Total Messages:</span>
+                    <span id="totalMessages">0</span>
+                  </div>
+                  <div class="cost-item">
+                    <span>Cost per SMS:</span>
+                    <span>Ksh 1.50</span>
+                  </div>
+                  <div class="cost-item total">
+                    <span>Total Cost:</span>
+                    <span id="totalCost">Ksh 0.00</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-paper-plane"></i> Send SMS
+                </button>
+                <button type="button" class="btn btn-secondary" id="scheduleSMS">
+                  <i class="fas fa-clock"></i> Schedule
+                </button>
+                <button type="button" class="btn btn-secondary" id="testSMS">
+                  <i class="fas fa-vial"></i> Test Send
+                </button>
+                <button type="button" class="btn btn-outline cancel-btn">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='sms-history.html'">
+                  <i class="fas fa-history"></i> SMS History
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -44,56 +265,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Send SMS';
-      if (pageSubtitle) pageSubtitle.textContent = 'Send SMS messages to members';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/send-sms.js"></script>
 </body>
 </html>

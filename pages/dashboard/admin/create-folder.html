@@ -29,10 +29,114 @@
             <p>Create new folders for document organization</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-folder-plus"></i>
-            <h2>Create Folder</h2>
-            <p>This section is under construction.</p>
+          <!-- Create Folder Form -->
+          <div class="form-container">
+            <form id="createFolderForm" class="form-grid">
+              <!-- Folder Information -->
+              <div class="form-section">
+                <h3><i class="fas fa-folder-plus"></i> Folder Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="folderName">Folder Name *</label>
+                    <input type="text" id="folderName" name="folderName" required placeholder="Enter folder name...">
+                  </div>
+                  <div class="form-group">
+                    <label for="parentFolder">Parent Folder</label>
+                    <select id="parentFolder" name="parentFolder">
+                      <option value="">Root Level</option>
+                      <option value="administrative">Administrative</option>
+                      <option value="financial">Financial</option>
+                      <option value="academic">Academic</option>
+                      <option value="events">Events</option>
+                      <option value="policies">Policies</option>
+                      <option value="forms">Forms</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="folderDescription">Description</label>
+                  <textarea id="folderDescription" name="folderDescription" rows="3" placeholder="Brief description of the folder purpose..."></textarea>
+                </div>
+              </div>
+
+              <!-- Folder Settings -->
+              <div class="form-section">
+                <h3><i class="fas fa-cog"></i> Folder Settings</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="accessLevel">Access Level</label>
+                    <select id="accessLevel" name="accessLevel">
+                      <option value="public">Public</option>
+                      <option value="members">Members Only</option>
+                      <option value="executive">Executive Only</option>
+                      <option value="admin">Admin Only</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="folderType">Folder Type</label>
+                    <select id="folderType" name="folderType">
+                      <option value="general">General</option>
+                      <option value="private">Private</option>
+                      <option value="shared">Shared</option>
+                      <option value="archive">Archive</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="allowUpload" name="allowUpload" checked>
+                      <span class="checkmark"></span>
+                      Allow users to upload files to this folder
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="allowSubfolders" name="allowSubfolders" checked>
+                      <span class="checkmark"></span>
+                      Allow creation of subfolders
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="enableVersioning" name="enableVersioning">
+                      <span class="checkmark"></span>
+                      Enable file versioning
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendNotification" name="sendNotification">
+                      <span class="checkmark"></span>
+                      Send notification when files are added
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Folder Structure Preview -->
+              <div class="form-section">
+                <h3><i class="fas fa-eye"></i> Folder Structure Preview</h3>
+                <div class="folder-preview">
+                  <div class="folder-tree">
+                    <div class="folder-item root">
+                      <i class="fas fa-folder"></i>
+                      <span>Root</span>
+                    </div>
+                    <div class="folder-structure" id="folderStructure">
+                      <!-- Dynamic structure will be built here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-folder-plus"></i> Create Folder
+                </button>
+                <button type="button" class="btn btn-secondary cancel-btn">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='documentation.html'">
+                  <i class="fas fa-folder"></i> View Documents
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -44,56 +148,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Create Folder';
-      if (pageSubtitle) pageSubtitle.textContent = 'Create new folders for document organization';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/create-folder.js"></script>
 </body>
 </html>

@@ -29,10 +29,105 @@
             <p>Issue fines to members</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-gavel"></i>
-            <h2>Issue Fine</h2>
-            <p>This section is under construction.</p>
+          <!-- Issue Fine Form -->
+          <div class="form-container">
+            <form id="issueFineForm" class="form-grid">
+              <!-- Member Selection -->
+              <div class="form-section">
+                <h3><i class="fas fa-user"></i> Member Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="memberId">Select Member *</label>
+                    <select id="memberId" name="memberId" required>
+                      <option value="">Choose a member...</option>
+                      <!-- Options will be populated dynamically -->
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="memberSearch">Search Member</label>
+                    <input type="text" id="memberSearch" placeholder="Search by name or ID...">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fine Details -->
+              <div class="form-section">
+                <h3><i class="fas fa-gavel"></i> Fine Details</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="fineType">Fine Type *</label>
+                    <select id="fineType" name="fineType" required>
+                      <option value="">Select fine type...</option>
+                      <option value="late-payment">Late Payment</option>
+                      <option value="meeting-absence">Meeting Absence</option>
+                      <option value="property-damage">Property Damage</option>
+                      <option value="rule-violation">Rule Violation</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="amount">Amount (Ksh) *</label>
+                    <input type="number" id="amount" name="amount" min="0" step="0.01" required placeholder="0.00">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="reason">Reason/Description *</label>
+                  <textarea id="reason" name="reason" rows="4" required placeholder="Describe the reason for this fine..."></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="dueDate">Due Date *</label>
+                    <input type="date" id="dueDate" name="dueDate" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="urgency">Urgency Level</label>
+                    <select id="urgency" name="urgency">
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Settings -->
+              <div class="form-section">
+                <h3><i class="fas fa-bell"></i> Notification Settings</h3>
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendEmail" name="sendEmail" checked>
+                      <span class="checkmark"></span>
+                      Send email notification to member
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendSMS" name="sendSMS">
+                      <span class="checkmark"></span>
+                      Send SMS notification to member
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendReminder" name="sendReminder" checked>
+                      <span class="checkmark"></span>
+                      Set automatic reminder before due date
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-gavel"></i> Issue Fine
+                </button>
+                <button type="button" class="btn btn-secondary cancel-btn">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='fines-collection.html'">
+                  <i class="fas fa-list"></i> View All Fines
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -44,56 +139,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Issue Fine';
-      if (pageSubtitle) pageSubtitle.textContent = 'Issue fines to members';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/issue-fine.js"></script>
 </body>
 </html>

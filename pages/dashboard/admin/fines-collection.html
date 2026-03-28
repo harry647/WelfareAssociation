@@ -29,10 +29,132 @@
             <p>Manage and collect member fines</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <h2>Fines Collection</h2>
-            <p>This section is under construction.</p>
+          <!-- Statistics Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalFinesCount">0</h3>
+                <p>Total Fines</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalFinesAmount">Ksh 0</h3>
+                <p>Total Outstanding</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="collectedFines">Ksh 0</h3>
+                <p>Collected This Month</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="pendingFines">Ksh 0</h3>
+                <p>Pending</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading Indicator -->
+          <div id="loading-indicator" class="loading-indicator" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading fines data...</p>
+          </div>
+          
+          <!-- Error Message -->
+          <div id="error-message" class="error-message" style="display: none;"></div>
+
+          <!-- Outstanding Fines Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-exclamation-triangle"></i> Outstanding Fines</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='issue-fine.html'">
+                  <i class="fas fa-plus"></i> Issue Fine
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Name</th>
+                    <th>Student ID</th>
+                    <th>Fine Type</th>
+                    <th>Amount</th>
+                    <th>Date Issued</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="outstandingFinesTable">
+                  <tr>
+                    <td colspan="8" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading outstanding fines...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Collected Fines Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-check-circle"></i> Collected Fines (This Month)</h2>
+              <div class="table-actions">
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+                <button class="btn btn-outline" onclick="window.location.href='../payments/history.html'">
+                  <i class="fas fa-history"></i> View All
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Name</th>
+                    <th>Student ID</th>
+                    <th>Fine Type</th>
+                    <th>Amount</th>
+                    <th>Date Paid</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="collectedFinesTable">
+                  <tr>
+                    <td colspan="7" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading collected fines...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -44,56 +166,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Fines Collection';
-      if (pageSubtitle) pageSubtitle.textContent = 'Manage and collect member fines';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/fines-collection.js"></script>
 </body>
 </html>

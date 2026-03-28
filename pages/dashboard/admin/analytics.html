@@ -29,10 +29,260 @@
             <p>View comprehensive analytics and insights</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-chart-line"></i>
-            <h2>Analytics</h2>
-            <p>This section is under construction.</p>
+          <!-- Date Range Filter -->
+          <div class="filter-section">
+            <div class="filter-buttons">
+              <button class="filter-btn active">Last 30 Days</button>
+              <button class="filter-btn">Last 3 Months</button>
+              <button class="filter-btn">Last 6 Months</button>
+              <button class="filter-btn">Last Year</button>
+              <button class="filter-btn">Custom Range</button>
+            </div>
+            <div class="export-buttons">
+              <button class="export-btn"><i class="fas fa-download"></i> Export PDF</button>
+              <button class="export-btn"><i class="fas fa-file-excel"></i> Export Excel</button>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalMembers">0</h3>
+                <p>Total Members</p>
+                <span id="membersGrowth" class="stat-change">+0 this month</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalRevenue">Ksh 0</h3>
+                <p>Total Revenue</p>
+                <span id="revenueGrowth" class="stat-change">+0% growth</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalLoans">Ksh 0</h3>
+                <p>Total Loans</p>
+                <span id="activeLoans" class="stat-change">0 active</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-percentage"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="collectionRate">0%</h3>
+                <p>Collection Rate</p>
+                <span id="collectionGrowth" class="stat-change">+0% improvement</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Overview -->
+          <div class="financial-overview">
+            <h2><i class="fas fa-chart-pie"></i> Financial Overview</h2>
+            <div class="financial-cards">
+              <div class="financial-card">
+                <h4>Total Assets</h4>
+                <p id="totalAssets">Ksh 0</p>
+              </div>
+              <div class="financial-card">
+                <h4>Total Liabilities</h4>
+                <p id="totalLiabilities">Ksh 0</p>
+              </div>
+              <div class="financial-card">
+                <h4>YoY Growth</h4>
+                <p id="yoyGrowth">0%</p>
+              </div>
+              <div class="financial-card">
+                <h4>Net Worth</h4>
+                <p id="netWorth">Ksh 0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Tables -->
+          <div class="analytics-sections">
+            <!-- Monthly Trends -->
+            <div class="table-container">
+              <div class="table-header">
+                <h2><i class="fas fa-chart-line"></i> Monthly Trends</h2>
+                <div class="table-actions">
+                  <button class="btn btn-secondary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Contributions</th>
+                      <th>Loans</th>
+                      <th>Savings</th>
+                      <th>Expenses</th>
+                      <th>Net Change</th>
+                      <th>Growth</th>
+                    </tr>
+                  </thead>
+                  <tbody id="monthlyTrendsTable">
+                    <tr>
+                      <td colspan="7" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p style="color: #666;">Loading monthly trends...</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Member Analytics -->
+            <div class="table-container">
+              <div class="table-header">
+                <h2><i class="fas fa-users"></i> Member Analytics</h2>
+                <div class="table-actions">
+                  <button class="btn btn-secondary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Member Type</th>
+                      <th>Active</th>
+                      <th>Inactive</th>
+                      <th>New This Month</th>
+                      <th>Retention Rate</th>
+                      <th>Avg Contribution</th>
+                    </tr>
+                  </thead>
+                  <tbody id="memberAnalyticsTable">
+                    <tr>
+                      <td colspan="6" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p style="color: #666;">Loading member analytics...</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Loan Analytics -->
+            <div class="table-container">
+              <div class="table-header">
+                <h2><i class="fas fa-hand-holding-usd"></i> Loan Analytics</h2>
+                <div class="table-actions">
+                  <button class="btn btn-secondary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Loan Type</th>
+                      <th>Total Amount</th>
+                      <th>Active Loans</th>
+                      <th>Repaid Loans</th>
+                      <th>Default Rate</th>
+                      <th>Avg Interest</th>
+                    </tr>
+                  </thead>
+                  <tbody id="loanAnalyticsTable">
+                    <tr>
+                      <td colspan="6" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p style="color: #666;">Loading loan analytics...</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Event Analytics -->
+            <div class="table-container">
+              <div class="table-header">
+                <h2><i class="fas fa-calendar"></i> Event Analytics</h2>
+                <div class="table-actions">
+                  <button class="btn btn-secondary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Event Name</th>
+                      <th>Date</th>
+                      <th>Registered</th>
+                      <th>Attended</th>
+                      <th>Participation Rate</th>
+                      <th>Rating</th>
+                    </tr>
+                  </thead>
+                  <tbody id="eventAnalyticsTable">
+                    <tr>
+                      <td colspan="6" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p style="color: #666;">Loading event analytics...</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Top Contributors -->
+            <div class="table-container">
+              <div class="table-header">
+                <h2><i class="fas fa-trophy"></i> Top Contributors</h2>
+                <div class="table-actions">
+                  <button class="btn btn-secondary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Member Name</th>
+                      <th>Member ID</th>
+                      <th>Contributions</th>
+                      <th>Savings</th>
+                      <th>Participation</th>
+                    </tr>
+                  </thead>
+                  <tbody id="topContributorsTable">
+                    <tr>
+                      <td colspan="6" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p style="color: #666;">Loading top contributors...</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -44,56 +294,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Analytics';
-      if (pageSubtitle) pageSubtitle.textContent = 'View comprehensive analytics and insights';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/analytics.js"></script>
 </body>
 </html>

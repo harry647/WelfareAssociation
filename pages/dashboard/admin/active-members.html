@@ -29,10 +29,94 @@
             <p>View and manage active SWA members</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-user-check"></i>
-            <h2>Active Members</h2>
-            <p>This section is under construction.</p>
+          <!-- Statistics Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-user-check"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="total-active">0</h3>
+                <p>Total Active</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="this-month-paid">0</h3>
+                <p>This Month Paid</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="activity-rate">0%</h3>
+                <p>Activity Rate</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="fully-paid">0</h3>
+                <p>Fully Paid</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Members Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-list"></i> Active Members List</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='../../contributions/pay.html'">
+                  <i class="fas fa-plus"></i> Add Payment
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="loading-indicator" style="display: none;">
+              <i class="fas fa-spinner fa-spin"></i>
+              <p>Loading active members...</p>
+            </div>
+            
+            <!-- Error Message -->
+            <div id="error-message" class="error-message" style="display: none;"></div>
+            
+            <!-- Active Members Table -->
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Number</th>
+                    <th>Full Name</th>
+                    <th>Student ID</th>
+                    <th>Email</th>
+                    <th>Last Payment</th>
+                    <th>Total Contributed</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="active-members-table">
+                  <tr>
+                    <td colspan="8" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading active members...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -44,56 +128,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Active Members';
-      if (pageSubtitle) pageSubtitle.textContent = 'View and manage active SWA members';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/active-members.js"></script>
 </body>
 </html>

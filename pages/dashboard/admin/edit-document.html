@@ -29,10 +29,141 @@
             <p>Edit and update existing documents</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-edit"></i>
-            <h2>Edit Document</h2>
-            <p>This section is under construction.</p>
+          <!-- Edit Document Form -->
+          <div class="form-container">
+            <form id="editDocumentForm" class="form-grid">
+              <!-- Document Information -->
+              <div class="form-section">
+                <h3><i class="fas fa-file-alt"></i> Document Information</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="documentTitle">Document Title *</label>
+                    <input type="text" id="documentTitle" name="documentTitle" required placeholder="Enter document title...">
+                  </div>
+                  <div class="form-group">
+                    <label for="documentType">Document Type *</label>
+                    <select id="documentType" name="documentType" required>
+                      <option value="">Select document type...</option>
+                      <option value="meeting-minutes">Meeting Minutes</option>
+                      <option value="financial-report">Financial Report</option>
+                      <option value="policy">Policy Document</option>
+                      <option value="procedure">Procedure Manual</option>
+                      <option value="form">Form</option>
+                      <option value="notice">Notice</option>
+                      <option value="announcement">Announcement</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="documentDescription">Description</label>
+                  <textarea id="documentDescription" name="documentDescription" rows="3" placeholder="Brief description of the document..."></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                      <option value="">Select category...</option>
+                      <option value="administrative">Administrative</option>
+                      <option value="financial">Financial</option>
+                      <option value="academic">Academic</option>
+                      <option value="events">Events</option>
+                      <option value="policies">Policies</option>
+                      <option value="forms">Forms</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="accessLevel">Access Level</label>
+                    <select id="accessLevel" name="accessLevel">
+                      <option value="public">Public</option>
+                      <option value="members">Members Only</option>
+                      <option value="executive">Executive Only</option>
+                      <option value="admin">Admin Only</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Current File Info -->
+              <div class="form-section">
+                <h3><i class="fas fa-file"></i> Current File</h3>
+                <div class="current-file-info">
+                  <div class="file-details">
+                    <i class="fas fa-file-pdf"></i>
+                    <div class="file-info-text">
+                      <strong id="currentFileName">document.pdf</strong>
+                      <p>Uploaded on: <span id="uploadDate">2024-01-15</span></p>
+                      <p>File size: <span id="fileSize">2.5 MB</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- File Replacement -->
+              <div class="form-section">
+                <h3><i class="fas fa-sync"></i> Replace File (Optional)</h3>
+                <div class="form-group">
+                  <label for="documentFile">Select New File</label>
+                  <div class="file-upload-area">
+                    <input type="file" id="documentFile" name="documentFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png">
+                    <div class="file-upload-drop-zone" id="dropZone">
+                      <i class="fas fa-sync-alt"></i>
+                      <p>Drag and drop new file here or click to browse</p>
+                      <small>Leave empty to keep current file</small>
+                    </div>
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                      <i class="fas fa-file"></i>
+                      <span id="fileName"></span>
+                      <button type="button" class="btn-remove" id="removeFile">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Document Settings -->
+              <div class="form-section">
+                <h3><i class="fas fa-cog"></i> Document Settings</h3>
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendNotification" name="sendNotification">
+                      <span class="checkmark"></span>
+                      Send notification to members about document update
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="makeFeatured" name="makeFeatured">
+                      <span class="checkmark"></span>
+                      Feature this document on homepage
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="allowDownload" name="allowDownload" checked>
+                      <span class="checkmark"></span>
+                      Allow members to download this document
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="archiveDocument" name="archiveDocument">
+                      <span class="checkmark"></span>
+                      Archive this document (will hide from main view)
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Save Changes
+                </button>
+                <button type="button" class="btn btn-secondary cancel-btn">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='documentation.html'">
+                  <i class="fas fa-folder"></i> View Documents
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -44,56 +175,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Edit Document';
-      if (pageSubtitle) pageSubtitle.textContent = 'Edit and update existing documents';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/edit-document.js"></script>
 </body>
 </html>

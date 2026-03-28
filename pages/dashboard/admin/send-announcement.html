@@ -29,10 +29,193 @@
             <p>Send announcements to all members</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-bullhorn"></i>
-            <h2>Send Announcement</h2>
-            <p>This section is under construction.</p>
+          <!-- Send Announcement Form -->
+          <div class="form-container">
+            <form id="sendAnnouncementForm" class="form-grid">
+              <!-- Announcement Details -->
+              <div class="form-section">
+                <h3><i class="fas fa-bullhorn"></i> Announcement Details</h3>
+                <div class="form-group">
+                  <label for="title">Announcement Title *</label>
+                  <input type="text" id="title" name="title" required placeholder="Enter announcement title...">
+                </div>
+                <div class="form-group">
+                  <label for="message">Message *</label>
+                  <textarea id="message" name="message" rows="6" required placeholder="Write your announcement message here..."></textarea>
+                  <div class="char-counter">
+                    <span id="charCount">0</span> / 1000 characters
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                      <option value="">Select category...</option>
+                      <option value="general">General</option>
+                      <option value="urgent">Urgent</option>
+                      <option value="meeting">Meeting</option>
+                      <option value="event">Event</option>
+                      <option value="financial">Financial</option>
+                      <option value="academic">Academic</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="priority">Priority Level</label>
+                    <select id="priority" name="priority">
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recipient Selection -->
+              <div class="form-section">
+                <h3><i class="fas fa-users"></i> Recipients</h3>
+                <div class="form-group">
+                  <label for="recipients">Send To *</label>
+                  <select id="recipients" name="recipients" required>
+                    <option value="">Select recipients...</option>
+                    <option value="all">All Members</option>
+                    <option value="active">Active Members Only</option>
+                    <option value="executive">Executive Team</option>
+                    <option value="committee">Committee Heads</option>
+                    <option value="custom">Custom Selection</option>
+                  </select>
+                </div>
+                <div class="form-group" id="customRecipients" style="display: none;">
+                  <label>Custom Recipients</label>
+                  <div class="recipient-selection">
+                    <div class="recipient-search">
+                      <input type="text" placeholder="Search members...">
+                      <button type="button" class="btn btn-secondary">Search</button>
+                    </div>
+                    <div class="recipient-list">
+                      <div class="checkbox-group">
+                        <label class="checkbox-label">
+                          <input type="checkbox" name="customMember" value="member1">
+                          <span class="checkmark"></span>
+                          John Doe (Member)
+                        </label>
+                        <label class="checkbox-label">
+                          <input type="checkbox" name="customMember" value="member2">
+                          <span class="checkmark"></span>
+                          Jane Smith (Member)
+                        </label>
+                        <label class="checkbox-label">
+                          <input type="checkbox" name="customMember" value="member3">
+                          <span class="checkmark"></span>
+                          Mike Johnson (Member)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Delivery Options -->
+              <div class="form-section">
+                <h3><i class="fas fa-cog"></i> Delivery Options</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="deliveryMethod">Delivery Method</label>
+                    <select id="deliveryMethod" name="deliveryMethod">
+                      <option value="email">Email Only</option>
+                      <option value="sms">SMS Only</option>
+                      <option value="both">Email and SMS</option>
+                      <option value="dashboard">Dashboard Only</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="scheduledDate">Schedule Date</label>
+                    <input type="datetime-local" id="scheduledDate" name="scheduledDate">
+                    <small>Leave empty to send immediately</small>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="sendEmailCopy" name="sendEmailCopy" checked>
+                      <span class="checkmark"></span>
+                      Send copy to my email
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="trackReads" name="trackReads" checked>
+                      <span class="checkmark"></span>
+                      Track message reads
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="allowReplies" name="allowReplies">
+                      <span class="checkmark"></span>
+                      Allow replies to announcement
+                    </label>
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="pinAnnouncement" name="pinAnnouncement">
+                      <span class="checkmark"></span>
+                      Pin to dashboard for 7 days
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Attachments -->
+              <div class="form-section">
+                <h3><i class="fas fa-paperclip"></i> Attachments</h3>
+                <div class="form-group">
+                  <label for="attachments">Add Attachments</label>
+                  <div class="file-upload-area">
+                    <input type="file" id="attachments" name="attachments" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png">
+                    <div class="file-upload-drop-zone">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                      <p>Drag and drop files here or click to browse</p>
+                      <small>Maximum file size: 10MB per file</small>
+                    </div>
+                    <div class="file-list" id="fileList">
+                      <!-- Selected files will appear here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Preview -->
+              <div class="form-section">
+                <h3><i class="fas fa-eye"></i> Preview</h3>
+                <div class="announcement-preview">
+                  <div class="preview-header">
+                    <h4 id="previewTitle">Announcement Title</h4>
+                    <span class="priority-badge" id="previewPriority">Medium</span>
+                  </div>
+                  <div class="preview-content">
+                    <p id="previewMessage">Your announcement message will appear here...</p>
+                  </div>
+                  <div class="preview-footer">
+                    <small>From: SWA Administration</small>
+                    <small>Date: <span id="previewDate">Today</span></small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-paper-plane"></i> Send Announcement
+                </button>
+                <button type="button" class="btn btn-secondary" id="saveDraft">
+                  <i class="fas fa-save"></i> Save Draft
+                </button>
+                <button type="button" class="btn btn-secondary" id="testSend">
+                  <i class="fas fa-vial"></i> Test Send
+                </button>
+                <button type="button" class="btn btn-outline cancel-btn">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='notices.html'">
+                  <i class="fas fa-list"></i> View Announcements
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -44,56 +227,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Send Announcement';
-      if (pageSubtitle) pageSubtitle.textContent = 'Send announcements to all members';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/send-announcement.js"></script>
 </body>
 </html>

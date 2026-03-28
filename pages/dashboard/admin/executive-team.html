@@ -29,10 +29,227 @@
             <p>Manage executive team members</p>
           </div>
           
-          <div class="section-placeholder">
-            <i class="fas fa-users-cog"></i>
-            <h2>Executive Team</h2>
-            <p>This section is under construction.</p>
+          <!-- Statistics Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="total-officers">0</h3>
+                <p>Total Officers</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-user-tie"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="total-executives">0</h3>
+                <p>Total Executives</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-user-friends"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="committee-heads">0</h3>
+                <p>Committee Heads</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="term-end">N/A</h3>
+                <p>Term End</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading Indicator -->
+          <div id="loading-indicator" class="loading-indicator" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading executive team data...</p>
+          </div>
+          
+          <!-- Error Message -->
+          <div id="error-message" class="error-message" style="display: none;">
+            <span>Failed to load executive team. Please try again later.</span>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <button class="action-btn" href="add-officer.html">
+              <i class="fas fa-user-plus"></i>
+              <span>Add Officer</span>
+            </button>
+            <button class="action-btn" href="security-settings.html">
+              <i class="fas fa-cog"></i>
+              <span>Manage Roles</span>
+            </button>
+            <button class="action-btn" href="../public/events.html">
+              <i class="fas fa-calendar"></i>
+              <span>Schedule Meeting</span>
+            </button>
+          </div>
+
+          <!-- Executive Team Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-users-cog"></i> Executive Team Members</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='add-officer.html'">
+                  <i class="fas fa-plus"></i> Add Officer
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Position</th>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Term Start</th>
+                    <th>Term End</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="executives-table-body">
+                  <tr>
+                    <td colspan="9" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading executive team members...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Committee Heads Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-user-friends"></i> Committee Heads</h2>
+              <div class="table-actions">
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Committee</th>
+                    <th>Head Name</th>
+                    <th>Student ID</th>
+                    <th>Members Count</th>
+                    <th>Phone</th>
+                    <th>Meeting Day</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="committee-table-body">
+                  <tr>
+                    <td colspan="8" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading committee heads...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Roles & Permissions Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-shield-alt"></i> Roles & Permissions</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='security-settings.html'">
+                  <i class="fas fa-cog"></i> Manage Roles
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th>Dashboard</th>
+                    <th>Manage Members</th>
+                    <th>Financial</th>
+                    <th>Reports</th>
+                    <th>Settings</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="roles-table-body">
+                  <tr>
+                    <td colspan="7" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading roles and permissions...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Meetings Schedule Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-calendar-alt"></i> Meetings Schedule</h2>
+              <div class="table-actions">
+                <button class="btn btn-primary" onclick="window.location.href='../public/events.html?create=meeting'">
+                  <i class="fas fa-calendar-plus"></i> Schedule Meeting
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Meeting Type</th>
+                    <th>Frequency</th>
+                    <th>Day</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Next Meeting</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="meetings-table-body">
+                  <tr>
+                    <td colspan="7" class="no-data-message">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Loading meetings schedule...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -44,56 +261,6 @@
 
   <script>w3.includeHTML();</script>
 
-  <script>
-    // Initialize sidebar functionality after components are loaded
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Executive Team';
-      if (pageSubtitle) pageSubtitle.textContent = 'Manage executive team members';
-
-      // Logout functionality
-      const logoutBtn = document.getElementById('headerLogoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-          localStorage.removeItem('swa_auth_token');
-          sessionStorage.removeItem('swa_auth_token');
-          localStorage.removeItem('swa_user');
-          sessionStorage.removeItem('swa_user');
-          window.location.replace('../../../pages/auth/login-page.html');
-        });
-      }
-    }
-  </script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/executive-team.js"></script>
 </body>
 </html>
