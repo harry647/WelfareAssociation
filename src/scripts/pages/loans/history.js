@@ -95,16 +95,30 @@ async function fetchLoanUpdates() {
     }
 }
 
+// Chart instances storage
+let loanGrowthChart = null;
+let repaymentChart = null;
+
 // ============================================
 // CHARTS (Chart.js)
 // ============================================
 function initCharts() {
+    // Destroy existing charts before creating new ones
+    if (loanGrowthChart) {
+        loanGrowthChart.destroy();
+        loanGrowthChart = null;
+    }
+    if (repaymentChart) {
+        repaymentChart.destroy();
+        repaymentChart = null;
+    }
+
     // Loan Growth Chart
     const loanGrowthCtx = document.getElementById('loanGrowthChart');
     if (loanGrowthCtx) {
         // Prepare real data or use defaults
         const monthlyData = getMonthlyLoanData();
-        new Chart(loanGrowthCtx, {
+        loanGrowthChart = new Chart(loanGrowthCtx, {
             type: 'line',
             data: {
                 labels: monthlyData.labels,
@@ -139,7 +153,7 @@ function initCharts() {
     if (repaymentCtx) {
         // Prepare real payment data or use defaults
         const paymentData = getMonthlyPaymentData();
-        new Chart(repaymentCtx, {
+        repaymentChart = new Chart(repaymentCtx, {
             type: 'bar',
             data: {
                 labels: paymentData.labels,
