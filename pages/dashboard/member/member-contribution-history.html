@@ -24,7 +24,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member-contribution-history.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member/member-contribution-history.html');
         return;
       }
       document.documentElement.style.visibility = 'visible';
@@ -33,7 +33,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member-contribution-history.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/member/member-contribution-history.html');
       }
     });
   </script>

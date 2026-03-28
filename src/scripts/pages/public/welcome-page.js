@@ -95,7 +95,7 @@ class WelcomePage {
 
             // Show success and redirect
             alert('Login successful! Redirecting to Member Portal...');
-            window.location.href = '../dashboard/member-portal.html';
+            window.location.href = '../../pages/dashboard/member/member-portal.html';
 
         } catch (error) {
             console.error('Login error:', error);
@@ -142,7 +142,7 @@ class WelcomePage {
 
             // Show success and redirect
             alert('Registration successful! Welcome to SWA!');
-            window.location.href = '../dashboard/member-portal.html';
+            window.location.href = '../../pages/dashboard/member/member-portal.html';
 
         } catch (error) {
             console.error('Registration error:', error);

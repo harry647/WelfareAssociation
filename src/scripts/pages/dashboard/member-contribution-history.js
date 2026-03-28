@@ -46,7 +46,7 @@ class MemberContributionHistory {
         if (!isAuth) {
             // Not logged in, redirect to login page
             console.log('User not authenticated, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-contribution-history.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-contribution-history.html';
             return false;
         }
         
@@ -54,7 +54,7 @@ class MemberContributionHistory {
         console.log('Current user:', user);
         if (!user) {
             console.log('No current user found, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-contribution-history.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-contribution-history.html';
             return false;
         }
         

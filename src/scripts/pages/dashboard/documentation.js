@@ -42,7 +42,7 @@ class Documentation {
      */
     checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/documentation.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../admin/documentation.html';
             return false;
         }
         return true;

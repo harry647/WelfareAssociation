@@ -47,7 +47,7 @@ class MemberPaymentHistory {
         if (!isAuth) {
             // Not logged in, redirect to login page
             console.log('User not authenticated, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-payments-history.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-payments-history.html';
             return false;
         }
         
@@ -55,7 +55,7 @@ class MemberPaymentHistory {
         console.log('Current user:', user);
         if (!user) {
             console.log('No current user found, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-payments-history.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-payments-history.html';
             return false;
         }
         

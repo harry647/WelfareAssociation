@@ -47,7 +47,7 @@ class SendSMS {
         const cancelBtn = document.querySelector('.cancel-btn');
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
-                window.location.href = 'admin-dashboard.html';
+                window.location.href = '../admin/admin-dashboard.html';
             });
         }
 
@@ -68,7 +68,7 @@ class SendSMS {
 
         console.log('Sending SMS:', sms);
         alert('SMS sent successfully!');
-        window.location.href = 'admin-dashboard.html';
+        window.location.href = '../admin/admin-dashboard.html';
     }
 
     handleLogout() {

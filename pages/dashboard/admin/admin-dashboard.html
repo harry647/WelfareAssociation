@@ -23,7 +23,7 @@
       
       if (!authToken || !userData) {
         // Not authenticated, redirect immediately
-        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/admin-dashboard.html');
         return;
       }
       
@@ -45,7 +45,7 @@
       const userData = localStorage.getItem('swa_user');
       
       if (!authToken || !userData) {
-        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin-dashboard.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/admin-dashboard.html');
         return;
       }
       

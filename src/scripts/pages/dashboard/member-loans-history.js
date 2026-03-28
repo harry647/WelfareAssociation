@@ -47,7 +47,7 @@ class MemberLoanHistory {
         if (!isAuth) {
             // Not logged in, redirect to login page
             console.log('User not authenticated, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-loans-history.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-loans-history.html';
             return false;
         }
         
@@ -55,7 +55,7 @@ class MemberLoanHistory {
         console.log('Current user:', user);
         if (!user) {
             console.log('No current user found, redirecting to login');
-            window.location.href = '../auth/login-page.html?redirect=../dashboard/member-loans-history.html';
+            window.location.href = '../../../auth/login-page.html?redirect=../member/member-loans-history.html';
             return false;
         }
         
