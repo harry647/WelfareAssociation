@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Member Contribution History - View your contribution records and payment history">
+  <title>Contribution History - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="../../src/styles/main.css">
+  <link rel="stylesheet" href="../../src/styles/original/header.css">
+  <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+  <link rel="stylesheet" href="../../src/styles/original/footer.css">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/member-portal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <script>
+    (function() {
+      document.documentElement.style.visibility = 'hidden';
+      if (performance && performance.navigation.type === 2) {
+        window.location.reload();
+        return;
+      }
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-contribution-history.html');
+        return;
+      }
+      document.documentElement.style.visibility = 'visible';
+    })();
+    window.addEventListener('pageshow', function(event) {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-contribution-history.html');
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <div w3-include-html="../shared/header.html"></div>
+
+  <!-- Member Top Bar -->
+  <header class="member-header">
+    <div class="member-header-left">
+      <div class="member-avatar">M</div>
+      <div>
+        <h1 id="welcome-message"><i class="fas fa-user-circle"></i> Welcome, Member</h1>
+        <p>View your contribution history and payment records</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button type="button" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
+
+  <div class="page-body">
+
+    <!-- Page Title Section -->
+    <section class="page-title-section">
+      <div class="page-title-content">
+        <h1><i class="fas fa-history"></i> Contribution History</h1>
+        <p>Track all your contributions and payment records over time</p>
+      </div>
+      <div class="page-actions">
+        <a href="member-portal.html" class="btn secondary-btn">
+          <i class="fas fa-arrow-left"></i> Back to Portal
+        </a>
+        <a href="../payments/make-payment.html" class="btn submit-btn">
+          <i class="fas fa-plus"></i> Make Contribution
+        </a>
+      </div>
+    </section>
+
+    <!-- Contribution Summary Cards -->
+    <section class="summary-section">
+      <div class="contribution-summary-cards">
+        <div class="summary-card total-contributions">
+          <div class="card-icon"><i class="fas fa-money-bill-wave"></i></div>
+          <div class="card-content">
+            <h3>Total Contributions</h3>
+            <p class="card-value" id="totalContributions">Ksh 0</p>
+            <p class="card-label">All time</p>
+          </div>
+        </div>
+        <div class="summary-card this-year">
+          <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+          <div class="card-content">
+            <h3>This Year</h3>
+            <p class="card-value" id="thisYearContributions">Ksh 0</p>
+            <p class="card-label">Contributions</p>
+          </div>
+        </div>
+        <div class="summary-card this-month">
+          <div class="card-icon"><i class="fas fa-calendar-day"></i></div>
+          <div class="card-content">
+            <h3>This Month</h3>
+            <p class="card-value" id="thisMonthContributions">Ksh 0</p>
+            <p class="card-label">Contributions</p>
+          </div>
+        </div>
+        <div class="summary-card pending-contributions">
+          <div class="card-icon"><i class="fas fa-clock"></i></div>
+          <div class="card-content">
+            <h3>Pending</h3>
+            <p class="card-value" id="pendingContributions">0</p>
+            <p class="card-label">Contributions</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters and Search -->
+    <section class="filters-section">
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label for="yearFilter">Year:</label>
+          <select id="yearFilter">
+            <option value="">All Years</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="monthFilter">Month:</label>
+          <select id="monthFilter">
+            <option value="">All Months</option>
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="statusFilter">Status:</label>
+          <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="verified">Verified</option>
+            <option value="pending">Pending</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <input type="text" id="searchInput" placeholder="Search contributions...">
+          <button type="button" id="searchBtn" class="btn secondary-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contributions Table -->
+    <section class="data-section full-width">
+      <h2 class="section-title"><i class="fas fa-table"></i> Contribution Records</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Reference</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="contributionsTableBody">
+            <!-- Data will be loaded dynamically -->
+          </tbody>
+        </table>
+        <div class="loading-indicator" id="contributionsLoading">
+          <i class="fas fa-spinner fa-spin"></i> Loading contribution history...
+        </div>
+        <div class="no-data" id="contributionsNoData" style="display: none;">
+          <i class="fas fa-info-circle"></i> No contribution history found
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination" id="pagination">
+        <!-- Pagination will be generated dynamically -->
+      </div>
+    </section>
+
+  </div><!-- /page-body -->
+
+  <div w3-include-html="../shared/footer.html"></div>
+
+  <script>w3.includeHTML();</script>
+  <script type="module" src="../../src/scripts/pages/dashboard/member-contribution-history.js"></script>
+</body>
+</html>

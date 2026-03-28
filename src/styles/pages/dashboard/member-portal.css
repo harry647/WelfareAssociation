@@ -1053,16 +1053,35 @@ table tbody tr:last-child td:last-child {
 }
 
 /* ============================================================================
-   LOAN HISTORY & PAYMENTS HISTORY STYLES
+   CONTRIBUTION HISTORY STYLES
    ============================================================================ */
 
-.loan-history-section, .payments-history-section {
+.contribution-history-section {
   background: var(--member-color-surface);
   border-radius: var(--member-radius-lg);
   padding: 24px;
   margin-bottom: 24px;
   box-shadow: var(--member-shadow-sm);
   border: 1px solid var(--member-color-border);
+}
+
+.contribution-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.total-contributions .card-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.this-year .card-icon {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.pending-contributions .card-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .loan-summary-cards, .payment-summary-cards {
@@ -1229,17 +1248,32 @@ table tbody tr:last-child td:last-child {
   .fine-summary-grid { grid-template-columns: repeat(2, 1fr); }
   .portal-grid { grid-template-columns: 1fr; }
   .full-width { grid-column: auto; }
+  .page-title-section { flex-direction: column; gap: 20px; text-align: center; }
+  .filter-controls { flex-direction: column; align-items: stretch; }
+  .search-group { margin-left: 0; }
+  .eligibility-card { flex-direction: column; gap: 20px; }
+  .eligibility-summary { grid-template-columns: 1fr; }
+  .eligibility-status { grid-column: span 1; }
 }
 
 @media (max-width: 640px) {
   .dashboard { grid-template-columns: 1fr 1fr; }
   .quick-links { grid-template-columns: 1fr 1fr; }
-  .loan-summary-cards, .payment-summary-cards { grid-template-columns: 1fr; }
+  .loan-summary-cards, .payment-summary-cards, .contribution-summary-cards { grid-template-columns: 1fr; }
   .profile-info { grid-template-columns: 1fr; }
   .page-body { padding: 16px; }
   .member-header { padding: 14px 16px; }
   .alert { margin: 12px 16px 0; }
   .logout-section { padding: 0 16px 24px; }
+  .page-title-section { margin: 16px; padding: 24px 20px; }
+  .page-title-content h1 { font-size: 1.5rem; }
+  .page-actions { flex-direction: column; width: 100%; }
+  .filters-section { margin: 0 16px 16px; padding: 16px; }
+  .filter-controls { gap: 12px; }
+  .search-group input { width: 100%; }
+  .summary-section { margin: 0 16px 16px; }
+  .eligibility-section { margin: 0 16px 16px; padding: 16px; }
+  .eligibility-actions { min-width: auto; width: 100%; }
 }
 
 .no-notifications {

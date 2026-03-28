@@ -150,7 +150,33 @@
 
         <!-- Contribution History -->
         <section class="data-section">
-          <h2 class="section-title"><i class="fas fa-history"></i> My Contributions</h2>
+          <h2 class="section-title"><i class="fas fa-history"></i> My Contribution History</h2>
+          <div class="contribution-summary-cards">
+            <div class="summary-card total-contributions">
+              <div class="card-icon"><i class="fas fa-money-bill-wave"></i></div>
+              <div class="card-content">
+                <h3>Total Contributions</h3>
+                <p class="card-value" id="totalContributions">Ksh 0</p>
+                <p class="card-label">All time</p>
+              </div>
+            </div>
+            <div class="summary-card this-year">
+              <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+              <div class="card-content">
+                <h3>This Year</h3>
+                <p class="card-value" id="thisYearContributions">Ksh 0</p>
+                <p class="card-label">Contributions</p>
+              </div>
+            </div>
+            <div class="summary-card pending-contributions">
+              <div class="card-icon"><i class="fas fa-clock"></i></div>
+              <div class="card-content">
+                <h3>Pending</h3>
+                <p class="card-value" id="pendingContributions">0</p>
+                <p class="card-label">Contributions</p>
+              </div>
+            </div>
+          </div>
           <div class="table-container">
             <table>
               <thead>
@@ -163,8 +189,14 @@
               </thead>
               <tbody id="contributionsTableBody"></tbody>
             </table>
+            <div class="loading-indicator" id="contributionsLoading">
+              <i class="fas fa-spinner fa-spin"></i> Loading contribution history...
+            </div>
+            <div class="no-data" id="contributionsNoData" style="display: none;">
+              <i class="fas fa-info-circle"></i> No contribution history found
+            </div>
           </div>
-          <a href="../contributions/history.html" class="view-all">View All Contributions →</a>
+          <a href="member-contribution-history.html" class="view-all">View All Contribution Details →</a>
         </section>
 
         <!-- Make Contribution -->
@@ -276,7 +308,7 @@
               <i class="fas fa-info-circle"></i> No loan history found
             </div>
           </div>
-          <a href="../loans/history.html" class="view-all">View All Loan Details →</a>
+          <a href="member-loans-history.html" class="view-all">View All Loan Details →</a>
         </section>
 
         <!-- Payment History -->
@@ -330,7 +362,7 @@
               <i class="fas fa-info-circle"></i> No payment history found
             </div>
           </div>
-          <a href="../payments/history.html" class="view-all">View All Payment Details →</a>
+          <a href="member-payments-history.html" class="view-all">View All Payment Details →</a>
         </section>
 
       </div><!-- /portal-grid -->

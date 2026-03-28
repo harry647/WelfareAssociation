@@ -52,7 +52,7 @@ router.get('/goals', auth, async (req, res) => {
         let where = {};
 
         if (!['admin', 'treasurer'].includes(req.user.role)) {
-            const member = await Member.findOne({ where: { userId: req.user.id } });
+            const member = await Member.findOne({ where: { userId: req.user._id } });
             if (member) where.memberId = member.id;
         } else if (memberId) {
             where.memberId = memberId;
@@ -116,7 +116,7 @@ router.post('/goals', auth, [
     try {
         const { name, description, targetAmount, targetDate } = req.body;
 
-        const member = await Member.findOne({ where: { userId: req.user.id } });
+        const member = await Member.findOne({ where: { userId: req.user._id } });
         if (!member) {
             return res.status(404).json({ success: false, message: 'Member not found' });
         }
@@ -192,7 +192,7 @@ router.post('/goals/:id/savings', auth, [
             method,
             reference,
             note,
-            recordedBy: req.user.id,
+            recordedBy: req.user._id,
             date: new Date()
         });
         goal.transactions = transactions;
@@ -241,7 +241,7 @@ router.post('/goals/:id/withdraw', auth, [
             method,
             reference,
             note,
-            recordedBy: req.user.id,
+            recordedBy: req.user._id,
             date: new Date()
         });
         goal.transactions = transactions;

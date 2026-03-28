@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Member Loan History - View your loan applications, status, and repayment history">
+  <title>Loan History - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="../../src/styles/main.css">
+  <link rel="stylesheet" href="../../src/styles/original/header.css">
+  <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
+  <link rel="stylesheet" href="../../src/styles/original/footer.css">
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/member-portal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <script>
+    (function() {
+      document.documentElement.style.visibility = 'hidden';
+      if (performance && performance.navigation.type === 2) {
+        window.location.reload();
+        return;
+      }
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-loans-history.html');
+        return;
+      }
+      document.documentElement.style.visibility = 'visible';
+    })();
+    window.addEventListener('pageshow', function(event) {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('../auth/login-page.html?redirect=../dashboard/member-loans-history.html');
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <div w3-include-html="../shared/header.html"></div>
+
+  <!-- Member Top Bar -->
+  <header class="member-header">
+    <div class="member-header-left">
+      <div class="member-avatar">M</div>
+      <div>
+        <h1 id="welcome-message"><i class="fas fa-user-circle"></i> Welcome, Member</h1>
+        <p>View your loan applications, status, and repayment history</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button type="button" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
+
+  <div class="page-body">
+
+    <!-- Page Title Section -->
+    <section class="page-title-section">
+      <div class="page-title-content">
+        <h1><i class="fas fa-history"></i> Loan History</h1>
+        <p>Track all your loan applications, status updates, and repayment progress</p>
+      </div>
+      <div class="page-actions">
+        <a href="member-portal.html" class="btn secondary-btn">
+          <i class="fas fa-arrow-left"></i> Back to Portal
+        </a>
+        <a href="../loans/apply.html" class="btn submit-btn">
+          <i class="fas fa-plus"></i> Apply for Loan
+        </a>
+      </div>
+    </section>
+
+    <!-- Loan Summary Cards -->
+    <section class="summary-section">
+      <div class="loan-summary-cards">
+        <div class="summary-card active-loans">
+          <div class="card-icon"><i class="fas fa-hand-holding-usd"></i></div>
+          <div class="card-content">
+            <h3>Active Loans</h3>
+            <p class="card-value" id="activeLoansCount">0</p>
+            <p class="card-label">Current loans</p>
+          </div>
+        </div>
+        <div class="summary-card total-borrowed">
+          <div class="card-icon"><i class="fas fa-coins"></i></div>
+          <div class="card-content">
+            <h3>Total Borrowed</h3>
+            <p class="card-value" id="totalBorrowed">Ksh 0</p>
+            <p class="card-label">All time</p>
+          </div>
+        </div>
+        <div class="summary-card outstanding-balance">
+          <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+          <div class="card-content">
+            <h3>Outstanding Balance</h3>
+            <p class="card-value" id="outstandingBalance">Ksh 0</p>
+            <p class="card-label">Total due</p>
+          </div>
+        </div>
+        <div class="summary-card completed-loans">
+          <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="card-content">
+            <h3>Completed Loans</h3>
+            <p class="card-value" id="completedLoansCount">0</p>
+            <p class="card-label">Fully repaid</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loan Eligibility Card -->
+    <section class="eligibility-section">
+      <h2 class="section-title"><i class="fas fa-chart-line"></i> Current Loan Eligibility</h2>
+      <div class="eligibility-card">
+        <div class="eligibility-summary">
+          <div class="eligibility-status" id="eligibilityStatus">
+            <span class="status-icon"></span>
+            <span class="status-text"></span>
+          </div>
+          <div class="max-loan-display">
+            <p class="max-loan-label">Maximum Loan Limit</p>
+            <p class="max-loan-amount" id="maxLoanAmount">Ksh 0</p>
+          </div>
+          <div class="member-score">
+            <p class="score-label">Member Score</p>
+            <p class="score-value" id="memberScore">0</p>
+          </div>
+        </div>
+        <div class="eligibility-actions">
+          <a href="../loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
+            <i class="fas fa-paper-plane"></i> Apply for Loan
+          </a>
+          <button type="button" class="btn secondary-btn" onclick="memberLoanHistory.refreshEligibility()">
+            <i class="fas fa-sync"></i> Refresh
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters and Search -->
+    <section class="filters-section">
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label for="yearFilter">Year:</label>
+          <select id="yearFilter">
+            <option value="">All Years</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="statusFilter">Status:</label>
+          <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="rejected">Rejected</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="typeFilter">Type:</label>
+          <select id="typeFilter">
+            <option value="">All Types</option>
+            <option value="emergency">Emergency Loan</option>
+            <option value="development">Development Loan</option>
+            <option value="education">Education Loan</option>
+            <option value="business">Business Loan</option>
+            <option value="personal">Personal Loan</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <input type="text" id="searchInput" placeholder="Search loans...">
+          <button type="button" id="searchBtn" class="btn secondary-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loans Table -->
+    <section class="data-section full-width">
+      <h2 class="section-title"><i class="fas fa-table"></i> Loan Records</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Loan Number</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Applied Date</th>
+              <th>Due Date</th>
+              <th>Balance</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="loansTableBody">
+            <!-- Data will be loaded dynamically -->
+          </tbody>
+        </table>
+        <div class="loading-indicator" id="loansLoading">
+          <i class="fas fa-spinner fa-spin"></i> Loading loan history...
+        </div>
+        <div class="no-data" id="loansNoData" style="display: none;">
+          <i class="fas fa-info-circle"></i> No loan history found
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination" id="pagination">
+        <!-- Pagination will be generated dynamically -->
+      </div>
+    </section>
+
+  </div><!-- /page-body -->
+
+  <div w3-include-html="../shared/footer.html"></div>
+
+  <script>w3.includeHTML();</script>
+  <script type="module" src="../../src/scripts/pages/dashboard/member-loans-history.js"></script>
+</body>
+</html>

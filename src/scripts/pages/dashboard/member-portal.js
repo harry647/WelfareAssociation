@@ -6,7 +6,7 @@
  */
 
 // Import services
-import { authService, memberService, contributionService, loanService, apiService } from '../../../services/index.js';
+import { authService, memberService, contributionService, loanService, paymentService, apiService } from '../../../services/index.js';
 
 class MemberPortal {
     constructor() {
@@ -475,6 +475,9 @@ class MemberPortal {
         // Load payments history  
         this.loadPaymentsHistory();
         
+        // Load contributions history
+        this.loadContributionsHistory();
+        
         console.log('Updated service displays with data:', services);
     }
     
@@ -740,7 +743,7 @@ class MemberPortal {
             tbody.innerHTML = '';
             if (noDataEl) noDataEl.style.display = 'none';
 
-            const result = await loanService.getLoans();
+            const result = await loanService.getAll();
             
             if (result.success && result.data) {
                 const loans = result.data;
@@ -817,7 +820,7 @@ class MemberPortal {
             tbody.innerHTML = '';
             if (noDataEl) noDataEl.style.display = 'none';
 
-            const result = await paymentService.getPayments();
+            const result = await paymentService.getAll();
             
             if (result.success && result.data) {
                 const payments = result.data;
@@ -880,6 +883,63 @@ class MemberPortal {
         this.updateElement('totalPayments', `Ksh ${totalPayments.toLocaleString()}`);
         this.updateElement('thisMonthPayments', `Ksh ${thisMonthPayments.toLocaleString()}`);
         this.updateElement('pendingPayments', pendingPayments);
+    }
+
+    /**
+     * Load contribution history
+     */
+    async loadContributionsHistory() {
+        const loadingEl = document.getElementById('contributionsLoading');
+        const tbody = document.getElementById('contributionsTableBody');
+        const noDataEl = document.getElementById('contributionsNoData');
+        
+        if (!loadingEl || !tbody) return;
+
+        try {
+            loadingEl.style.display = 'block';
+            tbody.innerHTML = '';
+            if (noDataEl) noDataEl.style.display = 'none';
+
+            const result = await contributionService.getAll();
+            
+            if (result.success && result.data) {
+                const contributions = result.data;
+                
+                if (contributions.length === 0) {
+                    if (noDataEl) noDataEl.style.display = 'block';
+                    this.updateContributionsSummary([]);
+                } else {
+                    this.populateContributionTable(contributions);
+                    this.updateContributionsSummary(contributions);
+                }
+            } else {
+                throw new Error(result.message || 'Failed to load contribution history');
+            }
+        } catch (error) {
+            console.error('Error loading contribution history:', error);
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #dc2626;">Error loading contribution history</td></tr>';
+        } finally {
+            loadingEl.style.display = 'none';
+        }
+    }
+
+    /**
+     * Update contributions summary cards
+     */
+    updateContributionsSummary(contributions) {
+        const totalContributions = contributions.reduce((sum, contribution) => sum + parseFloat(contribution.amount || 0), 0);
+        const currentYear = new Date().getFullYear();
+        const thisYearContributions = contributions
+            .filter(contribution => {
+                const contributionDate = new Date(contribution.date || contribution.createdAt);
+                return contributionDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, contribution) => sum + parseFloat(contribution.amount || 0), 0);
+        const pendingContributions = contributions.filter(contribution => contribution.status === 'pending').length;
+
+        this.updateElement('totalContributions', `Ksh ${totalContributions.toLocaleString()}`);
+        this.updateElement('thisYearContributions', `Ksh ${thisYearContributions.toLocaleString()}`);
+        this.updateElement('pendingContributions', pendingContributions);
     }
 
     /**

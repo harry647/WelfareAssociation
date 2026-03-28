@@ -36,7 +36,7 @@ router.get('/', auth, async (req, res) => {
         
         // Non-admin users only see their own contributions
         if (!['admin', 'treasurer', 'secretary'].includes(req.user.role)) {
-            const member = await Member.findOne({ where: { userId: req.user._id } });
+            const member = await Member.findOne({ where: { userId: req.user.id } });
             if (member) {
                 where.memberId = member.id;
             }
@@ -230,7 +230,7 @@ router.post('/add', auth, [
         if (memberId && ['admin', 'treasurer'].includes(req.user.role)) {
             member = await Member.findByPk(memberId);
         } else {
-            member = await Member.findOne({ where: { userId: req.user._id } });
+            member = await Member.findOne({ where: { userId: req.user.id } });
         }
 
         if (!member) {
@@ -263,7 +263,7 @@ router.post('/add', auth, [
             paymentReference,
             description,
             status: 'completed', // Auto-complete for cash/manual
-            recordedBy: req.user._id,
+            recordedBy: req.user.id,
             paymentDate: new Date()
         });
 
