@@ -8,7 +8,7 @@
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
  
 
   <script>
@@ -40,398 +40,392 @@
   </script>
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
-      <div class="brand-text">
-        <h2>SWA Admin</h2>
-        <p>JOOUST</p>
+      <!-- ─── DASHBOARD ─── -->
+      <div class="content-section active" id="section-dashboard">
+        <div class="page-body">
+
+          <div class="page-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <p>Welcome to the Student Welfare Association Admin Portal</p>
+          </div>
+
+          <div class="cards">
+            <div class="card">
+              <h3><i class="fas fa-users"></i> Total Members</h3>
+              <p class="stat-number" data-stat="total-members">0</p>
+              <p class="stat-label">Active Members</p>
+            </div>
+            <div class="card">
+              <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
+              <p class="stat-number" data-stat="monthly-contributions">Ksh 0</p>
+              <p class="stat-label">This Month</p>
+            </div>
+            <div class="card">
+              <h3><i class="fas fa-wallet"></i> Available Balance</h3>
+              <p class="stat-number" data-stat="available-balance">Ksh 0</p>
+              <p class="stat-label">Current Funds</p>
+            </div>
+            <div class="card">
+              <h3><i class="fas fa-exclamation-circle"></i> Pending Debts</h3>
+              <p class="stat-number" data-stat="pending-debts">Ksh 0</p>
+              <p class="stat-label">Outstanding</p>
+            </div>
+          </div>
+
+          <div class="summary-stats">
+            <h2><i class="fas fa-chart-pie"></i> Overview Statistics</h2>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-user-graduate"></i></span>
+                <span class="stat-value" data-stat="total-registered">0</span>
+                <span class="stat-desc">Total Registered</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-hand-holding-heart"></i></span>
+                <span class="stat-value" data-stat="welfare-packages">0</span>
+                <span class="stat-desc">Welfare Packages</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-calendar-check"></i></span>
+                <span class="stat-value" data-stat="events-held">0</span>
+                <span class="stat-desc">Events Held</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon"><i class="fas fa-star"></i></span>
+                <span class="stat-value" data-stat="scholarships">0</span>
+                <span class="stat-desc">Scholarships</span>
+              </div>
+            </div>
+          </div>
+
+          <section class="data-section">
+            <h2><i class="fas fa-history"></i> Recent Contributions</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Name</th><th>Student ID</th><th>Date</th>
+                    <th>Amount</th><th>Payment Method</th><th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-contributions-table">
+                  <tr><td colspan="6" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="data-section">
+            <h2><i class="fas fa-exclamation-triangle"></i> Pending Debts</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Name</th><th>Student ID</th><th>Amount</th>
+                    <th>Due Date</th><th>Status</th><th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="pending-debts-table">
+                  <tr><td colspan="6" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="data-section">
+            <h2><i class="fas fa-hand-holding-usd"></i> Loan Requests</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member Name</th><th>Student ID</th><th>Requested Amount</th>
+                    <th>Purpose</th><th>Date Requested</th><th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="loan-requests-table">
+                  <tr><td colspan="6" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="quick-actions">
+            <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+            <div class="action-buttons">
+              <a href="../auth/registration-form.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Member</a>
+              <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Generate Report</a>
+              <a href="notices.html" class="action-btn"><i class="fas fa-bullhorn"></i> Send Notice</a>
+              <a href="../public/events.html" class="action-btn"><i class="fas fa-calendar-plus"></i> Create Event</a>
+              <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Email</a>
+              <a href="settings.html" class="action-btn"><i class="fas fa-cog"></i> Settings</a>
+            </div>
+          </section>
+
+          <section class="activity-log">
+            <h2><i class="fas fa-history"></i> Recent Activity Log</h2>
+            <ul class="activity-list" id="activityLogList">
+              <li><span class="activity-time">—</span> <i class="fas fa-spinner fa-spin" style="color:var(--accent);"></i> Loading activity...</li>
+            </ul>
+          </section>
+
+        </div>
       </div>
-    </div>
 
-    <div class="sidebar-section-label">Main</div>
-  <a href="../../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-  <a href="admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-  <a href="../shared/members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
-  <a href="withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
-  <a href="../../../pages/contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
-  <a href="../shared/debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
-  <a href="../../../pages/payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
-  <a href="../../../pages/loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
-  <a href="../../../pages/reports/index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
-  <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+      <!-- ─── PLACEHOLDER SECTIONS ─── -->
+      <div class="content-section" id="section-members">
+        <div class="page-body"><div class="page-header"><h1><i class="fas fa-users"></i> Members</h1></div>
+        <div class="section-placeholder"><i class="fas fa-users"></i><h2>Members</h2><p>This section is under construction.</p></div></div>
+      </div>
 
-  <hr class="sidebar-divider">
+      <div class="content-section" id="section-contributions">
+        <div class="page-body"><div class="page-header"><h1><i class="fas fa-money-bill-wave"></i> Contributions</h1></div>
+        <div class="section-placeholder"><i class="fas fa-money-bill-wave"></i><h2>Contributions</h2><p>This section is under construction.</p></div></div>
+      </div>
 
-  <div class="sidebar-section-label">More</div>
-  <a href="registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
-  <a href="active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
-  <a href="fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
-  <a href="issue-fine.html" class="nav-link"><i class="fas fa-gavel"></i> Issue Fine</a>
-  <a href="members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
-  <a href="executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
-  <a href="add-officer.html" class="nav-link"><i class="fas fa-user-plus"></i> Add Officer</a>
-  <a href="edit-member.html" class="nav-link"><i class="fas fa-user-edit"></i> Edit Member</a>
-  <a href="member-details.html" class="nav-link"><i class="fas fa-user"></i> Member Details</a>
-  <a href="send-announcement.html" class="nav-link"><i class="fas fa-bullhorn"></i> Send Announcement</a>
-  <a href="send-sms.html" class="nav-link"><i class="fas fa-sms"></i> Send SMS</a>
-  <a href="documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
-  <a href="upload-document.html" class="nav-link"><i class="fas fa-upload"></i> Upload Document</a>
-  <a href="edit-document.html" class="nav-link"><i class="fas fa-edit"></i> Edit Document</a>
-  <a href="archive-docs.html" class="nav-link"><i class="fas fa-archive"></i> Archive Documents</a>
-  <a href="create-folder.html" class="nav-link"><i class="fas fa-folder-plus"></i> Create Folder</a>
-  <a href="create-notice.html" class="nav-link"><i class="fas fa-sticky-note"></i> Create Notice</a>
-  <a href="../shared/notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
-  <a href="#" class="nav-link" data-section="messages"><i class="fas fa-envelope"></i> Messages <span class="badge" id="messages-badge" style="display:none;">0</span></a>
-  <a href="analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
-  <a href="security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
-  <a href="#" class="nav-link" data-section="pages"><i class="fas fa-file-alt"></i> Pages</a>
-</div>
+      <div class="content-section" id="section-debts">
+        <div class="page-body"><div class="page-header"><h1><i class="fas fa-exclamation-triangle"></i> Debts</h1></div>
+        <div class="section-placeholder"><i class="fas fa-exclamation-triangle"></i><h2>Debts</h2><p>This section is under construction.</p></div></div>
+      </div>
 
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
+      <div class="content-section" id="section-loans">
+        <div class="page-body"><div class="page-header"><h1><i class="fas fa-hand-holding-usd"></i> Loans</h1></div>
+        <div class="section-placeholder"><i class="fas fa-hand-holding-usd"></i><h2>Loans</h2><p>This section is under construction.</p></div></div>
+      </div>
 
-    <!-- Top Bar -->
-    <div class="admin-header">
-      <div class="admin-info">
-        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-        <div class="admin-avatar">VO</div>
-        <div class="admin-details">
-          <h3>Vincent Otieno</h3>
-          <p>Administrator</p>
-          <span class="admin-role">Chairman, SWA</span>
+      <div class="content-section" id="section-reports">
+        <div class="page-body"><div class="page-header"><h1><i class="fas fa-chart-bar"></i> Reports</h1></div>
+        <div class="section-placeholder"><i class="fas fa-chart-bar"></i><h2>Reports</h2><p>This section is under construction.</p></div></div>
+      </div>
+
+      <div class="content-section" id="section-withdrawals">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-wallet"></i><h2>Withdrawals</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-settings">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-cog"></i><h2>Settings</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-registered">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-user-plus"></i><h2>Registered Members</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-active-members">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-user-check"></i><h2>Active Members</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-fines">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-file-invoice-dollar"></i><h2>Fines Collection</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-savings">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-piggy-bank"></i><h2>Members Savings</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-executive">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-users-cog"></i><h2>Executive Team</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-docs">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-folder-open"></i><h2>Documentation</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-notices">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-bullhorn"></i><h2>Notices</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-analytics">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-chart-line"></i><h2>Analytics</h2><p>Coming soon.</p></div></div>
+      </div>
+      <div class="content-section" id="section-security">
+        <div class="page-body"><div class="section-placeholder"><i class="fas fa-shield-alt"></i><h2>Security Settings</h2><p>Coming soon.</p></div></div>
+      </div>
+
+      <!-- ─── MESSAGES ─── -->
+      <div class="content-section" id="section-messages">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-envelope"></i> Messages</h1>
+            <p>View and manage contact form submissions</p>
+          </div>
+          <section class="data-section">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th><th>Email</th><th>Subject</th><th>Message</th>
+                    <th>Date</th><th>Status</th><th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="messages-table">
+                  <tr><td colspan="7" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading messages...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
       </div>
-      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
 
-    <!-- ─── DASHBOARD ─── -->
-    <div class="content-section active" id="section-dashboard">
-      <div class="page-body">
+      <!-- ─── PAGES MANAGEMENT ─── -->
+      <div class="content-section" id="section-pages">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-file-alt"></i> Manage Pages</h1>
+            <p>Manage content for public pages</p>
+          </div>
 
-        <div class="page-header">
-          <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
-          <p>Welcome to the Student Welfare Association Admin Portal</p>
+          <section class="data-section">
+            <h2><i class="fas fa-list"></i> Available Pages</h2>
+            <div class="page-selector-grid" id="pageSelectorGrid">
+              <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading pages...</div>
+            </div>
+          </section>
+
+          <section class="data-section" id="pageContentEditor" style="display:none;">
+            <h2><i class="fas fa-edit"></i> Edit Content: <span id="selectedPageName" style="color:var(--accent);"></span></h2>
+            <div class="content-items-list" id="contentItemsList"></div>
+            <button class="btn add-content-btn" id="addContentBtn">
+              <i class="fas fa-plus"></i> Add Content Section
+            </button>
+          </section>
+
+          <!-- Content Modal -->
+          <div class="modal" id="contentModal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 id="modalTitle">Add Content</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <form id="contentForm">
+                  <input type="hidden" id="contentId">
+                  <div class="form-group">
+                    <label for="sectionIdentifier">Section Identifier</label>
+                    <input type="text" id="sectionIdentifier" name="sectionIdentifier" placeholder="e.g., hero, about, mission" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="contentTitle">Title</label>
+                    <input type="text" id="contentTitle" name="title" placeholder="Content title">
+                  </div>
+                  <div class="form-group">
+                    <label for="contentSubtitle">Subtitle</label>
+                    <input type="text" id="contentSubtitle" name="subtitle" placeholder="Optional subtitle">
+                  </div>
+                  <div class="form-group">
+                    <label for="contentText">Content (HTML allowed)</label>
+                    <textarea id="contentText" name="content" rows="8" placeholder="Enter content... HTML allowed"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="displayOrder">Display Order</label>
+                    <input type="number" id="displayOrder" name="displayOrder" value="0" min="0">
+                  </div>
+                  <div class="form-group">
+                    <label style="display:flex;align-items:center;text-transform:none;letter-spacing:0;">
+                      <input type="checkbox" id="isActive" name="isActive" checked>
+                      Active
+                    </label>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Content</button>
+                    <button type="button" class="btn btn-secondary" id="cancelContentBtn">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
         </div>
-
-        <div class="cards">
-          <div class="card">
-            <h3><i class="fas fa-users"></i> Total Members</h3>
-            <p class="stat-number" data-stat="total-members">0</p>
-            <p class="stat-label">Active Members</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
-            <p class="stat-number" data-stat="monthly-contributions">Ksh 0</p>
-            <p class="stat-label">This Month</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-wallet"></i> Available Balance</h3>
-            <p class="stat-number" data-stat="available-balance">Ksh 0</p>
-            <p class="stat-label">Current Funds</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-exclamation-circle"></i> Pending Debts</h3>
-            <p class="stat-number" data-stat="pending-debts">Ksh 0</p>
-            <p class="stat-label">Outstanding</p>
-          </div>
-        </div>
-
-        <div class="summary-stats">
-          <h2><i class="fas fa-chart-pie"></i> Overview Statistics</h2>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-user-graduate"></i></span>
-              <span class="stat-value" data-stat="total-registered">0</span>
-              <span class="stat-desc">Total Registered</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-hand-holding-heart"></i></span>
-              <span class="stat-value" data-stat="welfare-packages">0</span>
-              <span class="stat-desc">Welfare Packages</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-calendar-check"></i></span>
-              <span class="stat-value" data-stat="events-held">0</span>
-              <span class="stat-desc">Events Held</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-star"></i></span>
-              <span class="stat-value" data-stat="scholarships">0</span>
-              <span class="stat-desc">Scholarships</span>
-            </div>
-          </div>
-        </div>
-
-        <section class="data-section">
-          <h2><i class="fas fa-history"></i> Recent Contributions</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th><th>Student ID</th><th>Date</th>
-                  <th>Amount</th><th>Payment Method</th><th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="recent-contributions-table">
-                <tr><td colspan="6" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="data-section">
-          <h2><i class="fas fa-exclamation-triangle"></i> Pending Debts</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th><th>Student ID</th><th>Amount</th>
-                  <th>Due Date</th><th>Status</th><th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="pending-debts-table">
-                <tr><td colspan="6" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="data-section">
-          <h2><i class="fas fa-hand-holding-usd"></i> Loan Requests</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th><th>Student ID</th><th>Requested Amount</th>
-                  <th>Purpose</th><th>Date Requested</th><th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="loan-requests-table">
-                <tr><td colspan="6" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="quick-actions">
-          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-          <div class="action-buttons">
-            <a href="../auth/registration-form.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Member</a>
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Generate Report</a>
-            <a href="notices.html" class="action-btn"><i class="fas fa-bullhorn"></i> Send Notice</a>
-            <a href="../public/events.html" class="action-btn"><i class="fas fa-calendar-plus"></i> Create Event</a>
-            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Email</a>
-            <a href="settings.html" class="action-btn"><i class="fas fa-cog"></i> Settings</a>
-          </div>
-        </section>
-
-        <section class="activity-log">
-          <h2><i class="fas fa-history"></i> Recent Activity Log</h2>
-          <ul class="activity-list" id="activityLogList">
-            <li><span class="activity-time">—</span> <i class="fas fa-spinner fa-spin" style="color:var(--accent);"></i> Loading activity...</li>
-          </ul>
-        </section>
-
       </div>
-    </div>
 
-    <!-- ─── PLACEHOLDER SECTIONS ─── -->
-    <div class="content-section" id="section-members">
-      <div class="page-body"><div class="page-header"><h1><i class="fas fa-users"></i> Members</h1></div>
-      <div class="section-placeholder"><i class="fas fa-users"></i><h2>Members</h2><p>This section is under construction.</p></div></div>
-    </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
-    <div class="content-section" id="section-contributions">
-      <div class="page-body"><div class="page-header"><h1><i class="fas fa-money-bill-wave"></i> Contributions</h1></div>
-      <div class="section-placeholder"><i class="fas fa-money-bill-wave"></i><h2>Contributions</h2><p>This section is under construction.</p></div></div>
-    </div>
-
-    <div class="content-section" id="section-debts">
-      <div class="page-body"><div class="page-header"><h1><i class="fas fa-exclamation-triangle"></i> Debts</h1></div>
-      <div class="section-placeholder"><i class="fas fa-exclamation-triangle"></i><h2>Debts</h2><p>This section is under construction.</p></div></div>
-    </div>
-
-    <div class="content-section" id="section-loans">
-      <div class="page-body"><div class="page-header"><h1><i class="fas fa-hand-holding-usd"></i> Loans</h1></div>
-      <div class="section-placeholder"><i class="fas fa-hand-holding-usd"></i><h2>Loans</h2><p>This section is under construction.</p></div></div>
-    </div>
-
-    <div class="content-section" id="section-reports">
-      <div class="page-body"><div class="page-header"><h1><i class="fas fa-chart-bar"></i> Reports</h1></div>
-      <div class="section-placeholder"><i class="fas fa-chart-bar"></i><h2>Reports</h2><p>This section is under construction.</p></div></div>
-    </div>
-
-    <div class="content-section" id="section-withdrawals">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-wallet"></i><h2>Withdrawals</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-settings">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-cog"></i><h2>Settings</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-registered">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-user-plus"></i><h2>Registered Members</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-active-members">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-user-check"></i><h2>Active Members</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-fines">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-file-invoice-dollar"></i><h2>Fines Collection</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-savings">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-piggy-bank"></i><h2>Members Savings</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-executive">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-users-cog"></i><h2>Executive Team</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-docs">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-folder-open"></i><h2>Documentation</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-notices">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-bullhorn"></i><h2>Notices</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-analytics">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-chart-line"></i><h2>Analytics</h2><p>Coming soon.</p></div></div>
-    </div>
-    <div class="content-section" id="section-security">
-      <div class="page-body"><div class="section-placeholder"><i class="fas fa-shield-alt"></i><h2>Security Settings</h2><p>Coming soon.</p></div></div>
-    </div>
-
-    <!-- ─── MESSAGES ─── -->
-    <div class="content-section" id="section-messages">
-      <div class="page-body">
-        <div class="page-header">
-          <h1><i class="fas fa-envelope"></i> Messages</h1>
-          <p>View and manage contact form submissions</p>
-        </div>
-        <section class="data-section">
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th><th>Email</th><th>Subject</th><th>Message</th>
-                  <th>Date</th><th>Status</th><th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="messages-table">
-                <tr><td colspan="7" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading messages...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- ─── PAGES MANAGEMENT ─── -->
-    <div class="content-section" id="section-pages">
-      <div class="page-body">
-        <div class="page-header">
-          <h1><i class="fas fa-file-alt"></i> Manage Pages</h1>
-          <p>Manage content for public pages</p>
-        </div>
-
-        <section class="data-section">
-          <h2><i class="fas fa-list"></i> Available Pages</h2>
-          <div class="page-selector-grid" id="pageSelectorGrid">
-            <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading pages...</div>
-          </div>
-        </section>
-
-        <section class="data-section" id="pageContentEditor" style="display:none;">
-          <h2><i class="fas fa-edit"></i> Edit Content: <span id="selectedPageName" style="color:var(--accent);"></span></h2>
-          <div class="content-items-list" id="contentItemsList"></div>
-          <button class="btn add-content-btn" id="addContentBtn">
-            <i class="fas fa-plus"></i> Add Content Section
-          </button>
-        </section>
-
-        <!-- Content Modal -->
-        <div class="modal" id="contentModal">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h3 id="modalTitle">Add Content</h3>
-              <button class="modal-close" id="closeModal">&times;</button>
-            </div>
-            <div class="modal-body">
-              <form id="contentForm">
-                <input type="hidden" id="contentId">
-                <div class="form-group">
-                  <label for="sectionIdentifier">Section Identifier</label>
-                  <input type="text" id="sectionIdentifier" name="sectionIdentifier" placeholder="e.g., hero, about, mission" required>
-                </div>
-                <div class="form-group">
-                  <label for="contentTitle">Title</label>
-                  <input type="text" id="contentTitle" name="title" placeholder="Content title">
-                </div>
-                <div class="form-group">
-                  <label for="contentSubtitle">Subtitle</label>
-                  <input type="text" id="contentSubtitle" name="subtitle" placeholder="Optional subtitle">
-                </div>
-                <div class="form-group">
-                  <label for="contentText">Content (HTML allowed)</label>
-                  <textarea id="contentText" name="content" rows="8" placeholder="Enter content... HTML allowed"></textarea>
-                </div>
-                <div class="form-group">
-                  <label for="displayOrder">Display Order</label>
-                  <input type="number" id="displayOrder" name="displayOrder" value="0" min="0">
-                </div>
-                <div class="form-group">
-                  <label style="display:flex;align-items:center;text-transform:none;letter-spacing:0;">
-                    <input type="checkbox" id="isActive" name="isActive" checked>
-                    Active
-                  </label>
-                </div>
-                <div class="form-actions">
-                  <button type="submit" class="btn btn-primary">Save Content</button>
-                  <button type="button" class="btn btn-secondary" id="cancelContentBtn">Cancel</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div><!-- /main -->
-
+  <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
   <script>w3.includeHTML();</script>
 
   <script>
-    // Sidebar navigation
-    document.querySelectorAll('.nav-link[data-section]').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const section = this.dataset.section;
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        const target = document.getElementById('section-' + section);
-        if (target) target.classList.add('active');
-        if (window.innerWidth <= 768) {
-          document.getElementById('sidebar').classList.remove('active');
-          document.getElementById('sidebarOverlay').classList.remove('active');
-        }
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wait for w3-include to finish loading
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar navigation
+      document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const section = this.dataset.section;
+          
+          // Update active states
+          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Show corresponding content section
+          document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+          const target = document.getElementById('section-' + section);
+          if (target) target.classList.add('active');
+          
+          // Close sidebar on mobile
+          if (window.innerWidth <= 768) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+          }
+        });
       });
-    });
 
-    // Sidebar toggle
-    document.getElementById('sidebarToggle').addEventListener('click', function() {
-      document.getElementById('sidebar').classList.toggle('active');
-      document.getElementById('sidebarOverlay').classList.toggle('active');
-    });
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
 
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      document.getElementById('sidebar').classList.remove('active');
-      this.classList.remove('active');
-    });
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
 
-    // Modal open/close
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle && !pageTitle.textContent.includes('Admin Dashboard')) {
+        pageTitle.textContent = 'Admin Dashboard';
+      }
+      if (pageSubtitle && !pageSubtitle.textContent.includes('Welcome')) {
+        pageSubtitle.textContent = 'Welcome back, Administrator';
+      }
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
+
+    // Modal functionality
     const modal = document.getElementById('contentModal');
     const closeModal = document.getElementById('closeModal');
     const cancelBtn = document.getElementById('cancelContentBtn');
@@ -439,15 +433,17 @@
 
     if (addContentBtn) {
       addContentBtn.addEventListener('click', function() {
-        modal.classList.add('active');
+        if (modal) modal.classList.add('active');
       });
     }
 
-    if (closeModal) closeModal.addEventListener('click', () => modal.classList.remove('active'));
-    if (cancelBtn) cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) modal.classList.remove('active');
-    });
+    if (closeModal && modal) closeModal.addEventListener('click', () => modal.classList.remove('active'));
+    if (cancelBtn && modal) cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+    if (modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) modal.classList.remove('active');
+      });
+    }
   </script>
 
   <script type="module" src="../../../src/scripts/pages/dashboard/admin-dashboard.js"></script>

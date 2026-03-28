@@ -3,198 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Members Savings - Track and manage member savings">
+  <meta name="description" content="SWA Members Savings - Admin Panel">
   <title>Members Savings - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/members-savings.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Members Savings Section -->
-    <div class="content-section active" id="section-savings">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-piggy-bank"></i> Members Savings</h1>
-          <p>Track and manage member savings and deposits</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="cards">
-          <div class="card">
-            <h3><i class="fas fa-users"></i> Total Members</h3>
-            <p class="stat-number" id="totalMembersCount">0</p>
-            <p class="stat-label">With Savings</p>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-piggy-bank"></i> Members Savings</h1>
+            <p>Manage member savings accounts</p>
           </div>
-          <div class="card">
-            <h3><i class="fas fa-money-bill-wave"></i> Total Savings</h3>
-            <p class="stat-number" id="totalSavingsAmount">Ksh 0</p>
-            <p class="stat-label">Current Balance</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-arrow-up"></i> Deposits</h3>
-            <p class="stat-number" id="monthDeposits">Ksh 0</p>
-            <p class="stat-label">This Month</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-arrow-down"></i> Withdrawals</h3>
-            <p class="stat-number" id="monthWithdrawals">Ksh 0</p>
-            <p class="stat-label">This Month</p>
+          
+          <div class="section-placeholder">
+            <i class="fas fa-piggy-bank"></i>
+            <h2>Members Savings</h2>
+            <p>This section is under construction.</p>
           </div>
         </div>
-
-        <!-- Savings Summary -->
-        <div class="summary-stats">
-          <h2><i class="fas fa-chart-pie"></i> Savings Overview</h2>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
-              <span class="stat-value" id="growthRate">--</span>
-              <span class="stat-desc">Growth Rate</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-percentage"></i></span>
-              <span class="stat-value" id="interestRate">--</span>
-              <span class="stat-desc">Interest Rate</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-hand-holding-usd"></i></span>
-              <span class="stat-value" id="avgSavings">--</span>
-              <span class="stat-desc">Avg. Savings</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-trophy"></i></span>
-              <span class="stat-value" id="topSaver">--</span>
-              <span class="stat-desc">Top Saver</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Individual Savings Accounts -->
-        <section class="data-section">
-          <h2><i class="fas fa-user-graduate"></i> Individual Savings Accounts</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
-                  <th>Opening Date</th>
-                  <th>Deposits</th>
-                  <th>Withdrawals</th>
-                  <th>Interest Earned</th>
-                  <th>Current Balance</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="individualSavingsTable">
-                <tr>
-                  <td colspan="8" class="no-data-message">
-                    <i class="fas fa-spinner fa-spin"></i> Loading savings data...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Recent Transactions -->
-        <section class="data-section">
-          <h2><i class="fas fa-exchange-alt"></i> Recent Transactions</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Member Name</th>
-                  <th>Transaction Type</th>
-                  <th>Amount</th>
-                  <th>Balance After</th>
-                  <th>Processed By</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="recentTransactionsTable">
-                <tr>
-                  <td colspan="7" class="no-data-message">
-                    <i class="fas fa-spinner fa-spin"></i> Loading transactions...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Savings Goals -->
-        <section class="data-section">
-          <h2><i class="fas fa-bullseye"></i> Members Savings Goals</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th>
-                  <th>Goal Name</th>
-                  <th>Target Amount</th>
-                  <th>Current Savings</th>
-                  <th>Progress</th>
-                  <th>Target Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="savingsGoalsTable">
-                <tr>
-                  <td colspan="7" class="no-data-message">
-                    <i class="fas fa-spinner fa-spin"></i> Loading savings goals...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            </table>
-          </div>
-        </section>
-
-        <!-- Quick Actions -->
-        <section class="quick-actions">
-          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-          <div class="action-buttons">
-            <a href="../payments/make-payment.html?category=contribution" class="action-btn"><i class="fas fa-plus-circle"></i> Add Deposit</a>
-            <a href="withdrawals.html" class="action-btn"><i class="fas fa-minus-circle"></i> Process Withdrawal</a>
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-calculator"></i> Calculate Interest</a>
-            <a href="../shared/savings-goal.html" class="action-btn"><i class="fas fa-bullseye"></i> Set Savings Goal</a>
-            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Statement</a>
-          </div>
-        </section>
-
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Members Savings';
+      if (pageSubtitle) pageSubtitle.textContent = 'Manage member savings accounts';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script type="module" src="../../../src/scripts/pages/dashboard/members-savings.js"></script>
 </body>
 </html>

@@ -3,285 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Issue New Fine - SWA Admin Panel">
-  <title>Issue New Fine - Student Welfare Association | JOOUST</title>
+  <meta name="description" content="SWA Issue Fine - Admin Panel">
+  <title>Issue Fine - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/issue-fine.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Page Content -->
-    <div class="content-section active">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-plus-circle"></i> Issue New Fine</h1>
-          <p>Create and issue a new fine to a member</p>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-gavel"></i> Issue Fine</h1>
+            <p>Issue fines to members</p>
+          </div>
+          
+          <div class="section-placeholder">
+            <i class="fas fa-gavel"></i>
+            <h2>Issue Fine</h2>
+            <p>This section is under construction.</p>
+          </div>
         </div>
-
-        <!-- Issue Fine Form -->
-        <section class="data-section">
-          <h2><i class="fas fa-file-invoice-dollar"></i> Fine Details</h2>
-          <div class="form-container">
-            <form id="issueFineForm">
-              <div class="form-group">
-                <label for="memberSelect">Select Member</label>
-                <select id="memberSelect" required>
-                  <option value="">-- Select Member --</option>
-                  <option value="JOO/2024/001">Lavenda Achieng (JOO/2024/001)</option>
-                  <option value="JOO/2024/002">Mary Odundo (JOO/2024/002)</option>
-                  <option value="JOO/2024/003">Francis Opiyo (JOO/2024/003)</option>
-                  <option value="JOO/2024/004">Vincent Otieno (JOO/2024/004)</option>
-                  <option value="JOO/2024/005">Mary Atieno (JOO/2024/005)</option>
-                  <option value="JOO/2024/006">Sarah Kemunto (JOO/2024/006)</option>
-                  <option value="JOO/2024/007">Jeff Juma (JOO/2024/007)</option>
-                  <option value="JOO/2024/008">John Ochieng (JOO/2024/008)</option>
-                  <option value="JOO/2024/009">Yvonne Achieng (JOO/2024/009)</option>
-                  <option value="JOO/2024/010">Emily Akinyi (JOO/2024/010)</option>
-                </select>
-              </div>
-
-              <!-- Fine Type Selection with Auto-fill -->
-              <div class="form-group">
-                <label for="fineType">
-                  <i class="fas fa-list"></i> Fine Type
-                  <span style="font-weight: normal; color: var(--text-light);">(Select to auto-fill amount)</span>
-                </label>
-                <select id="fineType" required onchange="autoFillFineAmount()">
-                  <option value="">-- Select Fine Type --</option>
-                  <!-- Fine types will be loaded dynamically -->
-                </select>
-                <small style="color: var(--text-light);">
-                  <i class="fas fa-info-circle"></i> Select a fine type to automatically fill the amount, or choose "Other" to enter a custom amount.
-                </small>
-              </div>
-
-              <div class="form-group">
-                <label for="fineAmount">
-                  <i class="fas fa-money-bill-wave"></i> Fine Amount (Ksh)
-                  <span style="font-weight: normal; color: var(--text-light);">(Auto-filled from fine type)</span>
-                </label>
-                <input type="number" id="fineAmount" placeholder="Enter amount" min="0" required>
-              </div>
-
-              <div class="form-group">
-                <label for="dueDate">Due Date</label>
-                <input type="date" id="dueDate" required>
-              </div>
-
-              <div class="form-group">
-                <label for="fineReason">Reason / Description</label>
-                <textarea id="fineReason" rows="4" placeholder="Provide details about the fine..."></textarea>
-              </div>
-
-              <div class="form-actions">
-                <a href="fines-collection.html" class="btn">Cancel</a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Issue Fine</button>
-              </div>
-            </form>
-          </div>
-        </section>
-
-        <!-- Fine Type Reference -->
-        <section class="data-section">
-          <h2><i class="fas fa-info-circle"></i> Available Fine Types</h2>
-          <p style="margin-bottom: 15px;">Current fine types configured in the system:</p>
-          <div id="fineTypesReference" class="table-container">
-            <!-- Loaded dynamically -->
-          </div>
-        </section>
-
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <script src="../../../src/scripts/pages/dashboard/issue-fine.js"></script>
-  <script type="module">
-    import { fineService } from '../../../src/services/fine-service.js';
-    
-    // Make fineService available globally
-    window.fineService = fineService;
-  </script>
+  <script>w3.includeHTML();</script>
+
   <script>
-    // Load fine types on page load
+    // Initialize sidebar functionality after components are loaded
     document.addEventListener('DOMContentLoaded', function() {
-      loadFineTypesForSelect();
-      loadFineTypesReference();
-      setDefaultDueDate();
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
     });
-    
-    function loadFineTypesForSelect() {
-      const fineTypes = window.fineService.getFineTypes();
-      const select = document.getElementById('fineType');
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
       
-      // Add "Other" option first
-      select.innerHTML = '<option value="">-- Select Fine Type --</option>';
-      
-      // Add fine types grouped by category
-      const categories = {};
-      fineTypes.forEach(ft => {
-        if (!categories[ft.category]) {
-          categories[ft.category] = [];
-        }
-        categories[ft.category].push(ft);
-      });
-      
-      for (const [category, types] of Object.entries(categories)) {
-        const optgroup = document.createElement('optgroup');
-        optgroup.label = capitalizeFirst(category);
-        
-        types.forEach(ft => {
-          const option = document.createElement('option');
-          option.value = JSON.stringify({ id: ft.id, amount: ft.amount, name: ft.name });
-          option.textContent = `${ft.name} - Ksh ${ft.amount.toLocaleString()}`;
-          optgroup.appendChild(option);
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
         });
-        
-        select.appendChild(optgroup);
       }
-      
-      // Add "Other/Custom" option
-      const otherOption = document.createElement('option');
-      otherOption.value = 'other';
-      otherOption.textContent = 'Other - Custom Amount';
-      select.appendChild(otherOption);
-    }
-    
-    function loadFineTypesReference() {
-      const fineTypes = window.fineService.getFineTypes();
-      const container = document.getElementById('fineTypesReference');
-      
-      if (container) {
-        container.innerHTML = `
-          <table>
-            <thead>
-              <tr>
-                <th>Fine Type</th>
-                <th>Amount</th>
-                <th>Category</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${fineTypes.map(ft => `
-                <tr>
-                  <td><strong>${ft.name}</strong></td>
-                  <td>Ksh ${ft.amount.toLocaleString()}</td>
-                  <td><span class="badge">${capitalizeFirst(ft.category)}</span></td>
-                  <td>${ft.description || '-'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        `;
-      }
-    }
-    
-    // Auto-fill amount when fine type is selected
-    function autoFillFineAmount() {
-      const fineTypeSelect = document.getElementById('fineType');
-      const amountInput = document.getElementById('fineAmount');
-      const selectedValue = fineTypeSelect.value;
-      
-      if (selectedValue && selectedValue !== 'other') {
-        try {
-          const fineTypeData = JSON.parse(selectedValue);
-          amountInput.value = fineTypeData.amount;
-        } catch (e) {
-          console.error('Error parsing fine type data:', e);
-        }
-      } else if (selectedValue === 'other') {
-        // Clear the amount for custom entry
-        amountInput.value = '';
-        amountInput.focus();
-      }
-    }
-    
-    function setDefaultDueDate() {
-      // Set default due date to 14 days from now
-      const dueDateInput = document.getElementById('dueDate');
-      const today = new Date();
-      const defaultDue = new Date(today.getTime() + (14 * 24 * 60 * 60 * 1000));
-      dueDateInput.value = defaultDue.toISOString().split('T')[0];
-    }
-    
-    function capitalizeFirst(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-    
-    // Form submission
-    document.getElementById('issueFineForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const memberId = document.getElementById('memberSelect').value;
-      const fineTypeSelect = document.getElementById('fineType');
-      const fineAmount = parseInt(document.getElementById('fineAmount').value);
-      const dueDate = document.getElementById('dueDate').value;
-      const description = document.getElementById('fineReason').value;
-      
-      let fineTypeId;
-      let fineTypeName;
-      
-      if (fineTypeSelect.value === 'other') {
-        fineTypeId = null;
-        fineTypeName = 'Custom Fine';
-      } else {
-        try {
-          const fineTypeData = JSON.parse(fineTypeSelect.value);
-          fineTypeId = fineTypeData.id;
-          fineTypeName = fineTypeData.name;
-        } catch (e) {
-          fineTypeId = null;
-          fineTypeName = 'Custom Fine';
-        }
-      }
-      
-      // Issue the fine using fineService
-      try {
-        const newFine = window.fineService.issueFineToMember(memberId, {
-          fineTypeId: fineTypeId,
-          amount: fineAmount,
-          dueDate: dueDate,
-          description: description
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
         });
-        
-        alert(`Fine issued successfully!\n\nMember: ${memberId}\nFine Type: ${fineTypeName}\nAmount: Ksh ${fineAmount.toLocaleString()}\nDue Date: ${dueDate}`);
-        
-        // Reset form
-        document.getElementById('issueFineForm').reset();
-        setDefaultDueDate();
-        loadFineTypesForSelect();
-        
-        // Optionally redirect to fines collection
-        // window.location.href = 'fines-collection.html';
-      } catch (error) {
-        alert('Error issuing fine: ' + error.message);
       }
-    });
-  </script>
-  
-  <!-- W3.js component loader -->
-  <script>
-    w3.includeHTML();
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Issue Fine';
+      if (pageSubtitle) pageSubtitle.textContent = 'Issue fines to members';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
 </body>
 </html>

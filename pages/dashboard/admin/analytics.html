@@ -3,251 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Analytics - View SWA analytics and insights">
+  <meta name="description" content="SWA Analytics - Admin Panel">
   <title>Analytics - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/analytics.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Analytics Section -->
-    <div class="content-section active" id="section-analytics">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
-          <p>Comprehensive insights and statistics for SWA operations</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="cards">
-          <div class="card">
-            <h3><i class="fas fa-users"></i> Total Members</h3>
-            <p class="stat-number" id="totalMembers">0</p>
-            <p class="stat-label" id="membersGrowth">+0 this month</p>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-chart-line"></i> Analytics</h1>
+            <p>View comprehensive analytics and insights</p>
           </div>
-          <div class="card">
-            <h3><i class="fas fa-money-bill-wave"></i> Revenue</h3>
-            <p class="stat-number" id="totalRevenue">Ksh 0</p>
-            <p class="stat-label" id="revenueGrowth">+0% growth</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-hand-holding-usd"></i> Loans Issued</h3>
-            <p class="stat-number" id="totalLoans">Ksh 0</p>
-            <p class="stat-label" id="activeLoans">0 active</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-percentage"></i> Collection Rate</h3>
-            <p class="stat-number" id="collectionRate">0%</p>
-            <p class="stat-label" id="collectionGrowth">+0% improvement</p>
+          
+          <div class="section-placeholder">
+            <i class="fas fa-chart-line"></i>
+            <h2>Analytics</h2>
+            <p>This section is under construction.</p>
           </div>
         </div>
-
-        <!-- Financial Analytics -->
-        <div class="summary-stats">
-          <h2><i class="fas fa-chart-pie"></i> Financial Overview</h2>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-wallet"></i></span>
-              <span class="stat-value" id="totalAssets">Ksh 0</span>
-              <span class="stat-desc">Total Assets</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-credit-card"></i></span>
-              <span class="stat-value" id="totalLiabilities">Ksh 0</span>
-              <span class="stat-desc">Liabilities</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
-              <span class="stat-value" id="yoyGrowth">0%</span>
-              <span class="stat-desc">YoY Growth</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-piggy-bank"></i></span>
-              <span class="stat-value" id="netWorth">Ksh 0</span>
-              <span class="stat-desc">Net Worth</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Monthly Trends -->
-        <section class="data-section">
-          <h2><i class="fas fa-calendar-alt"></i> Monthly Contribution Trends</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th>Contributions</th>
-                  <th>Loans Given</th>
-                  <th>Savings</th>
-                  <th>Expenses</th>
-                  <th>Net Change</th>
-                  <th>Growth %</th>
-                </tr>
-              </thead>
-              <tbody id="monthlyTrendsTable">
-                <tr class="loading-row">
-                  <td colspan="7" style="text-align: center; padding: 40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Loading trends data...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Member Analytics -->
-        <section class="data-section">
-          <h2><i class="fas fa-user-chart"></i> Member Analytics</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Active</th>
-                  <th>Inactive</th>
-                  <th>New This Month</th>
-                  <th>Retention Rate</th>
-                  <th>Avg. Contribution</th>
-                </tr>
-              </thead>
-              <tbody id="memberAnalyticsTable">
-                <tr class="loading-row">
-                  <td colspan="6" style="text-align: center; padding: 40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Loading member analytics...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Loan Analytics -->
-        <section class="data-section">
-          <h2><i class="fas fa-hand-holding-usd"></i> Loan Performance</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Loan Type</th>
-                  <th>Total Issued</th>
-                  <th>Active</th>
-                  <th>Fully Repaid</th>
-                  <th>Default Rate</th>
-                  <th>Avg. Interest</th>
-                </tr>
-              </thead>
-              <tbody id="loanAnalyticsTable">
-                <tr class="loading-row">
-                  <td colspan="6" style="text-align: center; padding: 40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Loading loan analytics...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Event Analytics -->
-        <section class="data-section">
-          <h2><i class="fas fa-calendar-check"></i> Event Performance</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Event Name</th>
-                  <th>Date</th>
-                  <th>Registered</th>
-                  <th>Attended</th>
-                  <th>Participation Rate</th>
-                  <th>Satisfaction</th>
-                </tr>
-              </thead>
-              <tbody id="eventAnalyticsTable">
-                <tr class="loading-row">
-                  <td colspan="6" style="text-align: center; padding: 40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Loading event analytics...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Top Contributors -->
-        <section class="data-section">
-          <h2><i class="fas fa-trophy"></i> Top Contributors</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
-                  <th>Total Contributions</th>
-                  <th>Savings</th>
-                  <th>Attendance</th>
-                </tr>
-              </thead>
-              <tbody id="topContributorsTable">
-                <tr class="loading-row">
-                  <td colspan="6" style="text-align: center; padding: 40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Loading top contributors...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Quick Actions -->
-        <section class="quick-actions">
-          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-          <div class="action-buttons">
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
-            <a href="analytics.html" class="action-btn" onclick="alert('Select date range from the filter options'); return false;"><i class="fas fa-calendar-alt"></i> Date Range</a>
-            <a href="analytics.html" class="action-btn" onclick="alert('Use the compare feature in the analytics tables'); return false;"><i class="fas fa-chart-bar"></i> Compare Periods</a>
-            <a href="send-announcement.html" class="action-btn"><i class="fas fa-envelope"></i> Send Report</a>
-            <a href="#" class="action-btn" onclick="window.print(); return false;"><i class="fas fa-print"></i> Print Dashboard</a>
-            <a href="settings.html" class="action-btn"><i class="fas fa-cog"></i> Configure</a>
-          </div>
-        </section>
-
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Analytics';
+      if (pageSubtitle) pageSubtitle.textContent = 'View comprehensive analytics and insights';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script type="module" src="../../../src/scripts/pages/dashboard/analytics.js"></script>
 </body>
 </html>

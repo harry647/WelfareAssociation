@@ -3,96 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Create Folder - SWA Admin Panel">
+  <meta name="description" content="SWA Create Folder - Admin Panel">
   <title>Create Folder - Student Welfare Association | JOOUST</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/create-folder.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Page Content -->
-    <div class="content-section active">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-folder-plus"></i> Create Folder</h1>
-          <p>Create a new folder to organize documents</p>
-        </div>
-
-        <!-- Create Folder Form -->
-        <section class="data-section">
-          <h2><i class="fas fa-folder-tree"></i> Folder Details</h2>
-          <div class="form-container">
-            <form id="createFolderForm">
-              <div class="form-group">
-                <label for="folderName">Folder Name</label>
-                <input type="text" id="folderName" placeholder="Enter folder name" required>
-              </div>
-
-              <div class="form-group">
-                <label for="parentFolder">Parent Folder (Optional)</label>
-                <select id="parentFolder">
-                  <option value="">-- Root (No Parent) --</option>
-                  <option value="constitution">Constitution & By-laws</option>
-                  <option value="finance">Financial Guidelines</option>
-                  <option value="guidelines">Member Guidelines</option>
-                  <option value="procedures">Procedures</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="folderDescription">Description</label>
-                <textarea id="folderDescription" rows="3" placeholder="Describe this folder..."></textarea>
-              </div>
-
-              <div class="form-group">
-                <label for="accessLevel">Access Level</label>
-                <select id="accessLevel" required>
-                  <option value="">-- Select Access Level --</option>
-                  <option value="public">Public - All Members</option>
-                  <option value="officers">Officers Only</option>
-                  <option value="executive">Executive Team Only</option>
-                  <option value="admin">Admin Only</option>
-                </select>
-              </div>
-
-              <div class="form-actions">
-                <a href="documentation.html" class="btn">Cancel</a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-folder-plus"></i> Create Folder</button>
-              </div>
-            </form>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-folder-plus"></i> Create Folder</h1>
+            <p>Create new folders for document organization</p>
           </div>
-        </section>
-
+          
+          <div class="section-placeholder">
+            <i class="fas fa-folder-plus"></i>
+            <h2>Create Folder</h2>
+            <p>This section is under construction.</p>
+          </div>
+        </div>
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Create Folder';
+      if (pageSubtitle) pageSubtitle.textContent = 'Create new folders for document organization';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script src="../../../src/scripts/pages/dashboard/create-folder.js"></script>
 </body>
 </html>

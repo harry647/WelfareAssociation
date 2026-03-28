@@ -3,115 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Edit Document - SWA Admin Panel">
+  <meta name="description" content="SWA Edit Document - Admin Panel">
   <title>Edit Document - Student Welfare Association | JOOUST</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/edit-document.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Page Content -->
-    <div class="content-section active">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-edit"></i> Edit Document</h1>
-          <p>Update document metadata and details</p>
-        </div>
-
-        <!-- Edit Document Form -->
-        <section class="data-section">
-          <h2><i class="fas fa-file-alt"></i> Document Details</h2>
-          <div class="form-container">
-            <form id="editDocumentForm">
-              <div class="form-group">
-                <label for="documentSelect">Select Document</label>
-                <select id="documentSelect" required>
-                  <option value="">-- Select Document --</option>
-                  <option value="1">SWA Constitution 2025</option>
-                  <option value="2">Member Handbook</option>
-                  <option value="3">Financial Procedures</option>
-                  <option value="4">Meeting Minutes Template</option>
-                  <option value="5">Code of Conduct</option>
-                  <option value="6">Loan Policy Guidelines</option>
-                  <option value="7">Orientation Presentation</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="documentName">Document Name</label>
-                <input type="text" id="documentName" placeholder="Enter document name" required>
-              </div>
-
-              <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" required>
-                  <option value="">-- Select Category --</option>
-                  <option value="constitution">Constitution & By-laws</option>
-                  <option value="finance">Financial Guidelines</option>
-                  <option value="guidelines">Member Guidelines</option>
-                  <option value="procedures">Procedures</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="version">New Version</label>
-                <input type="text" id="version" placeholder="e.g., v1.1" required>
-              </div>
-
-              <div class="form-group">
-                <label for="status">Status</label>
-                <select id="status" required>
-                  <option value="active">Active</option>
-                  <option value="draft">Draft</option>
-                  <option value="archived">Archived</option>
-                  <option value="deprecated">Deprecated</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="description">Description / Notes</label>
-                <textarea id="description" rows="4" placeholder="Update description or add notes..."></textarea>
-              </div>
-
-              <div class="form-actions">
-                <a href="documentation.html" class="btn">Cancel</a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
-              </div>
-            </form>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-edit"></i> Edit Document</h1>
+            <p>Edit and update existing documents</p>
           </div>
-        </section>
-
+          
+          <div class="section-placeholder">
+            <i class="fas fa-edit"></i>
+            <h2>Edit Document</h2>
+            <p>This section is under construction.</p>
+          </div>
+        </div>
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Edit Document';
+      if (pageSubtitle) pageSubtitle.textContent = 'Edit and update existing documents';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script src="../../../src/scripts/pages/dashboard/edit-document.js"></script>
 </body>
 </html>

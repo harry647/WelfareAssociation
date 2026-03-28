@@ -3,123 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Add Officer - SWA Admin Panel">
-  <title>Add Executive Officer - Student Welfare Association | JOOUST</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/min.css">
+  <meta name="description" content="SWA Add Officer - Admin Panel">
+  <title>Add Officer - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/add-officer.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Page Content -->
-    <div class="content-section active">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-user-plus"></i> Add Executive Officer</h1>
-          <p>Assign a new officer to the executive team</p>
-        </div>
-
-        <!-- Add Officer Form -->
-        <section class="data-section">
-          <h2><i class="fas fa-user-tie"></i> Officer Details</h2>
-          <div class="form-container">
-            <form id="addOfficerForm">
-              <div class="form-group">
-                <label for="memberSelect">Select Member</label>
-                <select id="memberSelect" required>
-                  <option value="">-- Select Member --</option>
-                  <option value="JOO/2024/001">Lavenda Achieng (JOO/2024/001)</option>
-                  <option value="JOO/2024/002">Mary Odundo (JOO/2024/002)</option>
-                  <option value="JOO/2024/003">Francis Opiyo (JOO/2024/003)</option>
-                  <option value="JOO/2024/004">Vincent Otieno (JOO/2024/004)</option>
-                  <option value="JOO/2024/005">Mary Atieno (JOO/2024/005)</option>
-                  <option value="JOO/2024/006">Sarah Kemunto (JOO/2024/006)</option>
-                  <option value="JOO/2024/007">Jeff Juma (JOO/2024/007)</option>
-                  <option value="JOO/2024/008">John Ochieng (JOO/2024/008)</option>
-                  <option value="JOO/2024/009">Yvonne Achieng (JOO/2024/009)</option>
-                  <option value="JOO/2024/010">Emily Akinyi (JOO/2024/010)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="position">Position</label>
-                <select id="position" required>
-                  <option value="">-- Select Position --</option>
-                  <option value="chairman">Chairman</option>
-                  <option value="vice-chairman">Vice Chairman</option>
-                  <option value="secretary-general">Secretary General</option>
-                  <option value="treasurer">Treasurer</option>
-                  <option value="pro">Public Relations Officer</option>
-                  <option value="finance-committee">Finance Committee Head</option>
-                  <option value="events-committee">Events Committee Head</option>
-                  <option value="welfare-committee">Welfare Committee Head</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="termStart">Term Start Date</label>
-                <input type="date" id="termStart" required placeholder="dd/mm/yyyy">
-                <span class="input-hint">Select the start date of the officer's term</span>
-              </div>
-
-              <div class="form-group">
-                <label for="termEnd">Term End Date</label>
-                <input type="date" id="termEnd" required placeholder="dd/mm/yyyy">
-                <span class="input-hint">Select the end date of the officer's term</span>
-              </div>
-
-              <div class="form-group">
-                <label for="responsibilities">Responsibilities</label>
-                <textarea id="responsibilities" rows="4" placeholder="List the officer's responsibilities..."></textarea>
-              </div>
-
-              <div class="form-group">
-                <label for="permissions">Access Level</label>
-                <select id="permissions" required>
-                  <option value="">-- Select Access Level --</option>
-                  <option value="super-admin">Super Admin - Full Access</option>
-                  <option value="treasurer">Treasurer - Financial Access</option>
-                  <option value="secretary">Secretary - Member Management</option>
-                  <option value="committee-head">Committee Head - Partial Access</option>
-                </select>
-              </div>
-
-              <div class="form-actions">
-                <a href="executive-team.html" class="btn">Cancel</a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Add Officer</button>
-              </div>
-            </form>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-user-plus"></i> Add Officer</h1>
+            <p>Add new executive officers to SWA</p>
           </div>
-        </section>
-
+          
+          <div class="section-placeholder">
+            <i class="fas fa-user-plus"></i>
+            <h2>Add Officer</h2>
+            <p>This section is under construction.</p>
+          </div>
+        </div>
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Add Officer';
+      if (pageSubtitle) pageSubtitle.textContent = 'Add new executive officers to SWA';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script src="../../../src/scripts/pages/dashboard/add-officer.js"></script>
 </body>
 </html>

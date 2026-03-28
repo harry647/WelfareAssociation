@@ -3,359 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Fines Collection - Manage and track member fines">
+  <meta name="description" content="SWA Fines Collection - Admin Panel">
   <title>Fines Collection - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/fines-collection.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Fines Collection Section -->
-    <div class="content-section active" id="section-fines">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-file-invoice-dollar"></i> Fines Collection</h1>
-          <p>Manage and track member fines and penalties</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="cards">
-          <div class="card">
-            <h3><i class="fas fa-exclamation-circle"></i> Total Fines</h3>
-            <p class="stat-number" id="totalFinesCount">0</p>
-            <p class="stat-label">Active Fines</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-money-bill-wave"></i> Total Amount</h3>
-            <p class="stat-number" id="totalFinesAmount">Ksh 0</p>
-            <p class="stat-label">Outstanding</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-check-circle"></i> Collected</h3>
-            <p class="stat-number" id="collectedFines">Ksh 0</p>
-            <p class="stat-label">This Month</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-clock"></i> Pending</h3>
-            <p class="stat-number" id="pendingFines">Ksh 0</p>
-            <p class="stat-label">Awaiting Payment</p>
-          </div>
-        </div>
-
-        <!-- Loading Indicator -->
-        <div id="loading-indicator" style="display: none; text-align: center; padding: 40px;">
-          <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #4a90d9;"></i>
-          <p style="margin-top: 10px;">Loading fines...</p>
-        </div>
-
-        <!-- Error Message -->
-        <div id="error-message" style="display: none; text-align: center; padding: 20px; background: #fee; border-left: 4px solid #e74c3c; margin: 10px 0;">
-          <i class="fas fa-exclamation-circle"></i>
-          <span></span>
-        </div>
-
-        <!-- Outstanding Fines -->
-        <section class="data-section">
-          <h2><i class="fas fa-exclamation-triangle"></i> Outstanding Fines</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
-                  <th>Fine Type</th>
-                  <th>Amount</th>
-                  <th>Date Issued</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="outstandingFinesTable">
-                <tr>
-                  <td colspan="8" style="text-align: center; padding: 40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: #4a90d9;"></i>
-                    <p style="margin-top: 10px;">Loading outstanding fines...</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Collected Fines -->
-        <section class="data-section">
-          <h2><i class="fas fa-check-circle"></i> Recently Collected Fines</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
-                  <th>Fine Type</th>
-                  <th>Amount Paid</th>
-                  <th>Date Paid</th>
-                  <th>Payment Method</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="collectedFinesTable">
-                <tr>
-                  <td colspan="7" style="text-align: center; padding: 40px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: #4a90d9;"></i>
-                    <p style="margin-top: 10px;">Loading collected fines...</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Fine Configuration - Admin Control -->
-        <section class="data-section">
-          <h2><i class="fas fa-cog"></i> Fine Types Configuration</h2>
-          <p style="margin-bottom: 20px; color: var(--text-light);">
-            <i class="fas fa-info-circle"></i> Configure fine types that can be applied to members. Each fine type has a fixed amount.
-          </p>
-          
-          <!-- Add New Fine Type Button -->
-          <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="openAddFineTypeModal()">
-            <i class="fas fa-plus"></i> Add Fine Type
-          </button>
-          
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Fine Type</th>
-                  <th>Amount (Ksh)</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="fineTypesTable">
-                <!-- Fine types will be loaded dynamically -->
-              </tbody>
-            </table>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-file-invoice-dollar"></i> Fines Collection</h1>
+            <p>Manage and collect member fines</p>
           </div>
           
-          <!-- Reset to Defaults -->
-          <button class="btn" style="margin-top: 20px; background: var(--warning); color: white;" onclick="resetFineTypesToDefaults()">
-            <i class="fas fa-undo"></i> Reset to Default Fine Types
-          </button>
-        </section>
-
-        <!-- Quick Actions -->
-        <section class="quick-actions">
-          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-          <div class="action-buttons">
-            <a href="issue-fine.html" class="action-btn"><i class="fas fa-plus-circle"></i> Issue New Fine</a>
-            <a href="../shared/notices.html" class="action-btn"><i class="fas fa-envelope"></i> Send Reminder</a>
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-calculator"></i> Calculate Total</a>
-            <a href="../payments/make-payment.html?category=fine" class="action-btn"><i class="fas fa-check-double"></i> Mark as Paid</a>
-            <a href="settings.html" class="action-btn"><i class="fas fa-cog"></i> Configure Fines</a>
+          <div class="section-placeholder">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <h2>Fines Collection</h2>
+            <p>This section is under construction.</p>
           </div>
-        </section>
-
+        </div>
       </div>
-    </div>
-
-  </div>
-
-  <!-- Add/Edit Fine Type Modal -->
-  <div id="fineTypeModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modalTitle"><i class="fas fa-plus-circle"></i> Add Fine Type</h3>
-        <span class="close" onclick="closeFineTypeModal()">&times;</span>
-      </div>
-      <div class="modal-body">
-        <form id="fineTypeForm">
-          <input type="hidden" id="editFineTypeId">
-          
-          <div class="form-group">
-            <label for="fineTypeName">Fine Type Name *</label>
-            <input type="text" id="fineTypeName" placeholder="e.g., Missed Meeting" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="fineTypeAmount">Amount (Ksh) *</label>
-            <input type="number" id="fineTypeAmount" placeholder="e.g., 200" min="0" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="fineTypeCategory">Category</label>
-            <select id="fineTypeCategory">
-              <option value="attendance">Attendance</option>
-              <option value="contributions">Contributions</option>
-              <option value="payments">Payments</option>
-              <option value="conduct">Conduct</option>
-              <option value="administrative">Administrative</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="fineTypeDescription">Description</label>
-            <textarea id="fineTypeDescription" rows="3" placeholder="Describe what this fine is for..."></textarea>
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" class="btn" onclick="closeFineTypeModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Fine Type</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <script type="module" src="../../../src/scripts/pages/dashboard/fines-collection.js"></script>
-  <script type="module">
-    import { fineService, DEFAULT_FINE_TYPES } from '../../../src/services/fine-service.js';
-    
-    // Make fineService available globally
-    window.fineService = fineService;
-    window.DEFAULT_FINE_TYPES = DEFAULT_FINE_TYPES;
-  </script>
+  <script>w3.includeHTML();</script>
+
   <script>
-    // Load fine types on page load
+    // Initialize sidebar functionality after components are loaded
     document.addEventListener('DOMContentLoaded', function() {
-      loadFineTypes();
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
     });
-    
-    function loadFineTypes() {
-      const fineTypes = window.fineService.getAllFineTypes();
-      const tbody = document.getElementById('fineTypesTable');
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
       
-      if (tbody) {
-        tbody.innerHTML = fineTypes.map(fineType => `
-          <tr>
-            <td><strong>${fineType.name}</strong></td>
-            <td>Ksh ${fineType.amount.toLocaleString()}</td>
-            <td><span class="badge">${capitalizeFirst(fineType.category)}</span></td>
-            <td>${fineType.description || '-'}</td>
-            <td>
-              <span class="status ${fineType.isActive ? 'active' : 'inactive'}">
-                ${fineType.isActive ? 'Active' : 'Inactive'}
-              </span>
-            </td>
-            <td>
-              <button class="btn" onclick="editFineType(${fineType.id})">
-                <i class="fas fa-edit"></i> Edit
-              </button>
-              <button class="btn ${fineType.isActive ? '' : 'btn-success'}" onclick="toggleFineTypeStatus(${fineType.id})">
-                <i class="fas fa-${fineType.isActive ? 'ban' : 'check'}"></i>
-                ${fineType.isActive ? 'Disable' : 'Enable'}
-              </button>
-            </td>
-          </tr>
-        `).join('');
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
       }
     }
-    
-    function capitalizeFirst(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-    
-    function openAddFineTypeModal() {
-      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add Fine Type';
-      document.getElementById('fineTypeForm').reset();
-      document.getElementById('editFineTypeId').value = '';
-      document.getElementById('fineTypeModal').style.display = 'block';
-    }
-    
-    function editFineType(id) {
-      const fineType = window.fineService.getFineTypeById(id);
-      if (fineType) {
-        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Fine Type';
-        document.getElementById('editFineTypeId').value = fineType.id;
-        document.getElementById('fineTypeName').value = fineType.name;
-        document.getElementById('fineTypeAmount').value = fineType.amount;
-        document.getElementById('fineTypeCategory').value = fineType.category;
-        document.getElementById('fineTypeDescription').value = fineType.description || '';
-        document.getElementById('fineTypeModal').style.display = 'block';
-      }
-    }
-    
-    function closeFineTypeModal() {
-      document.getElementById('fineTypeModal').style.display = 'none';
-    }
-    
-    // Form submission handler
-    document.getElementById('fineTypeForm')?.addEventListener('submit', function(e) {
-      e.preventDefault();
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
       
-      const id = document.getElementById('editFineTypeId').value;
-      const fineTypeData = {
-        name: document.getElementById('fineTypeName').value,
-        amount: parseInt(document.getElementById('fineTypeAmount').value),
-        category: document.getElementById('fineTypeCategory').value,
-        description: document.getElementById('fineTypeDescription').value
-      };
-      
-      if (id) {
-        // Update existing
-        window.fineService.updateFineType(parseInt(id), fineTypeData);
-      } else {
-        // Add new
-        window.fineService.addFineType(fineTypeData);
-      }
-      
-      closeFineTypeModal();
-      loadFineTypes();
-      alert('Fine type saved successfully!');
-    });
-    
-    function toggleFineTypeStatus(id) {
-      if (confirm('Are you sure you want to change the status of this fine type?')) {
-        window.fineService.toggleFineTypeStatus(id);
-        loadFineTypes();
+      if (pageTitle) pageTitle.textContent = 'Fines Collection';
+      if (pageSubtitle) pageSubtitle.textContent = 'Manage and collect member fines';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
       }
     }
-    
-    function resetFineTypesToDefaults() {
-      if (confirm('Are you sure you want to reset all fine types to defaults? This will remove any custom fine types.')) {
-        window.fineService.resetFineTypesToDefaults();
-        loadFineTypes();
-        alert('Fine types have been reset to defaults!');
-      }
-    }
-    
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      const modal = document.getElementById('fineTypeModal');
-      if (event.target == modal) {
-        closeFineTypeModal();
-      }
-    }
-  </script>
-  
-  <!-- W3.js component loader -->
-  <script>
-    w3.includeHTML();
   </script>
 </body>
 </html>

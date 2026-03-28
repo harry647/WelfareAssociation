@@ -3,317 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Documentation - SWA policies and guides">
+  <meta name="description" content="SWA Documentation - Admin Panel">
   <title>Documentation - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/documentation.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Documentation Section -->
-    <div class="content-section active" id="section-docs">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-folder-open"></i> Documentation</h1>
-          <p>Access policies, guides, and important documents</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="cards">
-          <div class="card">
-            <h3><i class="fas fa-file-alt"></i> Total Documents</h3>
-            <p class="stat-number">24</p>
-            <p class="stat-label">Available</p>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-folder-open"></i> Documentation</h1>
+            <p>Manage SWA documentation and resources</p>
           </div>
-          <div class="card">
-            <h3><i class="fas fa-book"></i> Policies</h3>
-            <p class="stat-number">8</p>
-            <p class="stat-label">Active</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-file-pdf"></i> Guides</h3>
-            <p class="stat-number">10</p>
-            <p class="stat-label">Available</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-download"></i> Downloads</h3>
-            <p class="stat-number">156</p>
-            <p class="stat-label">This Month</p>
+          
+          <div class="section-placeholder">
+            <i class="fas fa-folder-open"></i>
+            <h2>Documentation</h2>
+            <p>This section is under construction.</p>
           </div>
         </div>
-
-        <!-- Document Categories -->
-        <div class="summary-stats">
-          <h2><i class="fas fa-tags"></i> Document Categories</h2>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-gavel"></i></span>
-              <span class="stat-value">8</span>
-              <span class="stat-desc">Constitution & By-laws</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-hand-holding-usd"></i></span>
-              <span class="stat-value">5</span>
-              <span class="stat-desc">Financial Guidelines</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-user-graduate"></i></span>
-              <span class="stat-value">6</span>
-              <span class="stat-desc">Member Guidelines</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-icon"><i class="fas fa-clipboard-check"></i></span>
-              <span class="stat-value">5</span>
-              <span class="stat-desc">Procedures</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Documents List -->
-        <section class="data-section">
-          <h2><i class="fas fa-file-alt"></i> All Documents</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Document Name</th>
-                  <th>Category</th>
-                  <th>Type</th>
-                  <th>Size</th>
-                  <th>Last Updated</th>
-                  <th>Version</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><i class="fas fa-file-pdf" style="color: red;"></i> SWA Constitution 2025</td>
-                  <td>Constitution</td>
-                  <td>PDF</td>
-                  <td>2.4 MB</td>
-                  <td>2025-01-15</td>
-                  <td>v3.2</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-download"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Member Handbook</td>
-                  <td>Guidelines</td>
-                  <td>PDF</td>
-                  <td>1.8 MB</td>
-                  <td>2025-03-20</td>
-                  <td>v2.1</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-download"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-file-excel" style="color: green;"></i> Financial Procedures</td>
-                  <td>Finance</td>
-                  <td>XLSX</td>
-                  <td>450 KB</td>
-                  <td>2025-06-10</td>
-                  <td>v1.5</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-download"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-file-word" style="color: blue;"></i> Meeting Minutes Template</td>
-                  <td>Procedures</td>
-                  <td>DOCX</td>
-                  <td>120 KB</td>
-                  <td>2025-02-28</td>
-                  <td>v1.0</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-download"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Code of Conduct</td>
-                  <td>Policies</td>
-                  <td>PDF</td>
-                  <td>890 KB</td>
-                  <td>2025-04-05</td>
-                  <td>v2.0</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-download"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Loan Policy Guidelines</td>
-                  <td>Finance</td>
-                  <td>PDF</td>
-                  <td>1.2 MB</td>
-                  <td>2025-05-12</td>
-                  <td>v1.3</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-download"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><i class="fas fa-file-powerpoint" style="color: orange;"></i> Orientation Presentation</td>
-                  <td>Guidelines</td>
-                  <td>PPTX</td>
-                  <td>5.6 MB</td>
-                  <td>2025-08-01</td>
-                  <td>v1.0</td>
-                  <td><span class="status active">Active</span></td>
-                  <td>
-                    <button class="btn"><i class="fas fa-eye"></i></button>
-                    <button class="btn"><i class="fas fa-download"></i></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Recent Updates -->
-        <section class="data-section">
-          <h2><i class="fas fa-history"></i> Recent Document Updates</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Document</th>
-                  <th>Change Type</th>
-                  <th>Updated By</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>2025-09-10</td>
-                  <td>Member Handbook</td>
-                  <td><span style="color: orange;">Revision</span></td>
-                  <td>Secretary</td>
-                  <td>Updated contact information</td>
-                </tr>
-                <tr>
-                  <td>2025-09-05</td>
-                  <td>Loan Policy Guidelines</td>
-                  <td><span style="color: blue;">Addition</span></td>
-                  <td>Treasurer</td>
-                  <td>Added new interest rates section</td>
-                </tr>
-                <tr>
-                  <td>2025-08-28</td>
-                  <td>SWA Constitution 2025</td>
-                  <td><span style="color: green;">Amendment</span></td>
-                  <td>Chairman</td>
-                  <td>Approved by general assembly</td>
-                </tr>
-                <tr>
-                  <td>2025-08-15</td>
-                  <td>Code of Conduct</td>
-                  <td><span style="color: orange;">Revision</span></td>
-                  <td>PRO</td>
-                  <td>Added social media guidelines</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Document Requests -->
-        <section class="data-section">
-          <h2><i class="fas fa-request"></i> Document Access Requests</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Member Name</th>
-                  <th>Document Requested</th>
-                  <th>Request Date</th>
-                  <th>Purpose</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Jeff Juma</td>
-                  <td>Financial Procedures</td>
-                  <td>2025-09-08</td>
-                  <td>Committee Work</td>
-                  <td><span class="status pending">Pending</span></td>
-                  <td>
-                    <button class="btn approve">✓ Approve</button>
-                    <button class="btn btn-reject">✗ Deny</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Sarah Kemunto</td>
-                  <td>Meeting Minutes Template</td>
-                  <td>2025-09-09</td>
-                  <td>Event Planning</td>
-                  <td><span class="status received">Approved</span></td>
-                  <td><button class="btn"><i class="fas fa-envelope"></i> Send</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Quick Actions -->
-        <section class="quick-actions">
-          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-          <div class="action-buttons">
-            <a href="upload-document.html" class="action-btn"><i class="fas fa-plus-circle"></i> Upload Document</a>
-            <a href="create-folder.html" class="action-btn"><i class="fas fa-folder-plus"></i> Create Folder</a>
-            <a href="edit-document.html" class="action-btn"><i class="fas fa-edit"></i> Edit Document</a>
-            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-share-alt"></i> Share Document</a>
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export List</a>
-            <a href="archive-docs.html" class="action-btn"><i class="fas fa-archive"></i> Archive Old Docs</a>
-          </div>
-        </section>
-
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Documentation';
+      if (pageSubtitle) pageSubtitle.textContent = 'Manage SWA documentation and resources';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script type="module" src="../../../src/scripts/pages/dashboard/documentation.js"></script>
 </body>
 </html>

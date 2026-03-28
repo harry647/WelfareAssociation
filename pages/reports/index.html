@@ -7,71 +7,23 @@
   <title>Reports - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../src/styles/pages/dashboard/admin-dashboard.css">
-  <link rel="stylesheet" href="../../src/styles/pages/reports/index.css">
+  
+  <link rel="stylesheet" href="../../src/styles/pages/dashboard/unified-dashboard.css">
   
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../dashboard/components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../dashboard/components/header-admin.html"></div>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon"><i class="fas fa-user-shield"></i></div>
-      <div>
-        <h2>SWA Admin</h2>
-        <p>JOOUST</p>
-      </div>
-    </div>
-
-    <div class="sidebar-section-label">Main</div>
-    <a href="../../index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-    <a href="../dashboard/admin/admin-dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-    <a href="../dashboard/members.html" class="nav-link"><i class="fas fa-users"></i> Members</a>
-    <a href="../dashboard/withdrawals.html" class="nav-link"><i class="fas fa-money-bill-wave-alt"></i> Withdrawals</a>
-    <a href="../contributions/history.html" class="nav-link"><i class="fas fa-money-bill-wave"></i> Contributions</a>
-    <a href="../dashboard/debts.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Debts</a>
-    <a href="../payments/history.html" class="nav-link"><i class="fas fa-wallet"></i> Payments</a>
-    <a href="../loans/history.html" class="nav-link"><i class="fas fa-hand-holding-usd"></i> Loans</a>
-    <a href="index.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a>
-    <a href="../dashboard/settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
-
-    <hr class="sidebar-divider">
-
-    <div class="sidebar-section-label">More</div>
-    <a href="../dashboard/registered-members.html" class="nav-link"><i class="fas fa-user-plus"></i> Registered Members</a>
-    <a href="../dashboard/active-members.html" class="nav-link"><i class="fas fa-user-check"></i> Active Members</a>
-    <a href="../dashboard/fines-collection.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Fines Collection</a>
-    <a href="../dashboard/members-savings.html" class="nav-link"><i class="fas fa-piggy-bank"></i> Members Savings</a>
-    <a href="../dashboard/executive-team.html" class="nav-link"><i class="fas fa-users-cog"></i> Executive Team</a>
-    <a href="../dashboard/documentation.html" class="nav-link"><i class="fas fa-folder-open"></i> Documentation</a>
-    <a href="../dashboard/notices.html" class="nav-link"><i class="fas fa-bullhorn"></i> Notices</a>
-    <a href="../dashboard/analytics.html" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a>
-    <a href="../dashboard/security-settings.html" class="nav-link"><i class="fas fa-shield-alt"></i> Security Settings</a>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Top Bar -->
-    <div class="admin-header">
-      <div class="admin-info">
-        <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-        <div class="admin-avatar">VO</div>
-        <div class="admin-details">
-          <h3>Vincent Otieno</h3>
-          <p>Administrator</p>
-          <span class="admin-role">Chairman, SWA</span>
-        </div>
-      </div>
-      <button class="logout-btn-header"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-
-    <!-- Page Content -->
-    <div class="content-section active">
-      <div class="page-body">
-
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
         <div class="page-header">
           <h1><i class="fas fa-chart-bar"></i> Reports Dashboard</h1>
           <p>Financial insights and statistics for SWA</p>
@@ -173,9 +125,66 @@
       </div>
     </div>
 
-  </div>
+          </div>
+      </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
-  <script type="module" src="../../src/scripts/pages/reports/index.js"></script>
-</body>
+  <!-- Footer Component -->
+  <div w3-include-html="../dashboard/components/footer-dashboard.html"></div>
+
+  <script>w3.includeHTML();</script>
+
+  <script>
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Reports';
+      if (pageSubtitle) pageSubtitle.textContent = 'Generate and view comprehensive reports';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../auth/login-page.html');
+        });
+      }
+    }
+  </script>
 
 </html>

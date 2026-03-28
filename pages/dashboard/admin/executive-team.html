@@ -3,195 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Executive Team - Manage SWA leadership">
+  <meta name="description" content="SWA Executive Team - Admin Panel">
   <title>Executive Team - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/executive-team.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Executive Team Section -->
-    <div class="content-section active" id="section-executive">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-users-cog"></i> Executive Team</h1>
-          <p>Manage Student Welfare Association leadership and roles</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="cards">
-          <div class="card">
-            <h3><i class="fas fa-users"></i> Total Officers</h3>
-            <p class="stat-number" id="total-officers">0</p>
-            <p class="stat-label">Team Members</p>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-users-cog"></i> Executive Team</h1>
+            <p>Manage executive team members</p>
           </div>
-          <div class="card">
-            <h3><i class="fas fa-user-tie"></i> Executives</h3>
-            <p class="stat-number" id="total-executives">0</p>
-            <p class="stat-label">Core Team</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-user-friends"></i> Committee Heads</h3>
-            <p class="stat-number" id="committee-heads">0</p>
-            <p class="stat-label">Active</p>
-          </div>
-          <div class="card">
-            <h3><i class="fas fa-calendar-check"></i> Term Ends</h3>
-            <p class="stat-number" id="term-end">N/A</p>
-            <p class="stat-label">Current Term</p>
+          
+          <div class="section-placeholder">
+            <i class="fas fa-users-cog"></i>
+            <h2>Executive Team</h2>
+            <p>This section is under construction.</p>
           </div>
         </div>
-
-        <!-- Loading Indicator -->
-        <div id="loading-indicator" style="display: none; text-align: center; padding: 20px;">
-          <i class="fas fa-spinner fa-spin fa-2x"></i>
-          <p>Loading executive team data...</p>
-        </div>
-
-        <!-- Error Message -->
-        <div id="error-message" style="display: none; padding: 15px; background: #fee; color: #c00; border-radius: 5px; margin: 10px 0;">
-          <i class="fas fa-exclamation-circle"></i> <span></span>
-        </div>
-
-        <!-- Executive Members -->
-        <section class="data-section">
-          <h2><i class="fas fa-crown"></i> Executive Officers</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Position</th>
-                  <th>Name</th>
-                  <th>Student ID</th>
-                  <th>Contact</th>
-                  <th>Email</th>
-                  <th>Term Start</th>
-                  <th>Term End</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="executives-table-body">
-                <!-- Dynamic content loaded here -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Committee Heads -->
-        <section class="data-section">
-          <h2><i class="fas fa-user-friends"></i> Committee Heads</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Committee</th>
-                  <th>Chairperson</th>
-                  <th>Student ID</th>
-                  <th>Members</th>
-                  <th>Contact</th>
-                  <th>Meeting Day</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="committee-table-body">
-                <!-- Dynamic content loaded here -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Roles & Permissions -->
-        <section class="data-section">
-          <h2><i class="fas fa-shield-alt"></i> Roles & Permissions</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Role</th>
-                  <th>Dashboard Access</th>
-                  <th>Manage Members</th>
-                  <th>Financial Access</th>
-                  <th>Reports</th>
-                  <th>Settings</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="roles-table-body">
-                <!-- Dynamic content loaded here -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-
-        <!-- Meeting Schedule -->
-        <section class="data-section">
-          <h2><i class="fas fa-calendar-alt"></i> Executive Meeting Schedule</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Meeting Type</th>
-                  <th>Frequency</th>
-                  <th>Day</th>
-                  <th>Time</th>
-                  <th>Location</th>
-                  <th>Next Meeting</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="meetings-table-body">
-                <!-- Dynamic content loaded here -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Quick Actions -->
-        <section class="quick-actions">
-          <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-          <div class="action-buttons">
-            <a href="add-officer.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Officer</a>
-            <a href="security-settings.html" class="action-btn"><i class="fas fa-user-edit"></i> Update Role</a>
-            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Message</a>
-            <a href="../public/events.html" class="action-btn"><i class="fas fa-calendar-plus"></i> Schedule Meeting</a>
-            <a href="../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export List</a>
-            <a href="security-settings.html" class="action-btn"><i class="fas fa-shield-alt"></i> Manage Permissions</a>
-          </div>
-        </section>
-
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Executive Team';
+      if (pageSubtitle) pageSubtitle.textContent = 'Manage executive team members';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script type="module" src="../../../src/scripts/pages/dashboard/executive-team.js"></script>
 </body>
 </html>

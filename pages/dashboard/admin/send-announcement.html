@@ -3,118 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Send Announcement - SWA Admin Panel">
+  <meta name="description" content="SWA Send Announcement - Admin Panel">
   <title>Send Announcement - Student Welfare Association | JOOUST</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/send-announcement.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Page Content -->
-    <div class="content-section active">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-paper-plane"></i> Send Announcement</h1>
-          <p>Broadcast an announcement to members</p>
-        </div>
-
-        <!-- Send Announcement Form -->
-        <section class="data-section">
-          <h2><i class="fas fa-bullhorn"></i> Announcement Details</h2>
-          <div class="form-container">
-            <form id="sendAnnouncementForm">
-              <div class="form-group">
-                <label for="subject">Subject</label>
-                <input type="text" id="subject" placeholder="Enter announcement subject" required>
-              </div>
-
-              <div class="form-group">
-                <label for="recipients">Recipients</label>
-                <select id="recipients" required>
-                  <option value="">-- Select Recipients --</option>
-                  <option value="all">All Members (22)</option>
-                  <option value="active">Active Members (18)</option>
-                  <option value="executive">Executive Team (5)</option>
-                  <option value="finance">Finance Committee (4)</option>
-                  <option value="events">Events Committee (6)</option>
-                  <option value="welfare">Welfare Committee (5)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="deliveryMethod">Delivery Method</label>
-                <select id="deliveryMethod" required>
-                  <option value="">-- Select Method --</option>
-                  <option value="email">Email Only</option>
-                  <option value="sms">SMS Only</option>
-                  <option value="both">Both Email and SMS</option>
-                  <option value="app">App Notification</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="priority">Priority</label>
-                <select id="priority" required>
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="message">Message</label>
-                <textarea id="message" rows="8" placeholder="Write your announcement message here..."></textarea>
-              </div>
-
-              <div class="form-group">
-                <label>
-                  <input type="checkbox" id="scheduleSend"> Schedule for later
-                </label>
-              </div>
-
-              <div class="form-group" id="scheduleDateGroup" style="display:none;">
-                <label for="scheduleDate">Send Date & Time</label>
-                <input type="datetime-local" id="scheduleDate">
-              </div>
-
-              <div class="form-actions">
-                <a href="notices.html" class="btn">Cancel</a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Now</button>
-              </div>
-            </form>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-bullhorn"></i> Send Announcement</h1>
+            <p>Send announcements to all members</p>
           </div>
-        </section>
-
+          
+          <div class="section-placeholder">
+            <i class="fas fa-bullhorn"></i>
+            <h2>Send Announcement</h2>
+            <p>This section is under construction.</p>
+          </div>
+        </div>
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Send Announcement';
+      if (pageSubtitle) pageSubtitle.textContent = 'Send announcements to all members';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script src="../../../src/scripts/pages/dashboard/send-announcement.js"></script>
 </body>
 </html>

@@ -3,131 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Archive Documents - SWA Admin Panel">
+  <meta name="description" content="SWA Archive Documents - Admin Panel">
   <title>Archive Documents - Student Welfare Association | JOOUST</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- W3.js for component includes -->
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/archive-docs.css">
-  
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
 
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
 
-  <!-- Sidebar Component -->
-  <div w3-include-html="../components/sidebar-admin.html"></div>
-
-  <!-- Main Content -->
-  <div class="main" id="mainContent">
-
-    <!-- Header Component -->
-    <div w3-include-html="../components/header-admin.html"></div>
-
-    <!-- Page Content -->
-    <div class="content-section active">
-      <div class="page-body">
-
-        <div class="page-header">
-          <h1><i class="fas fa-archive"></i> Archive Documents</h1>
-          <p>Archive old or outdated documents</p>
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-archive"></i> Archive Documents</h1>
+            <p>Manage archived documents and records</p>
+          </div>
+          
+          <div class="section-placeholder">
+            <i class="fas fa-archive"></i>
+            <h2>Archive Documents</h2>
+            <p>This section is under construction.</p>
+          </div>
         </div>
-
-        <!-- Archive Documents Section -->
-        <section class="data-section">
-          <h2><i class="fas fa-file-archive"></i> Documents to Archive</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th><input type="checkbox" id="selectAll"></th>
-                  <th>Document Name</th>
-                  <th>Category</th>
-                  <th>Last Updated</th>
-                  <th>Version</th>
-                  <th>Reason</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><input type="checkbox" class="doc-select"></td>
-                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Old Constitution 2024</td>
-                  <td>Constitution</td>
-                  <td>2024-01-10</td>
-                  <td>v2.0</td>
-                  <td>Superseded by new version</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="doc-select"></td>
-                  <td><i class="fas fa-file-word" style="color: blue;"></i> Meeting Minutes 2023</td>
-                  <td>Procedures</td>
-                  <td>2023-12-15</td>
-                  <td>v1.0</td>
-                  <td>Outdated year</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="doc-select"></td>
-                  <td><i class="fas fa-file-excel" style="color: green;"></i> Budget 2023</td>
-                  <td>Finance</td>
-                  <td>2023-11-20</td>
-                  <td>v1.0</td>
-                  <td>Fiscal year ended</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" class="doc-select"></td>
-                  <td><i class="fas fa-file-pdf" style="color: red;"></i> Event Guidelines Old</td>
-                  <td>Guidelines</td>
-                  <td>2024-02-28</td>
-                  <td>v1.2</td>
-                  <td>Replaced with new guidelines</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Archive Options -->
-        <section class="data-section">
-          <h2><i class="fas fa-cog"></i> Archive Options</h2>
-          <div class="form-container">
-            <form id="archiveForm">
-              <div class="form-group">
-                <label for="archiveReason">Reason for Archiving</label>
-                <select id="archiveReason" required>
-                  <option value="">-- Select Reason --</option>
-                  <option value="superseded">Superseded by new version</option>
-                  <option value="outdated">Outdated / Expired</option>
-                  <option value="fiscal">Fiscal year ended</option>
-                  <option value="duplicate">Duplicate</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="archiveNotes">Notes (Optional)</label>
-                <textarea id="archiveNotes" rows="3" placeholder="Add any notes about this archive..."></textarea>
-              </div>
-
-              <div class="form-actions">
-                <a href="documentation.html" class="btn">Cancel</a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-archive"></i> Archive Selected</button>
-              </div>
-            </form>
-          </div>
-        </section>
-
       </div>
-    </div>
-
-  </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
-  <!-- W3.js component loader -->
+  <script>w3.includeHTML();</script>
+
   <script>
-    w3.includeHTML();
+    // Initialize sidebar functionality after components are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        initializeSidebar();
+        initializeHeader();
+      }, 100);
+    });
+
+    function initializeSidebar() {
+      // Sidebar toggle
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.toggle('active');
+          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+        });
+      }
+
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          if (sidebar) sidebar.classList.remove('active');
+          this.classList.remove('active');
+        });
+      }
+    }
+
+    function initializeHeader() {
+      // Set page title dynamically
+      const pageTitle = document.getElementById('pageTitle');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (pageTitle) pageTitle.textContent = 'Archive Documents';
+      if (pageSubtitle) pageSubtitle.textContent = 'Manage archived documents and records';
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('headerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('swa_auth_token');
+          sessionStorage.removeItem('swa_auth_token');
+          localStorage.removeItem('swa_user');
+          sessionStorage.removeItem('swa_user');
+          window.location.replace('../../../pages/auth/login-page.html');
+        });
+      }
+    }
   </script>
-  
-  <script src="../../../src/scripts/pages/dashboard/archive-docs.js"></script>
 </body>
 </html>
