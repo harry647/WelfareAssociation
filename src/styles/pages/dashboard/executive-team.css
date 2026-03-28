@@ -1,389 +1,140 @@
-/* Executive Team Page Styles */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* =============================================================================
+   Executive Team Page Specific Styles
+   Only styles that are unique to this page - no duplicates from unified-dashboard.css
+   ============================================================================= */
 
-    :root {
-      --bg: #f5f7fa;
-      --bg2: #ffffff;
-      --bg3: #f0f2f5;
-      --bg4: #e8eaed;
-      --border: #e2e5ea;
-      --border2: #d0d3d8;
-      --accent: #2d7c5b;
-      --accent2: #1e5c3f;
-      --green: #28a745;
-      --amber: #f59e0b;
-      --red: #dc3545;
-      --text: #1a1f2e;
-      --text2: #4a5568;
-      --text3: #718096;
-      --sidebar-w: 240px;
-      --header-h: 64px;
-      --radius: 12px;
-      --radius-sm: 8px;
-    }
+/* ── PAGE HEADER ── */
+.page-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    html { scroll-behavior: smooth; }
+.page-header h1 i {
+  color: var(--accent-color);
+  font-size: 18px;
+}
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      overflow-x: hidden;
-    }
+.page-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sidebar-w);
-      min-height: 100vh;
-      background: var(--bg2);
-      border-right: 1px solid var(--border);
-      box-shadow: 2px 0 8px rgba(0,0,0,0.05);
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 0 0 24px;
-      overflow-y: auto;
-      z-index: 200;
-      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
-    }
+/* ── TEAM GRID ── */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
 
-    .sidebar-brand {
-      padding: 22px 20px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
+.team-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
 
-    .sidebar-brand .brand-icon {
-      width: 34px; height: 34px;
-      background: linear-gradient(135deg, #2d7c5b, #1e5c3f);
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-      color: #fff;
-      flex-shrink: 0;
-    }
+.team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
 
-    .sidebar-brand h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: 0.02em;
-    }
+.team-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
 
-    .sidebar-brand p {
-      font-size: 10px;
-      color: var(--text3);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
+.team-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
 
-    .sidebar-section-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text3);
-      padding: 14px 20px 6px;
-      font-weight: 500;
-    }
+.team-card .position {
+  font-size: 13px;
+  color: var(--accent-color);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
 
-    .sidebar a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 20px;
-      font-size: 13.5px;
-      color: var(--text2);
-      text-decoration: none;
-      border-radius: 0;
-      transition: color 0.15s, background 0.15s;
-      position: relative;
-      margin: 1px 0;
-    }
+.team-card .email {
+  font-size: 12px;
+  color: var(--text-muted);
+}
 
-    .sidebar a i {
-      width: 17px;
-      text-align: center;
-      font-size: 13px;
-      opacity: 0.7;
-      transition: opacity 0.15s;
-    }
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+}
 
-    .sidebar a:hover {
-      color: var(--text);
-      background: rgba(45,124,91,0.08);
-    }
+.btn-primary {
+  background: var(--accent-color);
+  color: white;
+}
 
-    .sidebar a.active {
-      color: var(--accent);
-      background: rgba(45,124,91,0.12);
-    }
+.btn-primary:hover {
+  background: var(--accent-dark);
+}
 
-    .sidebar a.active::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--accent);
-      border-radius: 0 3px 3px 0;
-    }
+/* ── RESPONSIVE DESIGN ── */
+@media (max-width: 1024px) {
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
-    .sidebar a.active i { opacity: 1; }
+@media (max-width: 768px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
-    .sidebar-divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 10px 20px;
-    }
-
-    /* ── OVERLAY ── */
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 199;
-      backdrop-filter: blur(2px);
-    }
-    .sidebar-overlay.active { display: block; }
-
-    /* ── MAIN ── */
-    .main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── TOP BAR ── */
-    .admin-header {
-      height: var(--header-h);
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      gap: 16px;
-    }
-
-    .admin-info {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .sidebar-toggle {
-      background: none;
-      border: 1px solid var(--border2);
-      color: var(--text2);
-      width: 34px; height: 34px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-size: 14px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      transition: border-color 0.15s, color 0.15s;
-    }
-    .sidebar-toggle:hover { border-color: var(--accent); color: var(--accent); }
-
-    .admin-avatar {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, #2d7c5b, #1e5c3f);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-    }
-
-    .admin-details h3 {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .admin-details p {
-      font-size: 12px;
-      color: var(--text2);
-    }
-
-    .admin-role {
-      display: inline-block;
-      font-size: 10px;
-      background: rgba(45,124,91,0.15);
-      color: var(--accent);
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      margin-top: 2px;
-    }
-
-    .logout-btn-header {
-      background: none;
-      border: 1px solid var(--border2);
-      color: var(--text2);
-      padding: 7px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      transition: border-color 0.15s, color 0.15s;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .logout-btn-header:hover { border-color: var(--red); color: var(--red); }
-
-    /* ── PAGE CONTENT ── */
-    .page-body {
-      padding: 28px;
-      flex: 1;
-    }
-
-    .page-header {
-      margin-bottom: 28px;
-    }
-
-    .page-header h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .page-header h1 i {
-      color: var(--accent);
-      font-size: 18px;
-    }
-
-    .page-header p {
-      font-size: 13.5px;
-      color: var(--text2);
-      margin-top: 4px;
-    }
-
-    /* ── TEAM GRID ── */
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .team-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .team-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-    }
-
-    .team-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin: 0 auto 16px;
-      background: linear-gradient(135deg, #2d7c5b, #1e5c3f);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-    }
-
-    .team-card h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .team-card .position {
-      font-size: 13px;
-      color: var(--accent);
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-
-    .team-card .email {
-      font-size: 12px;
-      color: var(--text3);
-    }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent2);
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 1024px) {
-      .team-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      .main {
-        margin-left: 0;
-      }
-      .sidebar-toggle {
-        display: flex;
-      }
-      .team-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+@media (max-width: 480px) {
+  .team-card {
+    padding: 16px;
+  }
+  
+  .team-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
+  }
+  
+  .team-card h3 {
+    font-size: 15px;
+  }
+  
+  .page-header h1 {
+    font-size: 20px;
+  }
+}
