@@ -1,8 +1,8 @@
 /* =============================================================================
-   Member Portal Styles - Modern UI/UX Design
+   Member Portal Styles - Consistent with Project Theme
    ============================================================================= */
 
-/* CSS Custom Properties (Design Tokens) */
+/* CSS Custom Properties (Design Tokens) - Consistent with other files */
 :root {
   /* Primary Colors */
   --member-color-primary: #4f46e5;
@@ -106,6 +106,224 @@ body {
   z-index: 1;
 }
 
+/* Member Header Left Layout */
+.member-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.member-avatar {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--member-color-primary), var(--member-color-primary-dark));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Alert Styles */
+.alert {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 32px 0;
+  padding: 14px 18px;
+  border-radius: var(--member-radius-sm);
+  font-size: 13.5px;
+}
+
+.alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--member-color-warning);
+}
+
+.alert-warning i {
+  font-size: 15px;
+}
+
+.alert-link {
+  margin-left: auto;
+  color: var(--member-color-warning);
+  font-size: 12px;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+/* Page Body Layout */
+.page-body {
+  padding: 24px 28px;
+}
+
+/* Section Title */
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--member-color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.section-title i {
+  color: var(--member-color-primary);
+  font-size: 14px;
+}
+
+/* Fine Summary Section */
+.fine-summary {
+  background: var(--member-color-surface);
+  border: 1px solid var(--member-color-border);
+  border-radius: var(--member-radius);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+.fine-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.fine-card {
+  background: var(--member-color-surface-hover);
+  border: 1px solid var(--member-color-border);
+  border-radius: var(--member-radius-sm);
+  padding: 16px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.fine-card:hover {
+  border-color: var(--member-color-border);
+}
+
+.fine-card p:first-child {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--member-color-text-primary);
+  margin-bottom: 4px;
+}
+
+.fine-card p:last-child {
+  font-size: 11px;
+  color: var(--member-color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+#paidFines {
+  color: var(--member-color-success) !important;
+}
+
+#unpaidFines {
+  color: var(--member-color-warning) !important;
+}
+
+/* Portal Grid Layout */
+.portal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.portal-grid .data-section,
+.portal-grid .action-card,
+.portal-grid .fines-section,
+.portal-grid .pay-fines-section {
+  margin-bottom: 0;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Data Section */
+.data-section {
+  background: var(--member-color-surface);
+  border: 1px solid var(--member-color-border);
+  border-radius: var(--member-radius);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+/* Action Card */
+.action-card {
+  background: var(--member-color-surface);
+  border: 1px solid var(--member-color-border);
+  border-radius: var(--member-radius);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+.action-card p {
+  font-size: 13.5px;
+  color: var(--member-color-text-secondary);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+/* Pay Fines Section */
+.pay-fines-section {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--member-radius);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+.pay-fines-section p {
+  font-size: 13.5px;
+  color: var(--member-color-text-secondary);
+  margin-top: 6px;
+}
+
+/* Fines Section */
+.fines-section {
+  background: var(--member-color-surface);
+  border: 1px solid var(--member-color-border);
+  border-radius: var(--member-radius);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+.fines-section p {
+  font-size: 13px;
+  color: var(--member-color-text-secondary);
+  margin-bottom: 14px;
+}
+
+/* Status Overdue */
+.status.overdue {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--member-color-danger);
+}
+
+/* Logout Section */
+.logout-section {
+  padding: 0 28px 32px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* ============================================================================
    DASHBOARD CARDS
    ============================================================================ */
@@ -180,38 +398,15 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 32px 32px;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 24px;
 }
 
 /* ============================================================================
    SECTIONS
    ============================================================================ */
 
-.contribution-section {
-  grid-column: span 8;
-}
-
-.make-contribution {
-  grid-column: span 4;
-}
-
-.loan-section {
-  grid-column: span 6;
-}
-
 .notifications-section {
   margin: 0 32px;
   max-width: calc(100% - 64px);
-}
-
-.quick-links-section {
-  grid-column: span 6;
-}
-
-.profile-section {
-  grid-column: span 6;
 }
 
 section {
@@ -858,127 +1053,6 @@ table tbody tr:last-child td:last-child {
 }
 
 /* ============================================================================
-   RESPONSIVE DESIGN
-   ============================================================================ */
-
-@media (max-width: 1200px) {
-  .portal-main {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  
-  .contribution-section {
-    grid-column: span 6;
-  }
-  
-  .make-contribution {
-    grid-column: span 3;
-  }
-  
-  .loan-section {
-    grid-column: span 3;
-  }
-  
-  .notifications-section,
-  .quick-links-section,
-  .profile-section {
-    grid-column: span 3;
-  }
-}
-
-@media (max-width: 992px) {
-  .portal-main {
-    grid-template-columns: 1fr;
-    padding: 0 24px 24px;
-  }
-  
-  .contribution-section,
-  .make-contribution,
-  .loan-section,
-  .notifications-section,
-  .quick-links-section,
-  .profile-section {
-    grid-column: span 1;
-  }
-  
-  .dashboard {
-    margin: 24px;
-  }
-}
-
-@media (max-width: 768px) {
-  .member-header {
-    padding: 32px 24px;
-  }
-  
-  .member-header h1 {
-    font-size: 1.5rem;
-  }
-  
-  .dashboard {
-    grid-template-columns: 1fr;
-    margin: 16px;
-  }
-  
-  .quick-links {
-    grid-template-columns: 1fr;
-  }
-  
-  section {
-    padding: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .member-header h1 {
-    font-size: 1.25rem;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .card .stat {
-    font-size: 1.5rem;
-  }
-}
-
-/* No notifications state */
-.no-notifications {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--member-color-text-secondary);
-  background: var(--member-color-surface);
-  border-radius: var(--member-radius-md);
-  border: 1px solid var(--member-color-border);
-}
-
-.no-notifications i {
-  font-size: 2rem;
-  margin-bottom: 12px;
-  opacity: 0.5;
-}
-
-/* ============================================================================
-   ANIMATIONS
-   ============================================================================ */
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.dashboard section {
-  animation: fadeInUp 0.5s ease forwards;
-}
-
-.card:nth-child(1) { animation-delay: 0.1s; }
-.card:nth-child(2) { animation-delay: 0.15s; }
-
-/* ============================================================================
    LOAN HISTORY & PAYMENTS HISTORY STYLES
    ============================================================================ */
 
@@ -1146,82 +1220,57 @@ table tbody tr:last-child td:last-child {
   opacity: 0.5;
 }
 
-.view-all {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--member-color-primary);
-  text-decoration: none;
-  font-weight: 500;
-  margin-top: 16px;
-  transition: all var(--member-transition-fast);
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 1200px) {
+  .dashboard { grid-template-columns: repeat(2, 1fr); }
+  .fine-summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .portal-grid { grid-template-columns: 1fr; }
+  .full-width { grid-column: auto; }
 }
 
-.view-all:hover {
-  color: var(--member-color-primary-dark);
-  transform: translateX(2px);
+@media (max-width: 640px) {
+  .dashboard { grid-template-columns: 1fr 1fr; }
+  .quick-links { grid-template-columns: 1fr 1fr; }
+  .loan-summary-cards, .payment-summary-cards { grid-template-columns: 1fr; }
+  .profile-info { grid-template-columns: 1fr; }
+  .page-body { padding: 16px; }
+  .member-header { padding: 14px 16px; }
+  .alert { margin: 12px 16px 0; }
+  .logout-section { padding: 0 16px 24px; }
 }
 
-.view-all::after {
-  content: '→';
-  font-weight: bold;
+.no-notifications {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--member-color-text-secondary);
+  background: var(--member-color-surface);
+  border-radius: var(--member-radius-md);
+  border: 1px solid var(--member-color-border);
 }
 
-/* Status indicators */
-.status.received {
-  background: #dcfce7;
-  color: #166534;
-  padding: 4px 8px;
-  border-radius: var(--member-radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.status.pending {
-  background: #fef3c7;
-  color: #92400e;
-  padding: 4px 8px;
-  border-radius: var(--member-radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
+.dashboard section {
+  animation: fadeInUp 0.5s ease forwards;
 }
 
-.status.unpaid {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 4px 8px;
-  border-radius: var(--member-radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .loan-summary-cards, .payment-summary-cards {
-    grid-template-columns: 1fr;
-  }
-  
-  .table-container {
-    font-size: 0.75rem;
-  }
-  
-  .table-container th, .table-container td {
-    padding: 8px 12px;
-  }
-  
-  .summary-card {
-    padding: 16px;
-  }
-  
-  .card-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-  }
-  
-  .card-value {
-    font-size: 1.25rem;
-  }
-}
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.15s; }
 .card:nth-child(3) { animation-delay: 0.2s; }
 .card:nth-child(4) { animation-delay: 0.25s; }

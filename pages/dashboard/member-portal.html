@@ -1,545 +1,485 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- W3 Schools HTML Includes -->
-    <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="SWA Member Portal - Manage contributions, loans, and member services">
   <title>Member Portal - Student Welfare Association | JOOUST</title>
-  <!-- Main Styles -->
   <link rel="stylesheet" href="../../src/styles/main.css">
   <link rel="stylesheet" href="../../src/styles/original/header.css">
   <link rel="stylesheet" href="../../src/styles/pages/shared/navigation.css">
   <link rel="stylesheet" href="../../src/styles/original/footer.css">
-  <!-- Member Portal Styles -->
   <link rel="stylesheet" href="../../src/styles/pages/dashboard/member-portal.css">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  
-  <!-- Immediate auth check - hide body until verified -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
   <script>
-    // Run immediately before any content renders
     (function() {
-      // Hide body immediately to prevent flash of content
       document.documentElement.style.visibility = 'hidden';
-      
-      // Prevent caching of protected pages
       if (performance && performance.navigation.type === 2) {
         window.location.reload();
         return;
       }
-      
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
-      
       if (!authToken || !userData) {
-        // Not authenticated, redirect immediately
         window.location.replace('../auth/login-page.html?redirect=../dashboard/member-portal.html');
         return;
       }
-      
-      // Authenticated - show content
       document.documentElement.style.visibility = 'visible';
     })();
-    
-    // Also check on pageshow event (handles back button)
     window.addEventListener('pageshow', function(event) {
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
-      
       if (!authToken || !userData) {
         window.location.replace('../auth/login-page.html?redirect=../dashboard/member-portal.html');
       }
     });
   </script>
+
 </head>
 <body>
-  <!-- Shared Header -->
+
   <div w3-include-html="../shared/header.html"></div>
 
+  <!-- Member Top Bar -->
   <header class="member-header">
-    <h1 id="welcome-message"><i class="fas fa-user-circle"></i> Welcome, Member</h1>
-    <p>Manage your SWA account, contributions, and loans</p>
+    <div class="member-header-left">
+      <div class="member-avatar">M</div>
+      <div>
+        <h1 id="welcome-message"><i class="fas fa-user-circle"></i> Welcome, Member</h1>
+        <p>Manage your SWA account, contributions, and loans</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button type="button" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
   </header>
 
-  <!-- Fine Alerts (Warning Banner) -->
+  <!-- Fine Alert -->
   <div id="fineAlert" class="alert alert-warning" style="display: none;">
     <i class="fas fa-exclamation-triangle"></i>
     <span id="fineAlertText">You have unpaid fines of Ksh 0</span>
     <a href="#fines-section" class="alert-link">View Details</a>
   </div>
 
-  <!-- Dashboard Summary -->
-  <div class="dashboard">
-    <div class="card">
-      <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
-      <p class="stat" data-service="contributions">Ksh 0</p>
-      <p class="label">Lifetime</p>
-    </div>
-    <div class="card">
-      <h3><i class="fas fa-exclamation-circle"></i> Outstanding Debt</h3>
-      <p class="stat" data-service="debts">Ksh 0</p>
-      <p class="label">Due: March 25</p>
-    </div>
-    <div class="card">
-      <h3><i class="fas fa-hand-holding-usd"></i> Current Loan</h3>
-      <p class="stat" data-service="loans">Ksh 0</p>
-      <p class="label">Balance</p>
-    </div>
-    <div class="card">
-      <h3><i class="fas fa-wallet"></i> Balance</h3>
-      <p class="stat" data-service="savings">Ksh 0</p>
-      <p class="label">Available</p>
-    </div>
-  </div>
+  <div class="page-body">
 
-  <!-- Fine Summary Section -->
-  <section class="fine-summary" id="fines-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; margin: 20px; color: white;">
-    <h2 style="margin-top: 0;"><i class="fas fa-file-invoice-dollar"></i> My Fines Summary</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
-      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="totalFines" data-service="fines-total">Ksh 0</p>
-        <p style="margin: 5px 0 0 0; font-size: 14px;">Total Fines</p>
+    <!-- Dashboard Summary -->
+    <div class="dashboard">
+      <div class="card">
+        <h3><i class="fas fa-money-bill-wave"></i> Total Contributions</h3>
+        <p class="stat" data-service="contributions">Ksh 0</p>
+        <p class="label">Lifetime</p>
       </div>
-      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #4ade80;" id="paidFines" data-service="fines-paid">Ksh 0</p>
-        <p style="margin: 5px 0 0 0; font-size: 14px;">Paid</p>
+      <div class="card">
+        <h3><i class="fas fa-exclamation-circle"></i> Outstanding Debt</h3>
+        <p class="stat" data-service="debts">Ksh 0</p>
+        <p class="label">Due: March 25</p>
       </div>
-      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #fbbf24;" id="unpaidFines" data-service="fines-balance">Ksh 0</p>
-        <p style="margin: 5px 0 0 0; font-size: 14px;">Balance</p>
+      <div class="card">
+        <h3><i class="fas fa-hand-holding-usd"></i> Current Loan</h3>
+        <p class="stat" data-service="loans">Ksh 0</p>
+        <p class="label">Balance</p>
       </div>
-      <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 24px; font-weight: bold; margin: 0;" id="fineCount" data-service="fines-count">0</p>
-        <p style="margin: 5px 0 0 0; font-size: 14px;">Total Records</p>
+      <div class="card">
+        <h3><i class="fas fa-wallet"></i> Balance</h3>
+        <p class="stat" data-service="savings">Ksh 0</p>
+        <p class="label">Available</p>
       </div>
     </div>
-  </section>
 
-  <!-- Notifications -->
-  <section class="notifications-section">
-    <h2><i class="fas fa-bell"></i> Notifications</h2>
-    <div class="notification-cards" id="notificationCards">
-      <!-- Notifications will be loaded dynamically from API -->
-    </div>
-  </section>
-
-  <!-- Main Content Grid -->
-  <main class="portal-main">
-    <!-- Fine Records Table -->
-    <section class="fines-section" id="finesSection" style="display: none;">
-      <h2><i class="fas fa-file-invoice-dollar"></i> My Fine Records</h2>
-      <p>View and manage your fine records</p>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>Fine Type</th>
-            <th>Amount</th>
-            <th>Date</th>
-            <th>Due Date</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="finesTableBody">
-          <!-- Fines will be loaded dynamically -->
-        </tbody>
-      </table>
-    </section>
-
-    <!-- Contribution History -->
-    <section class="contribution-section">
-      <h2><i class="fas fa-history"></i> My Contributions</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Method</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="contributionsTableBody">
-          <!-- Contributions will be loaded dynamically from API -->
-        </tbody>
-      </table>
-      <a href="../contributions/history.html" class="view-all">View All Contributions</a>
-    </section>
-
-    <!-- Make Contribution -->
-    <section class="make-contribution">
-      <h2><i class="fas fa-money-bill-wave"></i> Make Contribution</h2>
-      <p>Make your monthly contribution easily through our secure payment system.</p>
-      <a href="../payments/make-payment.html" class="btn submit-btn">
-        <i class="fas fa-credit-card"></i> Go to Payment Page
-      </a>
-    </section>
-
-    <!-- Pay Fines Section (shown when there are unpaid fines) -->
-    <section class="pay-fines-section" id="payFinesSection" style="display: none;">
-      <h2><i class="fas fa-credit-card"></i> Pay Outstanding Fines</h2>
-      <p>You have unpaid fines. Click below to make payment.</p>
-      <a href="../payments/make-payment.html?category=fine" class="btn submit-btn" style="background: #dc2626;">
-        <i class="fas fa-money-bill-wave"></i> Pay Fines Now
-      </a>
-    </section>
-
-    <!-- Loan Request -->
-    <section class="loan-section">
-      <h2><i class="fas fa-hand-holding-usd"></i> Loan Request</h2>
-      <div class="eligibility" id="loanEligibility">
-        <h3>Your Eligibility</h3>
-        <div id="eligibilityLoading">
-          <p><i class="fas fa-spinner fa-spin"></i> Calculating your loan eligibility...</p>
+    <!-- Fine Summary -->
+    <section class="fine-summary" id="fines-section">
+      <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> My Fines Summary</h2>
+      <div class="fine-summary-grid">
+        <div class="fine-card">
+          <p id="totalFines" data-service="fines-total">Ksh 0</p>
+          <p>Total Fines</p>
         </div>
-        <div id="eligibilityContent" style="display: none;">
-          <div class="eligibility-summary">
-            <div class="eligibility-status" id="eligibilityStatus">
-              <span class="status-icon"></span>
-              <span class="status-text"></span>
+        <div class="fine-card">
+          <p id="paidFines" data-service="fines-paid">Ksh 0</p>
+          <p>Paid</p>
+        </div>
+        <div class="fine-card">
+          <p id="unpaidFines" data-service="fines-balance">Ksh 0</p>
+          <p>Balance</p>
+        </div>
+        <div class="fine-card">
+          <p id="fineCount" data-service="fines-count">0</p>
+          <p>Total Records</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="notifications-section">
+      <h2 class="section-title"><i class="fas fa-bell"></i> Notifications</h2>
+      <div class="notification-cards" id="notificationCards">
+        <!-- Loaded dynamically -->
+      </div>
+    </section>
+
+    <!-- Portal Main Grid -->
+    <main class="portal-main">
+      <div class="portal-grid">
+
+        <!-- Fine Records Table (hidden by default) -->
+        <section class="fines-section full-width" id="finesSection" style="display: none;">
+          <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> My Fine Records</h2>
+          <p>View and manage your fine records</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fine Type</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="finesTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Contribution History -->
+        <section class="data-section">
+          <h2 class="section-title"><i class="fas fa-history"></i> My Contributions</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="contributionsTableBody"></tbody>
+            </table>
+          </div>
+          <a href="../contributions/history.html" class="view-all">View All Contributions →</a>
+        </section>
+
+        <!-- Make Contribution -->
+        <section class="action-card">
+          <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> Make Contribution</h2>
+          <p>Make your monthly contribution easily through our secure payment system.</p>
+          <a href="../payments/make-payment.html" class="btn submit-btn">
+            <i class="fas fa-credit-card"></i> Go to Payment Page
+          </a>
+        </section>
+
+        <!-- Pay Fines (hidden by default) -->
+        <section class="pay-fines-section" id="payFinesSection" style="display: none;">
+          <h2 class="section-title" style="color: #f87171;"><i class="fas fa-credit-card"></i> Pay Outstanding Fines</h2>
+          <p>You have unpaid fines. Click below to make payment.</p>
+          <a href="../payments/make-payment.html?category=fine" class="btn submit-btn" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">
+            <i class="fas fa-money-bill-wave"></i> Pay Fines Now
+          </a>
+        </section>
+
+        <!-- Loan Request -->
+        <section class="action-card full-width">
+          <h2 class="section-title"><i class="fas fa-hand-holding-usd"></i> Loan Request</h2>
+          <div class="eligibility" id="loanEligibility">
+            <h3>Your Eligibility</h3>
+            <div id="eligibilityLoading">
+              <p><i class="fas fa-spinner fa-spin"></i> Calculating your loan eligibility...</p>
             </div>
-            <div class="max-loan-display">
-              <p class="max-loan-label">Your Maximum Loan Limit</p>
-              <p class="max-loan-amount" id="maxLoanAmount">Ksh 0</p>
+            <div id="eligibilityContent" style="display: none;">
+              <div class="eligibility-summary">
+                <div class="eligibility-status" id="eligibilityStatus">
+                  <span class="status-icon"></span>
+                  <span class="status-text"></span>
+                </div>
+                <div class="max-loan-display">
+                  <p class="max-loan-label">Maximum Loan Limit</p>
+                  <p class="max-loan-amount" id="maxLoanAmount">Ksh 0</p>
+                </div>
+                <div class="member-score">
+                  <p class="score-label">Member Score</p>
+                  <p class="score-value" id="memberScore">0</p>
+                </div>
+              </div>
+              <div class="eligibility-reasons" id="eligibilityReasons">
+                <h4>Score Breakdown</h4>
+                <ul id="reasonsList"></ul>
+              </div>
+              <div class="loan-progress" id="loanProgress">
+                <p><i class="fas fa-info-circle"></i> <span id="loanProgressText">Loan progress: First loan</span></p>
+              </div>
             </div>
-            <div class="member-score">
-              <p class="score-label">Member Score</p>
-              <p class="score-value" id="memberScore">0</p>
+            <div id="eligibilityError" style="display: none;">
+              <p><i class="fas fa-exclamation-triangle"></i> Unable to calculate eligibility. Please try again later.</p>
             </div>
           </div>
-          <div class="eligibility-reasons" id="eligibilityReasons">
-            <h4>Score Breakdown</h4>
-            <ul id="reasonsList">
-              <!-- Dynamic reasons will be inserted here -->
-            </ul>
-          </div>
-          <div class="loan-progress" id="loanProgress">
-            <p><i class="fas fa-info-circle"></i> <span id="loanProgressText">Loan progress: First loan</span></p>
-          </div>
-        </div>
-        <div id="eligibilityError" style="display: none;">
-          <p><i class="fas fa-exclamation-triangle"></i> Unable to calculate eligibility. Please try again later.</p>
-        </div>
-      </div>
-      <a href="../loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
-        <i class="fas fa-paper-plane"></i> Apply for Loan
-      </a>
-    </section>
+          <a href="../loans/apply.html" class="btn submit-btn" id="applyLoanBtn">
+            <i class="fas fa-paper-plane"></i> Apply for Loan
+          </a>
+        </section>
 
-    <!-- Loan History -->
-    <section class="loan-history-section">
-      <h2><i class="fas fa-history"></i> My Loan History</h2>
-      <div class="loan-summary-cards">
-        <div class="summary-card active-loans">
-          <div class="card-icon">
-            <i class="fas fa-hand-holding-usd"></i>
+        <!-- Loan History -->
+        <section class="data-section full-width">
+          <h2 class="section-title"><i class="fas fa-history"></i> My Loan History</h2>
+          <div class="loan-summary-cards">
+            <div class="summary-card active-loans">
+              <div class="card-icon"><i class="fas fa-hand-holding-usd"></i></div>
+              <div class="card-content">
+                <h3>Active Loans</h3>
+                <p class="card-value" id="activeLoansCount">0</p>
+                <p class="card-label">Current loans</p>
+              </div>
+            </div>
+            <div class="summary-card total-borrowed">
+              <div class="card-icon"><i class="fas fa-coins"></i></div>
+              <div class="card-content">
+                <h3>Total Borrowed</h3>
+                <p class="card-value" id="totalBorrowed">Ksh 0</p>
+                <p class="card-label">All time</p>
+              </div>
+            </div>
+            <div class="summary-card outstanding-balance">
+              <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+              <div class="card-content">
+                <h3>Outstanding Balance</h3>
+                <p class="card-value" id="outstandingBalance">Ksh 0</p>
+                <p class="card-label">Total due</p>
+              </div>
+            </div>
           </div>
-          <div class="card-content">
-            <h3>Active Loans</h3>
-            <p class="card-value" id="activeLoansCount">0</p>
-            <p class="card-label">Current loans</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Loan Number</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Applied Date</th>
+                  <th>Due Date</th>
+                  <th>Balance</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="loansTableBody"></tbody>
+            </table>
+            <div class="loading-indicator" id="loansLoading">
+              <i class="fas fa-spinner fa-spin"></i> Loading loan history...
+            </div>
+            <div class="no-data" id="loansNoData" style="display: none;">
+              <i class="fas fa-info-circle"></i> No loan history found
+            </div>
           </div>
-        </div>
-        <div class="summary-card total-borrowed">
-          <div class="card-icon">
-            <i class="fas fa-coins"></i>
-          </div>
-          <div class="card-content">
-            <h3>Total Borrowed</h3>
-            <p class="card-value" id="totalBorrowed">Ksh 0</p>
-            <p class="card-label">All time</p>
-          </div>
-        </div>
-        <div class="summary-card outstanding-balance">
-          <div class="card-icon">
-            <i class="fas fa-balance-scale"></i>
-          </div>
-          <div class="card-content">
-            <h3>Outstanding Balance</h3>
-            <p class="card-value" id="outstandingBalance">Ksh 0</p>
-            <p class="card-label">Total due</p>
-          </div>
-        </div>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Loan Number</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Applied Date</th>
-              <th>Due Date</th>
-              <th>Balance</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="loansTableBody">
-            <!-- Loans will be loaded dynamically from API -->
-          </tbody>
-        </table>
-        <div class="loading-indicator" id="loansLoading">
-          <i class="fas fa-spinner fa-spin"></i> Loading loan history...
-        </div>
-        <div class="no-data" id="loansNoData" style="display: none;">
-          <i class="fas fa-info-circle"></i> No loan history found
-        </div>
-      </div>
-      <a href="../loans/history.html" class="view-all">View All Loan Details</a>
-    </section>
+          <a href="../loans/history.html" class="view-all">View All Loan Details →</a>
+        </section>
 
-    <!-- Payments History -->
-    <section class="payments-history-section">
-      <h2><i class="fas fa-receipt"></i> My Payment History</h2>
-      <div class="payment-summary-cards">
-        <div class="summary-card total-payments">
-          <div class="card-icon">
-            <i class="fas fa-money-bill-wave"></i>
+        <!-- Payment History -->
+        <section class="data-section full-width">
+          <h2 class="section-title"><i class="fas fa-receipt"></i> My Payment History</h2>
+          <div class="payment-summary-cards">
+            <div class="summary-card total-payments">
+              <div class="card-icon"><i class="fas fa-money-bill-wave"></i></div>
+              <div class="card-content">
+                <h3>Total Payments</h3>
+                <p class="card-value" id="totalPayments">Ksh 0</p>
+                <p class="card-label">All time</p>
+              </div>
+            </div>
+            <div class="summary-card this-month">
+              <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+              <div class="card-content">
+                <h3>This Month</h3>
+                <p class="card-value" id="thisMonthPayments">Ksh 0</p>
+                <p class="card-label">Payments</p>
+              </div>
+            </div>
+            <div class="summary-card pending-payments">
+              <div class="card-icon"><i class="fas fa-clock"></i></div>
+              <div class="card-content">
+                <h3>Pending</h3>
+                <p class="card-value" id="pendingPayments">0</p>
+                <p class="card-label">Payments</p>
+              </div>
+            </div>
           </div>
-          <div class="card-content">
-            <h3>Total Payments</h3>
-            <p class="card-value" id="totalPayments">Ksh 0</p>
-            <p class="card-label">All time</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Payment ID</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Reference</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTableBody"></tbody>
+            </table>
+            <div class="loading-indicator" id="paymentsLoading">
+              <i class="fas fa-spinner fa-spin"></i> Loading payment history...
+            </div>
+            <div class="no-data" id="paymentsNoData" style="display: none;">
+              <i class="fas fa-info-circle"></i> No payment history found
+            </div>
           </div>
-        </div>
-        <div class="summary-card this-month">
-          <div class="card-icon">
-            <i class="fas fa-calendar-alt"></i>
-          </div>
-          <div class="card-content">
-            <h3>This Month</h3>
-            <p class="card-value" id="thisMonthPayments">Ksh 0</p>
-            <p class="card-label">Payments</p>
-          </div>
-        </div>
-        <div class="summary-card pending-payments">
-          <div class="card-icon">
-            <i class="fas fa-clock"></i>
-          </div>
-          <div class="card-content">
-            <h3>Pending</h3>
-            <p class="card-value" id="pendingPayments">0</p>
-            <p class="card-label">Payments</p>
-          </div>
-        </div>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Payment ID</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Method</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Reference</th>
-            </tr>
-          </thead>
-          <tbody id="paymentsTableBody">
-            <!-- Payments will be loaded dynamically from API -->
-          </tbody>
-        </table>
-        <div class="loading-indicator" id="paymentsLoading">
-          <i class="fas fa-spinner fa-spin"></i> Loading payment history...
-        </div>
-        <div class="no-data" id="paymentsNoData" style="display: none;">
-          <i class="fas fa-info-circle"></i> No payment history found
-        </div>
-      </div>
-      <a href="../payments/history.html" class="view-all">View All Payment Details</a>
-    </section>
+          <a href="../payments/history.html" class="view-all">View All Payment Details →</a>
+        </section>
 
-    <!-- Quick Links -->
-    <section class="quick-links-section">
-      <h2><i class="fas fa-link"></i> Quick Links</h2>
-      <div class="quick-links">
-        <a href="../public/policies.html" class="quick-link">
-          <i class="fas fa-file-alt"></i> View Policies
-        </a>
-        <a href="../public/events.html" class="quick-link">
-          <i class="fas fa-calendar-alt"></i> Upcoming Events
-        </a>
-        <a href="../public/news.html" class="quick-link">
-          <i class="fas fa-newspaper"></i> Latest News
-        </a>
-        <a href="../public/contact-information.html" class="quick-link">
-          <i class="fas fa-envelope"></i> Contact Support
-        </a>
-        <a href="../public/our-team.html" class="quick-link">
-          <i class="fas fa-users"></i> Executive Team
-        </a>
-        <a href="../public/faqs.html" class="quick-link">
-          <i class="fas fa-question-circle"></i> FAQs
-        </a>
-      </div>
-    </section>
+      </div><!-- /portal-grid -->
 
-    <!-- Profile Section -->
-    <section class="profile-section">
-      <h2><i class="fas fa-user-cog"></i> My Profile</h2>
-      <div class="profile-info">
-        <p><strong>Name:</strong> <span id="profile-name">Loading...</span></p>
-        <p><strong>Student ID:</strong> <span id="profile-member-number">Loading...</span></p>
-        <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
-        <p><strong>Phone:</strong> <span id="profile-phone">Loading...</span></p>
-        <p><strong>Member Since:</strong> <span id="profile-member-since">Loading...</span></p>
-        <p><strong>Status:</strong> <span id="profile-status" class="status active">Active</span></p>
-      </div>
-      <a href="../auth/profile.html" class="btn">
-        <i class="fas fa-edit"></i> Edit Profile
-      </a>
-    </section>
-  </main>
+      <!-- Quick Links -->
+      <section class="quick-links-section">
+        <h2 class="section-title"><i class="fas fa-link"></i> Quick Links</h2>
+        <div class="quick-links">
+          <a href="../public/policies.html" class="quick-link"><i class="fas fa-file-alt"></i> View Policies</a>
+          <a href="../public/events.html" class="quick-link"><i class="fas fa-calendar-alt"></i> Upcoming Events</a>
+          <a href="../public/news.html" class="quick-link"><i class="fas fa-newspaper"></i> Latest News</a>
+          <a href="../public/contact-information.html" class="quick-link"><i class="fas fa-envelope"></i> Contact Support</a>
+          <a href="../public/our-team.html" class="quick-link"><i class="fas fa-users"></i> Executive Team</a>
+          <a href="../public/faqs.html" class="quick-link"><i class="fas fa-question-circle"></i> FAQs</a>
+        </div>
+      </section>
 
-  <!-- Logout -->
-  <div class="logout-section">
-    <button type="button" class="logout-btn">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </button>
-  </div>
+      <!-- Profile -->
+      <section class="profile-section">
+        <h2 class="section-title"><i class="fas fa-user-cog"></i> My Profile</h2>
+        <div class="profile-info">
+          <p><strong>Name:</strong> <span id="profile-name">Loading...</span></p>
+          <p><strong>Student ID:</strong> <span id="profile-member-number">Loading...</span></p>
+          <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
+          <p><strong>Phone:</strong> <span id="profile-phone">Loading...</span></p>
+          <p><strong>Member Since:</strong> <span id="profile-member-since">Loading...</span></p>
+          <p><strong>Status:</strong> <span id="profile-status" class="status active">Active</span></p>
+        </div>
+        <a href="../auth/profile.html" class="btn">
+          <i class="fas fa-edit"></i> Edit Profile
+        </a>
+      </section>
 
-  <!-- Shared Footer -->
+    </main>
+
+    <!-- Logout -->
+    <div class="logout-section">
+      <button type="button" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+
+  </div><!-- /page-body -->
+
   <div w3-include-html="../shared/footer.html"></div>
 
-    <!-- W3 Schools HTML Includes Script -->
-    <script>
-        w3.includeHTML();
-    </script>
-    
-    <!-- Fine Service -->    
-    <script type="module">
-        // Import and initialize fine service
-        import { fineService } from '../../src/services/fine-service.js';
-        window.fineService = fineService;
-        
-        // Get member data and load fine data after service is ready
-        const profileKey = 'swa_member_profile';
-        const registrationKey = 'swa_registration';
-        
-        let memberData = null;
-        let memberId = 'JOO/2024/001'; // default
-        
-        // Try profile data first
-        const profileData = localStorage.getItem(profileKey);
-        if (profileData) {
-            memberData = JSON.parse(profileData);
+  <script>w3.includeHTML();</script>
+
+  <script type="module">
+    import { fineService } from '../../src/services/fine-service.js';
+    window.fineService = fineService;
+
+    const profileKey = 'swa_member_profile';
+    const registrationKey = 'swa_registration';
+
+    let memberData = null;
+    let memberId = 'JOO/2024/001';
+
+    const profileData = localStorage.getItem(profileKey);
+    if (profileData) memberData = JSON.parse(profileData);
+
+    if (!memberData) {
+      const registrationData = localStorage.getItem(registrationKey);
+      if (registrationData) memberData = JSON.parse(registrationData);
+    }
+
+    if (memberData) {
+      const welcomeElement = document.getElementById('welcome-message');
+      if (welcomeElement) {
+        const firstName = memberData.firstName || memberData.first_name || '';
+        const lastName = memberData.lastName || memberData.last_name || '';
+        const fullName = (firstName + ' ' + lastName).trim();
+        if (fullName) {
+          welcomeElement.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + fullName;
+          // Update avatar initials
+          const avatar = document.querySelector('.member-avatar');
+          if (avatar) avatar.textContent = (firstName[0] || '') + (lastName[0] || '');
         }
-        
-        // Try registration data as fallback
-        if (!memberData) {
-            const registrationData = localStorage.getItem(registrationKey);
-            if (registrationData) {
-                memberData = JSON.parse(registrationData);
-            }
-        }
-        
-        // Update welcome message if member data exists
-        if (memberData) {
-            const welcomeElement = document.getElementById('welcome-message');
-            if (welcomeElement) {
-                const firstName = memberData.firstName || memberData.first_name || '';
-                const lastName = memberData.lastName || memberData.last_name || '';
-                const fullName = (firstName + ' ' + lastName).trim();
-                
-                if (fullName) {
-                    welcomeElement.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + fullName;
-                }
-            }
-            
-            // Also update profile section if it exists
-            const displayName = document.getElementById('display-name');
-            if (displayName) {
-                const firstName = memberData.firstName || memberData.first_name || '';
-                const lastName = memberData.lastName || memberData.last_name || '';
-                displayName.textContent = (firstName + ' ' + lastName).trim() || 'Member';
-            }
-            
-            const displayStudentId = document.getElementById('display-student-id');
-            if (displayStudentId) {
-                displayStudentId.textContent = memberData.memberNumber || memberData.id || '-';
-            }
-            
-            // Set member ID for fines
-            memberId = memberData.memberNumber || memberData.id || 'JOO/2024/001';
-        }
-        
-        // Load fine summary and records (now that service is loaded)
-        if (typeof loadFineData === 'function') {
-            loadFineData(memberId);
-        }
-    </script>
-    
-    <!-- Dynamic Member Welcome Script (kept for other functionality) -->
-    <script>
-        // This script runs immediately but fine loading is now handled in the module above
-        function loadFineData(memberId) {
-            if (!window.fineService) {
-                console.error('Fine service not loaded');
-                return;
-            }
-            
-            const summary = window.fineService.getMemberFineSummary(memberId);
-            const fines = window.fineService.getMemberFinesFromStorage(memberId);
-            
-            // Update summary display
-            document.getElementById('totalFines').textContent = 'Ksh ' + summary.total.toLocaleString();
-            document.getElementById('paidFines').textContent = 'Ksh ' + summary.paid.toLocaleString();
-            document.getElementById('unpaidFines').textContent = 'Ksh ' + summary.unpaid.toLocaleString();
-            document.getElementById('fineCount').textContent = summary.count;
-            
-            // Show/hide fine alert
-            const fineAlert = document.getElementById('fineAlert');
-            const fineAlertText = document.getElementById('fineAlertText');
-            
-            if (summary.unpaid > 0) {
-                fineAlert.style.display = 'flex';
-                fineAlertText.innerHTML = `<strong>⚠ You have unpaid fines of Ksh ${summary.unpaid.toLocaleString()}</strong>`;
-            } else {
-                fineAlert.style.display = 'none';
-            }
-            
-            // Show/hide sections based on fine data
-            const finesSection = document.getElementById('finesSection');
-            const payFinesSection = document.getElementById('payFinesSection');
-            
-            if (fines.length > 0) {
-                finesSection.style.display = 'block';
-                
-                const tbody = document.getElementById('finesTableBody');
-                tbody.innerHTML = fines.map(fine => `
-                    <tr>
-                        <td><strong>${fine.fine_type}</strong></td>
-                        <td>Ksh ${fine.amount.toLocaleString()}</td>
-                        <td>${fine.date}</td>
-                        <td>${fine.due_date}</td>
-                        <td>
-                            <span class="status ${fine.status === 'paid' ? 'received' : (new Date(fine.due_date) < new Date() ? 'overdue' : 'pending')}">
-                                ${fine.status === 'paid' ? '✓ Paid' : (new Date(fine.due_date) < new Date() ? 'Overdue' : 'Pending')}
-                            </span>
-                        </td>
-                        <td>
-                            ${fine.status !== 'paid' ? `
-                                <a href="../payments/make-payment.html?category=fine&fineId=${fine.id}" class="btn" style="padding: 5px 10px; font-size: 12px;">
-                                    <i class="fas fa-credit-card"></i> Pay
-                                </a>
-                            ` : '<span style="color: #666;">-</span>'}
-                        </td>
-                    </tr>
-                `).join('');
-            }
-            
-            if (summary.unpaid > 0) {
-                payFinesSection.style.display = 'block';
-            } else {
-                payFinesSection.style.display = 'none';
-            }
-        }
-    </script>
+      }
+
+      const displayName = document.getElementById('display-name');
+      if (displayName) {
+        const firstName = memberData.firstName || memberData.first_name || '';
+        const lastName = memberData.lastName || memberData.last_name || '';
+        displayName.textContent = (firstName + ' ' + lastName).trim() || 'Member';
+      }
+
+      const displayStudentId = document.getElementById('display-student-id');
+      if (displayStudentId) displayStudentId.textContent = memberData.memberNumber || memberData.id || '-';
+
+      memberId = memberData.memberNumber || memberData.id || 'JOO/2024/001';
+    }
+
+    if (typeof loadFineData === 'function') loadFineData(memberId);
+  </script>
+
+  <script>
+    function loadFineData(memberId) {
+      if (!window.fineService) { console.error('Fine service not loaded'); return; }
+
+      const summary = window.fineService.getMemberFineSummary(memberId);
+      const fines = window.fineService.getMemberFinesFromStorage(memberId);
+
+      document.getElementById('totalFines').textContent = 'Ksh ' + summary.total.toLocaleString();
+      document.getElementById('paidFines').textContent = 'Ksh ' + summary.paid.toLocaleString();
+      document.getElementById('unpaidFines').textContent = 'Ksh ' + summary.unpaid.toLocaleString();
+      document.getElementById('fineCount').textContent = summary.count;
+
+      const fineAlert = document.getElementById('fineAlert');
+      const fineAlertText = document.getElementById('fineAlertText');
+
+      if (summary.unpaid > 0) {
+        fineAlert.style.display = 'flex';
+        fineAlertText.innerHTML = '<strong>⚠ You have unpaid fines of Ksh ' + summary.unpaid.toLocaleString() + '</strong>';
+      } else {
+        fineAlert.style.display = 'none';
+      }
+
+      const finesSection = document.getElementById('finesSection');
+      const payFinesSection = document.getElementById('payFinesSection');
+
+      if (fines.length > 0) {
+        finesSection.style.display = 'block';
+        const tbody = document.getElementById('finesTableBody');
+        tbody.innerHTML = fines.map(fine => `
+          <tr>
+            <td><strong>${fine.fine_type}</strong></td>
+            <td>Ksh ${fine.amount.toLocaleString()}</td>
+            <td>${fine.date}</td>
+            <td>${fine.due_date}</td>
+            <td>
+              <span class="status ${fine.status === 'paid' ? 'received' : (new Date(fine.due_date) < new Date() ? 'overdue' : 'pending')}">
+                ${fine.status === 'paid' ? '✓ Paid' : (new Date(fine.due_date) < new Date() ? 'Overdue' : 'Pending')}
+              </span>
+            </td>
+            <td>
+              ${fine.status !== 'paid' ? `<a href="../payments/make-payment.html?category=fine&fineId=${fine.id}" class="btn" style="padding:5px 10px;font-size:12px;"><i class="fas fa-credit-card"></i> Pay</a>` : '<span style="color:var(--text3);">—</span>'}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      if (summary.unpaid > 0) {
+        payFinesSection.style.display = 'block';
+      } else {
+        payFinesSection.style.display = 'none';
+      }
+    }
+  </script>
   <script type="module" src="../../src/scripts/pages/dashboard/member-portal.js"></script>
 </body>
 </html>
