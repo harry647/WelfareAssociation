@@ -118,14 +118,17 @@ class AuthService {
      * Logout user
      */
     async logout() {
+        console.log('authService.logout() called');
         try {
             await apiService.post(API_CONFIG.endpoints.logout, {}, true);
+            console.log('Logout API call successful');
         } catch (error) {
             console.error('Logout API call failed:', error);
         } finally {
+            console.log('Clearing tokens and redirecting...');
             apiService.clearTokens();
             this.currentUser = null;
-            window.location.href = '../../index.html';
+            window.location.href = '/index.html';
         }
     }
 

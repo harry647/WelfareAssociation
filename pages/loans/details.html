@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <script>
+    // Custom includeHTML if w3 is not available
+    if (typeof w3 === 'undefined') {
+      window.w3 = {
+        includeHTML: function(callback) {
+          document.querySelectorAll('[w3-include-html]').forEach(el => {
+            const file = el.getAttribute('w3-include-html');
+            if (file) {
+              fetch(file)
+                .then(response => response.text())
+                .then(html => { el.innerHTML = html; })
+                .catch(err => { console.error('Error loading:', file, err); });
+            }
+          });
+          if (callback) setTimeout(callback, 100);
+        }
+      };
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Loan Details - View detailed information about your loan application">
+  <title>Loan Details - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="/src/styles/main.css">
+  <link rel="stylesheet" href="/src/styles/original/header.css">
+  <link rel="stylesheet" href="/src/styles/pages/shared/navigation.css">
+  <link rel="stylesheet" href="/src/styles/original/footer.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #764ba2;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--gray-100);
+      font-family: 'DM Sans', sans-serif;
+    }
+    
+    .loan-page-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .loan-header-card {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .loan-header-card h1 {
+      margin: 0 0 10px 0;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+    }
+    
+    .loan-header-card .loan-number {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-pending { background: var(--warning); color: #92400e; }
+    .status-approved { background: var(--success); color: #065f46; }
+    .status-active { background: #60a5fa; color: #1e40af; }
+    .status-rejected { background: var(--danger); color: #fff; }
+    .status-completed { background: #a78bfa; color: #5b21b6; }
+    .status-overdue { background: #fb923c; color: #9a3412; }
+    
+    .detail-section {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .detail-section h3 {
+      margin: 0 0 20px 0;
+      color: var(--gray-900);
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+    }
+    
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .detail-item {
+      padding: 15px;
+      border-left: 4px solid var(--primary);
+      background: var(--gray-100);
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .detail-label {
+      font-size: 12px;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+    
+    .detail-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--gray-500);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      transition: background 0.3s;
+    }
+    
+    .back-btn:hover {
+      background: var(--gray-700);
+    }
+    
+    .loading-container {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .loading-spinner {
+      font-size: 48px;
+      color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 20px;
+      color: var(--gray-500);
+      font-size: 1.1rem;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .error-container {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--danger);
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .error-container i {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .error-container p {
+      margin: 0;
+      font-size: 1rem;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+  </style>
+
+  <script>
+    // Simple auth check before page loads
+    (function() {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('/pages/auth/login-page.html?redirect=/pages/loans/details.html');
+        return;
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Header -->
+  <div w3-include-html="/pages/shared/header.html"></div>
+  <div w3-include-html="/pages/dashboard/components/header-member.html"></div>
+
+  <div class="loan-page-container">
+    
+    <!-- Back Button -->
+    <a href="/pages/dashboard/member/member-portal.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-container">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+      </div>
+      <p class="loading-text">Loading loan details...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="error-container hidden">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p id="errorMessage">Failed to load loan details. Please try again.</p>
+      <a href="/pages/dashboard/member/member-portal.html" class="back-btn" style="margin-top: 20px;">
+        <i class="fas fa-arrow-left"></i> Go Back
+      </a>
+    </div>
+
+    <!-- Loan Details Content -->
+    <div id="loanContent" class="hidden">
+      
+      <!-- Loan Header -->
+      <div class="loan-header-card">
+        <div>
+          <p class="loan-number">Loan <span id="loanNumber">-</span></p>
+          <h1>Loan Details</h1>
+        </div>
+        <span id="loanStatus" class="status-badge">-</span>
+      </div>
+
+      <!-- Basic Information -->
+      <div class="detail-section">
+        <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Loan Amount</div>
+            <div class="detail-value" id="loanAmount">Ksh 0</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Interest Rate</div>
+            <div class="detail-value" id="interestRate">0%</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Repayment Period</div>
+            <div class="detail-value" id="repaymentPeriod">0 months</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Monthly Payment</div>
+            <div class="detail-value" id="monthlyPayment">Ksh 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Application Details -->
+      <div class="detail-section">
+        <h3><i class="fas fa-calendar-alt"></i> Application Details</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Application Date</div>
+            <div class="detail-value" id="applicationDate">-</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Approval Date</div>
+            <div class="detail-value" id="approvalDate">-</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Disbursement Date</div>
+            <div class="detail-value" id="disbursementDate">-</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Due Date</div>
+            <div class="detail-value" id="dueDate">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loan Purpose -->
+      <div class="detail-section">
+        <h3><i class="fas fa-bullseye"></i> Loan Purpose</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Purpose</div>
+            <div class="detail-value" id="loanPurpose">-</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Description</div>
+            <div class="detail-value" id="purposeDescription">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Summary -->
+      <div class="detail-section">
+        <h3><i class="fas fa-calculator"></i> Financial Summary</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Principal Amount</div>
+            <div class="detail-value" id="principalAmount">Ksh 0</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Total Interest</div>
+            <div class="detail-value" id="totalInterest">Ksh 0</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Total Amount</div>
+            <div class="detail-value" id="totalAmount">Ksh 0</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Outstanding Balance</div>
+            <div class="detail-value" id="outstandingBalance">Ksh 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guarantor Information -->
+      <div id="guarantorSection" class="detail-section hidden">
+        <h3><i class="fas fa-handshake"></i> Guarantor Information</h3>
+        <div id="guarantorList" class="detail-grid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div w3-include-html="/pages/dashboard/components/footer-member.html"></div>
+
+  <script>
+    // Initialize w3includeHTML with fallback
+    if (typeof w3 !== 'undefined' && w3.includeHTML) {
+      w3.includeHTML();
+    } else {
+      // Fallback implementation
+      document.querySelectorAll('[w3-include-html]').forEach(el => {
+        const file = el.getAttribute('w3-include-html');
+        if (file) {
+          fetch(file)
+            .then(response => response.text())
+            .then(html => { el.innerHTML = html; })
+            .catch(err => { console.error('Error loading:', file, err); });
+        }
+      });
+    }
+  </script>
+
+  <!-- Main Script -->
+  <script type="module">
+    import { authService } from '/src/services/index.js';
+
+    class LoanDetailsPage {
+      constructor() {
+        this.loanId = this.getLoanIdFromUrl();
+        this.loanData = null;
+        this.init();
+      }
+
+      getLoanIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+      }
+
+      init() {
+        // Check authentication
+        if (!authService.isAuthenticated()) {
+          window.location.href = '/pages/auth/login-page.html?redirect=/pages/loans/details.html';
+          return;
+        }
+
+        if (!this.loanId) {
+          this.showError('No loan ID provided in URL');
+          return;
+        }
+
+        // Wait for w3.includeHTML then load data
+        this.waitForIncludes().then(() => {
+          this.loadLoanDetails();
+        });
+      }
+
+      async waitForIncludes() {
+        // Wait for w3.includeHTML to complete
+        return new Promise(resolve => setTimeout(resolve, 1500));
+      }
+
+      async loadLoanDetails() {
+        this.showLoading();
+
+        try {
+          const token = localStorage.getItem('swa_auth_token');
+          const response = await fetch(`http://localhost:3000/api/loans/${this.loanId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          const result = await response.json();
+
+          if (result.success && result.data) {
+            this.loanData = result.data;
+            this.populateLoanDetails();
+            this.showContent();
+          } else {
+            throw new Error(result.message || 'Failed to load loan details');
+          }
+        } catch (error) {
+          console.error('Error loading loan details:', error);
+          this.showError(error.message || 'Failed to load loan details');
+        }
+      }
+
+      populateLoanDetails() {
+        const loan = this.loanData;
+
+        // Header
+        document.getElementById('loanNumber').textContent = loan.loanNumber || loan.loan_number || 'N/A';
+        
+        // Status badge
+        const statusEl = document.getElementById('loanStatus');
+        statusEl.textContent = (loan.status || 'unknown').toUpperCase();
+        statusEl.className = `status-badge status-${(loan.status || 'unknown').toLowerCase()}`;
+
+        // Basic info
+        document.getElementById('loanAmount').textContent = `Ksh ${parseFloat(loan.principalAmount || loan.amount || 0).toLocaleString()}`;
+        document.getElementById('interestRate').textContent = `${loan.interestRate || 0}%`;
+        document.getElementById('repaymentPeriod').textContent = `${loan.repaymentPeriod || 0} months`;
+        document.getElementById('monthlyPayment').textContent = `Ksh ${parseFloat(loan.monthlyPayment || 0).toLocaleString()}`;
+
+        // Dates
+        document.getElementById('applicationDate').textContent = this.formatDate(loan.applicationDate || loan.createdAt);
+        document.getElementById('approvalDate').textContent = this.formatDate(loan.approvalDate);
+        document.getElementById('disbursementDate').textContent = this.formatDate(loan.disbursementDate);
+        document.getElementById('dueDate').textContent = this.formatDate(loan.dueDate);
+
+        // Purpose
+        document.getElementById('loanPurpose').textContent = loan.purpose || 'Not specified';
+        document.getElementById('purposeDescription').textContent = loan.purposeDescription || loan.description || 'Not provided';
+
+        // Financial
+        document.getElementById('principalAmount').textContent = `Ksh ${parseFloat(loan.principalAmount || loan.amount || 0).toLocaleString()}`;
+        document.getElementById('totalInterest').textContent = `Ksh ${parseFloat(loan.totalInterest || 0).toLocaleString()}`;
+        document.getElementById('totalAmount').textContent = `Ksh ${parseFloat(loan.totalAmount || 0).toLocaleString()}`;
+        document.getElementById('outstandingBalance').textContent = `Ksh ${parseFloat(loan.remainingBalance || loan.balance || 0).toLocaleString()}`;
+
+        // Guarantors
+        if (loan.guarantors && loan.guarantors.length > 0) {
+          this.populateGuarantors(loan.guarantors);
+        }
+      }
+
+      populateGuarantors(guarantors) {
+        const section = document.getElementById('guarantorSection');
+        const list = document.getElementById('guarantorList');
+        
+        section.classList.remove('hidden');
+        list.innerHTML = guarantors.map((g, index) => `
+          <div class="detail-item">
+            <div class="detail-label">Guarantor ${index + 1}</div>
+            <div class="detail-value">${g.name || 'Unknown'}</div>
+          </div>
+        `).join('');
+      }
+
+      formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+          return new Date(dateStr).toLocaleDateString();
+        } catch {
+          return '-';
+        }
+      }
+
+      showLoading() {
+        document.getElementById('loadingState').classList.remove('hidden');
+        document.getElementById('loanContent').classList.add('hidden');
+        document.getElementById('errorState').classList.add('hidden');
+      }
+
+      showContent() {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('loanContent').classList.remove('hidden');
+        document.getElementById('errorState').classList.add('hidden');
+      }
+
+      showError(message) {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('loanContent').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+        document.getElementById('errorMessage').textContent = message;
+      }
+    }
+
+    // Initialize
+    new LoanDetailsPage();
+  </script>
+</body>
+</html>

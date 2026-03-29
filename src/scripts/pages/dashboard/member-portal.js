@@ -6,7 +6,7 @@
  */
 
 // Import services
-import { authService, memberService, contributionService, loanService, paymentService, apiService } from '../../../services/index.js';
+import { authService, memberService, contributionService, loanService, paymentService, apiService } from '/src/services/index.js';
 
 class MemberPortal {
     constructor() {
@@ -38,7 +38,7 @@ class MemberPortal {
         if (!isAuth) {
             // Not logged in, redirect to login page
             console.log('User not authenticated, redirecting to login');
-            window.location.href = '../../../auth/login-page.html?redirect=../member/member-portal.html';
+            window.location.href = '/pages/auth/login-page.html?redirect=/pages/dashboard/member/member-portal.html';
             return false;
         }
         
@@ -46,7 +46,7 @@ class MemberPortal {
         console.log('Current user:', user);
         if (!user) {
             console.log('No current user found, redirecting to login');
-            window.location.href = '../../../auth/login-page.html?redirect=../member/member-portal.html';
+            window.location.href = '/pages/auth/login-page.html?redirect=/pages/dashboard/member/member-portal.html';
             return false;
         }
         console.log('Authentication check passed');
@@ -54,13 +54,27 @@ class MemberPortal {
     }
 
     bindEvents() {
-        // Logout button
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.handleLogout();
-            });
+        // Logout button - try immediately and also with a delay
+        const bindLogoutBtn = () => {
+            const logoutBtn = document.querySelector('.logout-btn');
+            console.log('Logout button found:', !!logoutBtn);
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    console.log('Logout button clicked!');
+                    e.preventDefault();
+                    this.handleLogout();
+                });
+                return true;
+            } else {
+                console.error('Logout button not found in the DOM');
+                return false;
+            }
+        };
+        
+        // Try immediately
+        if (!bindLogoutBtn()) {
+            // Try again after DOM is fully loaded
+            setTimeout(bindLogoutBtn, 1000);
         }
 
         // Contribution form
@@ -177,7 +191,7 @@ class MemberPortal {
             <div class="dropdown-header">
                 <i class="fas fa-bell"></i> Notifications
             </div>
-            <div class="dropdown-item" onclick="window.location.href='../shared/notices.html'">
+            <div class="dropdown-item" onclick="window.location.href='/pages/dashboard/shared/notices.html'">
                 <i class="fas fa-microphone"></i> View All Notices
             </div>
             <div class="dropdown-item disabled">
@@ -385,7 +399,7 @@ class MemberPortal {
                 localStorage.removeItem('swa_auth_token');
                 localStorage.removeItem('swa_refresh_token');
                 localStorage.removeItem('swa_user');
-                window.location.href = '../../../auth/login-page.html?redirect=../member/member-portal.html';
+                window.location.href = '/pages/auth/login-page.html?redirect=/pages/dashboard/member/member-portal.html';
                 return;
             }
             console.warn('Failed to fetch member data from API:', error.status || error.message);
@@ -498,8 +512,14 @@ class MemberPortal {
         // Update loans display
         const loanElements = document.querySelectorAll('[data-service="loans"]');
         loanElements.forEach(el => {
-            const amount = services.loans?.balance || 0;
-            el.textContent = `Ksh ${parseFloat(amount).toLocaleString()}`;
+            // Calculate current loan balance from active loans
+            const activeLoans = (services.loans?.records || []).filter(loan => 
+                ['pending', 'active', 'overdue'].includes(loan.status)
+            );
+            const currentLoanBalance = activeLoans.reduce((sum, loan) => 
+                sum + parseFloat(loan.remainingBalance || loan.balance || 0), 0
+            );
+            el.textContent = `Ksh ${currentLoanBalance.toLocaleString()}`;
         });
         
         // Update debts display
@@ -723,7 +743,7 @@ class MemberPortal {
                     ${fine.status === 'paid' ? '✓ Paid' : fine.status === 'pending' ? '⏳ Pending' : '⚠ Unpaid'}
                 </span></td>
                 <td>
-                    ${fine.status === 'unpaid' ? `<button onclick="window.location.href='../payments/make-payment.html?category=fine&fineId=${fine.id}'" class="btn" style="padding: 5px 10px; font-size: 12px;">Pay Now</button>` : '-'}
+                    ${fine.status === 'unpaid' ? `<button onclick="window.location.href='/pages/payments/make-payment.html?category=fine&fineId=${fine.id}'" class="btn" style="padding: 5px 10px; font-size: 12px;">Pay Now</button>` : '-'}
                 </td>
             </tr>
         `).join('');
@@ -819,8 +839,12 @@ class MemberPortal {
      * Handle logout
      */
     handleLogout() {
+        console.log('handleLogout called');
         if (confirm('Are you sure you want to logout?')) {
+            console.log('User confirmed logout, calling authService.logout()');
             authService.logout();
+        } else {
+            console.log('User cancelled logout');
         }
     }
 
@@ -880,7 +904,7 @@ class MemberPortal {
                 <td>${loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : 'N/A'}</td>
                 <td>Ksh ${parseFloat(loan.remainingBalance || loan.balance || 0).toLocaleString()}</td>
                 <td>
-                    <button onclick="window.location.href='../loans/details.html?id=${loan.id}'" class="btn-small">
+                    <button onclick="window.location.href='/pages/loans/details.html?id=${loan.id || loan.loanNumber}'" class="btn-small">
                         <i class="fas fa-eye"></i> View
                     </button>
                 </td>
@@ -899,6 +923,12 @@ class MemberPortal {
         this.updateElement('activeLoansCount', activeLoans.length);
         this.updateElement('totalBorrowed', `Ksh ${totalBorrowed.toLocaleString()}`);
         this.updateElement('outstandingBalance', `Ksh ${outstandingBalance.toLocaleString()}`);
+        
+        // Also update the current loan display in dashboard
+        const loanElements = document.querySelectorAll('[data-service="loans"]');
+        loanElements.forEach(el => {
+            el.textContent = `Ksh ${outstandingBalance.toLocaleString()}`;
+        });
     }
 
     /**

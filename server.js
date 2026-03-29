@@ -291,12 +291,13 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "'unsafe-inline'", "https://www.w3schools.com", "https://cdnjs.cloudflare.com"],
+            scriptSrcElem: ["'self'", "'unsafe-inline'", "https://www.w3schools.com", "https://cdnjs.cloudflare.com"],
             scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
             imgSrc: ["'self'", "data:", "https:"],
             fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
-            connectSrc: ["'self'", "https://httpbin.org"],
-            formAction: ["'self'", "https://httpbin.org"],
+            connectSrc: ["'self'", "http://localhost:3000", "https://cdnjs.cloudflare.com"],
+            formAction: ["'self'"],
             frameSrc: ["'self'", "https://www.google.com"]
         }
     }
