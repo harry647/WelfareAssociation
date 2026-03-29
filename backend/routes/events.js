@@ -150,8 +150,103 @@ router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
 });
 
 /**
+ * POST /api/events/public/register
+ * Public event registration (no auth required)
+ */
+router.post('/public/register', [
+    body('eventName').notEmpty().withMessage('Event name is required'),
+    body('name').notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('phone').notEmpty().withMessage('Phone number is required'),
+    validate
+], async (req, res) => {
+    try {
+        const { eventName, name, email, phone, studentId, notes } = req.body;
+
+        // Find event by title (case-insensitive)
+        const event = await Event.findOne({ 
+            where: { 
+                title: { 
+                    [Op.iLike]: `%${eventName}%` 
+                },
+                status: 'published'
+            } 
+        });
+
+        if (!event) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Event not found. Please check the event name.' 
+            });
+        }
+
+        // Check if event requires registration
+        if (!event.requiresRegistration) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Registration is not required for this event' 
+            });
+        }
+
+        // Parse registered attendees
+        const registeredAttendees = typeof event.registeredAttendees === 'string' 
+            ? JSON.parse(event.registeredAttendees) 
+            : (event.registeredAttendees || []);
+
+        // Check if full
+        if (event.maxAttendees && registeredAttendees.length >= event.maxAttendees) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Event is full. Please try another event.' 
+            });
+        }
+
+        // Check if already registered by email
+        const alreadyRegistered = registeredAttendees.find(
+            r => r.email?.toLowerCase() === email.toLowerCase()
+        );
+
+        if (alreadyRegistered) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'You are already registered for this event' 
+            });
+        }
+
+        // Add registration
+        registeredAttendees.push({
+            name,
+            email,
+            phone,
+            studentId: studentId || null,
+            notes: notes || '',
+            registeredAt: new Date(),
+            status: 'registered',
+            isPublic: true
+        });
+
+        event.registeredAttendees = registeredAttendees;
+        await event.save();
+
+        res.status(201).json({ 
+            success: true, 
+            message: `Successfully registered for "${event.title}"! We will send a confirmation email to ${email}.`,
+            data: {
+                eventName: event.title,
+                name,
+                email,
+                registeredAt: new Date()
+            }
+        });
+    } catch (error) {
+        console.error('Error in public event registration:', error);
+        res.status(500).json({ success: false, message: 'Error processing registration. Please try again.' });
+    }
+});
+
+/**
  * POST /api/events/:id/register
- * Register for event
+ * Register for event (auth required - for members)
  */
 router.post('/:id/register', auth, async (req, res) => {
     try {

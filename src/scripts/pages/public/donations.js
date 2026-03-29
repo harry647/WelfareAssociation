@@ -269,6 +269,30 @@ class DonationsPage {
     }
 
     /**
+     * Show error message
+     */
+    showError(message) {
+        if (this.formFeedback) {
+            this.formFeedback.style.display = 'none';
+        }
+        if (this.successMessage) {
+            this.successMessage.style.display = 'block';
+            this.successMessage.style.backgroundColor = '#fee';
+            this.successMessage.style.border = '1px solid #fcc';
+            this.successMessage.style.color = '#c33';
+            const icon = this.successMessage.querySelector('i');
+            if (icon) {
+                icon.className = 'fas fa-exclamation-triangle';
+            }
+            const title = this.successMessage.querySelector('h3');
+            if (title) {
+                title.textContent = 'Error';
+            }
+            this.successText.textContent = message;
+        }
+    }
+
+    /**
      * Validate phone number
      */
     validatePhone(phone) {
@@ -303,7 +327,6 @@ class DonationsPage {
         
         // Prepare data
         const donationData = {
-            type: 'one-time',
             donorName: formData.get('donorName'),
             donorEmail: formData.get('donorEmail'),
             donorPhone: formData.get('donorPhone'),
@@ -311,16 +334,12 @@ class DonationsPage {
             paymentMethod: formData.get('donationPaymentMethod'),
             transactionId: formData.get('donorTransactionId'),
             message: formData.get('donorMessage'),
-            anonymous: formData.get('donorAnonymous') === 'on',
-            createdAt: new Date().toISOString()
+            anonymous: formData.get('donorAnonymous') === 'on'
         };
         
         try {
-            // Try API call (uncomment when backend is ready)
-            // const response = await this.submitDonation(donationData, this.config.endpoints.oneTimeDonation);
-            
-            // Mock success for now (remove when backend is ready)
-            await this.mockApiCall(1500);
+            // Real API call
+            const response = await this.submitDonation(donationData, this.config.endpoints.oneTimeDonation);
             
             this.showSuccess('Thank you for your generous donation! We have received your submission and will contact you shortly.');
             
@@ -328,7 +347,10 @@ class DonationsPage {
             console.error('Donation error:', error);
             this.hideAllForms();
             this.oneTimeForm.style.display = 'block';
-            alert('Failed to submit donation. Please try again or contact us directly.');
+            
+            // Show more specific error message
+            const errorMessage = error.response?.data?.message || 'Failed to submit donation. Please try again or contact us directly.';
+            this.showError(errorMessage);
         }
     }
 
@@ -359,23 +381,18 @@ class DonationsPage {
         
         // Prepare data
         const donationData = {
-            type: 'monthly',
             donorName: formData.get('monthlyDonorName'),
             donorEmail: formData.get('monthlyDonorEmail'),
             donorPhone: phone,
             amount: amount,
             startDate: formData.get('monthlyStartDate'),
             duration: formData.get('monthlyDuration'),
-            message: formData.get('monthlyDonorMessage'),
-            createdAt: new Date().toISOString()
+            message: formData.get('monthlyDonorMessage')
         };
         
         try {
-            // Try API call (uncomment when backend is ready)
-            // const response = await this.submitDonation(donationData, this.config.endpoints.monthlyDonation);
-            
-            // Mock success for now (remove when backend is ready)
-            await this.mockApiCall(1500);
+            // Real API call
+            const response = await this.submitDonation(donationData, this.config.endpoints.monthlyDonation);
             
             this.showSuccess('Thank you for committing to monthly giving! We will contact you to set up the recurring payment.');
             
@@ -383,7 +400,10 @@ class DonationsPage {
             console.error('Monthly donation error:', error);
             this.hideAllForms();
             this.monthlyForm.style.display = 'block';
-            alert('Failed to set up monthly donation. Please try again or contact us directly.');
+            
+            // Show more specific error message
+            const errorMessage = error.response?.data?.message || 'Failed to set up monthly donation. Please try again or contact us directly.';
+            this.showError(errorMessage);
         }
     }
 
@@ -419,7 +439,6 @@ class DonationsPage {
         
         // Prepare data
         const donationData = {
-            type: 'scholarship',
             donorName: formData.get('scholarName'),
             donorEmail: formData.get('scholarEmail'),
             donorPhone: formData.get('scholarPhone'),
@@ -428,16 +447,12 @@ class DonationsPage {
             duration: formData.get('scholarshipDuration'),
             focusArea: formData.get('scholarshipFocus'),
             message: formData.get('scholarshipMessage'),
-            anonymous: formData.get('scholarshipAnonymous') === 'on',
-            createdAt: new Date().toISOString()
+            anonymous: formData.get('scholarshipAnonymous') === 'on'
         };
         
         try {
-            // Try API call (uncomment when backend is ready)
-            // const response = await this.submitDonation(donationData, this.config.endpoints.scholarship);
-            
-            // Mock success for now (remove when backend is ready)
-            await this.mockApiCall(1500);
+            // Real API call
+            const response = await this.submitDonation(donationData, this.config.endpoints.scholarship);
             
             this.showSuccess('Thank you for your interest in sponsoring a student! We will contact you shortly to discuss the details.');
             
@@ -445,7 +460,10 @@ class DonationsPage {
             console.error('Scholarship error:', error);
             this.hideAllForms();
             this.scholarshipForm.style.display = 'block';
-            alert('Failed to submit inquiry. Please try again or contact us directly.');
+            
+            // Show more specific error message
+            const errorMessage = error.response?.data?.message || 'Failed to submit inquiry. Please try again or contact us directly.';
+            this.showError(errorMessage);
         }
     }
 
@@ -463,23 +481,18 @@ class DonationsPage {
         
         // Prepare data
         const donationData = {
-            type: 'corporate',
             companyName: formData.get('companyName'),
             contactPerson: formData.get('contactPerson'),
             companyEmail: formData.get('companyEmail'),
             companyPhone: formData.get('companyPhone'),
             partnershipType: formData.get('partnershipType'),
             proposedContribution: formData.get('proposedContribution'),
-            message: formData.get('companyMessage'),
-            createdAt: new Date().toISOString()
+            message: formData.get('companyMessage')
         };
         
         try {
-            // Try API call (uncomment when backend is ready)
-            // const response = await this.submitDonation(donationData, this.config.endpoints.corporate);
-            
-            // Mock success for now (remove when backend is ready)
-            await this.mockApiCall(1500);
+            // Real API call
+            const response = await this.submitDonation(donationData, this.config.endpoints.corporate);
             
             this.showSuccess('Thank you for your interest in partnering with us! Our team will contact you shortly to discuss opportunities.');
             
@@ -487,7 +500,10 @@ class DonationsPage {
             console.error('Corporate partnership error:', error);
             this.hideAllForms();
             this.corporateForm.style.display = 'block';
-            alert('Failed to submit inquiry. Please try again or contact us directly.');
+            
+            // Show more specific error message
+            const errorMessage = error.response?.data?.message || 'Failed to submit inquiry. Please try again or contact us directly.';
+            this.showError(errorMessage);
         }
     }
 
@@ -505,7 +521,6 @@ class DonationsPage {
         
         // Prepare data
         const donationData = {
-            type: 'inkind',
             donorName: formData.get('inkindName'),
             donorEmail: formData.get('inkindEmail'),
             donorPhone: formData.get('inkindPhone'),
@@ -514,16 +529,12 @@ class DonationsPage {
             quantity: formData.get('itemQuantity'),
             condition: formData.get('itemCondition'),
             pickupOption: formData.get('pickupOption'),
-            message: formData.get('inkindMessage'),
-            createdAt: new Date().toISOString()
+            message: formData.get('inkindMessage')
         };
         
         try {
-            // Try API call (uncomment when backend is ready)
-            // const response = await this.submitDonation(donationData, this.config.endpoints.inkind);
-            
-            // Mock success for now (remove when backend is ready)
-            await this.mockApiCall(1500);
+            // Real API call
+            const response = await this.submitDonation(donationData, this.config.endpoints.inkind);
             
             this.showSuccess('Thank you for your in-kind donation! We will contact you shortly to arrange the details.');
             
@@ -531,7 +542,10 @@ class DonationsPage {
             console.error('In-kind donation error:', error);
             this.hideAllForms();
             this.inkindForm.style.display = 'block';
-            alert('Failed to submit donation. Please try again or contact us directly.');
+            
+            // Show more specific error message
+            const errorMessage = error.response?.data?.message || 'Failed to submit donation. Please try again or contact us directly.';
+            this.showError(errorMessage);
         }
     }
 
@@ -549,7 +563,10 @@ class DonationsPage {
         });
         
         if (!response.ok) {
-            throw new Error('Failed to submit donation');
+            const errorData = await response.json().catch(() => ({}));
+            const error = new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            error.response = { data: errorData };
+            throw error;
         }
         
         return response.json();

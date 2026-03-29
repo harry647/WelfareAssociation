@@ -14,7 +14,7 @@ const Volunteer = sequelize.define('Volunteer', {
     },
     memberId: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'members',
             key: 'id'
@@ -22,11 +22,35 @@ const Volunteer = sequelize.define('Volunteer', {
     },
     userId: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'users',
             key: 'id'
         }
+    },
+    // Public submission fields (no auth required)
+    name: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            isEmail: true
+        }
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    studentId: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    yearOfStudy: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     area: {
         type: DataTypes.ENUM('events', 'education', 'community', 'fundraising', 'administration', 'other'),

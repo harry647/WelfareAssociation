@@ -104,6 +104,51 @@ router.get('/statistics', auth, authorize('admin', 'chairman', 'secretary'), asy
 });
 
 /**
+ * POST /api/volunteers/public/apply
+ * Public volunteer application (no auth required)
+ */
+router.post('/public/apply', [
+    body('name').notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('phone').notEmpty().withMessage('Phone number is required'),
+    body('interests').isArray({ min: 1 }).withMessage('At least one area of interest is required'),
+    body('availability').notEmpty().withMessage('Availability is required'),
+    validate
+], async (req, res) => {
+    try {
+        const { name, email, phone, studentId, year, interests, availability, experience, message } = req.body;
+
+        // Create volunteer application record
+        const volunteer = await Volunteer.create({
+            name,
+            email,
+            phone,
+            studentId: studentId || null,
+            yearOfStudy: year || null,
+            area: interests.join(', '),
+            availability,
+            skills: experience || '',
+            motivation: message || '',
+            status: 'pending'
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Thank you for your interest in volunteering with SWA! We will contact you soon.',
+            data: {
+                id: volunteer.id,
+                name: volunteer.name,
+                email: volunteer.email,
+                status: volunteer.status
+            }
+        });
+    } catch (error) {
+        console.error('Error creating public volunteer:', error);
+        res.status(500).json({ success: false, message: 'Error submitting volunteer application' });
+    }
+});
+
+/**
  * POST /api/volunteers
  * Apply to become a volunteer
  */

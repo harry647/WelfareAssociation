@@ -13,12 +13,12 @@ import { API_CONFIG } from '../config/app-config.js';
  */
 class VolunteerService {
     /**
-     * Submit volunteer registration
+     * Submit volunteer registration (public)
      * @param {Object} volunteerData - Volunteer registration data
      */
     async registerVolunteer(volunteerData) {
         return apiService.post(
-            API_CONFIG.endpoints.volunteerApply,
+            API_CONFIG.endpoints.volunteerPublicApply,
             volunteerData,
             false // No auth required for public volunteer registration
         );

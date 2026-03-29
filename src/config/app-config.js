@@ -42,6 +42,7 @@ export const API_CONFIG = {
         // Events
         events: '/events',
         eventRegister: '/events/register',
+        eventPublicRegister: '/events/public/register',
         newsletter: '/newsletter',
         newsSubscribe: '/newsletter',
         
@@ -83,6 +84,7 @@ export const API_CONFIG = {
         // Volunteers
         volunteers: '/volunteers',
         volunteerApply: '/volunteers/apply',
+        volunteerPublicApply: '/volunteers/public/apply',
         
         // Withdrawals
         withdrawals: '/withdrawals',

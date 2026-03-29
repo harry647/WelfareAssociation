@@ -121,6 +121,18 @@ class EventService {
             false
         );
     }
+
+    /**
+     * Public event registration (no auth required)
+     * @param {Object} registrationData - Registration data (eventName, name, email, phone, etc.)
+     */
+    async registerPublic(registrationData) {
+        return apiService.post(
+            API_CONFIG.endpoints.eventPublicRegister,
+            registrationData,
+            false
+        );
+    }
 }
 
 // Export singleton instance

@@ -1,4 +1,5 @@
 import { eventService } from '../../../services/index.js';
+import { showNotification } from '../../../utils/utility-functions.js';
 
 /**
  * Events Page Script
@@ -127,15 +128,18 @@ class EventsPage {
         data.eventName = this.currentEventName;
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Call the actual API
+            const response = await eventService.registerPublic(data);
 
-            // Show success
-            alert(`Successfully registered for "${this.currentEventName}"!\n\nWe will send a confirmation email to ${data.email}`);
-            this.closeModal();
+            if (response.success) {
+                showNotification(response.message || `Successfully registered for "${this.currentEventName}"!`, 'success');
+                this.closeModal();
+            } else {
+                showNotification(response.message || 'Failed to register. Please try again.', 'error');
+            }
         } catch (error) {
             console.error('Registration error:', error);
-            alert('Failed to register. Please try again.');
+            showNotification(error.message || 'Failed to register. Please try again.', 'error');
         } finally {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
@@ -147,13 +151,13 @@ class EventsPage {
         const email = emailInput?.value?.trim().toLowerCase();
 
         if (!email) {
-            alert('Please enter your email address');
+            showNotification('Please enter your email address', 'error');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address');
+            showNotification('Please enter a valid email address', 'error');
             return;
         }
 
@@ -168,15 +172,15 @@ class EventsPage {
             const response = await eventService.subscribeNewsletter(email);
 
             if (response.success) {
-                alert('Thank you for subscribing! You will receive updates about our events.');
+                showNotification('Thank you for subscribing! You will receive updates about our events.', 'success');
                 this.newsletterForm.reset();
             } else {
-                alert(response.message || 'Failed to subscribe. Please try again.');
+                showNotification(response.message || 'Failed to subscribe. Please try again.', 'error');
             }
 
         } catch (error) {
             console.error('Newsletter signup error:', error);
-            alert('Failed to subscribe. Please try again.');
+            showNotification('Failed to subscribe. Please try again.', 'error');
         } finally {
             const submitBtn = this.newsletterForm.querySelector('button');
             if (submitBtn) {
