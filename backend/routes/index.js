@@ -28,6 +28,7 @@ const withdrawalRoutes = require('./withdrawals');
 const pageContentRoutes = require('./page-content');
 const pageRoutes = require('./pages');
 const paymentRoutes = require('./payments');
+const uploadRoutes = require('./upload');
 
 module.exports = (app) => {
     // API Routes
@@ -57,6 +58,7 @@ module.exports = (app) => {
     app.use('/api/page-content', pageContentRoutes);
     app.use('/api/pages', pageRoutes);
     app.use('/api/payments', paymentRoutes);
+    app.use('/api/upload', uploadRoutes);
     
     // Health check endpoint
     app.get('/api/health', (req, res) => {
