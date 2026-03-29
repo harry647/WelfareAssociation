@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bereavement Management - SWA Admin">
+  <title>Bereavement Management - Student Welfare Association | JOOUST</title>
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/breavement/index.css">
+  
+  <script>
+    (function() {
+      document.documentElement.style.visibility = 'hidden';
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/bereavement-management.html');
+        return;
+      }
+      const user = JSON.parse(userData);
+      if (user.role !== 'admin') {
+        window.location.replace('../member/member-portal.html');
+        return;
+      }
+      document.documentElement.style.visibility = 'visible';
+    })();
+    window.addEventListener('pageshow', function() {
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/bereavement-management.html');
+        return;
+      }
+      const user = JSON.parse(userData);
+      if (user.role !== 'admin') window.location.replace('../member/member-portal.html');
+    });
+  </script>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
+
+      <!-- Page Content -->
+      <div class="page-body">
+        <div class="page-header">
+          <h1><i class="fas fa-heart-broken"></i> Bereavement Management</h1>
+          <p>Manage bereavement support cases and contributions</p>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="summary-stats" style="margin-bottom: 24px;">
+          <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <div class="stat-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; text-align: center;">
+              <div class="stat-icon" style="width: 48px; height: 48px; margin: 0 auto 12px; background: linear-gradient(135deg, #c0392b, #e74c3c); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-heart-broken" style="color: white; font-size: 20px;"></i>
+              </div>
+              <h3 style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0;" id="totalCases">0</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0;">Total Cases</p>
+            </div>
+            <div class="stat-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; text-align: center;">
+              <div class="stat-icon" style="width: 48px; height: 48px; margin: 0 auto 12px; background: linear-gradient(135deg, #f39c12, #f1c40f); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-clock" style="color: white; font-size: 20px;"></i>
+              </div>
+              <h3 style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0;" id="activeCases">0</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0;">Active Cases</p>
+            </div>
+            <div class="stat-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; text-align: center;">
+              <div class="stat-icon" style="width: 48px; height: 48px; margin: 0 auto 12px; background: linear-gradient(135deg, #27ae60, #2ecc71); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-donate" style="color: white; font-size: 20px;"></i>
+              </div>
+              <h3 style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0;" id="totalRaised">Ksh 0</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0;">Total Raised</p>
+            </div>
+            <div class="stat-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; text-align: center;">
+              <div class="stat-icon" style="width: 48px; height: 48px; margin: 0 auto 12px; background: linear-gradient(135deg, #3498db, #5dade2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-users" style="color: white; font-size: 20px;"></i>
+              </div>
+              <h3 style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0;" id="totalSupporters">0</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0;">Total Supporters</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="action-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+          <div class="search-box" style="flex: 1; max-width: 400px;">
+            <input type="text" id="searchInput" placeholder="Search cases..." style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+          </div>
+          <button class="btn btn-primary" id="addCaseBtn" onclick="document.getElementById('addCaseModal').style.display='flex'" style="background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border: none; padding: 12px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-plus"></i> Add New Case
+          </button>
+        </div>
+
+        <!-- Cases Table -->
+        <div class="table-container" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border-color);">
+                <th style="text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Member</th>
+                <th style="text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Deceased</th>
+                <th style="text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Relationship</th>
+                <th style="text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Date of Death</th>
+                <th style="text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Status</th>
+                <th style="text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Amount Raised</th>
+                <th style="text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="casesTableBody">
+              <tr>
+                <td colspan="7" class="no-data-message" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                  <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 12px;"></i>
+                  <p>Loading bereavement cases...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none; text-align: center; padding: 60px 24px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+          <i class="fas fa-heart-broken" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+          <h3 style="font-size: 18px; color: var(--text-primary); margin-bottom: 8px;">No Bereavement Cases</h3>
+          <p style="color: var(--text-muted); margin-bottom: 24px;">There are no bereavement cases yet. Click the button below to add the first case.</p>
+          <button class="btn btn-primary" id="addFirstCaseBtn" onclick="document.getElementById('addCaseModal').style.display='flex'" style="background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border: none; padding: 12px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer;">
+            <i class="fas fa-plus"></i> Add First Case
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Component -->
+  <div w3-include-html="../components/footer-dashboard.html"></div>
+
+  <!-- Add Case Modal -->
+  <div class="modal" id="addCaseModal" style="display: none;">
+    <div class="modal-content" style="background: var(--bg-secondary); border-radius: var(--radius-md); max-width: 600px; margin: 20px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 0;">Add Bereavement Case</h3>
+        <button class="modal-close" onclick="document.getElementById('addCaseModal').style.display='none'" style="background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <form id="addCaseForm">
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="memberSelect" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Select Member *</label>
+            <select id="memberSelect" required style="width: 100%; padding: 12px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <option value="">Select a member...</option>
+            </select>
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="deceasedName" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Deceased Name *</label>
+            <input type="text" id="deceasedName" required placeholder="Full name of deceased" style="width: 100%; padding: 12px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="relationship" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Relationship *</label>
+            <select id="relationship" required style="width: 100%; padding: 12px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <option value="">Select relationship...</option>
+              <option value="parent">Parent</option>
+              <option value="sibling">Sibling</option>
+              <option value="spouse">Spouse</option>
+              <option value="child">Child</option>
+              <option value="grandparent">Grandparent</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="dateOfDeath" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Date of Death *</label>
+            <input type="date" id="dateOfDeath" required style="width: 100%; padding: 12px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="dateOfBurial" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Date of Burial</label>
+            <input type="date" id="dateOfBurial" style="width: 100%; padding: 12px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="caseNotes" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Notes</label>
+            <textarea id="caseNotes" rows="4" placeholder="Additional notes..." style="width: 100%; padding: 12px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); resize: vertical;"></textarea>
+          </div>
+          
+          <div class="form-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('addCaseModal').style.display='none'" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border: none; padding: 12px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer;">Submit Case</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>w3.includeHTML();</script>
+  
+  <script type="module" src="../../../src/scripts/pages/dashboard/bereavement-management.js"></script>
+</body>
+</html>

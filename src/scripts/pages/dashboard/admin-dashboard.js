@@ -32,7 +32,53 @@ class AdminDashboardManager {
         await this.loadDashboardData();
         await this.loadUnreadMessagesCount();
         this.initEventListeners();
+        
+        // Handle hash-based navigation (e.g., #messages, #pages)
+        this.handleHashNavigation();
+        
+        // Listen for hash changes
+        window.addEventListener('hashchange', () => this.handleHashNavigation());
+        
         console.log('[Admin] AdminDashboardManager initialized');
+    }
+
+    /**
+     * Handle hash-based section navigation
+     */
+    handleHashNavigation() {
+        const hash = window.location.hash.slice(1); // Remove the #
+        if (!hash) return;
+        
+        const validSections = ['messages', 'pages'];
+        if (!validSections.includes(hash)) return;
+        
+        console.log('[Admin] Handling hash navigation:', hash);
+        
+        // Update active states
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.dropdown-item').forEach(l => l.classList.remove('active'));
+        
+        // Find and activate the matching dropdown item
+        const dropdownItem = document.querySelector(`.dropdown-item[data-section="${hash}"]`);
+        if (dropdownItem) {
+            dropdownItem.classList.add('active');
+        }
+        
+        // Show the corresponding content section
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById('section-' + hash);
+        if (target) {
+            target.classList.add('active');
+            console.log('[Admin] Activated section from hash:', 'section-' + hash);
+            
+            // Load content for the section
+            if (hash === 'messages') {
+                this.loadMessages();
+            } else if (hash === 'pages') {
+                this.loadPages();
+                this.initPageContentListeners();
+            }
+        }
     }
 
     /**
@@ -486,6 +532,43 @@ class AdminDashboardManager {
                 console.log('[Admin] Section clicked:', section);
 
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                const target = document.getElementById('section-' + section);
+                if (target) {
+                    target.classList.add('active');
+                    console.log('[Admin] Activated section:', 'section-' + section);
+                    
+                    // Load messages when messages section is shown
+                    if (section === 'messages') {
+                        window.adminDashboardManager.loadMessages();
+                    }
+                    // Load pages when pages section is shown
+                    if (section === 'pages') {
+                        console.log('[Admin] Loading pages...');
+                        window.adminDashboardManager.loadPages();
+                        window.adminDashboardManager.initPageContentListeners();
+                    }
+                }
+
+                // Close sidebar on mobile
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('active');
+                    document.getElementById('sidebarOverlay').classList.remove('active');
+                }
+            });
+        });
+
+        // Handle dropdown items with data-section (from sidebar-admin.html)
+        document.querySelectorAll('.dropdown-item[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.dataset.section;
+                console.log('[Admin] Dropdown section clicked:', section);
+
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.dropdown-item').forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
 
                 document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
