@@ -45,23 +45,28 @@ class LoanService {
     }
 
     /**
-     * Apply for a loan (alias for apply)
+     * Apply for a loan
      * @param {Object} loanData - Loan application data
      */
     async applyForLoan(loanData) {
         try {
-            // In production, this would call the actual API
-            // For demo, return success
-            console.log('Applying for loan:', loanData);
-            return {
-                success: true,
-                message: 'Loan application submitted successfully',
-                data: {
-                    loanId: loanData.loanId || this.generateLoanId(),
-                    status: 'pending',
-                    ...loanData
-                }
-            };
+            const token = localStorage.getItem('swa_auth_token');
+            const response = await fetch(API_CONFIG.endpoints.applyLoan, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify(loanData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                return result;
+            } else {
+                throw new Error(result.message || 'Failed to submit loan application');
+            }
         } catch (error) {
             console.error('Error applying for loan:', error);
             return {

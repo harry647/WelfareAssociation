@@ -571,6 +571,9 @@ class MemberPortal {
         // Load contributions history
         this.loadContributionsHistory();
         
+        // Load guarantor requests
+        this.loadGuarantorRequests();
+        
         console.log('Updated service displays with data:', services);
     }
     
@@ -1116,11 +1119,124 @@ class MemberPortal {
             element.textContent = value;
         }
     }
+
+    /**
+     * Load guarantor requests
+     */
+    async loadGuarantorRequests() {
+        const container = document.getElementById('guarantorRequestsCards');
+        const noDataEl = document.getElementById('noGuarantorRequests');
+        
+        if (!container) return;
+
+        try {
+            const result = await apiService.get('/loans/guarantor-requests', {}, true);
+            
+            if (result.success && result.data) {
+                const requests = result.data;
+                
+                if (requests.length === 0) {
+                    container.innerHTML = '';
+                    if (noDataEl) noDataEl.style.display = 'block';
+                } else {
+                    this.populateGuarantorRequests(requests);
+                    if (noDataEl) noDataEl.style.display = 'none';
+                }
+            } else {
+                throw new Error(result.message || 'Failed to load guarantor requests');
+            }
+        } catch (error) {
+            console.error('Error loading guarantor requests:', error);
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #dc2626;">Error loading guarantor requests</div>';
+            if (noDataEl) noDataEl.style.display = 'none';
+        }
+    }
+
+    /**
+     * Populate guarantor requests cards
+     */
+    populateGuarantorRequests(requests) {
+        const container = document.getElementById('guarantorRequestsCards');
+        if (!container) return;
+
+        container.innerHTML = requests.map(request => `
+            <div class="guarantor-request-card">
+                <div class="guarantor-request-header">
+                    <div class="guarantor-request-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <div class="guarantor-request-title">
+                        <h3>${request.memberName || 'A member'}</h3>
+                        <div class="loan-amount">Ksh ${parseFloat(request.amount || 0).toLocaleString()}</div>
+                    </div>
+                </div>
+                <div class="guarantor-request-details">
+                    <p>
+                        <strong>Loan Purpose:</strong>
+                        <span>${request.purpose || 'Not specified'}</span>
+                    </p>
+                    <p>
+                        <strong>Applied Date:</strong>
+                        <span>${new Date(request.applicationDate || request.createdAt).toLocaleDateString()}</span>
+                    </p>
+                    <p>
+                        <strong>Repayment Period:</strong>
+                        <span>${request.repaymentPeriod || 'Not specified'} months</span>
+                    </p>
+                </div>
+                <div class="guarantor-request-actions">
+                    <button class="btn btn-accept" onclick="memberPortal.respondToGuarantorRequest('${request.id}', 'accepted')">
+                        <i class="fas fa-check"></i> Accept
+                    </button>
+                    <button class="btn btn-reject" onclick="memberPortal.respondToGuarantorRequest('${request.id}', 'rejected')">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    /**
+     * Respond to guarantor request
+     */
+    async respondToGuarantorRequest(loanId, response) {
+        const confirmMessage = response === 'accepted' 
+            ? 'Are you sure you want to accept this guarantor request? You will be legally responsible for this loan if the borrower defaults.'
+            : 'Are you sure you want to reject this guarantor request?';
+            
+        if (!confirm(confirmMessage)) {
+            return;
+        }
+
+        let note = '';
+        if (response === 'rejected') {
+            note = prompt('Please provide a reason for rejecting this guarantor request (optional):');
+            if (note === null) return; // User cancelled
+        }
+
+        try {
+            const result = await apiService.put(`/loans/${loanId}/guarantor-response`, {
+                response: response,
+                note: note || ''
+            }, true);
+
+            if (result.success) {
+                alert(`Guarantor request ${response} successfully!`);
+                // Reload the guarantor requests
+                this.loadGuarantorRequests();
+            } else {
+                throw new Error(result.message || 'Failed to submit response');
+            }
+        } catch (error) {
+            console.error('Error responding to guarantor request:', error);
+            alert('Failed to submit response. Please try again.');
+        }
+    }
 }
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    new MemberPortal();
+    window.memberPortal = new MemberPortal();
 });
 
 // Export for module use

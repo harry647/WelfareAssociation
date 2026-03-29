@@ -663,3 +663,152 @@
     font-size: 12px;
   }
 }
+
+/* ============================================================================
+   LOANS MANAGEMENT STYLES
+   ============================================================================ */
+
+.loan-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.filter-group select {
+  padding: 10px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  min-width: 160px;
+  transition: all var(--transition-base);
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(45, 124, 91, 0.15);
+}
+
+/* Guarantor Status Badges */
+.guarantor-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.guarantor-status.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning-color, #f59e0b);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.guarantor-status.accepted {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success-color, #10b981);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.guarantor-status.rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color, #ef4444);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.guarantor-status.not_required {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--text-secondary, #6b7280);
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+/* Loan Actions */
+.loan-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.loan-actions .btn {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loan-actions .btn-view {
+  background: var(--accent-color);
+  color: white;
+}
+
+.loan-actions .btn-view:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.loan-actions .btn-approve {
+  background: var(--success-color, #10b981);
+  color: white;
+}
+
+.loan-actions .btn-approve:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.loan-actions .btn-reject {
+  background: var(--danger-color, #ef4444);
+  color: white;
+}
+
+.loan-actions .btn-reject:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design for Loans Section */
+@media (max-width: 768px) {
+  .loan-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .filter-group select {
+    flex: 1;
+    min-width: auto;
+  }
+}

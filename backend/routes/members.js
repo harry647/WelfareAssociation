@@ -25,6 +25,35 @@ const validate = (req, res, next) => {
 };
 
 /**
+ * GET /api/members/list
+ * Get member list for guarantor selection (authenticated members only)
+ */
+router.get('/list', auth, async (req, res) => {
+    try {
+        const members = await Member.findAll({
+            attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'phone', 'membershipStatus', 'joinDate'],
+            where: { membershipStatus: 'active' },
+            order: [['firstName', 'ASC']]
+        });
+        
+        res.json({
+            success: true,
+            data: members.map(m => ({
+                id: m.id,
+                firstName: m.firstName,
+                lastName: m.lastName,
+                memberNumber: m.memberNumber,
+                phone: m.phone,
+                name: `${m.firstName} ${m.lastName}`
+            }))
+        });
+    } catch (error) {
+        console.error('Error fetching member list:', error);
+        res.status(500).json({ success: false, message: 'Error fetching member list' });
+    }
+});
+
+/**
  * GET /api/members
  * Get all members (admin)
  */

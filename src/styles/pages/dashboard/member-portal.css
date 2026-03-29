@@ -1240,6 +1240,163 @@ table tbody tr:last-child td:last-child {
 }
 
 /* ============================================================================
+   GUARANTOR REQUESTS
+   ============================================================================ */
+
+.guarantor-requests-section {
+  margin: 0 32px;
+  max-width: calc(100% - 64px);
+}
+
+.guarantor-requests-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.guarantor-request-card {
+  background: var(--member-color-surface);
+  border: 2px solid var(--member-color-border);
+  border-radius: var(--member-radius-md);
+  padding: 20px;
+  transition: all var(--member-transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.guarantor-request-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, var(--member-color-warning), var(--member-color-primary));
+}
+
+.guarantor-request-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--member-shadow-lg);
+  border-color: var(--member-color-primary-light);
+}
+
+.guarantor-request-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.guarantor-request-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--member-color-warning), var(--member-color-primary));
+  border-radius: var(--member-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.guarantor-request-title {
+  flex: 1;
+}
+
+.guarantor-request-title h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--member-color-text-primary);
+  margin-bottom: 4px;
+}
+
+.guarantor-request-title .loan-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--member-color-primary);
+}
+
+.guarantor-request-details {
+  margin-bottom: 20px;
+}
+
+.guarantor-request-details p {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  color: var(--member-color-text-secondary);
+  border-bottom: 1px solid var(--member-color-border);
+}
+
+.guarantor-request-details p:last-child {
+  border-bottom: none;
+}
+
+.guarantor-request-details strong {
+  color: var(--member-color-text-primary);
+}
+
+.guarantor-request-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.guarantor-request-actions .btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--member-radius-sm);
+  cursor: pointer;
+  transition: all var(--member-transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-accept {
+  background: linear-gradient(135deg, var(--member-color-success), #059669);
+  color: white;
+}
+
+.btn-accept:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--member-shadow-md);
+}
+
+.btn-reject {
+  background: linear-gradient(135deg, var(--member-color-danger), #dc2626);
+  color: white;
+}
+
+.btn-reject:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--member-shadow-md);
+}
+
+.no-guarantor-requests {
+  text-align: center;
+  padding: 40px;
+  color: var(--member-color-text-secondary);
+  background: var(--member-color-surface);
+  border: 2px dashed var(--member-color-border);
+  border-radius: var(--member-radius-md);
+  margin-top: 18px;
+}
+
+.no-guarantor-requests i {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+  opacity: 0.5;
+}
+
+/* ============================================================================
    RESPONSIVE DESIGN
    ============================================================================ */
 

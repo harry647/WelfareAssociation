@@ -106,6 +106,19 @@ const Loan = sequelize.define('Loan', {
         type: DataTypes.JSONB,
         defaultValue: []
     },
+    // Guarantor response tracking
+    guarantorStatus: {
+        type: DataTypes.ENUM('pending', 'accepted', 'rejected', 'not_required'),
+        defaultValue: 'pending'
+    },
+    guarantorResponseDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    guarantorResponseNote: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     // Loan purpose
     purpose: {
         type: DataTypes.ENUM('education', 'business', 'emergency', 'personal', 'housing', 'medical', 'other'),

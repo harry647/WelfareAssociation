@@ -32,10 +32,15 @@ const validate = (req, res, next) => {
  */
 async function calculateMemberScore(memberId) {
     try {
+        console.log('Calculating score for member:', memberId);
+        
         const member = await Member.findByPk(memberId);
         if (!member) {
+            console.error('Member not found:', memberId);
             throw new Error('Member not found');
         }
+        
+        console.log('Member found:', { id: member.id, joinDate: member.joinDate });
 
         // Get member's financial history
         const [contributions, fines, existingLoans] = await Promise.all([
@@ -43,11 +48,19 @@ async function calculateMemberScore(memberId) {
             Fine.findAll({ where: { memberId, status: 'unpaid' } }),
             Loan.findAll({ where: { memberId } })
         ]);
+        
+        console.log('Financial data loaded:', { 
+            contributionsCount: contributions.length, 
+            finesCount: fines.length, 
+            loansCount: existingLoans.length 
+        });
 
         // Calculate metrics
         const totalContributions = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
         const unpaidFines = fines.reduce((sum, f) => sum + parseFloat(f.amount || 0), 0);
-        const membershipMonths = Math.max(1, Math.floor((new Date() - new Date(member.joinDate)) / (1000 * 60 * 60 * 24 * 30)));
+        const membershipMonths = member.joinDate ? 
+            Math.max(1, Math.floor((new Date() - new Date(member.joinDate)) / (1000 * 60 * 60 * 24 * 30))) : 
+            1;
         
         // Base score calculation
         let score = 0;
@@ -233,8 +246,12 @@ router.get('/pending', auth, authorize('admin', 'treasurer', 'secretary'), async
  */
 router.get('/eligibility', auth, async (req, res) => {
     try {
+        console.log('=== Eligibility Check Started ===');
+        console.log('User:', { id: req.user.id, role: req.user.role });
+        
         // Handle admin user case - admin cannot apply for loans
         if (req.user.id === 'admin') {
+            console.log('Admin user detected, returning ineligible');
             return res.json({
                 success: true,
                 data: {
@@ -250,16 +267,22 @@ router.get('/eligibility', auth, async (req, res) => {
         }
         
         // Get member
+        console.log('Looking up member for userId:', req.user.id);
         const member = await Member.findOne({ where: { userId: req.user.id } });
         if (!member) {
+            console.error('Member not found for userId:', req.user.id);
             return res.status(404).json({
                 success: false,
                 message: 'Member profile not found'
             });
         }
         
+        console.log('Member found:', { id: member.id, userId: member.userId, joinDate: member.joinDate });
+        
         // Calculate eligibility
+        console.log('Calculating eligibility for member:', member.id);
         const eligibility = await calculateMemberScore(member.id);
+        console.log('Eligibility calculated:', eligibility);
         
         // Check restrictions
         const activeLoan = await Loan.findOne({
@@ -294,6 +317,112 @@ router.get('/eligibility', auth, async (req, res) => {
             success: false,
             message: 'Error calculating loan eligibility'
         });
+    }
+});
+
+/**
+ * GET /api/loans/guarantor-requests
+ * Get loans where current user is a guarantor with pending response
+ */
+router.get('/guarantor-requests', auth, async (req, res) => {
+    try {
+        // Find member for this user
+        const member = await Member.findOne({ where: { userId: req.user.id } });
+        
+        if (!member) {
+            return res.json({ success: true, data: [] });
+        }
+        
+        // Find loans where this member is in guarantors array and status is pending
+        const loans = await Loan.findAll({
+            where: {
+                status: { [Op.in]: ['pending', 'approved'] },
+                guarantorStatus: 'pending'
+            }
+        });
+        
+        // Filter to loans where this member is a guarantor
+        const guarantorLoans = loans.filter(loan => {
+            const guarantors = loan.guarantors || [];
+            return guarantors.some(g => 
+                g.memberId === member.id || 
+                g.memberNumber === member.memberNumber ||
+                g.studentId === member.memberNumber
+            );
+        });
+        
+        // Get member details for response
+        const memberLoans = await Promise.all(guarantorLoans.map(async loan => {
+            const loanMember = await Member.findByPk(loan.memberId);
+            return {
+                id: loan.id,
+                loanNumber: loan.loanNumber,
+                amount: loan.principalAmount,
+                memberName: loanMember ? `${loanMember.firstName} ${loanMember.lastName}` : 'Unknown',
+                memberNumber: loanMember?.memberNumber,
+                status: loan.guarantorStatus,
+                createdAt: loan.createdAt
+            };
+        }));
+        
+        res.json({ success: true, data: memberLoans });
+    } catch (error) {
+        console.error('Guarantor requests error:', error);
+        res.status(500).json({ success: false, message: 'Error fetching guarantor requests' });
+    }
+});
+
+/**
+ * PUT /api/loans/:id/guarantor-response
+ * guarantor accepts or rejects a loan request
+ */
+router.put('/:id/guarantor-response', auth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { action, note } = req.body; // action: 'accept' or 'reject'
+        
+        const loan = await Loan.findByPk(id);
+        if (!loan) {
+            return res.status(404).json({ success: false, message: 'Loan not found' });
+        }
+        
+        // Get guarantor info from loan
+        const guarantors = loan.guarantors || [];
+        const guarantor = guarantors.find(g => g.memberId === req.user.id || g.userId === req.user.id);
+        
+        if (!guarantor) {
+            return res.status(403).json({ success: false, message: 'You are not a guarantor for this loan' });
+        }
+        
+        // Update guarantor status
+        const newStatus = action === 'accept' ? 'accepted' : 'rejected';
+        loan.guarantorStatus = newStatus;
+        loan.guarantorResponseDate = new Date();
+        loan.guarantorResponseNote = note || null;
+        await loan.save();
+        
+        // Create notification for loan member
+        const member = await Member.findByPk(loan.memberId);
+        if (member && member.userId) {
+            const { Notice } = require('../models');
+            await Notice.create({
+                memberId: loan.memberId,
+                userId: member.userId,
+                title: `Guarantor ${action === 'accept' ? 'Accepted' : 'Rejected'} Your Loan`,
+                message: `Your guarantor ${guarantor.name} has ${newStatus} your loan request (${loan.loanNumber}). ${
+                    action === 'accept' 
+                        ? 'The loan will be processed once admin approves disbursement.'
+                        : 'Please find another guarantor or contact admin.'
+                }`,
+                type: 'loan',
+                priority: 'high'
+            });
+        }
+        
+        res.json({ success: true, message: `You have ${newStatus} the loan request` });
+    } catch (error) {
+        console.error('Guarantor response error:', error);
+        res.status(500).json({ success: false, message: 'Error processing response' });
     }
 });
 
@@ -476,8 +605,30 @@ router.post('/apply', auth, [
             purpose,
             purposeDescription,
             guarantors: guarantors || [],
+            guarantorStatus: guarantors?.length > 0 ? 'pending' : 'not_required',
             status: 'pending'
         });
+        
+        // Notify guarantors if any were provided
+        if (guarantors && guarantors.length > 0) {
+            const { Notice, Member, User } = require('../models');
+            for (const guarantor of guarantors) {
+                // Find the guarantor member
+                const guarantorMember = await Member.findOne({ 
+                    where: { memberNumber: guarantor.studentId } 
+                });
+                if (guarantorMember && guarantorMember.userId) {
+                    await Notice.create({
+                        memberId: guarantorMember.id,
+                        userId: guarantorMember.userId,
+                        title: 'Guarantor Request - Action Required',
+                        message: `${member.firstName} ${member.lastName} has selected you as a guarantor for their loan request (${loan.loanNumber}) of Ksh ${principalAmount}. Please log in to the member portal to accept or reject this request.`,
+                        type: 'guarantor',
+                        priority: 'high'
+                    });
+                }
+            }
+        }
 
         res.status(201).json({
             success: true,

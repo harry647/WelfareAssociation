@@ -7,11 +7,11 @@ import { loanService } from '../../../services/index.js';
 import { API_CONFIG } from '../../../config/app-config.js';
 
 // Initialize the loan application functionality
-document.addEventListener('DOMContentLoaded', () => {
-    initLoanApplication();
+document.addEventListener('DOMContentLoaded', async () => {
+    await initLoanApplication();
 });
 
-function initLoanApplication() {
+async function initLoanApplication() {
     const form = document.getElementById('loanApplicationForm');
     
     if (!form) {
@@ -28,7 +28,8 @@ function initLoanApplication() {
     initConfirmationModal();
     initSTKPush();
     initReceiptDownload();
-    initAuthentication();
+    await initAuthentication();
+    await initGuarantorDropdown();
     initEligibilityCheck();
     
     // Handle "Other" purpose field visibility
@@ -698,17 +699,90 @@ function createDemoReceipt() {
 // ============================================
 // AUTHENTICATION LAYER (Auto-fill from profile)
 // ============================================
-function initAuthentication() {
-    // Check for logged in user
-    const userData = getLoggedInUser();
+async function initAuthentication() {
+    // Check for logged in user first from localStorage
+    const localUserData = getLoggedInUser();
+    let mergedData = localUserData;
     
-    if (userData) {
-        autoFillUserData(userData);
+    // Try to fetch latest user data from database API
+    try {
+        const apiUserData = await fetchUserFromAPI();
+        if (apiUserData) {
+            // Merge with local data - API data takes priority for latest values
+            mergedData = { ...localUserData, ...apiUserData };
+            autoFillUserData(mergedData);
+            
+            // Load eligibility and pre-fill loan amount
+            await loadMemberEligibility();
+            return;
+        }
+    } catch (e) {
+        console.log('Could not fetch user from API, using local data');
+    }
+    
+    // Fall back to localStorage data
+    if (localUserData) {
+        autoFillUserData(localUserData);
+    }
+}
+
+async function loadMemberEligibility() {
+    const amountInput = document.getElementById('loanAmount');
+    if (!amountInput) return;
+    
+    try {
+        // Use loanService.getEligibility() - same criteria used by member portal
+        const result = await loanService.getEligibility();
+        
+        if (result.success && result.data) {
+            const eligibility = result.data;
+            const eligibleAmount = eligibility.maxLoan || 1000;
+            
+            // Set the amount field
+            amountInput.value = eligibleAmount;
+            // Also set max attribute to prevent exceeding
+            amountInput.max = eligibleAmount;
+            
+            // Update placeholder to show eligibility
+            amountInput.placeholder = `Max: Ksh ${eligibleAmount.toLocaleString()}`;
+            
+            // Show eligibility message
+            const formGroup = amountInput.closest('.form-group');
+            if (formGroup) {
+                let note = formGroup.querySelector('.field-note');
+                if (!note) {
+                    note = document.createElement('small');
+                    note.className = 'field-note';
+                    amountInput.parentElement.appendChild(document.createElement('br'));
+                    amountInput.parentElement.appendChild(note);
+                }
+                note.textContent = `You are eligible for up to Ksh ${eligibleAmount.toLocaleString()}`;
+            }
+            
+            // Also show detailed eligibility status
+            const eligibilityEl = document.getElementById('eligibilityCheck');
+            if (eligibilityEl && !eligibility.eligible) {
+                eligibilityEl.className = 'eligibility-check error show';
+                eligibilityEl.innerHTML = '<i class="fas fa-times-circle"></i> ' + (eligibility.message || 'You do not qualify for a loan');
+            }
+        }
+    } catch (e) {
+        console.log('Could not load member eligibility:', e);
     }
 }
 
 function getLoggedInUser() {
-    // Check localStorage for user session
+    // Check for swa_user (used by the main app)
+    const swaUser = localStorage.getItem('swa_user');
+    if (swaUser) {
+        try {
+            return JSON.parse(swaUser);
+        } catch (e) {
+            // Continue to other checks
+        }
+    }
+    
+    // Also check userSession for backwards compatibility
     const userSession = localStorage.getItem('userSession');
     if (userSession) {
         try {
@@ -716,6 +790,41 @@ function getLoggedInUser() {
         } catch (e) {
             return null;
         }
+    }
+    return null;
+}
+
+async function fetchUserFromAPI() {
+    const token = localStorage.getItem('swa_auth_token');
+    if (!token) return null;
+    
+    try {
+        const response = await fetch('/api/users/profile', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+                // Transform API response to our expected format
+                const user = result.data.user;
+                const member = result.data.member;
+                return {
+                    name: user.firstName && user.lastName 
+                        ? `${user.firstName} ${user.lastName}` 
+                        : user.name || user.email,
+                    email: user.email,
+                    phone: member?.phone || user.phone,
+                    studentId: member?.memberNumber || user.studentId
+                };
+            }
+        }
+    } catch (e) {
+        console.log('API fetch error:', e);
     }
     return null;
 }
@@ -731,30 +840,41 @@ function autoFillUserData(userData) {
     const userStudentIdEl = document.getElementById('userStudentId');
     const userEmailEl = document.getElementById('userEmail');
     
+    // Normalize user data - handle different field names from different sources
+    const normalizedData = {
+        name: userData.name || (userData.firstName && userData.lastName ? `${userData.firstName} ${userData.lastName}` : null),
+        email: userData.email,
+        phone: userData.phone,
+        studentId: userData.studentId || userData.memberNumber
+    };
+    
     // Show user info bar
     if (userInfoBar) userInfoBar.classList.add('show');
     
-    // Auto-fill form fields
-    if (fullNameInput && userData.name) {
-        fullNameInput.value = userData.name;
+    // Auto-fill form fields (only if data is available)
+    if (fullNameInput && normalizedData.name) {
+        fullNameInput.value = normalizedData.name;
         fullNameInput.readOnly = true;
+        fullNameInput.parentElement?.querySelector('.required')?.classList.remove('required');
     }
-    if (studentIdInput && userData.studentId) {
-        studentIdInput.value = userData.studentId;
+    if (studentIdInput && normalizedData.studentId) {
+        studentIdInput.value = normalizedData.studentId;
         studentIdInput.readOnly = true;
+        studentIdInput.parentElement?.querySelector('.required')?.classList.remove('required');
     }
-    if (emailInput && userData.email) {
-        emailInput.value = userData.email;
+    if (emailInput && normalizedData.email) {
+        emailInput.value = normalizedData.email;
         emailInput.readOnly = true;
+        emailInput.parentElement?.querySelector('.required')?.classList.remove('required');
     }
-    if (phoneInput && userData.phone) {
-        phoneInput.value = userData.phone;
+    if (phoneInput && normalizedData.phone) {
+        phoneInput.value = normalizedData.phone;
     }
     
     // Update user info display
-    if (userNameEl) userNameEl.textContent = userData.name || 'N/A';
-    if (userStudentIdEl) userStudentIdEl.textContent = userData.studentId || 'N/A';
-    if (userEmailEl) userEmailEl.textContent = userData.email || 'N/A';
+    if (userNameEl) userNameEl.textContent = normalizedData.name || 'N/A';
+    if (userStudentIdEl) userStudentIdEl.textContent = normalizedData.studentId || 'N/A';
+    if (userEmailEl) userEmailEl.textContent = normalizedData.email || 'N/A';
     
     // Setup logout button
     const logoutBtn = document.getElementById('logoutBtn');
@@ -764,6 +884,87 @@ function autoFillUserData(userData) {
                 localStorage.removeItem('userSession');
                 window.location.href = '../../index.html';
             }
+        });
+    }
+}
+
+// ============================================
+// GUARANTOR DROPDOWN
+// ============================================
+async function initGuarantorDropdown() {
+    const guarantorSelect = document.getElementById('guarantorSelect');
+    if (!guarantorSelect) return;
+    
+    const token = localStorage.getItem('swa_auth_token');
+    
+    // Fetch members list from API
+    try {
+        const response = await fetch('/api/members/list', {
+            headers: token ? {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            } : { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+                const members = result.data;
+                
+                // Populate dropdown
+                members.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.id;
+                    option.textContent = `${member.name} (${member.memberNumber})`;
+                    option.dataset.name = member.name;
+                    option.dataset.studentId = member.memberNumber;
+                    option.dataset.phone = member.phone || '';
+                    guarantorSelect.appendChild(option);
+                });
+            }
+        } else {
+            console.log('Could not load members list:', response.status);
+        }
+    } catch (e) {
+        console.log('Could not load members list:', e);
+    }
+    
+    // Handle selection
+    guarantorSelect.addEventListener('change', (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        if (selectedOption && selectedOption.value) {
+            const guarantorName = document.getElementById('guarantorName');
+            const guarantorId = document.getElementById('guarantorId');
+            const guarantorPhone = document.getElementById('guarantorPhone');
+            
+            if (guarantorName) {
+                guarantorName.value = selectedOption.dataset.name;
+                guarantorName.readOnly = true;
+            }
+            if (guarantorId) {
+                guarantorId.value = selectedOption.dataset.studentId;
+                guarantorId.readOnly = true;
+            }
+            if (guarantorPhone) {
+                guarantorPhone.value = selectedOption.dataset.phone || '';
+            }
+        }
+    });
+    
+    // Allow manual entry - remove readOnly if user types in fields
+    const guarantorName = document.getElementById('guarantorName');
+    const guarantorId = document.getElementById('guarantorId');
+    
+    if (guarantorName) {
+        guarantorName.addEventListener('input', () => {
+            guarantorName.readOnly = false;
+            guarantorSelect.value = '';
+        });
+    }
+    if (guarantorId) {
+        guarantorId.addEventListener('input', () => {
+            guarantorId.readOnly = false;
+            guarantorSelect.value = '';
         });
     }
 }
@@ -905,7 +1106,7 @@ async function submitLoanApplication() {
         const result = await loanService.applyForLoan(loanData);
         
         if (result.success) {
-            showSuccessMessage('Loan application submitted successfully!');
+            showSuccessMessage(result.message || 'Loan application submitted successfully!');
             
             // Show M-Pesa payment section
             const mpesaSection = document.getElementById('mpesaSection');
@@ -924,20 +1125,7 @@ async function submitLoanApplication() {
         }
     } catch (error) {
         console.error('Error submitting loan application:', error);
-        
-        // Demo mode: Show success even without backend
-        showSuccessMessage('Loan application submitted successfully! (Demo mode)');
-        
-        // Show M-Pesa payment section
-        const mpesaSection = document.getElementById('mpesaSection');
-        if (mpesaSection) mpesaSection.classList.show();
-        
-        // Show application status
-        showApplicationStatus('pending');
-        
-        // Clear draft
-        clearDraft();
-        updateProgressStep(4);
+        showErrorMessage(error.message || 'Failed to submit loan application. Please check your connection and try again.');
     } finally {
         const submitButton = document.getElementById('submitBtn');
         if (submitButton) {

@@ -666,6 +666,133 @@ function showSection(sectionName) {
     }
 }
 
+// ==================== LOANS MANAGEMENT ====================
+let loansCache = [];
+
+async function loadLoans() {
+    try {
+        const statusFilter = document.getElementById('loanStatusFilter')?.value || '';
+        const guarantorFilter = document.getElementById('guarantorStatusFilter')?.value || '';
+        
+        const params = new URLSearchParams();
+        if (statusFilter) params.append('status', statusFilter);
+        if (guarantorFilter) params.append('guarantorStatus', guarantorFilter);
+        
+        const result = await apiCall('/loans?' + params.toString());
+        loansCache = result.data;
+        renderLoansTable(result.data);
+    } catch (error) {
+        console.error('Error loading loans:', error);
+        document.getElementById('loans-table').innerHTML = 
+            `<tr><td colspan="9" class="no-data-message"><i class="fas fa-exclamation-circle"></i> Error loading loans: ${error.message}</td></tr>`;
+    }
+}
+
+function renderLoansTable(loans) {
+    const tbody = document.getElementById('loans-table');
+    if (!tbody) return;
+    
+    if (!loans || loans.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="no-data-message"><i class="fas fa-info-circle"></i> No loans found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = loans.map(loan => `
+        <tr>
+            <td><strong>${loan.loanNumber || loan.id}</strong></td>
+            <td>${loan.memberName || 'N/A'}</td>
+            <td>Ksh ${parseFloat(loan.amount || 0).toLocaleString()}</td>
+            <td>${loan.purpose || 'N/A'}</td>
+            <td>${new Date(loan.applicationDate || loan.createdAt).toLocaleDateString()}</td>
+            <td><span class="status ${getLoanStatusClass(loan.status)}">${formatLoanStatus(loan.status)}</span></td>
+            <td>${loan.guarantorName || 'N/A'}</td>
+            <td><span class="guarantor-status ${loan.guarantorStatus || 'not_required'}">${formatGuarantorStatus(loan.guarantorStatus)}</span></td>
+            <td>
+                <div class="loan-actions">
+                    <button class="btn btn-view" onclick="viewLoanDetails('${loan.id}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    ${loan.status === 'pending' ? `
+                        <button class="btn btn-approve" onclick="approveLoan('${loan.id}')">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="btn btn-reject" onclick="rejectLoan('${loan.id}')">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    ` : ''}
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function getLoanStatusClass(status) {
+    const statusMap = {
+        'pending': 'pending',
+        'active': 'active',
+        'completed': 'completed',
+        'rejected': 'rejected',
+        'overdue': 'overdue'
+    };
+    return statusMap[status] || 'pending';
+}
+
+function formatLoanStatus(status) {
+    const statusMap = {
+        'pending': '⏳ Pending',
+        'active': '🔄 Active',
+        'completed': '✓ Completed',
+        'rejected': '✗ Rejected',
+        'overdue': '⚠ Overdue'
+    };
+    return statusMap[status] || status;
+}
+
+function formatGuarantorStatus(status) {
+    const statusMap = {
+        'pending': '⏳ Pending',
+        'accepted': '✓ Accepted',
+        'rejected': '✗ Rejected',
+        'not_required': '— Not Required'
+    };
+    return statusMap[status] || '— Not Required';
+}
+
+async function viewLoanDetails(loanId) {
+    // For now, just show an alert. In a real implementation, this would open a modal or navigate to details page
+    alert(`View details for loan ${loanId}. This would open a detailed view modal.`);
+}
+
+async function approveLoan(loanId) {
+    if (!confirm('Are you sure you want to approve this loan?')) return;
+    
+    try {
+        await apiCall(`/loans/${loanId}/approve`, { method: 'POST' });
+        alert('Loan approved successfully!');
+        loadLoans(); // Reload the loans list
+    } catch (error) {
+        console.error('Error approving loan:', error);
+        alert('Failed to approve loan: ' + error.message);
+    }
+}
+
+async function rejectLoan(loanId) {
+    const reason = prompt('Please provide a reason for rejecting this loan:');
+    if (reason === null) return; // User cancelled
+    
+    try {
+        await apiCall(`/loans/${loanId}/reject`, { 
+            method: 'POST',
+            body: JSON.stringify({ reason })
+        });
+        alert('Loan rejected successfully!');
+        loadLoans(); // Reload the loans list
+    } catch (error) {
+        console.error('Error rejecting loan:', error);
+        alert('Failed to reject loan: ' + error.message);
+    }
+}
+
 // Make functions globally available
 window.loadPageContent = loadPageContent;
 window.editContentItem = editContentItem;
@@ -676,6 +803,21 @@ window.refreshHtmlPage = refreshHtmlPage;
 window.openContentModal = openContentModal;
 window.showSection = showSection;
 window.handleUrlHash = handleUrlHash;
+window.loadLoans = loadLoans;
+window.viewLoanDetails = viewLoanDetails;
+window.approveLoan = approveLoan;
+window.rejectLoan = rejectLoan;
+
+// Initialize loans section when shown
+const originalShowSection = showSection;
+window.showSection = function(sectionName) {
+    originalShowSection(sectionName);
+    
+    // Load loans when loans section is shown
+    if (sectionName === 'loans') {
+        setTimeout(() => loadLoans(), 100);
+    }
+};
 
 // Smart hash link handler - decides whether to use hash or full URL
 document.addEventListener('DOMContentLoaded', function() {

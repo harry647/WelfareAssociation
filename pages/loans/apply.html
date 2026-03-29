@@ -569,6 +569,14 @@
                     <p class="fieldset-note">You must provide a guarantor who is a member of SWA</p>
                     
                     <div class="form-group">
+                        <label for="guarantorSelect">Select Guarantor <span class="required">*</span></label>
+                        <select id="guarantorSelect" name="guarantorSelect">
+                            <option value="">-- Select from members --</option>
+                        </select>
+                        <small class="text-muted">Or enter manually below</small>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="guarantorName">Guarantor Name <span class="required">*</span></label>
                         <input type="text" id="guarantorName" name="guarantorName" required 
                                placeholder="Enter guarantor's full name">

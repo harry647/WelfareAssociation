@@ -198,8 +198,62 @@
       </div>
 
       <div class="content-section" id="section-loans">
-        <div class="page-body"><div class="page-header"><h1><i class="fas fa-hand-holding-usd"></i> Loans</h1></div>
-        <div class="section-placeholder"><i class="fas fa-hand-holding-usd"></i><h2>Loans</h2><p>This section is under construction.</p></div></div>
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-hand-holding-usd"></i> Loans Management</h1>
+            <p>Manage loan applications and track guarantor status</p>
+          </div>
+
+          <div class="loan-filters">
+            <div class="filter-group">
+              <label for="loanStatusFilter">Status:</label>
+              <select id="loanStatusFilter">
+                <option value="">All Loans</option>
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="guarantorStatusFilter">Guarantor Status:</label>
+              <select id="guarantorStatusFilter">
+                <option value="">All</option>
+                <option value="pending">Pending Response</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+                <option value="not_required">Not Required</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="adminDashboard.loadLoans()">
+              <i class="fas fa-refresh"></i> Refresh
+            </button>
+          </div>
+
+          <section class="data-section">
+            <h2><i class="fas fa-list"></i> Loan Applications</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Loan Number</th>
+                    <th>Member Name</th>
+                    <th>Amount</th>
+                    <th>Purpose</th>
+                    <th>Application Date</th>
+                    <th>Status</th>
+                    <th>Guarantor</th>
+                    <th>Guarantor Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="loans-table">
+                  <tr><td colspan="9" class="no-data-message"><i class="fas fa-spinner fa-spin"></i> Loading loans...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
       </div>
 
       <div class="content-section" id="section-reports">
