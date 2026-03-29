@@ -1,38 +1,34 @@
 /**
  * PostgreSQL Database Connection
- * Handles connection to PostgreSQL using Sequelize
+ * Handles connection to PostgreSQL using pg Pool
  * Supports both local PostgreSQL and cloud PostgreSQL providers
  */
 
+const { Pool } = require('pg');
 const { Sequelize } = require('sequelize');
 
-/**
- * Get PostgreSQL URI based on environment
- * - Development: Uses local PostgreSQL (POSTGRES_URI_DEV)
- * - Production: Uses cloud PostgreSQL (POSTGRES_URI_PROD)
- */
-const getPostgresURI = () => {
-    const env = process.env.NODE_ENV || 'development';
-    
-    if (env === 'production') {
-        const prodUri = process.env.POSTGRES_URI_PROD;
-        if (!prodUri || prodUri.includes('username:password')) {
-            console.warn('⚠️  Production PostgreSQL URI not configured properly!');
-            console.warn('Please update POSTGRES_URI_PROD in .env file with your credentials');
-        }
-        return prodUri;
-    }
-    
-    // Development - use local PostgreSQL
-    return process.env.POSTGRES_URI_DEV || process.env.POSTGRES_URI;
+// Determine if we're in production
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Get connection string
+const getConnectionString = () => {
+    return isProduction
+        ? process.env.POSTGRES_URI_PROD
+        : process.env.POSTGRES_URI_DEV;
 };
 
-// Initialize Sequelize
-const sequelize = new Sequelize(getPostgresURI(), {
+// Create pg Pool for raw queries
+const pool = new Pool({
+    connectionString: getConnectionString(),
+    ssl: isProduction ? { rejectUnauthorized: false } : false
+});
+
+// Create Sequelize instance for ORM (models use this)
+const sequelize = new Sequelize(getConnectionString(), {
     dialect: 'postgres',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
     pool: {
-        max: 10,
+        max: 5,
         min: 0,
         acquire: 30000,
         idle: 10000
@@ -43,51 +39,54 @@ const sequelize = new Sequelize(getPostgresURI(), {
     }
 });
 
+// Log connection info (hide credentials)
+pool.on('connect', () => {
+    const env = process.env.NODE_ENV || 'development';
+    console.log(`📦 Connected to PostgreSQL (${env} mode)`);
+});
+
 const connectDB = async () => {
     try {
-        const postgresUri = getPostgresURI();
-        
-        // Log which database we're connecting to
         const env = process.env.NODE_ENV || 'development';
         console.log(`\n📦 Connecting to PostgreSQL (${env} mode)...`);
-        console.log(`   URI: ${postgresUri.replace(/\/\/.*:.*@/, '//[credentials_hidden]@')}`);
         
+        const connStr = getConnectionString();
+        
+        if (!connStr || connStr.includes('username:password') || connStr.includes('your_')) {
+            console.warn('⚠️  PostgreSQL URI not configured properly!');
+            console.warn('Please update POSTGRES_URI_DEV or POSTGRES_URI_PROD in .env file');
+            if (isProduction) {
+                process.exit(1);
+            }
+        } else {
+            console.log(`   URI: ${connStr.replace(/\/\/.*:.*@/, '//[credentials_hidden]@')}`);
+        }
+        
+        // Test Sequelize connection
         await sequelize.authenticate();
-        
-        console.log(`✅ PostgreSQL Connected: ${sequelize.config.host}`);
-        console.log(`   Database Name: ${sequelize.config.database}`);
-        
-        // Sync models - commented out to avoid console clutter
-        // Uncomment when you need to sync schema changes (add { alter: true } to modify existing tables)
-        // if (process.env.NODE_ENV !== 'production') {
-        //     console.log('🔄 Syncing models...');
-        //     await sequelize.sync({ alter: true });
-        //     console.log('✅ Models synced successfully');
-        // }
-        
-        console.log('✓ Database connected and models loaded');
+        console.log(`✅ PostgreSQL Connected successfully`);
         
         return sequelize;
     } catch (error) {
         console.error('❌ PostgreSQL connection failed:', error.message);
         
-        // Detailed error handling
         if (error.message.includes('ECONNREFUSED')) {
-            console.error('   → Is PostgreSQL running locally? Start with: pg_ctl start');
+            console.error('   → Is PostgreSQL running locally?');
         } else if (error.message.includes('ETIMEDOUT')) {
             console.error('   → Connection timeout. Check your network and credentials');
         } else if (error.message.includes('authentication failed')) {
             console.error('   → Invalid PostgreSQL username/password');
+        } else if (error.message.includes('ENOTFOUND')) {
+            console.error('   → Host not found. Check your connection string');
         } else if (error.message.includes('database')) {
-            console.error('   → Database does not exist. Create it first: createdb swa_db');
+            console.error('   → Database does not exist.');
         }
         
-        // Don't exit in development - allows the server to run for debugging
-        if (process.env.NODE_ENV === 'production') {
+        if (isProduction) {
             console.error('🛑 Exiting due to database connection failure in production');
             process.exit(1);
         }
     }
 };
 
-module.exports = { sequelize, connectDB };
+module.exports = { sequelize, pool, connectDB };

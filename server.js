@@ -14,7 +14,7 @@ const compression = require('compression');
 const crypto = require('crypto');
 const fs = require('fs');
 
-const { connectDB, sequelize } = require('./backend/config/database');
+const { connectDB, sequelize, pool } = require('./backend/config/database');
 const setupRoutes = require('./backend/routes');
 
 // Automatic initialization on first run
