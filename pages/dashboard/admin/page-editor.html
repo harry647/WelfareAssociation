@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Editor - <%= pageName %></title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/admin-dashboard.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+    }
+    
+    .editor-toolbar {
+      background: #2c3e50;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    
+    .editor-toolbar h1 {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .toolbar-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    
+    .toolbar-btn:hover {
+      background: #2980b9;
+    }
+    
+    .toolbar-btn.save {
+      background: #27ae60;
+    }
+    
+    .toolbar-btn.save:hover {
+      background: #219a52;
+    }
+    
+    .toolbar-btn.refresh {
+      background: #e67e22;
+    }
+    
+    .toolbar-btn.refresh:hover {
+      background: #d35400;
+    }
+    
+    .editor-container {
+      margin-top: 60px;
+      height: calc(100vh - 60px);
+      display: flex;
+    }
+    
+    .editor-panes {
+      display: flex;
+      height: 100%;
+      gap: 2px;
+      background: #ddd;
+    }
+    
+    .code-pane, .preview-pane {
+      flex: 1;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .pane-header {
+      background: #34495e;
+      color: white;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    
+    .pane-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .pane-btn:hover {
+      background: #2980b9;
+    }
+    
+    .html-editor {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      background: #1e1e1e;
+      color: #d4d4d4;
+    }
+    
+    .preview-pane iframe {
+      flex: 1;
+      background: white;
+      overflow: hidden;
+    }
+    
+    .preview-pane iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .status-bar {
+      background: #34495e;
+      color: #ecf0f1;
+      padding: 8px 20px;
+      font-size: 13px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #95a5a6;
+    }
+    
+    .status-dot.saved {
+      background: #2ecc71;
+    }
+    
+    .status-dot.modified {
+      background: #f39c12;
+    }
+    
+    .status-dot.saving {
+      background: #3498db;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-toolbar">
+    <h1><i class="fas fa-edit"></i> Editing: <span id="pageName"><%= pageName %></span></h1>
+    <div class="toolbar-actions">
+      <button class="toolbar-btn refresh" onclick="refreshPreview()">
+        <i class="fas fa-sync"></i> Refresh
+      </button>
+      <button class="toolbar-btn save" onclick="savePage()">
+        <i class="fas fa-save"></i> Save Changes
+      </button>
+    </div>
+  </div>
+  
+  <div class="editor-container">
+    <div class="editor-panes">
+      <div class="code-pane">
+        <div class="pane-header">
+          <span>HTML Source</span>
+          <button class="pane-btn" onclick="formatCode()"><i class="fas fa-align-left"></i> Format</button>
+        </div>
+        <textarea id="htmlEditor" class="html-editor" spellcheck="false"></textarea>
+      </div>
+      <div class="preview-pane">
+        <div class="pane-header">
+          <span>Preview</span>
+          <button class="pane-btn" onclick="refreshPreview()"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+        <iframe id="previewFrame"></iframe>
+      </div>
+    </div>
+  </div>
+  
+  <div class="status-bar">
+    <div class="status-indicator">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Ready</span>
+    </div>
+    <div>
+      <span id="lastSaved">Last saved: Never</span>
+    </div>
+  </div>
+
+  <script>
+    const pagePath = '<%= pagePath %>';
+    let hasUnsavedChanges = false;
+    let originalContent = '';
+    
+    // Load original content into textarea
+    async function loadOriginalContent() {
+      try {
+        updateStatus('Loading...', 'saving');
+        const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+        const response = await fetch(`/api/pages/content/${pagePath}`, {
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : ''
+          }
+        });
+        const data = await response.json();
+        if (data.success) {
+          originalContent = data.data.content;
+          document.getElementById('htmlEditor').value = originalContent;
+          updatePreview();
+          updateStatus('Ready', 'saved');
+        } else {
+          updateStatus('Error: ' + data.message, 'modified');
+        }
+      } catch (error) {
+        console.error('Error loading content:', error);
+        updateStatus('Error loading content', 'modified');
+      }
+    }
+    
+    function updatePreview() {
+      const content = document.getElementById('htmlEditor').value;
+      const frame = document.getElementById('previewFrame');
+      const doc = frame.contentDocument || frame.contentWindow.document;
+      doc.open();
+      doc.write(content);
+      doc.close();
+    }
+    
+    function formatCode() {
+      const editor = document.getElementById('htmlEditor');
+      // Simple HTML formatting - add newlines after closing tags
+      let formatted = editor.value
+        .replace(/>\s+</g, '><')
+        .replace(/(\n\s*)+/g, '\n');
+      editor.value = formatted;
+    }
+    
+    function refreshPreview() {
+      updatePreview();
+      updateStatus('Preview refreshed', 'saved');
+    }
+    
+    async function savePage() {
+      updateStatus('Saving...', 'saving');
+      
+      try {
+        const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+        const content = document.getElementById('htmlEditor').value;
+        
+        const response = await fetch(`/api/pages/content/${pagePath}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          },
+          body: JSON.stringify({ content: content, createBackup: true })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          originalContent = content;
+          hasUnsavedChanges = false;
+          updateStatus('Saved successfully!', 'saved');
+          document.getElementById('lastSaved').textContent = 'Last saved: ' + new Date().toLocaleTimeString();
+        } else {
+          updateStatus('Error: ' + data.message, 'modified');
+        }
+      } catch (error) {
+        updateStatus('Error: ' + error.message, 'modified');
+      }
+    }
+    
+    function updateStatus(text, state) {
+      document.getElementById('statusText').textContent = text;
+      const dot = document.getElementById('statusDot');
+      dot.className = 'status-dot ' + state;
+    }
+    
+    // Track changes in the textarea
+    document.getElementById('htmlEditor').addEventListener('input', function() {
+      hasUnsavedChanges = true;
+      updateStatus('Modified', 'modified');
+      // Debounce preview update
+      clearTimeout(window.previewTimeout);
+      window.previewTimeout = setTimeout(updatePreview, 500);
+    });
+    
+    // Warn before leaving
+    window.addEventListener('beforeunload', function(e) {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+      }
+    });
+    
+    // Initialize
+    loadOriginalContent();
+  </script>
+</body>
+</html>

@@ -300,11 +300,46 @@ app.use((req, res, next) => {
     next();
 });
 
+// Page Editor template route - serves the editor with dynamic page info
+// IMPORTANT: This must come BEFORE the static file serving
+app.get('/pages/dashboard/admin/page-editor.html', (req, res) => {
+    const pagePath = req.query.page || '';
+    const pageName = pagePath.split('/').pop().replace('.html', '');
+    
+    // Read the template file
+    const templatePath = path.join(__dirname, 'pages/dashboard/admin/page-editor.html');
+    let template = fs.readFileSync(templatePath, 'utf8');
+    
+    // Replace template variables
+    template = template.replace(/<%= pagePath %>/g, pagePath);
+    template = template.replace(/<%= pageName %>/g, pageName);
+    
+    res.setHeader('Content-Type', 'text/html');
+    res.send(template);
+});
+
 // Serve static files from root directory
 app.use(express.static(__dirname));
 
 // API Routes
 setupRoutes(app);
+
+// Page Editor template route - serves the editor with dynamic page info
+app.get('/pages/dashboard/admin/page-editor.html', (req, res) => {
+    const pagePath = req.query.page || '';
+    const pageName = pagePath.split('/').pop().replace('.html', '');
+    
+    // Read the template file
+    const templatePath = path.join(__dirname, 'pages/dashboard/admin/page-editor.html');
+    let template = fs.readFileSync(templatePath, 'utf8');
+    
+    // Replace template variables
+    template = template.replace(/<%= pagePath %>/g, pagePath);
+    template = template.replace(/<%= pageName %>/g, pageName);
+    
+    res.setHeader('Content-Type', 'text/html');
+    res.send(template);
+});
 
 // Serve index.html for root route
 app.get('/', (req, res) => {

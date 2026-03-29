@@ -26,6 +26,7 @@ const userRoutes = require('./users');
 const bereavementRoutes = require('./bereavement');
 const withdrawalRoutes = require('./withdrawals');
 const pageContentRoutes = require('./page-content');
+const pageRoutes = require('./pages');
 const paymentRoutes = require('./payments');
 
 module.exports = (app) => {
@@ -54,6 +55,7 @@ module.exports = (app) => {
     app.use('/api/bereavement', bereavementRoutes);
     app.use('/api/withdrawals', withdrawalRoutes);
     app.use('/api/page-content', pageContentRoutes);
+    app.use('/api/pages', pageRoutes);
     app.use('/api/payments', paymentRoutes);
     
     // Health check endpoint

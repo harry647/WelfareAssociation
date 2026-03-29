@@ -517,3 +517,149 @@
 .content-item {
   animation: fadeInUp 0.4s ease forwards;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HTML PAGE EDITOR STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── HTML PAGE GRID ── */
+.html-page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* ── EDITOR HEADER ── */
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.editor-header h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── CODE EDITOR ── */
+.editor-container {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #1e1e1e;
+}
+
+.code-editor {
+  width: 100%;
+  min-height: 500px;
+  padding: 16px;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #d4d4d4;
+  background: #1e1e1e;
+  border: none;
+  outline: none;
+  resize: vertical;
+}
+
+.code-editor:focus {
+  background: #252526;
+}
+
+.code-editor::placeholder {
+  color: #6a6a6a;
+}
+
+/* ── EDITOR STATUS ── */
+.editor-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.status-indicator.success {
+  background: #4caf50;
+}
+
+.status-indicator.warning {
+  background: #ff9800;
+}
+
+.status-indicator.error {
+  background: #f44336;
+}
+
+/* ── PAGE GROUP STYLES ── */
+.page-group {
+  margin-bottom: 24px;
+}
+
+.page-group-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.page-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.page-card-path {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .editor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .editor-actions {
+    width: 100%;
+  }
+  
+  .editor-actions .btn {
+    flex: 1;
+  }
+  
+  .code-editor {
+    min-height: 300px;
+    font-size: 12px;
+  }
+}

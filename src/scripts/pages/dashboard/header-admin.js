@@ -10,6 +10,35 @@
     console.log('Header Admin JS loaded');
 
     /**
+     * Smart hash link handler - decides whether to use hash or full URL
+     * Works on all admin pages
+     */
+    function initSmartHashLinks() {
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('.smart-hash');
+            if (!link) return;
+            
+            const section = link.dataset.section;
+            const fullUrl = link.dataset.url;
+            
+            // Check if we're already on admin-dashboard.html
+            if (window.location.pathname.includes('admin-dashboard.html')) {
+                // Use hash navigation (stay on same page)
+                e.preventDefault();
+                window.location.hash = section;
+            } else if (fullUrl) {
+                // Navigate to admin-dashboard with the hash
+                e.preventDefault();
+                window.location.href = fullUrl;
+            }
+            // Otherwise, let the normal link behavior happen
+        });
+    }
+    
+    // Initialize smart hash links
+    initSmartHashLinks();
+
+    /**
      * Create and show a dropdown menu
      */
     function createDropdownMenu(button, menuId, items) {
