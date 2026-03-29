@@ -13,6 +13,7 @@ const morgan = require('morgan');
 const compression = require('compression');
 const crypto = require('crypto');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
 
 const { connectDB, sequelize, pool } = require('./backend/config/database');
 const setupRoutes = require('./backend/routes');
@@ -140,68 +141,61 @@ async function initializeKeys() {
 }
 
 /**
- * Initialize database (create if not exists, sync models)
+ * Initialize database - sync models (tables) if they don't exist
  */
 async function initializeDatabase() {
-    const { Sequelize } = require('sequelize');
+    console.log('✓ Loading database models...');
     
-    const env = process.env.NODE_ENV || 'development';
-    const postgresUri = process.env[`POSTGRES_URI_${env.toUpperCase()}`] || 
-                       process.env.DATABASE_URL || 
-                       process.env.POSTGRES_URI_DEV;
-    
-    if (!postgresUri) {
-        throw new Error('PostgreSQL URI not configured');
-    }
-    
-    // Parse URI (supports both postgres:// and postgresql:// protocols)
-    const match = postgresUri.match(/(?:postgres|postgresql):\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
-    if (!match) {
-        throw new Error('Invalid PostgreSQL URI format');
-    }
-    
-    const creds = {
-        user: match[1],
-        password: match[2],
-        host: match[3],
-        port: parseInt(match[4]),
-        database: match[5]
-    };
-    
-    // Connect to postgres default database to create our target database
-    const adminSequelize = new Sequelize('postgres', 'postgres', creds.password, {
-        host: creds.host,
-        port: creds.port,
-        dialect: 'postgres',
-        logging: false
-    });
-    
-    try {
-        const [results] = await adminSequelize.query(
-            `SELECT 1 FROM pg_database WHERE datname = '${creds.database}'`
-        );
-        
-        if (!results || results.length === 0) {
-            await adminSequelize.query(`CREATE DATABASE ${creds.database}`);
-            console.log(`✓ Created database: ${creds.database}`);
-        } else {
-            console.log(`✓ Database already exists: ${creds.database}`);
-        }
-    } catch (error) {
-        if (!error.message.includes('already exists')) {
-            console.warn('Database creation warning:', error.message);
-        }
-    } finally {
-        await adminSequelize.close();
-    }
-    
-    // Load models and sync (handled by database.js)
+    // Load all models
     require('./backend/models');
     console.log('✓ Database models loaded');
     
-    return true;
+    // Sync models - creates tables if they don't exist
+    try {
+        console.log('✓ Syncing database schema...');
+        await sequelize.sync({ alter: false }); // false = only create if not exists
+        console.log('✓ Database schema synced');
+    } catch (error) {
+        console.warn('Database sync warning:', error.message);
+    }
     
     return true;
+}
+
+/**
+ * Create admin user on first run if not exists
+ */
+async function createAdminUser() {
+    const User = require('./backend/models/User');
+    
+    try {
+        // Check if admin exists
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@swa.org';
+        const existingAdmin = await User.findOne({ where: { email: adminEmail } });
+        
+        if (!existingAdmin) {
+            const adminPassword = process.env.ADMIN_PASSWORD || 'SWAAdmin2024!';
+            const hashedPassword = await bcrypt.hash(adminPassword, 10);
+            
+            await User.create({
+                email: adminEmail,
+                password: hashedPassword,
+                firstName: 'Admin',
+                lastName: 'User',
+                phone: process.env.ADMIN_PHONE || '+254700000000',
+                role: 'admin',
+                status: 'active'
+            });
+            
+            console.log('✓ Admin user created');
+            console.log(`   Email: ${adminEmail}`);
+            console.log(`   Password: ${adminPassword}`);
+        } else {
+            console.log('✓ Admin user already exists');
+        }
+    } catch (error) {
+        console.warn('Admin creation warning:', error.message);
+    }
 }
 
 /**
@@ -378,9 +372,13 @@ const startServer = async () => {
             console.log('Initializing security keys...');
             await initializeKeys();
             
-            // Initialize database
+            // Initialize database (sync tables only, don't create DB)
             console.log('\nInitializing database...');
             await initializeDatabase();
+            
+            // Create admin user
+            console.log('\nCreating admin user...');
+            await createAdminUser();
             
             // Create initialized flag
             fs.writeFileSync(INITIALIZED_FLAG, new Date().toISOString());
