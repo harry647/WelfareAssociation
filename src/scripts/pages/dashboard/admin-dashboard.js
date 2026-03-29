@@ -366,7 +366,7 @@ async function deleteContentItem(id) {
 // ==================== MESSAGES ====================
 async function loadMessages() {
     try {
-        const result = await apiCall('/messages');
+        const result = await apiCall('/contact');
         renderMessages(result.data);
     } catch (error) {
         console.error('Error loading messages:', error);
@@ -384,6 +384,8 @@ function renderMessages(messages) {
     
     let html = '';
     for (const msg of messages) {
+        const statusClass = msg.status === 'read' ? 'read' : (msg.status === 'replied' ? 'replied' : 'unread');
+        const statusText = msg.status === 'read' ? 'Read' : (msg.status === 'replied' ? 'Replied' : 'Unread');
         html += `
             <tr>
                 <td>${msg.name || '-'}</td>
@@ -391,7 +393,7 @@ function renderMessages(messages) {
                 <td>${msg.subject || '-'}</td>
                 <td>${(msg.message || '').substring(0, 50)}${(msg.message || '').length > 50 ? '...' : ''}</td>
                 <td>${msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : '-'}</td>
-                <td><span class="status-badge ${msg.status || 'unread'}">${msg.status || 'Unread'}</span></td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 <td>
                     <button class="btn-icon" onclick="viewMessage(${msg.id})"><i class="fas fa-eye"></i></button>
                     <button class="btn-icon" onclick="deleteMessage(${msg.id})"><i class="fas fa-trash"></i></button>
@@ -402,19 +404,53 @@ function renderMessages(messages) {
     table.innerHTML = html;
 }
 
+async function viewMessage(messageId) {
+    try {
+        const result = await apiCall(`/contact/${messageId}`);
+        const msg = result.data;
+        alert(`From: ${msg.name}\nEmail: ${msg.email}\nSubject: ${msg.subject}\n\n${msg.message}`);
+        // Mark as read if unread
+        if (msg.status !== 'read') {
+            await apiCall(`/contact/${messageId}/read`, { method: 'PATCH' });
+            loadMessages(); // Reload to update status
+        }
+    } catch (error) {
+        console.error('Error viewing message:', error);
+        alert('Failed to load message: ' + error.message);
+    }
+}
+
+async function deleteMessage(messageId) {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+    
+    try {
+        await apiCall(`/contact/${messageId}`, { method: 'DELETE' });
+        loadMessages(); // Reload the messages list
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        alert('Failed to delete message: ' + error.message);
+    }
+}
+
 // ==================== DASHBOARD STATS ====================
 async function loadDashboardStats() {
     try {
         // Load various stats in parallel
-        const [membersRes, contributionsRes, debtsRes] = await Promise.all([
+        const [membersRes, contributionsRes, debtsRes, eventsRes, announcementsRes, paymentsStatsRes] = await Promise.all([
             apiCall('/members'),
             apiCall('/contributions'),
-            apiCall('/debts')
+            apiCall('/debts'),
+            apiCall('/events'),
+            apiCall('/announcements'),
+            apiCall('/payments/stats/summary').catch(() => ({ data: null })) // Gracefully handle if endpoint doesn't exist
         ]);
         
         const members = membersRes.data || [];
         const contributions = contributionsRes.data || [];
         const debts = debtsRes.data || [];
+        const events = eventsRes.data || [];
+        const announcements = announcementsRes.data || [];
+        const paymentsStats = paymentsStatsRes.data;
         
         // Update DOM elements
         const totalMembersEl = document.querySelector('[data-stat="total-members"]');
@@ -440,6 +476,59 @@ async function loadDashboardStats() {
             pendingDebtsEl.textContent = `Ksh ${pendingTotal.toLocaleString()}`;
         }
         
+        // Update Available Balance from payments stats
+        const balanceEl = document.querySelector('[data-stat="available-balance"]');
+        if (balanceEl) {
+            // Try to get balance from payment stats, or calculate from contributions minus withdrawals
+            let balance = 0;
+            if (paymentsStats && paymentsStats.totalBalance !== undefined) {
+                balance = paymentsStats.totalBalance;
+            } else if (paymentsStats && paymentsStats.balance !== undefined) {
+                balance = paymentsStats.balance;
+            } else {
+                // Calculate: sum of all contributions - sum of all withdrawals
+                const totalContributions = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+                // Try to get withdrawals total if endpoint exists
+                try {
+                    const withdrawalsRes = await apiCall('/withdrawals/summary');
+                    const withdrawalsTotal = withdrawalsRes.data?.total || 0;
+                    balance = totalContributions - withdrawalsTotal;
+                } catch {
+                    balance = totalContributions;
+                }
+            }
+            balanceEl.textContent = `Ksh ${balance.toLocaleString()}`;
+        }
+        
+        // Update Overview Statistics
+        const totalRegisteredEl = document.querySelector('[data-stat="total-registered"]');
+        if (totalRegisteredEl) totalRegisteredEl.textContent = members.length;
+        
+        const welfarePackagesEl = document.querySelector('[data-stat="welfare-packages"]');
+        if (welfarePackagesEl) {
+            // Count welfare-related announcements or use announcements with category 'welfare'
+            const welfareCount = announcements.filter(a => 
+                (a.category === 'welfare' || a.title?.toLowerCase().includes('welfare'))
+            ).length;
+            welfarePackagesEl.textContent = welfareCount || '0';
+        }
+        
+        const eventsHeldEl = document.querySelector('[data-stat="events-held"]');
+        if (eventsHeldEl) {
+            // Count events that have already occurred
+            const eventsHeld = events.filter(e => new Date(e.date) <= new Date()).length;
+            eventsHeldEl.textContent = eventsHeld || '0';
+        }
+        
+        const scholarshipsEl = document.querySelector('[data-stat="scholarships"]');
+        if (scholarshipsEl) {
+            // Count scholarship-related announcements
+            const scholarshipCount = announcements.filter(a => 
+                (a.category === 'scholarship' || a.title?.toLowerCase().includes('scholarship'))
+            ).length;
+            scholarshipsEl.textContent = scholarshipCount || '0';
+        }
+        
     } catch (error) {
         console.error('Error loading dashboard stats:', error);
     }
@@ -448,10 +537,12 @@ async function loadDashboardStats() {
 // ==================== RECENT ACTIVITY ====================
 async function loadActivityLog() {
     try {
-        // Combine recent contributions and other activities
-        const [contributionsRes, loansRes] = await Promise.all([
+        // Combine recent contributions, loans, debts, and other activities
+        const [contributionsRes, loansRes, debtsRes, membersRes] = await Promise.all([
             apiCall('/contributions?limit=10'),
-            apiCall('/loans?status=pending')
+            apiCall('/loans?status=pending'),
+            apiCall('/debts'),
+            apiCall('/members')
         ]);
         
         const activities = [];
@@ -461,7 +552,8 @@ async function loadActivityLog() {
             activities.push({
                 type: 'contribution',
                 text: `${c.memberName || 'A member'} contributed Ksh ${(c.amount || 0).toLocaleString()}`,
-                time: c.createdAt
+                time: c.createdAt,
+                icon: 'fa-money-bill-wave'
             });
         }
         
@@ -470,12 +562,39 @@ async function loadActivityLog() {
             activities.push({
                 type: 'loan',
                 text: `${l.memberName || 'A member'} requested a loan of Ksh ${(l.amount || 0).toLocaleString()}`,
-                time: l.createdAt
+                time: l.createdAt,
+                icon: 'fa-hand-holding-usd'
             });
         }
         
-        // Sort by time
-        activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+        // Add recent member registrations
+        const recentMembers = (membersRes.data || [])
+            .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+            .slice(0, 3);
+        for (const m of recentMembers) {
+            if (m.createdAt) {
+                activities.push({
+                    type: 'member',
+                    text: `${m.firstName || ''} ${m.lastName || ''} registered as a member`,
+                    time: m.createdAt,
+                    icon: 'fa-user-plus'
+                });
+            }
+        }
+        
+        // Add pending debts
+        const pendingDebts = (debtsRes.data || []).filter(d => d.status === 'pending').slice(0, 3);
+        for (const d of pendingDebts) {
+            activities.push({
+                type: 'debt',
+                text: `Debt of Ksh ${(d.amount || 0).toLocaleString()} for ${d.memberName || 'member'}`,
+                time: d.createdAt,
+                icon: 'fa-exclamation-triangle'
+            });
+        }
+        
+        // Sort by time (most recent first)
+        activities.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
         
         renderActivityLog(activities.slice(0, 10));
     } catch (error) {
@@ -494,7 +613,7 @@ function renderActivityLog(activities) {
     
     let html = '';
     for (const activity of activities) {
-        const icon = activity.type === 'contribution' ? 'fa-money-bill-wave' : 'fa-hand-holding-usd';
+        const icon = activity.icon || 'fa-info-circle';
         const time = activity.time ? new Date(activity.time).toLocaleDateString() : '—';
         html += `<li><span class="activity-time">${time}</span> <i class="fas ${icon}"></i> ${activity.text}</li>`;
     }
@@ -505,7 +624,29 @@ function renderActivityLog(activities) {
 async function loadRecentContributions() {
     try {
         const result = await apiCall('/contributions?limit=10');
-        renderContributionsTable(result.data);
+        
+        // Enrich contributions with member data if needed
+        const contributions = result.data || [];
+        try {
+            const membersRes = await apiCall('/members');
+            const membersMap = {};
+            (membersRes.data || []).forEach(m => {
+                membersMap[m.id] = m;
+            });
+            // Add studentId if not present
+            contributions.forEach(c => {
+                if (!c.memberId_display && c.memberId) {
+                    const member = membersMap[c.memberId];
+                    if (member) {
+                        c.memberId_display = member.studentId || c.memberId;
+                    }
+                }
+            });
+        } catch (e) {
+            console.log('Could not fetch member data for contributions:', e);
+        }
+        
+        renderContributionsTable(contributions);
     } catch (error) {
         console.error('Error loading contributions:', error);
     }
@@ -525,7 +666,7 @@ function renderContributionsTable(contributions) {
         html += `
             <tr>
                 <td>${c.memberName || '-'}</td>
-                <td>${c.memberId || '-'}</td>
+                <td>${c.memberId_display || c.memberId || '-'}</td>
                 <td>${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '-'}</td>
                 <td>Ksh ${(c.amount || 0).toLocaleString()}</td>
                 <td>${c.paymentMethod || '-'}</td>
@@ -540,7 +681,30 @@ function renderContributionsTable(contributions) {
 async function loadPendingDebts() {
     try {
         const result = await apiCall('/debts?status=pending');
-        renderDebtsTable(result.data);
+        
+        // Enrich debts with member data if needed
+        const debts = result.data || [];
+        try {
+            const membersRes = await apiCall('/members');
+            const membersMap = {};
+            (membersRes.data || []).forEach(m => {
+                membersMap[m.id] = m;
+            });
+            // Add memberName and studentId if not present
+            debts.forEach(d => {
+                if (!d.memberName && d.memberId) {
+                    const member = membersMap[d.memberId];
+                    if (member) {
+                        d.memberName = `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name;
+                        d.memberId_display = member.studentId || d.memberId;
+                    }
+                }
+            });
+        } catch (e) {
+            console.log('Could not fetch member data for debts:', e);
+        }
+        
+        renderDebtsTable(debts);
     } catch (error) {
         console.error('Error loading debts:', error);
     }
@@ -571,11 +735,45 @@ function renderDebtsTable(debts) {
     table.innerHTML = html;
 }
 
+async function viewDebt(debtId) {
+    try {
+        const result = await apiCall(`/debts/${debtId}`);
+        const debt = result.data;
+        alert(`Debt Details:\n\nMember: ${debt.memberName || 'N/A'}\nStudent ID: ${debt.memberId_display || debt.memberId || 'N/A'}\nAmount: Ksh ${(debt.amount || 0).toLocaleString()}\nDue Date: ${debt.dueDate ? new Date(debt.dueDate).toLocaleDateString() : 'N/A'}\nStatus: ${debt.status || 'Pending'}\nDescription: ${debt.description || 'N/A'}`);
+    } catch (error) {
+        console.error('Error viewing debt:', error);
+        alert('Failed to load debt details: ' + error.message);
+    }
+}
+
 // ==================== LOAN REQUESTS TABLE ====================
 async function loadLoanRequests() {
     try {
         const result = await apiCall('/loans?status=pending');
-        renderLoanRequestsTable(result.data);
+        
+        // Enrich loans with member data if needed
+        const loans = result.data || [];
+        try {
+            const membersRes = await apiCall('/members');
+            const membersMap = {};
+            (membersRes.data || []).forEach(m => {
+                membersMap[m.id] = m;
+            });
+            // Add memberName if not present
+            loans.forEach(loan => {
+                if (!loan.memberName && loan.memberId) {
+                    const member = membersMap[loan.memberId];
+                    if (member) {
+                        loan.memberName = `${member.firstName || ''} ${member.lastName || ''}`.trim();
+                        loan.memberId_display = member.studentId || loan.memberId;
+                    }
+                }
+            });
+        } catch (e) {
+            console.log('Could not fetch member names:', e);
+        }
+        
+        renderLoanRequestsTable(loans);
     } catch (error) {
         console.error('Error loading loan requests:', error);
     }
@@ -595,18 +793,44 @@ function renderLoanRequestsTable(loans) {
         html += `
             <tr>
                 <td>${l.memberName || '-'}</td>
-                <td>${l.memberId || '-'}</td>
+                <td>${l.memberId_display || l.memberId || '-'}</td>
                 <td>Ksh ${(l.amount || 0).toLocaleString()}</td>
                 <td>${l.purpose || '-'}</td>
                 <td>${l.createdAt ? new Date(l.createdAt).toLocaleDateString() : '-'}</td>
                 <td>
-                    <button class="btn-small" onclick="approveLoan(${l.id})">Approve</button>
-                    <button class="btn-small btn-danger" onclick="rejectLoan(${l.id})">Reject</button>
+                    <button class="btn-small" onclick="viewLoan(${l.id})">View</button>
+                    <button class="btn-small" style="background:var(--success);" onclick="approveLoan('${l.id}')">Approve</button>
+                    <button class="btn-small" style="background:var(--danger);" onclick="rejectLoan('${l.id}')">Reject</button>
                 </td>
             </tr>
         `;
     }
     table.innerHTML = html;
+}
+
+async function viewLoan(loanId) {
+    try {
+        const result = await apiCall(`/loans/${loanId}`);
+        const loan = result.data;
+        const details = [
+            `Loan Details:`,
+            ``,
+            `Loan Number: ${loan.loanNumber || loan.id}`,
+            `Member: ${loan.memberName || 'N/A'}`,
+            `Amount: Ksh ${(loan.amount || 0).toLocaleString()}`,
+            `Purpose: ${loan.purpose || 'N/A'}`,
+            `Status: ${loan.status || 'Pending'}`,
+            `Application Date: ${loan.applicationDate ? new Date(loan.applicationDate).toLocaleDateString() : 'N/A'}`,
+            `Guarantor: ${loan.guarantorName || 'N/A'}`,
+            `Guarantor Status: ${loan.guarantorStatus || 'N/A'}`,
+            ``,
+            `Description: ${loan.description || 'N/A'}`
+        ].join('\n');
+        alert(details);
+    } catch (error) {
+        console.error('Error viewing loan:', error);
+        alert('Failed to load loan details: ' + error.message);
+    }
 }
 
 // ==================== INITIALIZATION ====================
@@ -805,8 +1029,12 @@ window.showSection = showSection;
 window.handleUrlHash = handleUrlHash;
 window.loadLoans = loadLoans;
 window.viewLoanDetails = viewLoanDetails;
+window.viewLoan = viewLoan;
 window.approveLoan = approveLoan;
 window.rejectLoan = rejectLoan;
+window.viewMessage = viewMessage;
+window.deleteMessage = deleteMessage;
+window.viewDebt = viewDebt;
 
 // Initialize loans section when shown
 const originalShowSection = showSection;

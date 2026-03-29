@@ -343,6 +343,11 @@ router.get('/eligibility', auth, async (req, res) => {
  */
 router.get('/guarantor-requests', auth, async (req, res) => {
     try {
+        // Handle admin user - admin cannot be a guarantor
+        if (req.user.id === 'admin' || req.user.role === 'admin') {
+            return res.json({ success: true, data: [] });
+        }
+        
         // Find member for this user
         const member = await Member.findOne({ where: { userId: req.user.id } });
         
@@ -486,20 +491,41 @@ router.get('/statistics', auth, authorize('admin', 'treasurer', 'secretary'), as
 
 /**
  * GET /api/loans/:id
- * Get loan by ID
+ * Get loan by ID or loanNumber
  */
 router.get('/:id', auth, async (req, res) => {
     try {
-        const loan = await Loan.findByPk(req.params.id, {
-            include: [
-                { 
-                    model: Member, 
-                    as: 'member', 
-                    attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
-                }
-            ]
-        });
-
+        // Validate if the ID looks like a UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUuid = uuidRegex.test(req.params.id);
+        
+        let loan;
+        
+        if (isUuid) {
+            // If it's a UUID, find directly by ID with include
+            loan = await Loan.findByPk(req.params.id, {
+                include: [
+                    { 
+                        model: Member, 
+                        as: 'member', 
+                        attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                    }
+                ]
+            });
+        } else {
+            // Otherwise try to find by loanNumber
+            loan = await Loan.findOne({
+                where: { loanNumber: req.params.id },
+                include: [
+                    { 
+                        model: Member, 
+                        as: 'member', 
+                        attributes: ['firstName', 'lastName', 'memberNumber', 'email', 'phone'] 
+                    }
+                ]
+            });
+        }
+        
         if (!loan) {
             return res.status(404).json({
                 success: false,
@@ -732,7 +758,17 @@ router.post('/apply', auth, [
  */
 router.patch('/:id/approve', auth, authorize('admin', 'treasurer', 'secretary'), async (req, res) => {
     try {
-        const loan = await Loan.findByPk(req.params.id);
+        // Validate if the ID looks like a UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUuid = uuidRegex.test(req.params.id);
+        
+        let loan;
+        
+        if (isUuid) {
+            loan = await Loan.findByPk(req.params.id);
+        } else {
+            loan = await Loan.findOne({ where: { loanNumber: req.params.id } });
+        }
         
         if (!loan) {
             return res.status(404).json({
@@ -750,7 +786,8 @@ router.patch('/:id/approve', auth, authorize('admin', 'treasurer', 'secretary'),
 
         loan.status = 'approved';
         loan.approvalDate = new Date();
-        loan.approvedBy = req.user.id;
+        // Only set approvedBy if it's a valid UUID (not admin user)
+        loan.approvedBy = req.user.id === 'admin' ? null : req.user.id;
         
         // Disburse the loan (in real app, would transfer money)
         loan.disbursementDate = new Date();
@@ -780,7 +817,17 @@ router.patch('/:id/reject', auth, authorize('admin', 'treasurer', 'secretary'), 
     try {
         const { rejectionReason } = req.body;
         
-        const loan = await Loan.findByPk(req.params.id);
+        // Validate if the ID looks like a UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUuid = uuidRegex.test(req.params.id);
+        
+        let loan;
+        
+        if (isUuid) {
+            loan = await Loan.findByPk(req.params.id);
+        } else {
+            loan = await Loan.findOne({ where: { loanNumber: req.params.id } });
+        }
         
         if (!loan) {
             return res.status(404).json({
@@ -797,7 +844,8 @@ router.patch('/:id/reject', auth, authorize('admin', 'treasurer', 'secretary'), 
         }
 
         loan.status = 'rejected';
-        loan.rejectedBy = req.user.id;
+        // Only set rejectedBy if it's a valid UUID (not admin user)
+        loan.rejectedBy = req.user.id === 'admin' ? null : req.user.id;
         loan.rejectionReason = rejectionReason || 'Not specified';
         
         await loan.save();
@@ -823,10 +871,23 @@ router.patch('/:id/reject', auth, authorize('admin', 'treasurer', 'secretary'), 
 router.post('/:id/payments', auth, async (req, res) => {
     try {
         const { amount, method, reference } = req.body;
-
-        const loan = await Loan.findByPk(req.params.id, {
-            include: [{ model: Member, as: 'member' }]
-        });
+        
+        // Validate if the ID looks like a UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUuid = uuidRegex.test(req.params.id);
+        
+        let loan;
+        
+        if (isUuid) {
+            loan = await Loan.findByPk(req.params.id, {
+                include: [{ model: Member, as: 'member' }]
+            });
+        } else {
+            loan = await Loan.findOne({
+                where: { loanNumber: req.params.id },
+                include: [{ model: Member, as: 'member' }]
+            });
+        }
         
         if (!loan) {
             return res.status(404).json({
