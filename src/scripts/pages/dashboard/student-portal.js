@@ -74,7 +74,7 @@ class StudentPortal {
 
             // Show success and redirect
             alert('Login successful! Redirecting to Member Portal...');
-            window.location.href = 'member-portal.html';
+            window.location.href = '/pages/dashboard/member/member-portal.html';
 
         } catch (error) {
             console.error('Login error:', error);

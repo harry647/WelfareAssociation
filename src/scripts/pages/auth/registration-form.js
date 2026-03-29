@@ -345,6 +345,7 @@ class RegistrationForm {
             // Now try to register in database
             let dbRegistrationSuccess = false;
             let dbErrorMessage = '';
+            let dbResult = null;
             try {
                 const dbResponse = await fetch('/api/auth/register', {
                     method: 'POST',
@@ -363,7 +364,7 @@ class RegistrationForm {
                 });
                 
                 if (dbResponse.ok) {
-                    const dbResult = await dbResponse.json();
+                    dbResult = await dbResponse.json();
                     console.log('Database registration:', dbResult);
                     dbRegistrationSuccess = true;
                 } else {
@@ -409,7 +410,7 @@ class RegistrationForm {
                 // Redirect after delay
                 setTimeout(() => {
                     localStorage.removeItem('swa_temp_password');
-                    window.location.href = '../dashboard/member-portal.html';
+                    window.location.href = '/pages/dashboard/member/member-portal.html';
                 }, 3000);
             } else {
                 // Database registration failed - show error with details

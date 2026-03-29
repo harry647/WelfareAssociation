@@ -163,7 +163,7 @@ class ProfileManager {
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
                 if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-                    window.location.href = '../dashboard/member-portal.html';
+                    window.location.href = '/pages/dashboard/member/member-portal.html';
                 }
             });
         }
@@ -251,7 +251,7 @@ class ProfileManager {
 
             // Redirect after delay
             setTimeout(() => {
-                window.location.href = '../dashboard/member-portal.html';
+                window.location.href = '/pages/dashboard/member/member-portal.html';
             }, 1500);
 
         } catch (error) {

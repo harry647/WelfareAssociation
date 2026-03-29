@@ -30,7 +30,7 @@
       // Check if user is admin
       const user = JSON.parse(userData);
       if (!['admin', 'treasurer', 'secretary', 'chairman'].includes(user.role)) {
-        window.location.replace('../dashboard/member-portal.html');
+        window.location.replace('/pages/dashboard/member/member-portal.html');
         return;
       }
       document.documentElement.style.visibility = 'visible';
@@ -39,12 +39,12 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../auth/login-page.html?redirect=../loans/history.html');
+        window.location.replace('/pages/auth/login-page.html?redirect=/pages/loans/history.html');
         return;
       }
       const user = JSON.parse(userData);
       if (!['admin', 'treasurer', 'secretary', 'chairman'].includes(user.role)) {
-        window.location.replace('../dashboard/member-portal.html');
+        window.location.replace('/pages/dashboard/member/member-portal.html');
         return;
       }
     });
