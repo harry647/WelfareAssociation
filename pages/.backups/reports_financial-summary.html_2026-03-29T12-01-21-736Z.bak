@@ -64,7 +64,7 @@
                     <tr>
                         <th>Category</th>
                         <th>Amount</th>
-                        <th>Percentage (%)</th>
+                        <th>Percentage</th>
                     </tr>
                 </thead>
                 <tbody id="financialTableBody">

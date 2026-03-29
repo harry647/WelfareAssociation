@@ -17,6 +17,7 @@
       font-family: 'DM Sans', sans-serif;
       background: #f5f7fa;
       min-height: 100vh;
+      overflow: hidden;
     }
     
     .editor-toolbar {
@@ -31,6 +32,7 @@
       left: 0;
       right: 0;
       z-index: 1000;
+      height: 56px;
     }
     
     .editor-toolbar h1 {
@@ -78,24 +80,104 @@
     }
     
     .editor-container {
-      margin-top: 60px;
-      height: calc(100vh - 60px);
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      bottom: 36px;
       display: flex;
+      flex-direction: column;
     }
     
     .editor-panes {
       display: flex;
-      height: 100%;
-      gap: 2px;
-      background: #ddd;
+      flex: 1;
+      gap: 0;
+      min-height: 0;
     }
     
     .code-pane, .preview-pane {
-      flex: 1;
-      background: white;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 200px;
+      min-height: 100px;
+    }
+    
+    .code-pane {
+      background: white;
+      width: 50%;
+    }
+    
+    .preview-pane {
+      background: white;
+      width: 50%;
+    }
+    
+    /* Resize handle between panes (horizontal) */
+    .resize-handle-vertical {
+      width: 6px;
+      background: #ecf0f1;
+      cursor: col-resize;
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+    
+    .resize-handle-vertical:hover,
+    .resize-handle-vertical.active {
+      background: #3498db;
+    }
+    
+    .resize-handle-vertical::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 3px;
+      height: 40px;
+      background: #bdc3c7;
+      border-radius: 2px;
+    }
+    
+    .resize-handle-vertical:hover::after,
+    .resize-handle-vertical.active::after {
+      background: white;
+    }
+    
+    /* Resize handle at bottom of panes (vertical) */
+    .resize-handle-horizontal {
+      height: 6px;
+      background: #ecf0f1;
+      cursor: row-resize;
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+    
+    .resize-handle-horizontal:hover,
+    .resize-handle-horizontal.active {
+      background: #3498db;
+    }
+    
+    .resize-handle-horizontal::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 3px;
+      width: 40px;
+      background: #bdc3c7;
+      border-radius: 2px;
+    }
+    
+    .resize-handle-horizontal:hover::after,
+    .resize-handle-horizontal.active::after {
+      background: white;
     }
     
     .pane-header {
@@ -106,6 +188,8 @@
       justify-content: space-between;
       align-items: center;
       font-size: 13px;
+      flex-shrink: 0;
+      height: 36px;
     }
     
     .pane-btn {
@@ -122,6 +206,13 @@
       background: #2980b9;
     }
     
+    .editor-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    
     .html-editor {
       flex: 1;
       border: none;
@@ -133,18 +224,19 @@
       outline: none;
       background: #1e1e1e;
       color: #d4d4d4;
+      min-height: 0;
+    }
+    
+    .preview-pane .editor-wrapper {
+      flex-direction: column;
     }
     
     .preview-pane iframe {
       flex: 1;
       background: white;
       overflow: hidden;
-    }
-    
-    .preview-pane iframe {
-      width: 100%;
-      height: 100%;
       border: none;
+      min-height: 0;
     }
     
     .status-bar {
@@ -156,8 +248,11 @@
       bottom: 0;
       left: 0;
       right: 0;
+      height: 36px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      z-index: 100;
     }
     
     .status-indicator {
@@ -190,6 +285,23 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
+    
+    /* Hide resize handles on small screens */
+    @media (max-width: 768px) {
+      .resize-handle-vertical,
+      .resize-handle-horizontal {
+        display: none;
+      }
+      
+      .editor-panes {
+        flex-direction: column;
+      }
+      
+      .code-pane, .preview-pane {
+        width: 100% !important;
+        height: 50% !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -212,14 +324,21 @@
           <span>HTML Source</span>
           <button class="pane-btn" onclick="formatCode()"><i class="fas fa-align-left"></i> Format</button>
         </div>
-        <textarea id="htmlEditor" class="html-editor" spellcheck="false"></textarea>
+        <div class="editor-wrapper">
+          <textarea id="htmlEditor" class="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="resize-handle-horizontal" id="codeResizeHandle" title="Drag to resize vertically"></div>
       </div>
+      <div class="resize-handle-vertical" id="paneResizeHandle" title="Drag to resize horizontally"></div>
       <div class="preview-pane">
         <div class="pane-header">
           <span>Preview</span>
           <button class="pane-btn" onclick="refreshPreview()"><i class="fas fa-sync"></i> Refresh</button>
         </div>
-        <iframe id="previewFrame"></iframe>
+        <div class="editor-wrapper">
+          <iframe id="previewFrame"></iframe>
+        </div>
+        <div class="resize-handle-horizontal" id="previewResizeHandle" title="Drag to resize vertically"></div>
       </div>
     </div>
   </div>
@@ -269,6 +388,8 @@
       const frame = document.getElementById('previewFrame');
       const doc = frame.contentDocument || frame.contentWindow.document;
       doc.open();
+      // Inject base tag to fix relative paths resolution
+      doc.write('<base href="/">');
       doc.write(content);
       doc.close();
     }
@@ -342,6 +463,135 @@
     
     // Initialize
     loadOriginalContent();
+    
+    // === Resizable Panes Functionality ===
+    
+    // Vertical resize (between code and preview panes)
+    const paneResizeHandle = document.getElementById('paneResizeHandle');
+    const codePane = document.querySelector('.code-pane');
+    const previewPane = document.querySelector('.preview-pane');
+    
+    let isResizingVertical = false;
+    let startX, startCodeWidth, startPreviewWidth;
+    
+    paneResizeHandle.addEventListener('mousedown', function(e) {
+      isResizingVertical = true;
+      startX = e.clientX;
+      const containerWidth = document.querySelector('.editor-panes').offsetWidth;
+      startCodeWidth = codePane.offsetWidth;
+      startPreviewWidth = previewPane.offsetWidth;
+      paneResizeHandle.classList.add('active');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    });
+    
+    // Horizontal resize (bottom of code pane)
+    const codeResizeHandle = document.getElementById('codeResizeHandle');
+    const codeWrapper = codePane.querySelector('.editor-wrapper');
+    
+    let isResizingCodeHorizontal = false;
+    let startYCode, startCodeHeight;
+    
+    codeResizeHandle.addEventListener('mousedown', function(e) {
+      isResizingCodeHorizontal = true;
+      startYCode = e.clientY;
+      startCodeHeight = codePane.offsetHeight;
+      codeResizeHandle.classList.add('active');
+      document.body.style.cursor = 'row-resize';
+      document.body.style.userSelect = 'none';
+    });
+    
+    // Horizontal resize (bottom of preview pane)
+    const previewResizeHandle = document.getElementById('previewResizeHandle');
+    const previewWrapper = previewPane.querySelector('.editor-wrapper');
+    
+    let isResizingPreviewHorizontal = false;
+    let startYPreview, startPreviewHeight;
+    
+    previewResizeHandle.addEventListener('mousedown', function(e) {
+      isResizingPreviewHorizontal = true;
+      startYPreview = e.clientY;
+      startPreviewHeight = previewPane.offsetHeight;
+      previewResizeHandle.classList.add('active');
+      document.body.style.cursor = 'row-resize';
+      document.body.style.userSelect = 'none';
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+      // Vertical resize between panes
+      if (isResizingVertical) {
+        const dx = e.clientX - startX;
+        const containerWidth = document.querySelector('.editor-panes').offsetWidth;
+        const minWidth = 200;
+        const maxWidth = containerWidth - minWidth - 6; // 6px for resize handle
+        
+        let newCodeWidth = startCodeWidth + dx;
+        let newPreviewWidth = startPreviewWidth - dx;
+        
+        // Enforce min/max constraints
+        if (newCodeWidth < minWidth) {
+          newCodeWidth = minWidth;
+          newPreviewWidth = containerWidth - minWidth - 6;
+        } else if (newPreviewWidth < minWidth) {
+          newPreviewWidth = minWidth;
+          newCodeWidth = containerWidth - minWidth - 6;
+        }
+        
+        codePane.style.width = newCodeWidth + 'px';
+        previewPane.style.width = newPreviewWidth + 'px';
+      }
+      
+      // Horizontal resize for code pane
+      if (isResizingCodeHorizontal) {
+        const dy = e.clientY - startYCode;
+        const minHeight = 100;
+        const maxHeight = codePane.parentElement.offsetHeight - minHeight - 6;
+        
+        let newHeight = startCodeHeight + dy;
+        if (newHeight < minHeight) newHeight = minHeight;
+        if (newHeight > maxHeight) newHeight = maxHeight;
+        
+        codePane.style.height = newHeight + 'px';
+        codeWrapper.style.height = 'calc(100% - ' + newHeight + 'px + ' + codePane.offsetHeight + 'px)';
+        
+        // Adjust preview pane to fill remaining space
+        const containerHeight = document.querySelector('.editor-panes').offsetHeight;
+        const previewNewHeight = containerHeight - newHeight - 6; // 6px for handle
+        previewPane.style.height = previewNewHeight + 'px';
+        previewWrapper.style.height = (previewNewHeight - previewPane.querySelector('.pane-header').offsetHeight - 6) + 'px';
+      }
+      
+      // Horizontal resize for preview pane
+      if (isResizingPreviewHorizontal) {
+        const dy = e.clientY - startYPreview;
+        const minHeight = 100;
+        const maxHeight = previewPane.parentElement.offsetHeight - minHeight - 6;
+        
+        let newHeight = startPreviewHeight + dy;
+        if (newHeight < minHeight) newHeight = minHeight;
+        if (newHeight > maxHeight) newHeight = maxHeight;
+        
+        previewPane.style.height = newHeight + 'px';
+        previewWrapper.style.height = (newHeight - previewPane.querySelector('.pane-header').offsetHeight - 6) + 'px';
+        
+        // Adjust code pane to fill remaining space
+        const containerHeight = document.querySelector('.editor-panes').offsetHeight;
+        const codeNewHeight = containerHeight - newHeight - 6;
+        codePane.style.height = codeNewHeight + 'px';
+        codeWrapper.style.height = (codeNewHeight - codePane.querySelector('.pane-header').offsetHeight - 6) + 'px';
+      }
+    });
+    
+    document.addEventListener('mouseup', function() {
+      isResizingVertical = false;
+      isResizingCodeHorizontal = false;
+      isResizingPreviewHorizontal = false;
+      paneResizeHandle.classList.remove('active');
+      codeResizeHandle.classList.remove('active');
+      previewResizeHandle.classList.remove('active');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    });
   </script>
 </body>
 </html>
