@@ -1061,22 +1061,37 @@ async function submitLoanApplication() {
     
     // Collect form data
     const formData = new FormData(form);
+    
+    // Build guarantors array if guarantor info is provided
+    const guarantors = [];
+    const guarantorName = formData.get('guarantorName');
+    const guarantorId = formData.get('guarantorId');
+    const guarantorPhone = formData.get('guarantorPhone');
+    
+    if (guarantorName && guarantorId) {
+        guarantors.push({
+            name: guarantorName,
+            studentId: guarantorId,
+            phone: guarantorPhone
+        });
+    }
+    
     const loanData = {
         fullName: formData.get('fullName'),
         studentId: formData.get('studentId'),
         phone: formData.get('phone'),
         email: formData.get('email'),
-        loanAmount: parseFloat(formData.get('loanAmount')),
-        loanPurpose: formData.get('loanPurpose'),
-        loanPurposeOther: formData.get('loanPurposeOther'),
+        principalAmount: parseFloat(formData.get('loanAmount')), // Fixed: backend expects principalAmount
+        purpose: formData.get('loanPurpose'), // Fixed: backend expects 'purpose'
+        purposeDescription: formData.get('loanPurposeOther'),
         repaymentPeriod: parseInt(formData.get('repaymentPeriod')),
-        guarantorName: formData.get('guarantorName'),
-        guarantorId: formData.get('guarantorId'),
-        guarantorPhone: formData.get('guarantorPhone'),
+        guarantors: guarantors, // Fixed: backend expects guarantors array
         loanId: generateLoanId(),
         status: 'pending',
         createdAt: new Date().toISOString()
     };
+    
+    console.log('Submitting loan data:', loanData); // Debug log
 
     // Add calculated totals
     const calculation = calculateLoanRepayment();
@@ -1097,6 +1112,9 @@ async function submitLoanApplication() {
 
     // Submit the application
     try {
+        console.log('=== Submitting Loan Application ===');
+        console.log('Loan data being sent:', loanData);
+        
         const submitButton = document.getElementById('submitBtn');
         if (submitButton) {
             submitButton.disabled = true;
@@ -1105,7 +1123,10 @@ async function submitLoanApplication() {
 
         const result = await loanService.applyForLoan(loanData);
         
+        console.log('API Response:', result);
+        
         if (result.success) {
+            console.log('✅ Loan application successful:', result);
             showSuccessMessage(result.message || 'Loan application submitted successfully!');
             
             // Show M-Pesa payment section
@@ -1121,10 +1142,12 @@ async function submitLoanApplication() {
             // Update progress to completion
             updateProgressStep(4);
         } else {
+            console.error('❌ Loan application failed:', result);
             showErrorMessage(result.message || 'Failed to submit loan application. Please try again.');
         }
     } catch (error) {
-        console.error('Error submitting loan application:', error);
+        console.error('❌ Error submitting loan application:', error);
+        console.error('Error stack:', error.stack);
         showErrorMessage(error.message || 'Failed to submit loan application. Please check your connection and try again.');
     } finally {
         const submitButton = document.getElementById('submitBtn');
@@ -1200,13 +1223,12 @@ async function callAPI(endpoint, options = {}) {
 // VALIDATION
 // ============================================
 function validateLoanApplication(data) {
-    // Validate student ID format
-    const studentIdPattern = /^JOO\/\d{4}\/\d{3,4}$/;
-    if (!studentIdPattern.test(data.studentId)) {
-        showErrorMessage('Invalid student ID format. Expected format: JOO/YYYY/XXX');
+    // Validate student ID format - now accepts any format
+    if (!data.studentId || data.studentId.trim() === '') {
+        showErrorMessage('Student ID is required');
         return false;
     }
-
+    
     // Validate phone number
     const phonePattern = /^(\+254|0)[0-9]{9}$/;
     const cleanPhone = data.phone.replace(/\s/g, '');
@@ -1221,9 +1243,15 @@ function validateLoanApplication(data) {
         return false;
     }
 
-    // Validate guarantor student ID
-    if (!studentIdPattern.test(data.guarantorId)) {
-        showErrorMessage('Invalid guarantor student ID format');
+    // Validate guarantor - accepts any format, check guarantors array
+    if (!data.guarantors || data.guarantors.length === 0) {
+        showErrorMessage('At least one guarantor is required');
+        return false;
+    }
+    
+    const guarantor = data.guarantors[0];
+    if (!guarantor.studentId || guarantor.studentId.trim() === '') {
+        showErrorMessage('Guarantor student ID is required');
         return false;
     }
 
@@ -1234,67 +1262,112 @@ function validateLoanApplication(data) {
 // MESSAGE DISPLAY FUNCTIONS
 // ============================================
 function showSuccessMessage(message) {
+    // Remove any existing messages first
+    removeExistingMessages();
+    
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'alert alert-success';
+    messageDiv.className = 'success-notification';
     messageDiv.innerHTML = `
-        <i class="fas fa-check-circle"></i>
-        <span>${message}</span>
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="success-content">
+            <h4>Application Submitted Successfully!</h4>
+            <p>${message}</p>
+            <div class="success-details">
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Status: Under Review</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>You will receive email updates</span>
+                </div>
+            </div>
+            <button class="btn-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i> Dismiss
+            </button>
+        </div>
     `;
     
+    // Add styles
     messageDiv.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #d4edda;
-        color: #155724;
-        padding: 15px 25px;
-        border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0;
+        z-index: 9999;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: slideDown 0.4s ease;
         display: flex;
-        align-items: center;
-        gap: 10px;
-        max-width: 400px;
-        animation: slideIn 0.3s ease;
+        align-items: stretch;
     `;
-
+    
     document.body.appendChild(messageDiv);
-
+    
+    // Auto-remove after 10 seconds (longer than before)
     setTimeout(() => {
-        messageDiv.remove();
-    }, 5000);
+        if (messageDiv && messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 10000);
 }
 
 function showErrorMessage(message) {
+    // Remove any existing messages first
+    removeExistingMessages();
+    
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'alert alert-error';
+    messageDiv.className = 'error-notification';
     messageDiv.innerHTML = `
-        <i class="fas fa-exclamation-circle"></i>
-        <span>${message}</span>
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="error-content">
+            <h4>Application Failed</h4>
+            <p>${message}</p>
+            <button class="btn-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i> Dismiss
+            </button>
+        </div>
     `;
     
     messageDiv.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #f8d7da;
-        color: #721c24;
-        padding: 15px 25px;
-        border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 0;
+        z-index: 9999;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: slideDown 0.4s ease;
         display: flex;
-        align-items: center;
-        gap: 10px;
-        max-width: 400px;
-        animation: slideIn 0.3s ease;
+        align-items: stretch;
     `;
-
+    
     document.body.appendChild(messageDiv);
-
+    
+    // Auto-remove after 8 seconds
     setTimeout(() => {
-        messageDiv.remove();
-    }, 5000);
+        if (messageDiv && messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 8000);
+}
+
+function removeExistingMessages() {
+    // Remove any existing success or error notifications
+    const existingNotifications = document.querySelectorAll('.success-notification, .error-notification');
+    existingNotifications.forEach(notification => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    });
 }
 
 // Export for potential module use

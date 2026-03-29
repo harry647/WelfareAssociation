@@ -41,7 +41,7 @@ class LoanService {
      * @param {Object} loanData - Loan application data
      */
     async apply(loanData) {
-        return apiService.post(API_CONFIG.endpoints.applyLoan, loanData, true);
+        return apiService.post(`${API_CONFIG.baseURL}${API_CONFIG.endpoints.applyLoan}`, loanData, true);
     }
 
     /**
@@ -51,7 +51,7 @@ class LoanService {
     async applyForLoan(loanData) {
         try {
             const token = localStorage.getItem('swa_auth_token');
-            const response = await fetch(API_CONFIG.endpoints.applyLoan, {
+            const response = await fetch(`${API_CONFIG.baseURL}${API_CONFIG.endpoints.applyLoan}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,6 +61,12 @@ class LoanService {
             });
             
             const result = await response.json();
+            
+            // Handle validation errors from express-validator
+            if (!response.ok && result.errors && Array.isArray(result.errors)) {
+                const errorMessages = result.errors.map(e => e.msg || e.message).join(', ');
+                throw new Error(errorMessages || 'Validation failed');
+            }
             
             if (response.ok && result.success) {
                 return result;

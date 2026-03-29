@@ -1087,3 +1087,164 @@ html {
         scroll-behavior: auto;
     }
 }
+
+/* ============================================
+   SUCCESS/ERROR NOTIFICATION STYLES
+   ============================================ */
+
+.success-notification,
+.error-notification {
+    display: flex;
+    align-items: stretch;
+    min-height: 120px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    animation: slideDown 0.4s ease;
+}
+
+.success-notification {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.error-notification {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.success-icon,
+.error-icon {
+    flex: 0 0 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+}
+
+.success-icon {
+    color: #10b981;
+}
+
+.error-icon {
+    color: #ef4444;
+}
+
+.success-icon i,
+.error-icon i {
+    font-size: 2.5rem;
+}
+
+.success-content,
+.error-content {
+    flex: 1;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.success-content h4,
+.error-content h4 {
+    margin: 0 0 15px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+}
+
+.success-content p,
+.error-content p {
+    margin: 0 0 20px 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+}
+
+.success-details {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.detail-item i {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+}
+
+.detail-item span {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.btn-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+/* Animation */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .success-notification,
+    .error-notification {
+        min-height: 100px;
+    }
+    
+    .success-content,
+    .error-content {
+        padding: 20px;
+    }
+    
+    .success-content h4,
+    .error-content h4 {
+        font-size: 1.2rem;
+    }
+    
+    .success-details {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .detail-item {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}

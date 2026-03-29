@@ -42,12 +42,18 @@ async function calculateMemberScore(memberId) {
         
         console.log('Member found:', { id: member.id, joinDate: member.joinDate });
 
-        // Get member's financial history
-        const [contributions, fines, existingLoans] = await Promise.all([
-            Contribution.findAll({ where: { memberId } }),
-            Fine.findAll({ where: { memberId, status: 'unpaid' } }),
-            Loan.findAll({ where: { memberId } })
-        ]);
+        // Get member's financial history with error handling
+        let contributions, fines, existingLoans;
+        try {
+            [contributions, fines, existingLoans] = await Promise.all([
+                Contribution.findAll({ where: { memberId } }),
+                Fine.findAll({ where: { memberId, status: 'unpaid' } }),
+                Loan.findAll({ where: { memberId } })
+            ]);
+        } catch (dbError) {
+            console.error('Database query error:', dbError);
+            throw new Error('Failed to retrieve financial history');
+        }
         
         console.log('Financial data loaded:', { 
             contributionsCount: contributions.length, 
@@ -55,12 +61,20 @@ async function calculateMemberScore(memberId) {
             loansCount: existingLoans.length 
         });
 
-        // Calculate metrics
-        const totalContributions = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
-        const unpaidFines = fines.reduce((sum, f) => sum + parseFloat(f.amount || 0), 0);
-        const membershipMonths = member.joinDate ? 
-            Math.max(1, Math.floor((new Date() - new Date(member.joinDate)) / (1000 * 60 * 60 * 24 * 30))) : 
-            1;
+        // Calculate metrics with error handling
+        let totalContributions, unpaidFines, membershipMonths;
+        try {
+            totalContributions = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
+            unpaidFines = fines.reduce((sum, f) => sum + parseFloat(f.amount || 0), 0);
+            membershipMonths = member.joinDate ? 
+                Math.max(1, Math.floor((new Date() - new Date(member.joinDate)) / (1000 * 60 * 60 * 24 * 30))) : 
+                1;
+            
+            console.log('Calculated metrics:', { totalContributions, unpaidFines, membershipMonths });
+        } catch (calcError) {
+            console.error('Error calculating metrics:', calcError);
+            throw new Error('Failed to calculate eligibility metrics');
+        }
         
         // Base score calculation
         let score = 0;
@@ -248,6 +262,9 @@ router.get('/eligibility', auth, async (req, res) => {
     try {
         console.log('=== Eligibility Check Started ===');
         console.log('User:', { id: req.user.id, role: req.user.role });
+        
+        // Note: Database access is via Sequelize models (Loan, Member, Contribution, Fine)
+        // imported at the top of this file
         
         // Handle admin user case - admin cannot apply for loans
         if (req.user.id === 'admin') {
@@ -525,16 +542,32 @@ router.post('/apply', auth, [
     validate
 ], async (req, res) => {
     try {
+        console.log('=== Loan Application Started ===');
+        console.log('Request body:', req.body);
+        console.log('User:', { id: req.user.id, role: req.user.role });
+        
         const { principalAmount, repaymentPeriod, purpose, purposeDescription, guarantors } = req.body;
+        
+        console.log('Parsed loan data:', { 
+            principalAmount, 
+            repaymentPeriod, 
+            purpose, 
+            purposeDescription, 
+            guarantorsCount: guarantors?.length || 0 
+        });
 
         // Get member
+        console.log('Looking up member for userId:', req.user.id);
         const member = await Member.findOne({ where: { userId: req.user.id } });
         if (!member) {
+            console.error('Member not found for userId:', req.user.id);
             return res.status(404).json({
                 success: false,
                 message: 'Member profile not found'
             });
         }
+        
+        console.log('Member found:', { id: member.id, userId: member.userId, name: `${member.firstName} ${member.lastName}` });
 
         // Check for existing active loans
         const existingLoan = await Loan.findOne({
@@ -545,17 +578,22 @@ router.post('/apply', auth, [
         });
 
         if (existingLoan) {
+            console.log('Active loan found, rejecting application:', existingLoan.loanNumber);
             return res.status(400).json({
                 success: false,
                 message: 'You have an active loan that needs to be settled first'
             });
         }
 
+        console.log('No active loans found, proceeding with eligibility check');
+
         // Calculate eligibility to validate requested amount
         const eligibility = await calculateMemberScore(member.id);
+        console.log('Eligibility calculated:', eligibility);
         
         // Validate requested amount against eligibility
         if (parseFloat(principalAmount) > eligibility.maxLoan) {
+            console.log('Amount exceeds limit:', { requested: principalAmount, maxAllowed: eligibility.maxLoan });
             return res.status(400).json({
                 success: false,
                 message: `The requested amount exceeds your maximum loan limit of Ksh ${eligibility.maxLoan.toLocaleString()}`,
@@ -567,6 +605,8 @@ router.post('/apply', auth, [
                 }
             });
         }
+
+        console.log('Amount validation passed');
 
         // Check for unpaid fines - can still apply but warn
         const unpaidFines = await Fine.sum('amount', {
@@ -589,6 +629,19 @@ router.post('/apply', auth, [
         // Generate loan number
         const loanCount = await Loan.count() + 1;
         const loanNumber = `LN${String(loanCount).padStart(6, '0')}`;
+        
+        console.log('Creating loan with data:', {
+            memberId: member.id,
+            loanNumber,
+            principalAmount,
+            interestRate,
+            totalAmount,
+            repaymentPeriod,
+            monthlyPayment,
+            dueDate,
+            purpose,
+            guarantorStatus: guarantors?.length > 0 ? 'pending' : 'not_required'
+        });
 
         // Create loan
         const loan = await Loan.create({
@@ -609,6 +662,8 @@ router.post('/apply', auth, [
             status: 'pending'
         });
         
+        console.log('Loan created successfully:', { id: loan.id, loanNumber: loan.loanNumber });
+        
         // Notify guarantors if any were provided
         if (guarantors && guarantors.length > 0) {
             const { Notice, Member, User } = require('../models');
@@ -622,13 +677,22 @@ router.post('/apply', auth, [
                         memberId: guarantorMember.id,
                         userId: guarantorMember.userId,
                         title: 'Guarantor Request - Action Required',
-                        message: `${member.firstName} ${member.lastName} has selected you as a guarantor for their loan request (${loan.loanNumber}) of Ksh ${principalAmount}. Please log in to the member portal to accept or reject this request.`,
-                        type: 'guarantor',
-                        priority: 'high'
+                        content: `${member.firstName} ${member.lastName} has selected you as a guarantor for their loan request (${loan.loanNumber}) of Ksh ${principalAmount}. Please log in to the member portal to accept or reject this request.`,
+                        type: 'reminder',
+                        priority: 'high',
+                        author: req.user.id,
+                        isPublished: true,
+                        audience: 'members'
                     });
                 }
             }
         }
+
+        console.log('Sending success response:', { 
+            loanId: loan.id, 
+            loanNumber: loan.loanNumber,
+            warnings: unpaidFines > 0 ? [`You have unpaid fines of Ksh ${unpaidFines.toLocaleString()}`] : []
+        });
 
         res.status(201).json({
             success: true,
@@ -644,10 +708,20 @@ router.post('/apply', auth, [
             }
         });
     } catch (error) {
-        console.error('Loan application error:', error);
+        console.error('=== Loan Application Error ===');
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        
+        // Check if it's a validation error
+        const statusCode = error.name === 'SequelizeValidationError' ? 400 : 500;
+        
         res.status(500).json({
             success: false,
-            message: 'Error submitting loan application'
+            message: 'Failed to submit loan application',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
