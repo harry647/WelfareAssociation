@@ -69,6 +69,20 @@ class MemberLoanHistory {
             btn.addEventListener('click', () => this.handleLogout());
         });
 
+        // Header notification bell (with delayed init for w3.includeHTML)
+        const initNotificationBell = () => {
+            const notificationBell = document.getElementById('notificationBell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleNotificationBellClick(notificationBell);
+                });
+            } else {
+                setTimeout(initNotificationBell, 100);
+            }
+        };
+        setTimeout(initNotificationBell, 500);
+
         // Filter events
         const yearFilter = document.getElementById('yearFilter');
         const statusFilter = document.getElementById('statusFilter');
@@ -421,6 +435,37 @@ class MemberLoanHistory {
             authService.logout();
             window.location.href = '../auth/login-page.html';
         }
+    }
+
+    handleNotificationBellClick(bellElement) {
+        let dropdown = document.getElementById('notifications-menu');
+        if (dropdown) {
+            dropdown.remove();
+            return;
+        }
+        dropdown = document.createElement('div');
+        dropdown.id = 'notifications-menu';
+        dropdown.className = 'dropdown-menu';
+        dropdown.innerHTML = `
+            <div class="dropdown-header"><i class="fas fa-bell"></i> Notifications</div>
+            <div class="dropdown-item" onclick="window.location.href='../../shared/notices.html'">
+                <i class="fas fa-microphone"></i> View All Notices
+            </div>
+            <div class="dropdown-item disabled"><i class="fas fa-check-circle"></i> No new notifications</div>
+        `;
+        bellElement.parentElement.appendChild(dropdown);
+        dropdown.style.position = 'absolute';
+        dropdown.style.top = '100%';
+        dropdown.style.right = '0';
+        dropdown.style.marginTop = '8px';
+        dropdown.style.minWidth = '220px';
+        dropdown.style.zIndex = '1000';
+        document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target) && e.target !== bellElement) {
+                dropdown.remove();
+                document.removeEventListener('click', closeDropdown);
+            }
+        });
     }
 }
 

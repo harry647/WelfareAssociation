@@ -1,13 +1,13 @@
 /**
- * Header Admin Component Initialization
- * This file handles button click events for the admin header component
- * Include this AFTER w3.includeHTML() in admin dashboard pages
+ * Header Shared Component Initialization
+ * This file handles button click events for the shared header component
+ * Include this AFTER w3.includeHTML() in shared dashboard pages
  */
 
 (function() {
     'use strict';
 
-    console.log('Header Admin JS loaded');
+    console.log('Header Shared JS loaded');
 
     /**
      * Create and show a dropdown menu
@@ -27,6 +27,12 @@
 
         // Add items
         items.forEach(function(item) {
+            if (item.text === '---') {
+                var divider = document.createElement('div');
+                divider.style.cssText = 'height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;';
+                menu.appendChild(divider);
+                return;
+            }
             var menuItem = document.createElement('div');
             menuItem.style.cssText = 'padding: 12px 20px; cursor: pointer; color: #e2e8f0; font-size: 14px; transition: background 0.2s;';
             menuItem.textContent = item.text;
@@ -68,58 +74,18 @@
     /**
      * Initialize all header button event handlers
      */
-    /**
-     * Load admin user info and update header
-     */
-    function loadAdminUserInfo() {
-        // Get user from localStorage
-        var userData = localStorage.getItem('swa_user');
-        var user = userData ? JSON.parse(userData) : null;
-        var userNameEl = document.getElementById('headerUserName');
-        var userRoleEl = document.getElementById('headerUserRole');
-        var pageSubtitle = document.getElementById('pageSubtitle');
-        var userAvatar = document.getElementById('headerUserAvatar');
-        
-        if (user) {
-            var name = user.name || user.firstName || user.email || 'Admin';
-            var firstName = name.split(' ')[0];
-            var role = user.role || 'Administrator';
-            
-            if (userNameEl) {
-                userNameEl.textContent = name;
-            }
-            if (userRoleEl) {
-                userRoleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1);
-            }
-            if (pageSubtitle) {
-                pageSubtitle.textContent = 'Welcome back, ' + firstName;
-            }
-            if (userAvatar) {
-                userAvatar.textContent = firstName.charAt(0).toUpperCase();
-            }
-            console.log('Admin user info loaded:', firstName);
-        } else {
-            console.log('No user data found in localStorage');
-        }
-    }
-    
     function initHeaderButtons() {
-        console.log('Initializing header buttons...');
-        
-        // Load admin user info
-        loadAdminUserInfo();
+        console.log('Initializing shared header buttons...');
         
         // Get all button elements
         var sidebarToggle = document.getElementById('sidebarToggle');
         var notificationBell = document.getElementById('notificationBell');
-        var quickActionsBtn = document.getElementById('quickActionsBtn');
         var userProfile = document.getElementById('userProfile');
         var logoutBtn = document.getElementById('headerLogoutBtn');
 
         console.log('Elements found:', {
             sidebarToggle: !!sidebarToggle,
             notificationBell: !!notificationBell,
-            quickActionsBtn: !!quickActionsBtn,
             userProfile: !!userProfile,
             logoutBtn: !!logoutBtn
         });
@@ -156,33 +122,6 @@
             console.log('Notification bell handler attached');
         }
 
-        // Quick actions button - show quick actions menu
-        if (quickActionsBtn) {
-            quickActionsBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                console.log('Quick actions button clicked');
-                
-                // Create quick actions dropdown
-                createDropdownMenu(quickActionsBtn, 'quick-actions-menu', [
-                    { text: 'Add New Member', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/edit-member.html';
-                    }},
-                    { text: 'Create Announcement', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/send-announcement.html';
-                    }},
-                    { text: 'Upload Document', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/upload-document.html';
-                    }},
-                    { text: 'Create Notice', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/create-notice.html';
-                    }}
-                ]);
-            };
-            console.log('Quick actions button handler attached');
-        }
-
         // User profile - show user menu
         if (userProfile) {
             userProfile.onclick = function(e) {
@@ -197,14 +136,17 @@
                 
                 // Create user dropdown
                 createDropdownMenu(userProfile, 'user-menu', [
-                    { text: userName ? userName.textContent : 'Admin User', action: null },
-                    { text: userRole ? userRole.textContent : 'Administrator', action: null },
+                    { text: userName ? userName.textContent : 'User', action: null },
+                    { text: userRole ? userRole.textContent : 'Member', action: null },
                     { text: '---', action: null },
-                    { text: 'Profile Settings', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/settings.html';
+                    { text: 'My Profile', action: function() { 
+                        window.location.href = '/pages/auth/profile.html';
                     }},
-                    { text: 'Security Settings', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/security-settings.html';
+                    { text: 'My Contributions', action: function() { 
+                        window.location.href = '/pages/dashboard/member/member-contribution-history.html';
+                    }},
+                    { text: 'My Loans', action: function() { 
+                        window.location.href = '/pages/dashboard/member/member-loans-history.html';
                     }}
                 ]);
             };
@@ -231,7 +173,7 @@
             console.log('Logout button handler attached');
         }
 
-        console.log('All header button handlers initialized');
+        console.log('All shared header button handlers initialized');
     }
 
     // Try to initialize immediately if elements exist

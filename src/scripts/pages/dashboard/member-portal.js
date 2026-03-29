@@ -108,6 +108,99 @@ class MemberPortal {
                 notification.classList.toggle('read');
             });
         });
+
+        // Header notification bell - show notifications dropdown (with delayed init for w3.includeHTML)
+        this.initHeaderNotificationBell();
+
+        // Load member name into header
+        this.loadMemberHeaderInfo();
+    }
+
+    loadMemberHeaderInfo() {
+        const loadInfo = () => {
+            const user = authService.getCurrentUser();
+            const welcomeMsg = document.getElementById('welcomeMessage');
+            const avatar = document.getElementById('memberAvatar');
+            
+            if (user) {
+                // Get the member name
+                const memberName = user.name || user.firstName || user.email || 'Member';
+                const firstName = memberName.split(' ')[0];
+                
+                if (welcomeMsg) {
+                    welcomeMsg.innerHTML = `<i class="fas fa-user-circle"></i> Welcome, ${firstName}`;
+                }
+                
+                // Update avatar with first letter
+                if (avatar) {
+                    avatar.textContent = firstName.charAt(0).toUpperCase();
+                }
+                
+                console.log('Member header updated with name:', firstName);
+            } else {
+                setTimeout(loadInfo, 200);
+            }
+        };
+        setTimeout(loadInfo, 300);
+    }
+
+    initHeaderNotificationBell() {
+        const tryInit = () => {
+            const notificationBell = document.getElementById('notificationBell');
+            if (notificationBell) {
+                console.log('Notification bell found');
+                notificationBell.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleNotificationBellClick(notificationBell);
+                });
+            } else {
+                console.log('Notification bell not found, retrying...');
+                setTimeout(tryInit, 100);
+            }
+        };
+        setTimeout(tryInit, 500);
+    }
+
+    handleNotificationBellClick(bellElement) {
+        // Check if dropdown already exists
+        let dropdown = document.getElementById('notifications-menu');
+        if (dropdown) {
+            dropdown.remove();
+            return;
+        }
+
+        // Create dropdown menu
+        dropdown = document.createElement('div');
+        dropdown.id = 'notifications-menu';
+        dropdown.className = 'dropdown-menu';
+        dropdown.innerHTML = `
+            <div class="dropdown-header">
+                <i class="fas fa-bell"></i> Notifications
+            </div>
+            <div class="dropdown-item" onclick="window.location.href='../shared/notices.html'">
+                <i class="fas fa-microphone"></i> View All Notices
+            </div>
+            <div class="dropdown-item disabled">
+                <i class="fas fa-check-circle"></i> No new notifications
+            </div>
+        `;
+        bellElement.parentElement.appendChild(dropdown);
+
+        // Position dropdown
+        dropdown.style.position = 'absolute';
+        dropdown.style.top = '100%';
+        dropdown.style.right = '0';
+        dropdown.style.marginTop = '8px';
+        dropdown.style.minWidth = '220px';
+        dropdown.style.zIndex = '1000';
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target) && e.target !== bellElement) {
+                dropdown.remove();
+                document.removeEventListener('click', closeDropdown);
+            }
+        });
     }
 
     handlePaymentMethodChange(select) {
