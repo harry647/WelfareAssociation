@@ -1,0 +1,46 @@
+# Render Blueprint Configuration
+# Auto-configures your service on push to GitHub
+
+services:
+  - type: web
+    name: swa-website
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      # Server Configuration
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+
+      # PostgreSQL Configuration
+      - key: POSTGRES_URI_DEV
+        value: postgresql://postgres:HarryPostgres4656!!@127.0.0.1:5432/swa_db
+      - key: POSTGRES_URI_PROD
+        value: postgresql://swa_db_user:acDp5mP8sXQhbJfauRnX5GNuXDew3rxd@dpg-d74ik3qdbo4c738tlk1g-a/swa_db
+
+      # JWT Configuration
+      - key: JWT_SECRET
+        value: SWA-6eb93c105ed76407272a77da4ad5a2bf9670eaa3bef66b117a4027eec0937776
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: JWT_REFRESH_SECRET
+        value: SWA-dec9b1eaff1833db46c62d280127009242ecf40a63328a4bd6e261db09bdad2a
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
+
+      # API Key Configuration
+      - key: API_KEY
+        value: SWA-API-a84e557eb0c2f38753c7676498de9c4afc52fb166255e5bae7190896d9d01cefcf33279a9093801f7ab46f8ff3bb054eb5323710bb2ee334feaaf2eb75e637ad
+
+      # Encryption Configuration
+      - key: ENCRYPTION_TOKEN
+        value: SWA-ENC-200c69e7fb1b21482878912e1912e5d5870f08e29700b0074920a645bd05ff45
+
+      # CORS Configuration (update this to your production URL)
+      - key: CORS_ORIGIN
+        value: https://welfareassociation.onrender.com
