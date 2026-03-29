@@ -3,6 +3,39 @@
    Only styles that are unique to this page - no duplicates from unified-dashboard.css
    ============================================================================= */
 
+/* Additional Color Variables for Edit Document */
+:root {
+  --accent-light: rgba(45, 124, 91, 0.1);
+  --success-color: #10b981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --warning-color: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.1);
+  --error-color: #ef4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+}
+
+/* ── PAGE HEADER ── */
+.page-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-header h1 i {
+  color: var(--accent-color);
+  font-size: 18px;
+}
+
+.page-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
 /* ── FORM CONTAINER ── */
 .form-container {
   background: var(--bg-secondary);
@@ -12,6 +45,47 @@
   box-shadow: var(--shadow-sm);
   max-width: 800px;
   margin: 0 auto;
+}
+
+/* ── FORM GRID ── */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── FORM SECTIONS ── */
+.form-section {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  transition: all var(--transition-base);
+}
+
+.form-section:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.form-section h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-section h3 i {
+  color: var(--accent-color);
+  font-size: 14px;
+  background: var(--accent-light);
+  padding: 8px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── FORM GROUPS ── */
@@ -154,8 +228,178 @@
 }
 
 .btn-secondary:hover {
-  background: #e8eaed;
-  border-color: var(--border-color);
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-outline:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: var(--error-light);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+/* ── CURRENT FILE INFO ── */
+.current-file-info {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.file-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.file-details i {
+  font-size: 32px;
+  color: var(--accent-color);
+  background: var(--accent-light);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.file-info-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.file-info-text p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 2px 0;
+}
+
+/* ── FILE UPLOAD AREA ── */
+.file-upload-area {
+  position: relative;
+}
+
+.file-upload-drop-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  text-align: center;
+  background: var(--bg-secondary);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.file-upload-drop-zone:hover {
+  border-color: var(--accent-color);
+  background: var(--accent-light);
+}
+
+.file-upload-drop-zone.dragover {
+  border-color: var(--accent-color);
+  background: var(--accent-light);
+  transform: scale(1.02);
+}
+
+.file-upload-drop-zone i {
+  font-size: 32px;
+  color: var(--accent-color);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.file-upload-drop-zone p {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.file-upload-drop-zone small {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: 12px;
+}
+
+.file-info i {
+  color: var(--accent-color);
+  font-size: 16px;
+}
+
+.file-info span {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.btn-remove {
+  background: var(--error-color);
+  border: none;
+  color: white;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin-left: auto;
+}
+
+.btn-remove:hover {
+  background: var(--error-dark);
+}
+
+/* ── CHECKBOX STYLES ── */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 400;
+  transition: color var(--transition-base);
+}
+
+.checkbox-label:hover {
+  color: var(--accent-color);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  display: none;
 }
 
 /* ── FORM ACTIONS ── */
@@ -185,8 +429,22 @@
     padding: 20px;
   }
   
-  .data-section {
+  .form-section {
     padding: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 15px;
+  }
+  
+  .form-section h3 i {
+    font-size: 13px;
+    padding: 6px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   
   .form-actions {
@@ -195,6 +453,29 @@
   
   .btn {
     width: 100%;
+    justify-content: center;
+  }
+  
+  .file-details {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .file-upload-drop-zone {
+    padding: 24px;
+  }
+  
+  .file-upload-drop-zone i {
+    font-size: 24px;
+  }
+  
+  .checkbox-group {
+    gap: 10px;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
   }
 }
 
@@ -203,12 +484,29 @@
     padding: 16px;
   }
   
-  .data-section {
+  .form-section {
     padding: 12px;
+  }
+  
+  .form-section h3 {
+    font-size: 14px;
+    gap: 8px;
+  }
+  
+  .form-section h3 i {
+    font-size: 12px;
+    padding: 6px;
   }
   
   .form-group {
     margin-bottom: 16px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px 14px;
+    font-size: 13px;
   }
   
   .btn {
@@ -216,12 +514,30 @@
     font-size: 13px;
   }
   
-  .data-section h2 {
-    font-size: 14px;
+  .file-details i {
+    font-size: 24px;
+    padding: 8px;
   }
   
-  .data-section h2 i {
+  .file-upload-drop-zone {
+    padding: 20px;
+  }
+  
+  .file-upload-drop-zone i {
+    font-size: 20px;
+  }
+  
+  .file-upload-drop-zone p {
     font-size: 13px;
-    padding: 6px;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
+    gap: 8px;
+  }
+  
+  .checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
   }
 }

@@ -3,6 +3,17 @@
    Only styles that are unique to this page - no duplicates from unified-dashboard.css
    ============================================================================= */
 
+/* Additional Color Variables for Payment History */
+:root {
+  --accent-light: rgba(45, 124, 91, 0.1);
+  --success-color: #10b981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --warning-color: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.1);
+  --error-color: #ef4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+}
+
 /* ── PAGE HEADER ── */
 .page-header h1 {
   font-family: 'Syne', sans-serif;
@@ -222,6 +233,31 @@
 
 .payment-records__table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* ── BUTTON VARIANTS ── */
+.btn-primary {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: white;
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 /* ── STATUS BADGES ── */

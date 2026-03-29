@@ -2,6 +2,9 @@
    Unified Dashboard Layout System - Consistent Across All Dashboard Pages
    ============================================================================= */
 
+/* Import unified button styles */
+@import url('./button-frames.css');
+
 :root {
   /* Layout Dimensions */
   --sidebar-width: 240px;
@@ -504,25 +507,6 @@ tbody tr:hover {
 td:first-child {
   color: var(--text-primary);
   font-weight: 500;
-}
-
-/* Buttons */
-.btn {
-  background: none;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  padding: 5px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: all 0.15s;
-  margin-right: 6px;
-}
-
-.btn:hover {
-  border-color: var(--accent-color);
-  color: var(--accent-color);
 }
 
 /* Quick Actions */

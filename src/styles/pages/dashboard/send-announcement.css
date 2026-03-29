@@ -3,6 +3,24 @@
    Only styles that are unique to this page - no duplicates from unified-dashboard.css
    ============================================================================= */
 
+/* Additional Color Variables for Send Announcement */
+:root {
+  --accent-light: rgba(45, 124, 91, 0.1);
+  --success-color: #10b981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --warning-color: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.1);
+  --error-color: #ef4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+}
+
+/* ── FORM GRID ── */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 /* ── PAGE HEADER ── */
 .page-header {
   margin-bottom: 32px;
@@ -318,6 +336,240 @@
   box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45);
 }
 
+/* ── CHARACTER COUNTER ── */
+.char-counter {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.char-counter span {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── RECIPIENT SELECTION ── */
+.recipient-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.recipient-search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.recipient-search input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.recipient-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  padding: 12px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 400;
+  transition: color var(--transition-base);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.checkbox-label:hover {
+  color: var(--accent-color);
+  background: var(--accent-light);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  display: none;
+}
+
+/* ── FILE UPLOAD AREA ── */
+.file-upload-area {
+  position: relative;
+}
+
+.file-upload-drop-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  text-align: center;
+  background: var(--bg-secondary);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.file-upload-drop-zone:hover {
+  border-color: var(--accent-color);
+  background: var(--accent-light);
+}
+
+.file-upload-drop-zone.dragover {
+  border-color: var(--accent-color);
+  background: var(--accent-light);
+  transform: scale(1.02);
+}
+
+.file-upload-drop-zone i {
+  font-size: 32px;
+  color: var(--accent-color);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.file-upload-drop-zone p {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.file-upload-drop-zone small {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.file-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.file-item button {
+  background: var(--error-color);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 11px;
+}
+
+/* ── ANNOUNCEMENT PREVIEW ── */
+.announcement-preview {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.preview-header h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.priority-badge.low {
+  background: var(--success-light);
+  color: var(--success-color);
+}
+
+.priority-badge.medium {
+  background: var(--warning-light);
+  color: var(--warning-color);
+}
+
+.priority-badge.high {
+  background: var(--error-light);
+  color: var(--error-color);
+}
+
+.priority-badge.urgent {
+  background: var(--error-color);
+  color: white;
+}
+
+.preview-content {
+  margin-bottom: 16px;
+}
+
+.preview-content p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.preview-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.preview-footer small {
+  display: block;
+}
+
 /* ── ANIMATIONS ── */
 @keyframes fadeInUp {
   from {
@@ -356,12 +608,51 @@
     padding: 20px;
   }
 
+  .data-section {
+    padding: 16px;
+  }
+  
   .form-actions {
     flex-direction: column;
+    gap: 12px;
   }
 
   .form-actions .btn {
     width: 100%;
+    justify-content: center;
+  }
+  
+  .recipient-search {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .recipient-list {
+    max-height: 150px;
+  }
+  
+  .file-upload-drop-zone {
+    padding: 24px;
+  }
+  
+  .file-upload-drop-zone i {
+    font-size: 24px;
+  }
+  
+  .announcement-preview {
+    padding: 16px;
+  }
+  
+  .preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .preview-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 }
 
@@ -381,6 +672,14 @@
     margin-top: 12px;
   }
 
+  .form-container {
+    padding: 16px;
+  }
+
+  .data-section {
+    padding: 12px;
+  }
+
   .data-section h2 {
     font-size: 14px;
     padding: 16px 20px;
@@ -390,10 +689,50 @@
   .form-group select,
   .form-group textarea {
     padding: 12px 14px;
+    font-size: 13px;
   }
-  
+
   .btn {
     padding: 12px 24px;
     font-size: 13px;
+  }
+  
+  .file-upload-drop-zone {
+    padding: 20px;
+  }
+  
+  .file-upload-drop-zone i {
+    font-size: 20px;
+  }
+  
+  .file-upload-drop-zone p {
+    font-size: 13px;
+  }
+  
+  .announcement-preview {
+    padding: 12px;
+  }
+  
+  .preview-header h4 {
+    font-size: 16px;
+  }
+  
+  .priority-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+  
+  .preview-content p {
+    font-size: 13px;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  
+  .checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
   }
 }

@@ -3,7 +3,56 @@
    Only styles that are unique to this page - no duplicates from unified-dashboard.css
    ============================================================================= */
 
+/* Additional Color Variables for Create Folder */
+:root {
+  --accent-light: rgba(45, 124, 91, 0.1);
+  --success-color: #10b981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --warning-color: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.1);
+  --error-color: #ef4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+}
+
+/* ── PAGE HEADER ── */
+.page-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-header h1 i {
+  color: var(--accent-color);
+  font-size: 18px;
+}
+
+.page-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
 /* ── FORM CONTAINER ── */
+.form-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── FORM GRID ── */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
 .form-container {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -154,8 +203,112 @@
 }
 
 .btn-secondary:hover {
-  background: #e8eaed;
-  border-color: var(--border-color);
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-outline:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+/* ── FOLDER PREVIEW ── */
+.folder-preview {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.folder-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.folder-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.folder-item:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-color);
+}
+
+.folder-item.root {
+  background: var(--accent-light);
+  border-color: var(--accent-color);
+  font-weight: 600;
+}
+
+.folder-item i {
+  color: var(--accent-color);
+  font-size: 16px;
+}
+
+.folder-item span {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.folder-structure {
+  margin-left: 28px;
+  padding-left: 16px;
+  border-left: 2px solid var(--border-color);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── CHECKBOX STYLES ── */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 400;
+  transition: color var(--transition-base);
+}
+
+.checkbox-label:hover {
+  color: var(--accent-color);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  display: none;
 }
 
 /* ── FORM ACTIONS ── */
@@ -185,8 +338,22 @@
     padding: 20px;
   }
   
-  .data-section {
+  .form-section {
     padding: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 15px;
+  }
+  
+  .form-section h3 i {
+    font-size: 13px;
+    padding: 6px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   
   .form-actions {
@@ -195,6 +362,31 @@
   
   .btn {
     width: 100%;
+    justify-content: center;
+  }
+  
+  .folder-preview {
+    padding: 12px;
+  }
+  
+  .folder-item {
+    padding: 10px 12px;
+  }
+  
+  .folder-item i {
+    font-size: 14px;
+  }
+  
+  .folder-item span {
+    font-size: 13px;
+  }
+  
+  .checkbox-group {
+    gap: 10px;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
   }
 }
 
@@ -203,12 +395,29 @@
     padding: 16px;
   }
   
-  .data-section {
+  .form-section {
     padding: 12px;
+  }
+  
+  .form-section h3 {
+    font-size: 14px;
+    gap: 8px;
+  }
+  
+  .form-section h3 i {
+    font-size: 12px;
+    padding: 6px;
   }
   
   .form-group {
     margin-bottom: 16px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px 14px;
+    font-size: 13px;
   }
   
   .btn {
@@ -216,12 +425,37 @@
     font-size: 13px;
   }
   
-  .data-section h2 {
+  .folder-preview {
+    padding: 12px;
+  }
+  
+  .folder-item {
+    padding: 8px 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .folder-item i {
     font-size: 14px;
   }
   
-  .data-section h2 i {
-    font-size: 13px;
-    padding: 6px;
+  .folder-item span {
+    font-size: 12px;
+  }
+  
+  .folder-structure {
+    margin-left: 20px;
+    padding-left: 12px;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
+    gap: 8px;
+  }
+  
+  .checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
   }
 }

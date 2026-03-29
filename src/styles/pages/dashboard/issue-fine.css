@@ -3,6 +3,39 @@
    Only styles that are unique to this page - no duplicates from unified-dashboard.css
    ============================================================================= */
 
+/* Additional Color Variables for Issue Fine */
+:root {
+  --accent-light: rgba(45, 124, 91, 0.1);
+  --success-color: #10b981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --warning-color: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.1);
+  --error-color: #ef4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+}
+
+/* ── PAGE HEADER ── */
+.page-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-header h1 i {
+  color: var(--accent-color);
+  font-size: 18px;
+}
+
+.page-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
 /* ── FORM CONTAINER ── */
 .form-container {
   background: var(--bg-secondary);
@@ -12,6 +45,47 @@
   box-shadow: var(--shadow-sm);
   max-width: 800px;
   margin: 0 auto;
+}
+
+/* ── FORM GRID ── */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── FORM SECTIONS ── */
+.form-section {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  transition: all var(--transition-base);
+}
+
+.form-section:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.form-section h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-section h3 i {
+  color: var(--accent-color);
+  font-size: 14px;
+  background: var(--accent-light);
+  padding: 8px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── FORM GROUPS ── */
@@ -198,6 +272,40 @@
   color: var(--accent-color);
 }
 
+/* ── CHECKBOX STYLES ── */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 400;
+  transition: color var(--transition-base);
+}
+
+.checkbox-label:hover {
+  color: var(--accent-color);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  display: none;
+}
+
 /* ── BUTTONS ── */
 .btn {
   display: inline-flex;
@@ -210,20 +318,23 @@
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
-  border: none;
+  border: 1px solid transparent;
   font-family: 'DM Sans', sans-serif;
   text-decoration: none;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
+  background: var(--accent-color);
+  border-color: var(--accent-color);
   color: white;
-  box-shadow: 0 4px 12px rgba(45, 124, 91, 0.3);
+  box-shadow: 0 2px 8px rgba(45, 124, 91, 0.2);
 }
 
 .btn-primary:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(45, 124, 91, 0.4);
+  box-shadow: 0 4px 12px rgba(45, 124, 91, 0.3);
 }
 
 .btn-primary:active {
@@ -232,13 +343,31 @@
 
 .btn-secondary {
   background: var(--bg-tertiary);
+  border-color: var(--border-color);
   color: var(--text-secondary);
-  border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background: #e8eaed;
-  border-color: var(--border-color);
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-outline:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: var(--error-light);
+  border-color: var(--error-color);
+  color: var(--error-color);
 }
 
 /* ── FORM ACTIONS ── */
@@ -268,8 +397,22 @@
     padding: 20px;
   }
   
-  .data-section {
+  .form-section {
     padding: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 15px;
+  }
+  
+  .form-section h3 i {
+    font-size: 13px;
+    padding: 6px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   
   .form-actions {
@@ -278,15 +421,15 @@
   
   .btn {
     width: 100%;
+    justify-content: center;
   }
   
-  .table-container {
+  .checkbox-group {
+    gap: 10px;
+  }
+  
+  .checkbox-label {
     font-size: 12px;
-  }
-  
-  .table-container th,
-  .table-container td {
-    padding: 10px 12px;
   }
 }
 
@@ -295,8 +438,18 @@
     padding: 16px;
   }
   
-  .data-section {
+  .form-section {
     padding: 12px;
+  }
+  
+  .form-section h3 {
+    font-size: 14px;
+    gap: 8px;
+  }
+  
+  .form-section h3 i {
+    font-size: 12px;
+    padding: 6px;
   }
   
   .form-group {
@@ -315,12 +468,13 @@
     font-size: 13px;
   }
   
-  .data-section h2 {
-    font-size: 14px;
+  .checkbox-label {
+    font-size: 12px;
+    gap: 8px;
   }
   
-  .data-section h2 i {
-    font-size: 13px;
-    padding: 6px;
+  .checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
   }
 }

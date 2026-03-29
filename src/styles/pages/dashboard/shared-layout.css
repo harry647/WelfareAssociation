@@ -1,0 +1,51 @@
+/* =============================================================================
+   Shared Dashboard Layout - Pages Without Sidebar
+   For pages in pages/dashboard/shared/ that don't have sidebars
+   ============================================================================= */
+
+/* Override header positioning for pages without sidebar */
+.admin-header {
+  left: 0 !important;
+  right: 0 !important;
+}
+
+/* Main content adjustments for full-width layout */
+.main {
+  margin-left: 0 !important;
+  padding-top: 72px !important; /* Account for fixed header */
+  min-height: 100vh;
+  background: var(--bg-primary, #f5f7fa);
+}
+
+/* Ensure content section takes full width */
+.content-section {
+  width: 100%;
+  padding: 0;
+}
+
+.page-body {
+  padding: 24px;
+  max-width: none;
+}
+
+/* Footer adjustments for full-width layout */
+.dashboard-footer {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-body {
+    padding: 16px;
+  }
+  
+  .admin-header {
+    left: 0 !important;
+  }
+}
+
+/* Hide sidebar toggle button since there's no sidebar */
+.sidebar-toggle {
+  display: none !important;
+}
