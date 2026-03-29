@@ -320,3 +320,64 @@
   }
 }
 </style>
+
+<script>
+// Header Button Event Handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar toggle is handled by individual page JS files
+    
+    // Notification bell click handler
+    const notificationBell = document.getElementById('notificationBell');
+    if (notificationBell) {
+        notificationBell.addEventListener('click', function() {
+            // Toggle notification dropdown/panel
+            const badge = document.getElementById('notificationBadge');
+            if (badge) badge.style.display = 'none';
+            
+            // Emit custom event for notification panel
+            document.dispatchEvent(new CustomEvent('toggleNotifications'));
+            
+            console.log('Notification bell clicked');
+        });
+    }
+    
+    // Quick actions button handler
+    const quickActionsBtn = document.getElementById('quickActionsBtn');
+    if (quickActionsBtn) {
+        quickActionsBtn.addEventListener('click', function() {
+            // Show quick actions menu or emit event
+            document.dispatchEvent(new CustomEvent('toggleQuickActions'));
+            
+            console.log('Quick actions button clicked');
+        });
+    }
+    
+    // User profile click handler
+    const userProfile = document.getElementById('userProfile');
+    if (userProfile) {
+        userProfile.addEventListener('click', function() {
+            // Toggle user profile dropdown/menu
+            document.dispatchEvent(new CustomEvent('toggleUserMenu'));
+            
+            console.log('User profile clicked');
+        });
+    }
+    
+    // Logout button handler
+    const logoutBtn = document.getElementById('headerLogoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            // Clear auth tokens
+            localStorage.removeItem('swa_auth_token');
+            localStorage.removeItem('swa_user');
+            sessionStorage.removeItem('swa_auth_token');
+            sessionStorage.removeItem('swa_user');
+            
+            // Redirect to login
+            window.location.href = '/pages/auth/login-page.html';
+            
+            console.log('Logout button clicked');
+        });
+    }
+});
+</script>
