@@ -253,7 +253,12 @@
           <p class="loan-number">Loan <span id="loanNumber">-</span></p>
           <h1>Loan Details</h1>
         </div>
-        <span id="loanStatus" class="status-badge">-</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="loanStatus" class="status-badge">-</span>
+          <a id="payNowBtn" href="/pages/payments/make-payment.html?category=loan&loanId=" class="btn btn-success" style="display: none; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            <i class="fas fa-credit-card"></i> Pay Now
+          </a>
+        </div>
       </div>
 
       <!-- Basic Information -->
@@ -469,6 +474,17 @@
         document.getElementById('totalInterest').textContent = `Ksh ${parseFloat(loan.totalInterest || 0).toLocaleString()}`;
         document.getElementById('totalAmount').textContent = `Ksh ${parseFloat(loan.totalAmount || 0).toLocaleString()}`;
         document.getElementById('outstandingBalance').textContent = `Ksh ${parseFloat(loan.remainingBalance || loan.balance || 0).toLocaleString()}`;
+
+        // Show Pay Now button for active/approved loans with outstanding balance
+        const outstandingBalance = loan.remainingBalance || loan.balance || 0;
+        const loanStatus = (loan.status || '').toLowerCase();
+        const payNowBtn = document.getElementById('payNowBtn');
+        
+        if (payNowBtn && outstandingBalance > 0 && ['active', 'approved', 'overdue'].includes(loanStatus)) {
+          // Set the loan ID in the href
+          payNowBtn.href = `/pages/payments/make-payment.html?category=loan&loanId=${loan._id || loan.id || loan.loanId || this.loanId}`;
+          payNowBtn.style.display = 'inline-flex';
+        }
 
         // Guarantors
         if (loan.guarantors && loan.guarantors.length > 0) {

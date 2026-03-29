@@ -6,6 +6,7 @@
 
 // Import services
 import { bereavementService } from '../../../services/index.js';
+import { authService } from '../../../services/index.js';
 
 // API Base URL
 const API_BASE_URL = '/api';
@@ -208,6 +209,9 @@ function closeModal(modal) {
 function initCondolenceForm() {
     const form = document.getElementById('condolenceForm');
     
+    // Prefill user data for condolence form
+    prefillUserData();
+    
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -271,6 +275,9 @@ function addMessageToDisplay(data) {
  */
 function initQuickContribute() {
     const form = document.getElementById('quickContributeForm');
+    
+    // Prefill user data
+    prefillUserData();
     
     if (form) {
         form.addEventListener('submit', async (e) => {
@@ -741,6 +748,69 @@ function getContributionTypeLabel(type) {
         'other': 'Other'
     };
     return types[type] || type || 'Unknown';
+}
+
+/**
+ * Prefill user data for contribution forms
+ */
+function prefillUserData() {
+    try {
+        // Get user from auth service
+        const user = authService.getCurrentUser();
+        
+        // Get member data from localStorage
+        let memberRaw = null;
+        const memberDataStr = localStorage.getItem('swa_member_data');
+        if (memberDataStr) {
+            try {
+                memberRaw = JSON.parse(memberDataStr);
+            } catch (e) {
+                console.log('Could not parse member data');
+            }
+        }
+        
+        // Handle API response structure
+        const member = memberRaw?.member || memberRaw?.data?.member || memberRaw;
+        const userFromMember = memberRaw?.user || memberRaw?.data?.user || {};
+        
+        if (!user && !member) {
+            console.log('No authenticated user or member data found');
+            return;
+        }
+        
+        console.log('Prefilling bereavement user data - User:', user, 'Member:', member);
+        
+        // Build full name
+        let fullName = '';
+        if (user?.firstName || user?.lastName) {
+            fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        } else if (member?.firstName || member?.lastName) {
+            fullName = `${member.firstName || ''} ${member.lastName || ''}`.trim();
+        } else if (userFromMember?.firstName || userFromMember?.lastName) {
+            fullName = `${userFromMember.firstName || ''} ${userFromMember.lastName || ''}`.trim();
+        }
+        
+        // Get phone
+        const phone = member?.phone || userFromMember?.phone || user?.phone || user?.phoneNumber;
+        
+        // Fill ALL contributorName fields on the page (both forms)
+        const nameFields = document.querySelectorAll('#contributorName');
+        nameFields.forEach(field => {
+            if (fullName && field) {
+                field.value = fullName;
+            }
+        });
+        
+        // Fill contributorPhone field (in quick contribute modal)
+        const phoneField = document.getElementById('contributorPhone');
+        if (phone && phoneField) {
+            phoneField.value = phone;
+        }
+        
+        console.log('Bereavement user data prefilled');
+    } catch (error) {
+        console.error('Error prefilling bereavement user data:', error);
+    }
 }
 
 function formatDate(date) {

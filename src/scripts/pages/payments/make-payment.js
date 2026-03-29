@@ -4,6 +4,9 @@
  * Ready for Fetch API integration
  */
 
+// Import auth service for user data
+import { authService } from '../../../services/index.js';
+
 class PaymentManager {
     constructor() {
         // Configuration
@@ -44,8 +47,151 @@ class PaymentManager {
         // Initialize
         this.init();
         
+        // Prefill user details if logged in
+        this.prefillUserData();
+        
         // Check for category parameter in URL
         this.handleUrlCategory();
+        
+        // Check for loan ID in URL (loan payment from loan details page)
+        this.handleLoanFromUrl();
+    }
+
+    /**
+     * Prefill user details from auth service and member data
+     */
+    prefillUserData() {
+        try {
+            // Get user from auth service
+            const user = authService.getCurrentUser();
+            
+            // Get member data from localStorage
+            let memberRaw = null;
+            const memberDataStr = localStorage.getItem('swa_member_data');
+            if (memberDataStr) {
+                try {
+                    memberRaw = JSON.parse(memberDataStr);
+                } catch (e) {
+                    console.log('Could not parse member data');
+                }
+            }
+            
+            // Handle API response structure: { member: {...}, user: {...} }
+            const member = memberRaw?.member || memberRaw?.data?.member || memberRaw;
+            const userFromMember = memberRaw?.user || memberRaw?.data?.user || {};
+            
+            if (!user && !member) {
+                console.log('No authenticated user or member data found');
+                return;
+            }
+            
+            console.log('Prefilling user data - User:', user, 'Member:', member);
+            
+            // Build full name
+            let fullName = '';
+            if (user?.firstName || user?.lastName) {
+                fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+            } else if (member?.firstName || member?.lastName) {
+                fullName = `${member.firstName || ''} ${member.lastName || ''}`.trim();
+            } else if (userFromMember?.firstName || userFromMember?.lastName) {
+                fullName = `${userFromMember.firstName || ''} ${userFromMember.lastName || ''}`.trim();
+            }
+            
+            if (fullName && this.fullName) {
+                this.fullName.value = fullName;
+            }
+            
+            // Prefill student ID (memberNumber)
+            const studentId = member?.memberNumber || userFromMember?.memberNumber || user?.memberId || user?.studentId;
+            if (studentId && this.studentId) {
+                this.studentId.value = studentId;
+            }
+            
+            // Prefill phone
+            const phone = member?.phone || userFromMember?.phone || user?.phone || user?.phoneNumber;
+            if (phone && this.phone) {
+                this.phone.value = phone;
+            }
+            
+            console.log('User data prefilled successfully');
+        } catch (error) {
+            console.error('Error prefilling user data:', error);
+        }
+    }
+
+    /**
+     * Handle loan payment from URL parameter
+     * Used when navigating from loan details page
+     */
+    async handleLoanFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const loanId = urlParams.get('loanId');
+        
+        if (!loanId) {
+            return;
+        }
+        
+        console.log('Loan ID found in URL:', loanId);
+        
+        // Switch to loan category if not already selected
+        const loanRadio = document.querySelector('input[name="paymentCategory"][value="loan"]');
+        if (loanRadio) {
+            loanRadio.checked = true;
+            this.updateFormForCategory();
+        }
+        
+        // Fetch loan details and prefill amount
+        await this.fetchLoanDetails(loanId);
+    }
+
+    /**
+     * Fetch loan details from API
+     */
+    async fetchLoanDetails(loanId) {
+        try {
+            const token = localStorage.getItem('swa_auth_token');
+            if (!token) {
+                console.error('No auth token found');
+                return;
+            }
+            
+            // Show loading state
+            this.updateLoanBalance(0, true);
+            
+            const response = await fetch(`${this.config.apiBaseUrl}/loans/${loanId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch loan details');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                const loan = result.data;
+                const outstandingBalance = loan.remainingBalance || loan.balance || loan.outstandingBalance || 0;
+                
+                // Update loan balance display
+                this.updateLoanBalance(outstandingBalance);
+                
+                // Prefill amount with outstanding balance (user can edit)
+                this.setAmount(outstandingBalance);
+                this.updateHint(`Loan repayment - Enter amount to pay (outstanding: Ksh ${parseFloat(outstandingBalance).toLocaleString()})`);
+                
+                console.log('Loan details loaded, balance:', outstandingBalance);
+            } else {
+                throw new Error(result.message || 'Failed to load loan details');
+            }
+        } catch (error) {
+            console.error('Error fetching loan details:', error);
+            this.updateLoanBalance(0);
+            this.showError('Failed to load loan details. Please enter amount manually.');
+        }
     }
 
     handleUrlCategory() {
