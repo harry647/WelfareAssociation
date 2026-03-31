@@ -175,7 +175,12 @@ class EventsPage {
                 showNotification('Thank you for subscribing! You will receive updates about our events.', 'success');
                 this.newsletterForm.reset();
             } else {
-                showNotification(response.message || 'Failed to subscribe. Please try again.', 'error');
+                // Check for already subscribed
+                if (response.message && response.message.includes('already')) {
+                    showNotification('This email is already subscribed! We will keep you updated.', 'error');
+                } else {
+                    showNotification(response.message || 'Failed to subscribe. Please try again.', 'error');
+                }
             }
 
         } catch (error) {

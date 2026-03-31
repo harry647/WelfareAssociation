@@ -63,7 +63,7 @@ router.post('/', [
         const { email, name } = req.body;
 
         // Check if already subscribed
-        const existing = await Newsletter.findOne({ email: email.toLowerCase() });
+        const existing = await Newsletter.findOne({ where: { email: email.toLowerCase() } });
         
         if (existing) {
             if (existing.isActive) {
@@ -131,7 +131,7 @@ router.post('/unsubscribe', [
     try {
         const { email } = req.body;
 
-        const subscriber = await Newsletter.findOne({ email: email.toLowerCase() });
+        const subscriber = await Newsletter.findOne({ where: { email: email.toLowerCase() } });
 
         if (!subscriber) {
             return res.status(404).json({ success: false, message: 'Email not found' });

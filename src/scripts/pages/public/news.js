@@ -1,4 +1,5 @@
 import { newsService } from '../../../services/index.js';
+import { showNotification } from '../../../utils/utility-functions.js';
 
 /**
  * News Page Script
@@ -41,13 +42,13 @@ class NewsPage {
         const email = emailInput?.value?.trim().toLowerCase();
 
         if (!email) {
-            alert('Please enter your email address');
+            showNotification('Please enter your email address', 'error');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address');
+            showNotification('Please enter a valid email address', 'error');
             return;
         }
 
@@ -62,15 +63,20 @@ class NewsPage {
             const response = await newsService.subscribe(email);
 
             if (response.success) {
-                alert('Thank you for subscribing! You will receive our latest news and updates.');
+                showNotification('Thank you for subscribing! You will receive our latest news and updates.', 'success');
                 this.newsletterForm.reset();
             } else {
-                alert(response.message || 'Failed to subscribe. Please try again.');
+                // Check for already subscribed
+                if (response.message && response.message.includes('already')) {
+                    showNotification('This email is already subscribed! We will keep you updated.', 'error');
+                } else {
+                    showNotification(response.message || 'Failed to subscribe. Please try again.', 'error');
+                }
             }
 
         } catch (error) {
             console.error('Newsletter signup error:', error);
-            alert('Failed to subscribe. Please try again.');
+            showNotification('Failed to subscribe. Please try again.', 'error');
         } finally {
             const submitBtn = this.newsletterForm.querySelector('button');
             if (submitBtn) {
