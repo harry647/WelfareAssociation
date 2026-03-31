@@ -434,19 +434,26 @@ class DonationsPage {
             }
         }
         
+        // Validate phone if provided
+        const phone = formData.get('scholarPhone');
+        if (phone && !this.validatePhone(phone)) {
+            alert('Please enter a valid phone number (format: 254XXXXXXXXX)');
+            return;
+        }
+        
         // Show loading
         this.showLoading('Submitting your sponsorship inquiry...');
         
-        // Prepare data
+        // Prepare data - only include non-empty values for optional fields
         const donationData = {
             donorName: formData.get('scholarName'),
             donorEmail: formData.get('scholarEmail'),
-            donorPhone: formData.get('scholarPhone'),
+            donorPhone: formData.get('scholarPhone') || undefined,
             sponsorshipType: sponsorshipType,
             amount: amount,
-            duration: formData.get('scholarshipDuration'),
-            focusArea: formData.get('scholarshipFocus'),
-            message: formData.get('scholarshipMessage'),
+            duration: formData.get('scholarshipDuration') || undefined,
+            focusArea: formData.get('scholarshipFocus') || undefined,
+            message: formData.get('scholarshipMessage') || undefined,
             anonymous: formData.get('scholarshipAnonymous') === 'on'
         };
         
@@ -516,6 +523,13 @@ class DonationsPage {
         const form = e.target;
         const formData = new FormData(form);
         
+        // Validate phone if provided
+        const phone = formData.get('inkindPhone');
+        if (phone && !this.validatePhone(phone)) {
+            alert('Please enter a valid phone number (format: 254XXXXXXXXX)');
+            return;
+        }
+        
         // Show loading
         this.showLoading('Submitting your in-kind donation...');
         
@@ -526,10 +540,10 @@ class DonationsPage {
             donorPhone: formData.get('inkindPhone'),
             category: formData.get('donationCategory'),
             itemDescription: formData.get('itemDescription'),
-            quantity: formData.get('itemQuantity'),
-            condition: formData.get('itemCondition'),
-            pickupOption: formData.get('pickupOption'),
-            message: formData.get('inkindMessage')
+            quantity: formData.get('itemQuantity') || undefined,
+            condition: formData.get('itemCondition') || undefined,
+            pickupOption: formData.get('pickupOption') || undefined,
+            message: formData.get('inkindMessage') || undefined
         };
         
         try {

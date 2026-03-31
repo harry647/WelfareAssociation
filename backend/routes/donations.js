@@ -82,7 +82,7 @@ router.post('/one-time', [
         console.error('One-time donation error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error submitting donation'
+            message: error.message || 'Error submitting donation'
         });
     }
 });
@@ -118,8 +118,8 @@ router.post('/monthly', [
             donorEmail,
             donorPhone,
             amount,
-            monthlyStartDate: startDate,
-            monthlyDuration: duration,
+            startDate,
+            duration,
             message,
             status: 'pending'
         });
@@ -131,8 +131,8 @@ router.post('/monthly', [
                 id: donation.id,
                 type: donation.type,
                 amount: donation.amount,
-                monthlyStartDate: donation.monthlyStartDate,
-                monthlyDuration: donation.monthlyDuration,
+                startDate: donation.startDate,
+                duration: donation.duration,
                 status: donation.status,
                 createdAt: donation.createdAt
             }
@@ -141,7 +141,7 @@ router.post('/monthly', [
         console.error('Monthly donation error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error setting up monthly donation'
+            message: error.message || 'Error setting up monthly donation'
         });
     }
 });
@@ -153,10 +153,10 @@ router.post('/monthly', [
 router.post('/scholarship', [
     body('donorName').notEmpty().withMessage('Donor name is required').isLength({ min: 2, max: 200 }),
     body('donorEmail').isEmail().withMessage('Valid email is required'),
-    body('donorPhone').optional().matches(phoneRegex).withMessage('Phone must be in format: 254XXXXXXXXX'),
-    body('sponsorshipType').isIn(['full', 'semester', 'partial', 'custom']).withMessage('Valid sponsorship type is required'),
+    body('donorPhone').optional({ nullable: true, checkFalsy: true }).matches(/^254[0-9]{9}$/).withMessage('Phone must be in format: 254XXXXXXXXX'),
+    body('sponsorshipType').notEmpty().withMessage('Sponsorship type is required').isIn(['full', 'semester', 'partial', 'custom']).withMessage('Valid sponsorship type is required'),
     body('amount').optional().isNumeric().isFloat({ min: 1000 }).withMessage('Custom amount must be at least Ksh 1000'),
-    body('duration').isIn(['one-time', 'monthly', 'quarterly']).withMessage('Valid payment duration is required'),
+    body('duration').optional().isIn(['one-time', 'monthly', 'quarterly']).withMessage('Valid payment duration is required'),
     body('focusArea').optional().isIn(['any', 'science', 'business', 'arts', 'health']),
     body('message').optional().isLength({ max: 1000 }),
     body('anonymous').optional().isBoolean(),
@@ -198,8 +198,8 @@ router.post('/scholarship', [
             donorPhone,
             amount: finalAmount,
             sponsorshipType,
-            sponsorshipDuration: duration,
-            scholarshipFocus: focusArea || 'any',
+            duration,
+            focusArea: focusArea || 'any',
             message,
             anonymous: anonymous || false,
             status: 'pending'
@@ -221,7 +221,7 @@ router.post('/scholarship', [
         console.error('Scholarship donation error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error submitting scholarship inquiry'
+            message: error.message || 'Error submitting scholarship inquiry'
         });
     }
 });
@@ -253,6 +253,7 @@ router.post('/corporate', [
 
         const donation = await Donation.create({
             type: 'corporate',
+            amount: 0,
             donorName: contactPerson,
             donorEmail: companyEmail,
             donorPhone: companyPhone,
@@ -280,7 +281,7 @@ router.post('/corporate', [
         console.error('Corporate donation error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error submitting partnership inquiry'
+            message: error.message || 'Error submitting partnership inquiry'
         });
     }
 });
@@ -292,10 +293,10 @@ router.post('/corporate', [
 router.post('/inkind', [
     body('donorName').notEmpty().withMessage('Donor name is required').isLength({ min: 2, max: 200 }),
     body('donorEmail').isEmail().withMessage('Valid email is required'),
-    body('donorPhone').optional().matches(phoneRegex).withMessage('Phone must be in format: 254XXXXXXXXX'),
-    body('category').isIn(['books', 'laptops', 'food', 'clothing', 'stationery', 'other']).withMessage('Valid category is required'),
-    body('itemDescription').notEmpty().withMessage('Item description is required').isLength({ min: 10, max: 1000 }),
-    body('quantity').optional().isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+    body('donorPhone').optional({ nullable: true, checkFalsy: true }).matches(/^254[0-9]{9}$/).withMessage('Phone must be in format: 254XXXXXXXXX'),
+    body('category').notEmpty().withMessage('Donation category is required').isIn(['books', 'laptops', 'food', 'clothing', 'stationery', 'other']).withMessage('Valid category is required'),
+    body('itemDescription').notEmpty().withMessage('Item description is required').isLength({ min: 1, max: 1000 }),
+    body('quantity').optional({ nullable: true, checkFalsy: true }).isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
     body('condition').optional().isIn(['new', 'like-new', 'good', 'fair']).withMessage('Valid condition is required'),
     body('pickupOption').optional().isIn(['dropoff', 'pickup']).withMessage('Valid pickup option is required'),
     body('message').optional().isLength({ max: 1000 }),
@@ -316,14 +317,15 @@ router.post('/inkind', [
 
         const donation = await Donation.create({
             type: 'inkind',
+            amount: 0,
             donorName,
             donorEmail,
             donorPhone,
-            donationCategory: category,
+            category,
             itemDescription,
-            itemQuantity: quantity || 1,
-            itemCondition: condition || 'good',
-            pickupOption: pickupOption || 'dropoff',
+            quantity,
+            condition,
+            pickupOption,
             message,
             status: 'pending'
         });
@@ -334,9 +336,9 @@ router.post('/inkind', [
             data: {
                 id: donation.id,
                 type: donation.type,
-                donationCategory: donation.donationCategory,
+                category: donation.category,
                 itemDescription: donation.itemDescription,
-                itemQuantity: donation.itemQuantity,
+                quantity: donation.quantity,
                 status: donation.status,
                 createdAt: donation.createdAt
             }
@@ -345,7 +347,7 @@ router.post('/inkind', [
         console.error('In-kind donation error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error submitting in-kind donation'
+            message: error.message || 'Error submitting in-kind donation'
         });
     }
 });
