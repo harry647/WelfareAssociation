@@ -150,6 +150,55 @@ router.get('/', auth, async (req, res) => {
 });
 
 /**
+ * GET /api/payments/config
+ * Get payment configuration (bank details, available methods)
+ * NOTE: This route MUST be defined BEFORE /:id to avoid being matched as an ID
+ */
+router.get('/config', auth, async (req, res) => {
+    console.log('DEBUG: Config route reached');
+    try {
+        const config = {
+            availableMethods: [],
+            mpesa: {
+                enabled: !!(paymentConfig.mpesa.consumerKey && paymentConfig.mpesa.consumerKey !== 'your_mpesa_consumer_key_here'),
+                shortcode: paymentConfig.mpesa.shortcode || '123456'
+            },
+            stripe: {
+                enabled: !!(paymentConfig.stripe.publicKey && paymentConfig.stripe.publicKey.startsWith('pk_')),
+                publicKey: paymentConfig.stripe.publicKey || ''
+            },
+            flutterwave: {
+                enabled: !!(paymentConfig.flutterwave.publicKey && paymentConfig.flutterwave.publicKey !== 'your_flutterwave_public_key')
+            },
+            bank: {
+                enabled: !!(paymentConfig.bank.accountNumber && paymentConfig.bank.accountNumber !== '1234567890'),
+                name: paymentConfig.bank.name,
+                accountName: paymentConfig.bank.accountName,
+                accountNumber: paymentConfig.bank.accountNumber,
+                branch: paymentConfig.bank.branch
+            }
+        };
+        
+        // Add enabled methods
+        if (config.mpesa.enabled) config.availableMethods.push('mpesa');
+        if (config.stripe.enabled) config.availableMethods.push('card');
+        if (config.flutterwave.enabled) config.availableMethods.push('flutterwave');
+        if (config.bank.enabled) config.availableMethods.push('bank');
+        
+        res.json({
+            success: true,
+            data: config
+        });
+    } catch (error) {
+        console.error('Error fetching payment config:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching payment configuration'
+        });
+    }
+});
+
+/**
  * GET /api/payments/my
  * Get current user's payments
  */
@@ -714,54 +763,6 @@ router.post('/upload-proof', auth, paymentProofUpload.single('paymentProof'), as
         res.status(500).json({
             success: false,
             message: 'Failed to upload payment proof'
-        });
-    }
-});
-
-/**
- * GET /api/payments/config
- * Get payment configuration (bank details, available methods)
- */
-router.get('/config', async (req, res) => {
-    console.log('DEBUG: Config route reached');
-    try {
-        const config = {
-            availableMethods: [],
-            mpesa: {
-                enabled: !!(paymentConfig.mpesa.consumerKey && paymentConfig.mpesa.consumerKey !== 'your_mpesa_consumer_key_here'),
-                shortcode: paymentConfig.mpesa.shortcode || '123456'
-            },
-            stripe: {
-                enabled: !!(paymentConfig.stripe.publicKey && paymentConfig.stripe.publicKey.startsWith('pk_')),
-                publicKey: paymentConfig.stripe.publicKey || ''
-            },
-            flutterwave: {
-                enabled: !!(paymentConfig.flutterwave.publicKey && paymentConfig.flutterwave.publicKey !== 'your_flutterwave_public_key')
-            },
-            bank: {
-                enabled: !!(paymentConfig.bank.accountNumber && paymentConfig.bank.accountNumber !== '1234567890'),
-                name: paymentConfig.bank.name,
-                accountName: paymentConfig.bank.accountName,
-                accountNumber: paymentConfig.bank.accountNumber,
-                branch: paymentConfig.bank.branch
-            }
-        };
-        
-        // Add enabled methods
-        if (config.mpesa.enabled) config.availableMethods.push('mpesa');
-        if (config.stripe.enabled) config.availableMethods.push('card');
-        if (config.flutterwave.enabled) config.availableMethods.push('flutterwave');
-        if (config.bank.enabled) config.availableMethods.push('bank');
-        
-        res.json({
-            success: true,
-            data: config
-        });
-    } catch (error) {
-        console.error('Error fetching payment config:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching payment configuration'
         });
     }
 });

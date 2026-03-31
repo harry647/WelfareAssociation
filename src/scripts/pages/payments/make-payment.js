@@ -87,7 +87,21 @@ class PaymentManager {
      */
     async fetchPaymentConfig() {
         try {
-            const response = await fetch(`${this.config.apiBaseUrl}/payments/config`);
+            // Get auth token for authenticated request
+            const token = localStorage.getItem('swa_auth_token');
+            
+            const response = await fetch(`${this.config.apiBaseUrl}/payments/config`, {
+                headers: token ? {
+                    'Authorization': `Bearer ${token}`
+                } : {}
+            });
+            
+            // Handle unauthorized - user not logged in
+            if (response.status === 401) {
+                console.warn('User not authenticated for payment config');
+                return; // Silently fail - config is optional
+            }
+            
             const data = await response.json();
             
             if (data.success && data.data) {
