@@ -30,6 +30,7 @@ const pageContentRoutes = require('./page-content');
 const pageRoutes = require('./pages');
 const paymentRoutes = require('./payments');
 const settingsRoutes = require('./settings');
+const mpesaRoutes = require('./mpesa');
 const uploadRoutes = require('./upload');
 
 module.exports = (app) => {
@@ -61,7 +62,8 @@ module.exports = (app) => {
     app.use('/api/page-content', pageContentRoutes);
     app.use('/api/pages', pageRoutes);
     app.use('/api/payments', paymentRoutes);
-    app.use('/api/settings', settingsRoutes);    app.use('/api/upload', uploadRoutes);
+    app.use('/api/settings', settingsRoutes);
+    app.use('/api/mpesa', mpesaRoutes);    app.use('/api/upload', uploadRoutes);
     
     // Health check endpoint
     app.get('/api/health', (req, res) => {

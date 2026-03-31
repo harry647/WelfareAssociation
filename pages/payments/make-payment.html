@@ -32,8 +32,62 @@
     </header>
 
     <main class="payment-container">
+        <!-- Generate Payment Reference First -->
+        <section class="payment-reference-section" id="paymentReferenceSection" style="display: none;">
+            <h2><i class="fas fa-receipt"></i> Generate Payment Reference</h2>
+            <p>Generate a reference number first, then pay via M-Pesa manually</p>
+            
+            <form id="referenceForm" class="reference-form">
+                <div class="form-group">
+                    <label for="refPaymentType">What are you paying for?</label>
+                    <select id="refPaymentType" required>
+                        <option value="">Select payment type</option>
+                        <option value="contribution">Monthly Contribution - Ksh 500</option>
+                        <option value="shares">Shares - Ksh 1000</option>
+                        <option value="welfare">Welfare Fund - Ksh 200</option>
+                        <option value="bereavement">Bereavement - Ksh 500</option>
+                        <option value="loan">Loan Repayment</option>
+                        <option value="event">Event Fee</option>
+                        <option value="fine">Fine/Penalty</option>
+                        <option value="registration">Registration - Ksh 300</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="refAmount">Amount (Ksh)</label>
+                    <input type="number" id="refAmount" required min="10" placeholder="Enter amount">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-qrcode"></i> Generate Reference
+                </button>
+            </form>
+            
+            <div id="referenceResult" class="reference-result" style="display: none;">
+                <div class="result-box">
+                    <h3>Payment Reference</h3>
+                    <p class="reference-code" id="generatedReference"></p>
+                    <p class="reference-instruction">Enter this as your <strong>Account Number</strong> when paying via M-Pesa</p>
+                    
+                    <div class="mpesa-instructions">
+                        <h4>M-Pesa Instructions:</h4>
+                        <ol>
+                            <li>Dial <strong>*234#</strong></li>
+                            <li>Select <strong>Lipa na M-Pesa</strong></li>
+                            <li>Select <strong>Paybill</strong></li>
+                            <li>Enter Business Number: <strong id="refPaybill"></strong></li>
+                            <li>Enter Account Number: <strong id="refAccountNo"></strong></li>
+                            <li>Enter Amount and confirm</li>
+                        </ol>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="location.reload()">
+                    <i class="fas fa-check"></i> Done - Generate Another
+                </button>
+            </div>
+        </section>
+
         <!-- Payment Categories -->
-        <section class="payment-categories">
             <h2><i class="fas fa-th-large"></i> Select Payment Type</h2>
             
             <div class="category-grid">

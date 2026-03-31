@@ -96,6 +96,14 @@ class SecuritySettings {
                 this.saveBankSettings();
             });
         }
+        
+        const mpesaC2BForm = document.getElementById('mpesaC2BForm');
+        if (mpesaC2BForm) {
+            mpesaC2BForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.registerMpesaC2B();
+            });
+        }
     }
 
     async loadSecurityData() {
@@ -622,6 +630,27 @@ class SecuritySettings {
             }
         } catch (error) {
             alert('Error saving settings: ' + error.message);
+        }
+    }
+    
+    async registerMpesaC2B() {
+        const token = localStorage.getItem('swa_auth_token');
+        try {
+            const response = await fetch('/api/mpesa/c2b/register', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                alert('C2B callback registered!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
         }
     }
 }

@@ -144,8 +144,33 @@
                 <button type="submit" class="btn btn-primary">Save Stripe Settings</button>
               </form>
               
+              <!-- M-Pesa C2B Settings -->
+              <form id="mpesaC2BForm" class="security-form payment-config-form">
+                <h3><i class="fas fa-link"></i> M-Pesa C2B Configuration</h3>
+                <p class="form-hint">Configure automatic payment detection for manual M-Pesa payments</p>
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="mpesaC2BEnabled">
+                      <span class="checkmark"></span>
+                      Enable C2B Webhook (Automatic payment detection)
+                    </label>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Callback URL</label>
+                    <input type="url" id="mpesaCallbackUrl" placeholder="https://yourdomain.com/api/mpesa/c2b/validate" readonly>
+                    <small class="form-hint">URL for M-Pesa to call when payments arrive</small>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Register C2B Callback</button>
+                <a href="/api/mpesa/transactions" target="_blank" class="btn btn-secondary" style="margin-left:10px">
+                  <i class="fas fa-list"></i> View Transactions
+                </a>
+              </form>
+
               <!-- Bank Transfer Settings -->
-              <form id="bankForm" class="security-form payment-config-form">
                 <h3><i class="fas fa-university"></i> Bank Transfer</h3>
                 <div class="form-row">
                   <div class="form-group">

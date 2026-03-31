@@ -68,7 +68,14 @@ const Payment = sequelize.define('Payment', {
     mpesa: {
         type: DataTypes.JSONB,
         allowNull: true,
-        defaultValue: {}
+        defaultValue: {},
+        comment: 'Stores M-Pesa transaction details: TransID, TransTime, etc.'
+    },
+    // For manual M-Pesa via Paybill - the account number (student ID used)
+    accountReference: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+        comment: 'Student ID used as M-Pesa account reference'
     },
     // Payment reference
     reference: {

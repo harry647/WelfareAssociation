@@ -479,6 +479,11 @@ class PaymentManager {
     handlePaymentMethodChange(e) {
         const method = e.target.value;
         
+        // Check if M-Pesa selected to show reference option
+        if (method === 'mpesa') {
+            this.showReferenceOption();
+        }
+        
         // Show/hide transaction ID field
         if (method === 'cash') {
             this.transactionId.disabled = true;
@@ -497,6 +502,17 @@ class PaymentManager {
         } else {
             this.transactionId.disabled = true;
             this.hideElement(this.uploadProofGroup);
+        }
+    }
+    
+    /**
+     * Show payment reference section for manual M-Pesa
+     */
+    showReferenceOption() {
+        // Show generate reference button for manual M-Pesa
+        const existingSection = document.getElementById('paymentReferenceSection');
+        if (existingSection) {
+            existingSection.style.display = 'block';
         }
     }
 
@@ -993,4 +1009,51 @@ class PaymentManager {
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.paymentManager = new PaymentManager();
+});
+
+// Handle Generate Payment Reference Form
+document.addEventListener('DOMContentLoaded', () => {
+    const referenceForm = document.getElementById('referenceForm');
+    if (referenceForm) {
+        referenceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const type = document.getElementById('refPaymentType')?.value;
+            const amount = document.getElementById('refAmount')?.value;
+            const token = localStorage.getItem('swa_auth_token');
+            
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/mpesa/create-reference', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ type, amount: parseFloat(amount) })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show reference result
+                    document.getElementById('referenceForm').style.display = 'none';
+                    document.getElementById('referenceResult').style.display = 'block';
+                    
+                    document.getElementById('generatedReference').textContent = data.data.reference;
+                    document.getElementById('refPaybill').textContent = data.data.mpesaPaybill || '123456';
+                    document.getElementById('refAccountNo').textContent = data.data.reference;
+                } else {
+                    alert(data.message || 'Error generating reference');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error generating reference');
+            }
+        });
+    }
 });
