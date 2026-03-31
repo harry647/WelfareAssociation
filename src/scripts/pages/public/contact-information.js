@@ -100,6 +100,10 @@ class ContactPage {
     }
 
     async handleSubmit() {
+        // Clear any existing feedback messages
+        const existingFeedback = this.form.querySelectorAll('.feedback-success, .feedback-error');
+        existingFeedback.forEach(el => el.remove());
+
         // Validate all fields
         const inputs = this.form.querySelectorAll('input, textarea, select');
         let allValid = true;
@@ -117,15 +121,16 @@ class ContactPage {
 
         // Collect form data
         const formData = new FormData(this.form);
+        const firstName = formData.get('first-name');
+        const lastName = formData.get('last-name');
+        
         const contactData = {
-            firstName: formData.get('first-name'),
-            lastName: formData.get('last-name'),
+            name: `${firstName} ${lastName}`,
             email: formData.get('email'),
             phone: formData.get('phone'),
-            studentId: formData.get('student-id'),
             subject: formData.get('subject'),
             message: formData.get('message'),
-            newsletter: formData.get('newsletter') === 'on'
+            category: this.mapSubjectToCategory(formData.get('subject'))
         };
 
         // Show loading state
@@ -135,18 +140,30 @@ class ContactPage {
         submitBtn.disabled = true;
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Real API call
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(contactData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Failed to send message');
+            }
 
             // Show success
-            alert('Thank you for your message! We will get back to you soon.');
+            this.showSuccess('Thank you for your message! We will get back to you soon.');
             
             // Reset form
             this.form.reset();
 
         } catch (error) {
             console.error('Contact form error:', error);
-            this.showError('Failed to send message. Please try again.');
+            this.showError(error.message || 'Failed to send message. Please try again.');
         } finally {
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
@@ -154,7 +171,84 @@ class ContactPage {
     }
 
     showError(message) {
-        alert(message);
+        const errorDiv = this.createFeedbackDiv('error', message);
+        this.form.insertBefore(errorDiv, this.form.firstChild);
+        // Remove after 5 seconds
+        setTimeout(() => errorDiv.remove(), 5000);
+    }
+
+    showSuccess(message) {
+        // Hide form, show full success message covering form area
+        this.form.style.display = 'none';
+        
+        const successContainer = document.createElement('div');
+        successContainer.className = 'success-message-container';
+        successContainer.style.cssText = `
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            border-radius: 16px;
+            text-align: center;
+            margin: 20px 0;
+        `;
+        
+        successContainer.innerHTML = `
+            <i class="fas fa-check-circle" style="font-size: 4rem; margin-bottom: 20px;"></i>
+            <h2 style="margin: 0 0 15px 0; font-size: 1.8rem;">Thank You!</h2>
+            <p style="margin: 0; font-size: 1.2rem; opacity: 0.95;">${message}</p>
+            <button type="button" onclick="location.reload()" style="
+                margin-top: 25px;
+                padding: 14px 35px;
+                background: white;
+                color: #28a745;
+                border: none;
+                border-radius: 30px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+            ">Send Another Message</button>
+        `;
+        
+        this.form.parentNode.insertBefore(successContainer, this.form);
+    }
+
+    createFeedbackDiv(type, message) {
+        const div = document.createElement('div');
+        div.className = `feedback-${type}`;
+        div.style.cssText = `
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
+            justify-content: center;
+        `;
+        if (type === 'success') {
+            div.style.cssText += 'background: #d4edda; color: #155724; border: 2px solid #28a745;';
+            div.innerHTML = `<i class="fas fa-check-circle" style="font-size: 1.5rem;"></i> <span>${message}</span>`;
+        } else {
+            div.style.cssText += 'background: #f8d7da; color: #721c24; border: 2px solid #dc3545;';
+            div.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size: 1.5rem;"></i> <span>${message}</span>`;
+        }
+        return div;
+    }
+
+    mapSubjectToCategory(subject) {
+        const categoryMap = {
+            'membership': 'membership',
+            'loan': 'loan',
+            'welfare': 'general',
+            'volunteer': 'general',
+            'partnership': 'general',
+            'feedback': 'feedback',
+            'complaint': 'complaint',
+            'other': 'other'
+        };
+        return categoryMap[subject] || 'general';
     }
 }
 
@@ -162,6 +256,3 @@ class ContactPage {
 document.addEventListener('DOMContentLoaded', () => {
     new ContactPage();
 });
-
-// Export for module use
-export default ContactPage;
