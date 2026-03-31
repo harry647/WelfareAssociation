@@ -74,6 +74,110 @@
             </div>
           </div>
 
+          <!-- Payment Settings -->
+          <div class="security-sections">
+            <div class="security-section">
+              <h2><i class="fas fa-credit-card"></i> Payment Configuration</h2>
+              <p class="section-description">Configure payment methods. Settings are stored in database with .env as fallback.</p>
+              
+              <!-- M-Pesa Settings -->
+              <form id="mpesaForm" class="security-form payment-config-form">
+                <h3><i class="fab fa-mobile-alt"></i> M-Pesa (Safaricom)</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Consumer Key</label>
+                    <input type="text" id="mpesaConsumerKey" placeholder="M-Pesa Consumer Key">
+                  </div>
+                  <div class="form-group">
+                    <label>Consumer Secret</label>
+                    <input type="password" id="mpesaConsumerSecret" placeholder="M-Pesa Consumer Secret">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Business Shortcode</label>
+                    <input type="text" id="mpesaShortcode" placeholder="123456">
+                  </div>
+                  <div class="form-group">
+                    <label>Paybill Number</label>
+                    <input type="text" id="mpesaPaybill" placeholder="123456">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Callback URL</label>
+                  <input type="url" id="mpesaCallbackUrl" placeholder="https://yourdomain.com/api/payments/mpesa/callback">
+                </div>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="mpesaEnabled">
+                    <span class="checkmark"></span>
+                    Enable M-Pesa Payments
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Save M-Pesa Settings</button>
+              </form>
+              
+              <!-- Stripe Settings -->
+              <form id="stripeForm" class="security-form payment-config-form">
+                <h3><i class="fab fa-stripe-s"></i> Stripe (Card Payments)</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Public Key</label>
+                    <input type="text" id="stripePublicKey" placeholder="pk_test_...">
+                  </div>
+                  <div class="form-group">
+                    <label>Secret Key</label>
+                    <input type="password" id="stripeSecretKey" placeholder="sk_test_...">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Webhook Secret</label>
+                  <input type="password" id="stripeWebhookSecret" placeholder="whsec_...">
+                </div>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="stripeEnabled">
+                    <span class="checkmark"></span>
+                    Enable Stripe Payments
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Stripe Settings</button>
+              </form>
+              
+              <!-- Bank Transfer Settings -->
+              <form id="bankForm" class="security-form payment-config-form">
+                <h3><i class="fas fa-university"></i> Bank Transfer</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Bank Name</label>
+                    <input type="text" id="bankName" placeholder="Kenya Commercial Bank">
+                  </div>
+                  <div class="form-group">
+                    <label>Branch</label>
+                    <input type="text" id="bankBranch" placeholder="Kenyatta Avenue Branch">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Account Name</label>
+                    <input type="text" id="bankAccountName" placeholder="SWA JOOUST">
+                  </div>
+                  <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" id="bankAccountNumber" placeholder="1234567890">
+                  </div>
+                </div>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="bankEnabled">
+                    <span class="checkmark"></span>
+                    Enable Bank Transfer
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Bank Settings</button>
+              </form>
+            </div>
+
           <!-- Security Settings Sections -->
           <div class="security-sections">
             <!-- Password Policy -->

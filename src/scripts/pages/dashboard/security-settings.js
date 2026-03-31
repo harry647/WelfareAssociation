@@ -26,6 +26,7 @@ class SecuritySettings {
         this.initSidebar();
         this.initEventListeners();
         this.loadSecurityData();
+        this.loadPaymentConfig();
     }
 
     initSidebar() {
@@ -69,6 +70,31 @@ class SecuritySettings {
         const logoutBtn = document.querySelector('.logout-btn-header');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => this.handleLogout());
+        }
+        
+        // Payment setting forms
+        const mpesaForm = document.getElementById('mpesaForm');
+        if (mpesaForm) {
+            mpesaForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveMpesaSettings();
+            });
+        }
+        
+        const stripeForm = document.getElementById('stripeForm');
+        if (stripeForm) {
+            stripeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveStripeSettings();
+            });
+        }
+        
+        const bankForm = document.getElementById('bankForm');
+        if (bankForm) {
+            bankForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveBankSettings();
+            });
         }
     }
 
@@ -450,6 +476,152 @@ class SecuritySettings {
             localStorage.removeItem('swa_refresh_token');
             localStorage.removeItem('swa_user');
             window.location.href = '../../index.html';
+        }
+    }
+    
+    // ============================================
+    // Payment Configuration Methods
+    // ============================================
+    
+    async loadPaymentConfig() {
+        try {
+            const token = localStorage.getItem('swa_auth_token');
+            if (!token) return;
+            
+            const response = await fetch('/api/settings/payment/config', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            const data = await response.json();
+            if (data.success && data.data) {
+                this.populatePaymentForms(data.data);
+            }
+        } catch (error) {
+            console.error('Error loading payment config:', error);
+        }
+    }
+    
+    populatePaymentForms(config) {
+        // M-Pesa
+        if (config.mpesa) {
+            document.getElementById('mpesaEnabled').checked = config.mpesa.enabled;
+            document.getElementById('mpesaConsumerKey').value = config.mpesa.consumerKey || '';
+            document.getElementById('mpesaConsumerSecret').value = ''; // Never show existing
+            document.getElementById('mpesaShortcode').value = config.mpesa.shortcode || '';
+            document.getElementById('mpesaPaybill').value = config.mpesa.paybill || '';
+            document.getElementById('mpesaCallbackUrl').value = config.mpesa.callbackUrl || '';
+        }
+        
+        // Stripe
+        if (config.stripe) {
+            document.getElementById('stripeEnabled').checked = config.stripe.enabled;
+            document.getElementById('stripePublicKey').value = config.stripe.publicKey || '';
+            document.getElementById('stripeSecretKey').value = ''; // Never show existing
+            document.getElementById('stripeWebhookSecret').value = '';
+        }
+        
+        // Bank
+        if (config.bank) {
+            document.getElementById('bankEnabled').checked = config.bank.enabled;
+            document.getElementById('bankName').value = config.bank.name || '';
+            document.getElementById('bankBranch').value = config.bank.branch || '';
+            document.getElementById('bankAccountName').value = config.bank.accountName || '';
+            document.getElementById('bankAccountNumber').value = config.bank.accountNumber || '';
+        }
+    }
+    
+    async saveMpesaSettings() {
+        const mpesa = {
+            enabled: document.getElementById('mpesaEnabled').checked,
+            consumerKey: document.getElementById('mpesaConsumerKey').value,
+            consumerSecret: document.getElementById('mpesaConsumerSecret').value,
+            shortcode: document.getElementById('mpesaShortcode').value,
+            paybill: document.getElementById('mpesaPaybill').value,
+            callbackUrl: document.getElementById('mpesaCallbackUrl').value
+        };
+        
+        const token = localStorage.getItem('swa_auth_token');
+        try {
+            const response = await fetch('/api/settings/payment/config', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ mpesa })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                alert('M-Pesa settings saved successfully!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error saving settings: ' + error.message);
+        }
+    }
+    
+    async saveStripeSettings() {
+        const stripe = {
+            enabled: document.getElementById('stripeEnabled').checked,
+            publicKey: document.getElementById('stripePublicKey').value,
+            secretKey: document.getElementById('stripeSecretKey').value,
+            webhookSecret: document.getElementById('stripeWebhookSecret').value
+        };
+        
+        const token = localStorage.getItem('swa_auth_token');
+        try {
+            const response = await fetch('/api/settings/payment/config', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ stripe })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                alert('Stripe settings saved successfully!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error saving settings: ' + error.message);
+        }
+    }
+    
+    async saveBankSettings() {
+        const bank = {
+            enabled: document.getElementById('bankEnabled').checked,
+            name: document.getElementById('bankName').value,
+            branch: document.getElementById('bankBranch').value,
+            accountName: document.getElementById('bankAccountName').value,
+            accountNumber: document.getElementById('bankAccountNumber').value
+        };
+        
+        const token = localStorage.getItem('swa_auth_token');
+        try {
+            const response = await fetch('/api/settings/payment/config', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ bank })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                alert('Bank settings saved successfully!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error saving settings: ' + error.message);
         }
     }
 }

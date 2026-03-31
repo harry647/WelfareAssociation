@@ -209,8 +209,9 @@
                         <option value="mpesa">M-Pesa</option>
                         <option value="bank">Bank Transfer</option>
                         <option value="card">Card Payment (Visa/Mastercard)</option>
-                        <option value="cash">Cash</option>
+                        <option value="cash" class="admin-only" style="display:none;">Cash (Admin Only)</option>
                     </select>
+                    <small class="form-hint" id="paymentMethodHint">Cash option available for admin/treasurer only</small>
                 </div>
                 
                 <div class="form-group">
@@ -338,10 +339,11 @@
             <div class="instructions-card">
                 <h3><i class="fas fa-university"></i> Bank Transfer</h3>
                 <ol>
-                    <li>Log in to your online banking or visit any KCB branch</li>
-                    <li><strong>Bank:</strong> Kenya Commercial Bank (KCB)</li>
-                    <li><strong>Account Name:</strong> SWA JOOUST</li>
-                    <li><strong>Account Number:</strong> 1234567890</li>
+                    <li>Log in to your online banking or visit any bank branch</li>
+                    <li><strong>Bank:</strong> <span data-bank-name>Kenya Commercial Bank</span></li>
+                    <li><strong>Account Name:</strong> <span data-bank-account-name>SWA JOOUST</span></li>
+                    <li><strong>Account Number:</strong> <span data-bank-account>1234567890</span></li>
+                    <li><strong>Branch:</strong> <span data-bank-branch>Kenyatta Avenue</span></li>
                     <li><strong>Reference:</strong> Use your Student ID (e.g., JOO/2024/001)</li>
                     <li>Complete the transfer and keep the receipt</li>
                     <li><strong>Upload proof of payment</strong> using the file upload field above, or</li>

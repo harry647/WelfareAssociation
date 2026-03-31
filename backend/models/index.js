@@ -28,6 +28,7 @@ const Contact = require('./Contact');
 const Newsletter = require('./Newsletter');
 const Withdrawal = require('./Withdrawal');
 const PageContent = require('./PageContent');
+const Settings = require('./Settings');
 
 // Define associations
 // User - Member association (User has memberId pointing to Member)
@@ -148,7 +149,8 @@ async function initModels(sequelizeInstance) {
         Contact,
         Newsletter,
         Withdrawal,
-        PageContent
+        PageContent,
+        Settings
     };
 }
 

@@ -12,6 +12,7 @@ const Payment = sequelize.define('Payment', {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
+    // Member reference
     memberId: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -20,6 +21,20 @@ const Payment = sequelize.define('Payment', {
             key: 'id'
         }
     },
+    // Student ID for reference
+    studentId: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+    },
+    // Payer details
+    fullName: {
+        type: DataTypes.STRING(200),
+        allowNull: true
+    },
+    phone: {
+        type: DataTypes.STRING(20),
+        allowNull: true
+    },
     paymentNumber: {
         type: DataTypes.STRING(20),
         allowNull: false,
@@ -27,7 +42,7 @@ const Payment = sequelize.define('Payment', {
     },
     // Payment type
     type: {
-        type: DataTypes.ENUM('loan_repayment', 'contribution', 'savings', 'fine', 'donation', 'other'),
+        type: DataTypes.ENUM('loan_repayment', 'contribution', 'savings', 'fine', 'donation', 'shares', 'welfare', 'bereavement', 'event', 'registration', 'subscription', 'other'),
         allowNull: false
     },
     // Related entity (stored as JSON)
@@ -80,6 +95,11 @@ const Payment = sequelize.define('Payment', {
     },
     // Description
     description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    // Additional notes
+    notes: {
         type: DataTypes.TEXT,
         allowNull: true
     },

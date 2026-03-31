@@ -7,6 +7,7 @@ const { runVolunteerMigration } = require('./volunteer-migration');
 const { runVolunteerConstraintsMigration } = require('./volunteer-constraints-migration');
 const { runLoanMigration } = require('./loan-migration');
 const { runDonationMigration } = require('./donation-migration');
+const { runPaymentMigration } = require('./payment-migration');
 
 async function runAllMigrations() {
     console.log('\n🔄 Running database migrations...');
@@ -28,17 +29,21 @@ async function runAllMigrations() {
         console.log('\n💰 Running donation migrations...');
         const donationSuccess = await runDonationMigration();
         
+        // Run payment migration
+        console.log('\n💳 Running payment migrations...');
+        const paymentSuccess = await runPaymentMigration();
+        
         // Add missing donation columns (if they don't exist)
         console.log('\n🔧 Adding missing donation columns...');
         const addColumnsSuccess = await addMissingDonationColumns();
         
-        if (loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && addColumnsSuccess) {
+        if (loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && addColumnsSuccess) {
             console.log('\n✅ All migrations completed successfully');
         } else {
             console.log('\n⚠️ Some migrations failed');
         }
         
-        return loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && addColumnsSuccess;
+        return loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && addColumnsSuccess;
         
     } catch (error) {
         console.error('\n❌ Migration runner error:', error);

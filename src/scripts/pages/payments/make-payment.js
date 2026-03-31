@@ -55,6 +55,97 @@ class PaymentManager {
         
         // Check for loan ID in URL (loan payment from loan details page)
         this.handleLoanFromUrl();
+        
+        // Hide cash option for non-admin users
+        this.handleCashOptionForAdmin();
+    }
+    
+    /**
+     * Hide cash payment option for non-admin users
+     */
+    handleCashOptionForAdmin() {
+        const user = authService.getCurrentUser();
+        const isAdmin = user?.role === 'admin' || user?.role === 'treasurer' || user?.role === 'secretary';
+        
+        const cashOption = this.paymentMethod?.querySelector('option[value="cash"]');
+        const hint = document.getElementById('paymentMethodHint');
+        
+        if (!isAdmin && cashOption) {
+            cashOption.style.display = 'none';
+            if (hint) {
+                hint.style.display = 'block';
+            }
+        } else if (cashOption) {
+            cashOption.style.display = '';
+            if (hint) {
+                hint.style.display = 'none';
+            }
+        }
+    }
+    
+    /**
+     * Fetch payment config from API
+     */
+    async fetchPaymentConfig() {
+        try {
+            const response = await fetch(`${this.config.apiBaseUrl}/payments/config`);
+            const data = await response.json();
+            
+            if (data.success && data.data) {
+                const config = data.data;
+                
+                // Update bank details in instructions
+                this.updateBankDetails(config.bank || {});
+                
+                // Disable unavailable payment methods
+                this.updateAvailableMethods(config.availableMethods || []);
+            }
+        } catch (error) {
+            console.error('Error fetching payment config:', error);
+        }
+    }
+    
+    /**
+     * Update bank details in the payment form instructions
+     */
+    updateBankDetails(bankConfig, accountName) {
+        if (!bankConfig.enabled) return;
+        
+        // Update bank transfer instructions
+        const bankAccountElements = document.querySelectorAll('[data-bank-account]');
+        bankAccountElements.forEach(el => {
+            if (bankConfig.accountNumber) el.textContent = bankConfig.accountNumber;
+        });
+        
+        const bankNameElements = document.querySelectorAll('[data-bank-name]');
+        bankNameElements.forEach(el => {
+            if (bankConfig.name) el.textContent = bankConfig.name;
+        });
+        
+        const bankBranchElements = document.querySelectorAll('[data-bank-branch]');
+        bankBranchElements.forEach(el => {
+            if (bankConfig.branch) el.textContent = bankConfig.branch;
+        });
+        
+        const bankAccountNameElements = document.querySelectorAll('[data-bank-account-name]');
+        bankAccountNameElements.forEach(el => {
+            if (accountName || bankConfig.accountName) el.textContent = accountName || bankConfig.accountName;
+        });
+    }
+    
+    /**
+     * Enable/disable payment methods based on config
+     */
+    updateAvailableMethods(availableMethods) {
+        if (!this.paymentMethod) return;
+        
+        const options = this.paymentMethod.querySelectorAll('option');
+        options.forEach(option => {
+            const value = option.value;
+            if (value && value !== '') {
+                option.disabled = !availableMethods.includes(value);
+            }
+        });
     }
 
     /**
@@ -213,6 +304,9 @@ class PaymentManager {
         this.bindEvents();
         this.generateReferenceNumber();
         this.updateFormForCategory();
+        
+        // Fetch payment config from server
+        this.fetchPaymentConfig();
     }
 
     cacheElements() {
@@ -500,40 +594,58 @@ class PaymentManager {
             const paymentData = this.collectPaymentData();
             paymentData.paymentType = 'stk_push';
             
-            // Ready for Fetch API - uncomment when backend is ready
-            /*
+            // Connect to real API
             const response = await fetch(`${this.config.apiBaseUrl}${this.config.stkPushEndpoint}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('swa_auth_token')}`
+                },
                 body: JSON.stringify({
                     phone,
                     amount,
-                    reference: this.referenceNumber?.value,
-                    ...paymentData
+                    category: paymentData.category,
+                    referenceNumber: this.referenceNumber?.value
                 })
             });
             
-            if (!response.ok) throw new Error('STK Push failed');
-            
             const data = await response.json();
             
-            if (data.success) {
-                this.showSuccess('Payment initiated! Check your phone for the M-Pesa prompt.');
-            } else {
-                throw new Error(data.message || 'Payment failed');
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || data.errors?.[0]?.msg || 'STK Push failed');
             }
-            */
             
-            // Mock response for now - remove when backend is ready
-            setTimeout(() => {
-                this.showSuccess('STK Push initiated! Check your phone for the M-Pesa prompt. Enter your PIN to complete payment.');
-            }, 2000);
+            this.showSuccess(data.message || 'Payment initiated! Check your phone for the M-Pesa prompt.');
             
         } catch (error) {
             console.error('STK Push error:', error);
             this.hideLoading();
             this.showError(error.message || 'Failed to initiate payment. Please try again.');
         }
+    }
+
+    /**
+     * Upload payment proof file
+     */
+    async uploadPaymentProof(file) {
+        if (!file) return null;
+        
+        const formData = new FormData();
+        formData.append('paymentProof', file);
+        
+        const response = await fetch(`${this.config.apiBaseUrl}/payments/upload-proof`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('swa_auth_token')}`
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            return data.data.fileUrl;
+        }
+        return null;
     }
 
     /**
@@ -553,29 +665,38 @@ class PaymentManager {
             const paymentData = this.collectPaymentData();
             paymentData.paymentType = 'manual';
             
-            // Ready for Fetch API - uncomment when backend is ready
-            /*
+            // Upload payment proof if file selected
+            let receiptUrl = null;
+            if (this.paymentProof?.files?.length > 0) {
+                const file = this.paymentProof.files[0];
+                if (file) {
+                    this.showLoading('Uploading payment proof...');
+                    receiptUrl = await this.uploadPaymentProof(file);
+                }
+            }
+            
+            // Add receipt URL to payment data
+            if (receiptUrl) {
+                paymentData.receipt = receiptUrl;
+            }
+            
+            // Connect to real API
             const response = await fetch(`${this.config.apiBaseUrl}${this.config.paymentSubmitEndpoint}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('swa_auth_token')}`
+                },
                 body: JSON.stringify(paymentData)
             });
             
-            if (!response.ok) throw new Error('Payment submission failed');
-            
             const data = await response.json();
             
-            if (data.success) {
-                this.showSuccess('Payment submitted successfully!', data);
-            } else {
-                throw new Error(data.message || 'Payment failed');
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || data.errors?.[0]?.msg || 'Payment submission failed');
             }
-            */
             
-            // Mock response for now - remove when backend is ready
-            setTimeout(() => {
-                this.showSuccess('Payment submitted successfully!', paymentData);
-            }, 1500);
+            this.showSuccess(data.message || 'Payment submitted successfully!', data.data);
             
         } catch (error) {
             console.error('Payment submission error:', error);
@@ -585,17 +706,38 @@ class PaymentManager {
     }
 
     /**
+     * Map frontend category to API type
+     */
+    getTypeFromCategory(category) {
+        const categoryToType = {
+            'contribution': 'contribution',
+            'shares': 'shares',
+            'welfare': 'welfare',
+            'bereavement': 'bereavement',
+            'loan': 'loan_repayment',
+            'event': 'event',
+            'fine': 'fine',
+            'registration': 'registration',
+            'subscription': 'subscription',
+            'other': 'other'
+        };
+        return categoryToType[category] || category;
+    }
+
+    /**
      * Collect all payment data from form
      */
     collectPaymentData() {
         const formData = new FormData(this.form);
+        const category = document.querySelector('input[name="paymentCategory"]:checked')?.value;
         
         return {
             referenceNumber: this.referenceNumber?.value,
             fullName: formData.get('fullName'),
             studentId: formData.get('studentId'),
             phone: formData.get('phone'),
-            category: document.querySelector('input[name="paymentCategory"]:checked')?.value,
+            category: category,
+            type: this.getTypeFromCategory(category), // Send mapped type as well
             amount: parseFloat(formData.get('amount')),
             paymentMethod: formData.get('paymentMethod'),
             transactionId: formData.get('transactionId'),
