@@ -40,8 +40,7 @@ class PaymentManager {
                 subscription: 100,
                 other: 100
             },
-            phoneRegex: /^254[0-9]{9}$/,
-            studentIdRegex: /^JOO\/\d{4}\/\d{3,}$/i
+            phoneRegex: /^254[0-9]{9}$/
         };
 
         // Initialize
@@ -778,8 +777,6 @@ class PaymentManager {
         
         if (!this.studentId?.value?.trim()) {
             errors.push('Student ID is required');
-        } else if (!this.config.studentIdRegex.test(this.studentId.value)) {
-            errors.push('Invalid Student ID format (e.g., JOO/2024/001)');
         }
         
         if (!this.phone?.value?.trim()) {

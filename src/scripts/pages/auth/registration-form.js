@@ -196,14 +196,6 @@ class RegistrationForm {
             }
         }
 
-        // Student ID validation
-        if (name === 'student-id' && value) {
-            const idRegex = /^(JOO|JOOUST|\d{2})\/?\d{4}\/\d{3}$/i;
-            if (!idRegex.test(value)) {
-                isValid = false;
-                errorMessage = 'Please enter a valid student ID (e.g., JOO/2024/001)';
-            }
-        }
 
         // Terms validation
         if (name === 'terms' && !input.checked) {
