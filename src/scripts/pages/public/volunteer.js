@@ -5,8 +5,114 @@
  * @version 2.0.0
  */
 
-import { volunteerService } from '../../services/index.js';
-import { showNotification } from '../../utils/utility-functions.js';
+// NOTE: Imports removed to prevent module loading issues
+// Using inline fallbacks for functionality
+
+// Fallback volunteer service with actual API calls
+const volunteerService = {
+    async getOpportunities() {
+        try {
+            const response = await fetch('/api/volunteers/opportunities');
+            const data = await response.json();
+            return data.success ? data.data : [];
+        } catch (e) {
+            console.warn('Could not load opportunities from API:', e);
+            return [];
+        }
+    },
+    async registerVolunteer(data) {
+        try {
+            const response = await fetch('/api/volunteers/public/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (result.success) {
+                return result;
+            } else {
+                throw new Error(result.message || 'Failed to submit');
+            }
+        } catch (e) {
+            console.error('API call failed:', e);
+            // Fallback to demo mode if API fails
+            throw e;
+        }
+    }
+};
+
+// Notification function that shows actual feedback
+function showNotification(message, type = 'info') {
+    // Create a notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span class="notification-icon">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        </span>
+        <span class="notification-message">${message}</span>
+        <button class="notification-close">&times;</button>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+        font-family: Arial, sans-serif;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Add animation keyframes if not already present
+    if (!document.getElementById('notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Close button handler
+    const closeBtn = notification.querySelector('.notification-close');
+    closeBtn.style.cssText = `
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0 5px;
+    `;
+    closeBtn.onclick = () => removeNotification(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => removeNotification(notification), 5000);
+}
+
+function removeNotification(notification) {
+    notification.style.animation = 'slideOut 0.3s ease-out';
+    setTimeout(() => notification.remove(), 300);
+}
 
 class VolunteerPage {
     constructor() {
@@ -180,14 +286,11 @@ class VolunteerPage {
         } catch (error) {
             console.error('Volunteer form error:', error);
             
-            // Show error message
+            // Show error message (no fallback to demo mode - let users know API may not be available)
             showNotification(
-                error.message || 'Failed to submit application. Please try again.',
+                error.message || 'Failed to submit application. The server may be unavailable. Please try again later.',
                 'error'
             );
-            
-            // Demo mode fallback - simulate success for testing
-            this.handleDemoSubmission(volunteerData);
             
         } finally {
             // Reset loading state

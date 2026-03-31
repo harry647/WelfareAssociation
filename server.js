@@ -153,7 +153,7 @@ async function initializeDatabase() {
     // Sync models - creates tables if they don't exist
     try {
         console.log('✓ Syncing database schema...');
-        await sequelize.sync({ alter: false }); // false = only create if not exists
+        await sequelize.sync({ alter: true }); // true = update existing tables
         console.log('✓ Database schema synced');
     } catch (error) {
         console.warn('Database sync warning:', error.message);
@@ -170,40 +170,14 @@ async function initializeDatabase() {
  * Adds missing columns/tables that are defined in models but not in database
  */
 async function runDatabaseMigrations() {
-    const queryInterface = sequelize.getQueryInterface();
-    console.log('\n✓ Checking database schema migrations...');
+    const { runAllMigrations } = require('./backend/migrations');
     
     try {
-        // Migration: Add guarantor columns to loans table if missing
-        const loansTable = await queryInterface.describeTable('loans');
-        
-        const loansMigrations = [
-            { column: 'guarantor_status', spec: {
-                type: sequelize.Sequelize.ENUM('pending', 'accepted', 'rejected', 'not_required'),
-                defaultValue: 'pending',
-                allowNull: true
-            }},
-            { column: 'guarantor_response_date', spec: {
-                type: sequelize.Sequelize.DATE,
-                allowNull: true
-            }},
-            { column: 'guarantor_response_note', spec: {
-                type: sequelize.Sequelize.TEXT,
-                allowNull: true
-            }}
-        ];
-        
-        for (const migration of loansMigrations) {
-            if (!loansTable[migration.column]) {
-                console.log(`  → Adding missing column: loans.${migration.column}`);
-                await queryInterface.addColumn('loans', migration.column, migration.spec);
-                console.log(`  ✓ Column loans.${migration.column} added`);
-            }
-        }
-        
-        console.log('✓ Database migrations complete');
+        const success = await runAllMigrations();
+        return success;
     } catch (error) {
         console.warn('Migration warning:', error.message);
+        return false;
     }
 }
 

@@ -64,6 +64,64 @@ router.get('/', auth, async (req, res) => {
 });
 
 /**
+ * GET /api/volunteers/opportunities
+ * Get volunteer opportunities (public, no auth required)
+ * MUST be defined BEFORE /:id to avoid route conflict
+ */
+router.get('/opportunities', async (req, res) => {
+    try {
+        // Return static opportunities data
+        const opportunities = [
+            {
+                id: 'events',
+                title: 'Event Planning Committee',
+                description: 'Help plan and organize SWA events throughout the year',
+                spots: 5,
+                commitment: '5 hours/week',
+                skills: ['Organization', 'Creativity', 'Teamwork']
+            },
+            {
+                id: 'mentorship',
+                title: 'Mentorship Program',
+                description: 'Mentor new students and help them adjust to campus life',
+                spots: 10,
+                commitment: '2 hours/week',
+                skills: ['Good communication', 'Patience', 'Empathy']
+            },
+            {
+                id: 'outreach',
+                title: 'Community Outreach',
+                description: 'Participate in community service projects and charity drives',
+                spots: 15,
+                commitment: 'Variable (project-based)',
+                skills: ['Teamwork', 'Enthusiasm', 'Adaptability']
+            },
+            {
+                id: 'media',
+                title: 'Media & Communications',
+                description: 'Help with social media, photography, and content creation',
+                spots: 3,
+                commitment: '3 hours/week',
+                skills: ['Social media', 'Photography', 'Writing']
+            },
+            {
+                id: 'technical',
+                title: 'Technical Support',
+                description: 'Help with website maintenance, database management',
+                spots: 2,
+                commitment: '4 hours/week',
+                skills: ['Web development', 'IT', 'Data management']
+            }
+        ];
+
+        res.json({ success: true, data: opportunities });
+    } catch (error) {
+        console.error('Error fetching opportunities:', error);
+        res.status(500).json({ success: false, message: 'Error fetching opportunities' });
+    }
+});
+
+/**
  * GET /api/volunteers/:id
  * Get volunteer by ID
  */
@@ -104,6 +162,63 @@ router.get('/statistics', auth, authorize('admin', 'chairman', 'secretary'), asy
 });
 
 /**
+ * GET /api/volunteers/opportunities
+ * Get volunteer opportunities (public, no auth required)
+ */
+router.get('/opportunities', async (req, res) => {
+    try {
+        // Return static opportunities data
+        const opportunities = [
+            {
+                id: 'events',
+                title: 'Event Planning Committee',
+                description: 'Help plan and organize SWA events throughout the year',
+                spots: 5,
+                commitment: '5 hours/week',
+                skills: ['Organization', 'Creativity', 'Teamwork']
+            },
+            {
+                id: 'mentorship',
+                title: 'Mentorship Program',
+                description: 'Mentor new students and help them adjust to campus life',
+                spots: 10,
+                commitment: '2 hours/week',
+                skills: ['Good communication', 'Patience', 'Empathy']
+            },
+            {
+                id: 'outreach',
+                title: 'Community Outreach',
+                description: 'Participate in community service projects and charity drives',
+                spots: 15,
+                commitment: 'Variable (project-based)',
+                skills: ['Teamwork', 'Enthusiasm', 'Adaptability']
+            },
+            {
+                id: 'media',
+                title: 'Media & Communications',
+                description: 'Help with social media, photography, and content creation',
+                spots: 3,
+                commitment: '3 hours/week',
+                skills: ['Social media', 'Photography', 'Writing']
+            },
+            {
+                id: 'technical',
+                title: 'Technical Support',
+                description: 'Help with website maintenance, database management',
+                spots: 2,
+                commitment: '4 hours/week',
+                skills: ['Web development', 'IT', 'Data management']
+            }
+        ];
+
+        res.json({ success: true, data: opportunities });
+    } catch (error) {
+        console.error('Error fetching opportunities:', error);
+        res.status(500).json({ success: false, message: 'Error fetching opportunities' });
+    }
+});
+
+/**
  * POST /api/volunteers/public/apply
  * Public volunteer application (no auth required)
  */
@@ -118,6 +233,20 @@ router.post('/public/apply', [
     try {
         const { name, email, phone, studentId, year, interests, availability, experience, message } = req.body;
 
+        // Map frontend interests to valid enum values
+        const interestToAreaMap = {
+            'events': 'events',
+            'mentorship': 'education',
+            'outreach': 'community',
+            'media': 'administration',
+            'technical': 'administration',
+            'fundraising': 'fundraising'
+        };
+        
+        // Use the first valid interest or default to 'other'
+        const firstInterest = Array.isArray(interests) ? interests[0] : interests;
+        const area = interestToAreaMap[firstInterest] || 'other';
+
         // Create volunteer application record
         const volunteer = await Volunteer.create({
             name,
@@ -125,9 +254,12 @@ router.post('/public/apply', [
             phone,
             studentId: studentId || null,
             yearOfStudy: year || null,
-            area: interests.join(', '),
-            availability,
-            skills: experience || '',
+            area: area,
+            // Store availability as JSON object
+            availability: { preference: availability },
+            // Store skills as array (from experience)
+            skills: experience ? [experience] : [],
+            experience: experience || '',
             motivation: message || '',
             status: 'pending'
         });
