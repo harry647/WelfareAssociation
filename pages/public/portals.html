@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- W3 Schools HTML Includes -->
-    <script src="https://www.w3schools.com/lib/w3.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="SWA Portals - Access different portals for students, members, and administrators">
@@ -48,7 +46,7 @@
                         <li><i class="fas fa-file-alt"></i> View Policies</li>
                         <li><i class="fas fa-newspaper"></i> Latest News</li>
                     </ul>
-                    <a href="../dashboard/student-portal.html" class="portal-btn">Access Student Portal</a>
+                    <a href="/pages/dashboard/member/student-portal.html" class="portal-btn">Access Student Portal</a>
                 </article>
 
                 <article class="portal-card member-portal">
@@ -82,24 +80,7 @@
                         <li><i class="fas fa-file-export"></i> Data Export</li>
                         <li><i class="fas fa-bullhorn"></i> Announcements</li>
                     </ul>
-                    <a href="../dashboard/admin/admin-dashboard.html" class="portal-btn">Access Admin Portal</a>
-                </article>
-
-                <article class="portal-card public-portal">
-                    <div class="portal-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h3>Public Portal</h3>
-                    <p>For visitors and the general public to learn about the association.</p>
-                    <ul class="portal-features">
-                        <li><i class="fas fa-info-circle"></i> About SWA</li>
-                        <li><i class="fas fa-graduation-cap"></i> Programs & Services</li>
-                        <li><i class="fas fa-envelope"></i> Contact Information</li>
-                        <li><i class="fas fa-newspaper"></i> News & Updates</li>
-                        <li><i class="fas fa-calendar-alt"></i> Upcoming Events</li>
-                        <li><i class="fas fa-question-circle"></i> FAQs</li>
-                    </ul>
-                    <a href="../index.html" class="portal-btn">Visit Public Portal</a>
+                    <a href="/pages/dashboard/admin/admin-dashboard.html" class="portal-btn">Access Admin Portal</a>
                 </article>
             </div>
         </section>
@@ -259,12 +240,10 @@
     <!-- Shared Footer -->
     <div w3-include-html="../shared/footer.html"></div>
     
+    <!-- HTML Include Utility -->
+    <script type="module" src="../../src/scripts/utils/html-include.js"></script>
+    
     <!-- Public Pages Shared Script -->
     <script type="module" src="../../src/scripts/pages/public/public.js"></script>
-    
-    <!-- W3 Schools HTML Includes Script -->
-    <script>
-        w3.includeHTML();
-    </script>
 </body>
 </html>

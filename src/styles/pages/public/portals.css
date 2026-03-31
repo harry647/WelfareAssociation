@@ -225,6 +225,10 @@
     transition: all var(--transition-normal);
     font-weight: 600;
     font-size: 0.9375rem;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
 }
 
 .student-portal .portal-btn {
