@@ -120,26 +120,70 @@ class RegistrationForm {
     }
 
     setupFieldValidation() {
-        // Phone number formatting
+        // Phone number formatting - converts any format to +254XXXXXXXXX
         const phoneInput = document.getElementById('phone');
         if (phoneInput) {
             phoneInput.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/[^\d+]/g, '');
-                if (!value.startsWith('+')) {
-                    value = '+254' + value.replace(/^\+?254/, '').replace(/^0/, '');
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Handle various input formats and convert to 254XXXXXXXXX
+                if (value.length > 0) {
+                    if (value.startsWith('+')) {
+                        value = value.substring(1);
+                    }
+                    
+                    if (value.startsWith('254')) {
+                        // Already has country code
+                    } else if (value.startsWith('0')) {
+                        value = '254' + value.substring(1);
+                    } else if (value.startsWith('7') || value.startsWith('1')) {
+                        value = '254' + value;
+                    } else if (value.length >= 3) {
+                        const mobileMatch = value.match(/[7-9]\d{8,9}/);
+                        if (mobileMatch) {
+                            value = '254' + mobileMatch[0];
+                        }
+                    }
                 }
+                
+                if (value.length > 12) {
+                    value = value.substring(0, 12);
+                }
+                
                 e.target.value = value;
             });
         }
 
-        // Emergency phone formatting
+        // Emergency phone formatting - converts any format to +254XXXXXXXXX
         const emergencyPhoneInput = document.getElementById('emergency-phone');
         if (emergencyPhoneInput) {
             emergencyPhoneInput.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/[^\d+]/g, '');
-                if (!value.startsWith('+')) {
-                    value = '+254' + value.replace(/^\+?254/, '').replace(/^0/, '');
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Handle various input formats and convert to 254XXXXXXXXX
+                if (value.length > 0) {
+                    if (value.startsWith('+')) {
+                        value = value.substring(1);
+                    }
+                    
+                    if (value.startsWith('254')) {
+                        // Already has country code
+                    } else if (value.startsWith('0')) {
+                        value = '254' + value.substring(1);
+                    } else if (value.startsWith('7') || value.startsWith('1')) {
+                        value = '254' + value;
+                    } else if (value.length >= 3) {
+                        const mobileMatch = value.match(/[7-9]\d{8,9}/);
+                        if (mobileMatch) {
+                            value = '254' + mobileMatch[0];
+                        }
+                    }
                 }
+                
+                if (value.length > 12) {
+                    value = value.substring(0, 12);
+                }
+                
                 e.target.value = value;
             });
         }

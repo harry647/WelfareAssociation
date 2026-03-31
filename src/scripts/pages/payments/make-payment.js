@@ -816,17 +816,40 @@ class PaymentManager {
 
     /**
      * Format phone number as user types
+     * Converts any format to 254XXXXXXXXX
      */
     formatPhoneNumber(e) {
         let value = e.target.value.replace(/\D/g, '');
         
-        // Add country code if not present
-        if (value.length > 0 && !value.startsWith('254')) {
-            if (value.startsWith('0')) {
-                value = '254' + value.substring(1);
-            } else if (value.startsWith('7')) {
-                value = '254' + value;
+        // Handle various input formats and convert to 254XXXXXXXXX
+        if (value.length > 0) {
+            // If starts with +, remove it first (already done by replace but double check)
+            if (value.startsWith('+')) {
+                value = value.substring(1);
             }
+            
+            // If starts with 254, keep it
+            if (value.startsWith('254')) {
+                // Already has country code, just keep it
+            } else if (value.startsWith('0')) {
+                // Remove leading 0 and add 254 (e.g., 0706256790 -> 254706256790)
+                value = '254' + value.substring(1);
+            } else if (value.startsWith('7') || value.startsWith('1')) {
+                // Starts with 7 or 1 (Kenyan mobile), add 254
+                value = '254' + value;
+            } else if (value.length >= 3) {
+                // For any other case, try to extract the mobile number
+                // Look for 7 or 1 after potential country code
+                const mobileMatch = value.match(/[7-9]\d{8,9}/);
+                if (mobileMatch) {
+                    value = '254' + mobileMatch[0];
+                }
+            }
+        }
+        
+        // Limit to 12 digits (254 + 9 digits)
+        if (value.length > 12) {
+            value = value.substring(0, 12);
         }
         
         e.target.value = value;

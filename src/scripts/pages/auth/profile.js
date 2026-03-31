@@ -186,13 +186,41 @@ class ProfileManager {
     }
 
     /**
-     * Format phone number input
+     * Format phone number input - converts any format to +254XXXXXXXXX
      */
     formatPhoneNumber(input, fieldName) {
-        let value = input.value.replace(/[^\d+]/g, '');
-        if (!value.startsWith('+')) {
-            value = '+254' + value.replace(/^\+?254/, '').replace(/^0/, '');
+        let value = input.value.replace(/\D/g, '');
+        
+        // Handle various input formats and convert to +254XXXXXXXXX
+        if (value.length > 0) {
+            // If starts with +, remove it first
+            if (value.startsWith('+')) {
+                value = value.substring(1);
+            }
+            
+            // If starts with 254, keep it
+            if (value.startsWith('254')) {
+                // Already has country code, just keep it
+            } else if (value.startsWith('0')) {
+                // Remove leading 0 and add 254 (e.g., 0706256790 -> 254706256790)
+                value = '254' + value.substring(1);
+            } else if (value.startsWith('7') || value.startsWith('1')) {
+                // Starts with 7 or 1 (Kenyan mobile), add 254
+                value = '254' + value;
+            } else if (value.length >= 3) {
+                // For any other case, try to extract the mobile number
+                const mobileMatch = value.match(/[7-9]\d{8,9}/);
+                if (mobileMatch) {
+                    value = '254' + mobileMatch[0];
+                }
+            }
         }
+        
+        // Limit to 12 digits (254 + 9 digits)
+        if (value.length > 12) {
+            value = value.substring(0, 12);
+        }
+        
         input.value = value;
     }
 

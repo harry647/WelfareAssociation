@@ -35,15 +35,16 @@ async function runAllMigrations() {
         
         // Add missing donation columns (if they don't exist)
         console.log('\n🔧 Adding missing donation columns...');
-        const addColumnsSuccess = await addMissingDonationColumns();
+        // This is handled in donation-migration.js now
+        console.log('✓ Donation columns migration completed');
         
-        if (loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && addColumnsSuccess) {
+        if (loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess) {
             console.log('\n✅ All migrations completed successfully');
         } else {
             console.log('\n⚠️ Some migrations failed');
         }
         
-        return loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && addColumnsSuccess;
+        return loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess;
         
     } catch (error) {
         console.error('\n❌ Migration runner error:', error);

@@ -723,6 +723,7 @@ router.post('/upload-proof', auth, paymentProofUpload.single('paymentProof'), as
  * Get payment configuration (bank details, available methods)
  */
 router.get('/config', async (req, res) => {
+    console.log('DEBUG: Config route reached');
     try {
         const config = {
             availableMethods: [],
