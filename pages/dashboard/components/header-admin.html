@@ -25,6 +25,19 @@
       <i class="fas fa-plus-circle"></i>
     </button>
 
+    <!-- Communication Icons -->
+    <div class="communication-icons">
+      <a href="/pages/dashboard/admin/send-email.html" class="header-icon-btn" title="Send Email">
+        <i class="fas fa-envelope"></i>
+      </a>
+      <a href="/pages/dashboard/admin/send-sms.html" class="header-icon-btn" title="Send SMS">
+        <i class="fas fa-sms"></i>
+      </a>
+      <a href="/pages/dashboard/admin/send-whatsapp.html" class="header-icon-btn whatsapp" title="Send WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+    </div>
+
     <!-- User Profile Dropdown -->
     <div class="user-profile" id="userProfile">
       <div class="user-avatar" id="headerUserAvatar">A</div>
@@ -280,6 +293,47 @@
   color: #f87171;
 }
 
+/* Communication Icons */
+.communication-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+}
+
+.header-icon-btn i {
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.header-icon-btn:hover {
+  background: rgba(45, 124, 91, 0.3) !important;
+}
+
+.header-icon-btn:hover i {
+  color: #4ade80;
+}
+
+.header-icon-btn.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.3) !important;
+}
+
+.header-icon-btn.whatsapp:hover i {
+  color: #25D366;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
   .admin-header {
@@ -317,6 +371,10 @@
   
   .user-profile {
     padding: 8px;
+  }
+  
+  .communication-icons {
+    display: none;
   }
 }
 </style>
