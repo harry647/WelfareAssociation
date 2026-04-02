@@ -9,7 +9,7 @@ const { body, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const Bereavement = require('../models/Bereavement');
 const Member = require('../models/Member');
-const { auth, authorize } = require('../middleware/auth');
+const { auth, authorize, optionalAuth } = require('../middleware/auth');
 
 const validate = (req, res, next) => {
     const errors = validationResult(req);
@@ -21,15 +21,15 @@ const validate = (req, res, next) => {
 
 /**
  * GET /api/bereavement
- * Get all bereavement cases
+ * Get all bereavement cases (public endpoint)
  */
-router.get('/', auth, async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
     try {
         const { status, page = 1, limit = 10 } = req.query;
         const where = {};
 
-        // Filter by role
-        if (req.user.role === 'member') {
+        // Filter by role if authenticated
+        if (req.user && req.user.role === 'member') {
             const member = await Member.findOne({ where: { userId: req.user.id } });
             if (member) {
                 where.memberId = member.id;
@@ -194,17 +194,39 @@ router.get('/:id', auth, async (req, res) => {
  * POST /api/bereavement
  * Create a new bereavement case
  */
-router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
-    body('deceasedName').notEmpty().withMessage('Deceased name is required'),
-    body('deceasedRelationship').notEmpty().withMessage('Relationship is required'),
-    body('memberId').notEmpty().withMessage('Member ID is required')
-], validate, async (req, res) => {
+router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), async (req, res) => {
     try {
-        const { deceasedName, deceasedRelationship, dateOfDeath, dateOfBurial, cause, memberId, notes } = req.body;
+        console.log('=== BEREAVEMENT POST ===');
+        console.log('Raw body:', req.body);
+        console.log('Headers:', req.headers['content-type']);
+        
+        const body = req.body;
+        const memberId = body.memberId;
+        const deceased = body.deceased || {};
+        
+        console.log('Parsed - memberId:', memberId, 'deceased:', deceased);
+
+        // Validate required fields
+        if (!memberId) {
+            return res.status(400).json({ success: false, message: 'Member ID is required' });
+        }
+        
+        const deceasedName = deceased.name || body.deceasedName;
+        const deceasedRelationship = deceased.relationship || body.deceasedRelationship;
+        
+        console.log('Deceased name:', deceasedName, 'relationship:', deceasedRelationship);
+
+        if (!deceasedName) {
+            return res.status(400).json({ success: false, message: 'Deceased name is required' });
+        }
+        
+        if (!deceasedRelationship) {
+            return res.status(400).json({ success: false, message: 'Relationship is required' });
+        }
 
         const member = await Member.findByPk(memberId);
         if (!member) {
-            return res.status(404).json({ success: false, message: 'Member not found' });
+            return res.status(404).json({ success: false, message: 'Member not found: ' + memberId });
         }
 
         // Generate case number
@@ -214,14 +236,15 @@ router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
         const bereavement = await Bereavement.create({
             memberId,
             caseNumber,
-            deceasedName,
-            deceasedRelationship,
-            dateOfDeath,
-            dateOfBurial,
-            cause,
-            notes: notes || '',
-            createdBy: req.user.id,
-            status: 'pending'
+            deceased: {
+                name: deceasedName,
+                relationship: deceasedRelationship,
+                dateOfDeath: deceased.dateOfDeath || body.dateOfDeath || null,
+                dateOfBurial: deceased.dateOfBurial || body.dateOfBurial || null
+            },
+            notes: body.notes || '',
+            createdBy: req.user?.id === 'admin' ? null : req.user.id,
+            status: body.status || 'pending'
         });
 
         res.status(201).json({
@@ -231,7 +254,7 @@ router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
         });
     } catch (error) {
         console.error('Error creating bereavement case:', error);
-        res.status(500).json({ success: false, message: 'Error creating bereavement case' });
+        res.status(500).json({ success: false, message: 'Error creating bereavement case: ' + error.message });
     }
 });
 

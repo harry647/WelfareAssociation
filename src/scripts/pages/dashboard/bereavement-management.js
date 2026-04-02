@@ -4,12 +4,14 @@
  */
 
 import { bereavementService, memberService } from '../../../services/index.js';
-import { formatCurrency, formatDate } from '../../../utils/utility-functions.js';
-import { showNotification } from '../../../utils/utility-functions.js';
-
-
-import { showConfirm } from '../../../utils/utility-functions.js';
+import { formatCurrency, formatDate, showNotification, showConfirm, showAlert } from '../../../utils/utility-functions.js';
 import { showPrompt } from '../../../utils/utility-functions.js';
+
+// Make functions available globally for inline onclick handlers
+window.showAlert = showAlert;
+window.showConfirm = showConfirm;
+window.showNotification = showNotification;
+
 // State
 let bereavementCases = [];
 let members = [];
@@ -272,8 +274,11 @@ async function submitNewCase() {
         status: 'pending'
     };
     
+    console.log('Submitting bereavement case:', caseData);
+    
     try {
-        await bereavementService.createCase(caseData);
+        const result = await bereavementService.createCase(caseData);
+        console.log('Bereavement created:', result);
         showNotification('Bereavement case created successfully', 'success');
         
         // Close modal and reload
@@ -288,7 +293,7 @@ async function submitNewCase() {
         
     } catch (error) {
         console.error('Error creating bereavement case:', error);
-        showNotification('Failed to create bereavement case', 'error');
+        showNotification('Failed to create bereavement case: ' + (error.message || 'Unknown error'), 'error');
     }
 }
 

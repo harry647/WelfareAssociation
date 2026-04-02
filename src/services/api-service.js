@@ -175,11 +175,17 @@ class ApiService {
 
     /**
      * GET request
+     * @param {string} endpoint - API endpoint
+     * @param {Object} params - Query parameters
+     * @param {boolean} auth - Whether to include auth token (default: true)
+     * @param {Object} options - Additional options
      */
     get(endpoint, params = {}, auth = true, options = {}) {
         const queryString = new URLSearchParams(params).toString();
         const url = queryString ? `${endpoint}?${queryString}` : endpoint;
-        return this.request(url, { method: 'GET', auth, ...options });
+        // For public endpoints (auth=false), prevent redirect on 401
+        const preventAutoRedirect = !auth;
+        return this.request(url, { method: 'GET', auth, preventAutoRedirect });
     }
 
     /**

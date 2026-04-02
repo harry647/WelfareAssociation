@@ -8,6 +8,7 @@
 export class ModalHelper {
     constructor() {
         this.modalCount = 0;
+        this.callbacks = {};
         this.initStyles();
     }
 
@@ -332,8 +333,12 @@ export class ModalHelper {
             }
         });
 
-        // Store callback for this modal
-        overlay.dataset.callback = callback.toString();
+        // Generate unique ID for this callback
+        const callbackId = `callback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        this.callbacks[callbackId] = callback;
+        
+        // Store just the callback ID in dataset
+        overlay.dataset.callbackId = callbackId;
     }
 
     closeModal(modalId, result = null) {
@@ -345,18 +350,21 @@ export class ModalHelper {
             overlay.style.animation = 'modalFadeIn 0.3s ease reverse';
             
             setTimeout(() => {
-                overlay.remove();
+                // Get callback ID and execute callback from memory
+                const callbackId = overlay.dataset.callbackId;
+                const callback = this.callbacks[callbackId];
                 
-                // Execute callback if exists
-                const callbackStr = overlay.dataset.callback;
-                if (callbackStr) {
+                if (callback) {
                     try {
-                        const callback = eval(`(${callbackStr})`);
                         callback(result);
                     } catch (error) {
                         console.error('Modal callback error:', error);
                     }
+                    // Clean up callback
+                    delete this.callbacks[callbackId];
                 }
+                
+                overlay.remove();
             }, 300);
         }
     }

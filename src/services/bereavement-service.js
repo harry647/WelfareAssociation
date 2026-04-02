@@ -17,7 +17,8 @@ class BereavementService {
      * @param {Object} params - Query parameters
      */
     async getAll(params = {}) {
-        return apiService.get(API_CONFIG.endpoints.bereavement, params, true);
+        // Use auth=false to allow public access (optional auth for GET)
+        return apiService.get(API_CONFIG.endpoints.bereavement, params, false);
     }
 
     /**

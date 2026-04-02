@@ -395,13 +395,14 @@ async function loadBereavementData() {
     if (noDataEl) noDataEl.style.display = 'none';
     
     try {
-        // Fetch from API
+        // Fetch from API (public, no auth required)
         const response = await bereavementService.getAll();
         
         if (response && response.data) {
-            bereavementData = response.data;
+            // Transform API data to expected format
+            bereavementData = response.data.map(transformBereavementData);
         } else if (Array.isArray(response)) {
-            bereavementData = response;
+            bereavementData = response.map(transformBereavementData);
         } else {
             bereavementData = [];
         }
@@ -409,7 +410,18 @@ async function loadBereavementData() {
         console.log('Bereavement data loaded:', bereavementData.length, 'cases');
     } catch (error) {
         console.error('Error loading bereavement data:', error);
+        // Show error message but don't redirect
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (noDataEl) {
+            noDataEl.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <h3>Unable to Load Data</h3>
+                <p>Could not connect to server. Please try again later.</p>
+            `;
+            noDataEl.style.display = 'flex';
+        }
         bereavementData = [];
+        return;
     }
     
     // Hide loading
@@ -420,6 +432,41 @@ async function loadBereavementData() {
     updateSummary();
     populateBeneficiarySelect();
     populateAdminCaseSelect();
+}
+
+/**
+ * Transform API data to frontend expected format
+ */
+function transformBereavementData(apiData) {
+    const deceased = apiData.deceased || {};
+    const member = apiData.member || {};
+    
+    return {
+        id: apiData.id,
+        caseNumber: apiData.caseNumber,
+        // Member info
+        name: member.firstName && member.lastName ? `${member.firstName} ${member.lastName}` : 'Unknown',
+        memberName: member.firstName && member.lastName ? `${member.firstName} ${member.lastName}` : 'Unknown',
+        memberId: member.id,
+        studentId: member.memberNumber,
+        // Deceased info
+        type: deceased.relationship || 'other',
+        description: deceased.name ? `Lost: ${deceased.relationship}` : 'No description',
+        date: deceased.dateOfDeath || apiData.createdAt,
+        // Financial
+        amountRaised: parseFloat(apiData.totalContributions) || 0,
+        targetAmount: 50000, // Default target
+        // Status
+        status: apiData.status || 'pending',
+        urgent: apiData.status === 'active',
+        // Relations
+        contributions: apiData.contributions || [],
+        messages: apiData.messages || [],
+        supporters: (apiData.contributions || []).length,
+        // Dates
+        createdAt: apiData.createdAt,
+        updatedAt: apiData.updatedAt
+    };
 }
 
 async function loadContributions() {
