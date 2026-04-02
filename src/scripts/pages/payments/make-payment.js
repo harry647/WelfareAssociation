@@ -340,6 +340,9 @@ class PaymentManager {
         this.cacheElements();
         this.bindEvents();
         this.generateReferenceNumber();
+        this.loadEvents(); // Load events from database
+        this.loadBereavements(); // Load bereavement cases from database
+        this.prefillUserData();
         this.updateFormForCategory();
         
         // Fetch payment config from server
@@ -366,6 +369,8 @@ class PaymentManager {
         // Dynamic form groups
         this.eventGroup = document.getElementById('eventGroup');
         this.eventSelect = document.getElementById('eventSelect');
+        this.bereavementGroup = document.getElementById('bereavementGroup');
+        this.bereavementSelect = document.getElementById('bereavementSelect');
         this.loanBalanceGroup = document.getElementById('loanBalanceGroup');
         this.loanBalance = document.getElementById('loanBalance');
         this.recurringGroup = document.getElementById('recurringGroup');
@@ -380,6 +385,7 @@ class PaymentManager {
         this.lastPaymentReference = null; // Store reference for receipt download
         this.currentLoanId = null; // Store loaded loan ID for loan repayments
         this.currentEventId = null; // Store selected event ID for event payments
+        this.currentBereavementId = null; // Store selected bereavement ID for bereavement payments
         this.currentFineId = null; // Store selected fine ID for fine payments
         
         // Feedback elements
@@ -402,6 +408,9 @@ class PaymentManager {
         // Event selection change
         this.eventSelect?.addEventListener('change', (e) => this.handleEventChange(e));
 
+        // Bereavement selection change
+        this.bereavementSelect?.addEventListener('change', (e) => this.handleBereavementChange(e));
+
         // Student ID change (for loan balance lookup)
         this.studentId?.addEventListener('change', () => this.fetchLoanBalance());
 
@@ -422,6 +431,172 @@ class PaymentManager {
 
         // Amount validation
         this.amount?.addEventListener('input', () => this.validateAmount());
+    }
+
+    /**
+     * Load events from database and populate dropdown
+     */
+    async loadEvents() {
+        try {
+            console.log('Loading events from database...');
+            
+            const response = await fetch(`${this.config.apiBaseUrl}/events`);
+            if (!response.ok) {
+                throw new Error('Failed to load events');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                this.populateEventDropdown(result.data);
+                console.log(`Loaded ${result.data.length} events`);
+            } else {
+                console.warn('No events found or API error:', result.message);
+                // Keep existing hardcoded options as fallback
+            }
+        } catch (error) {
+            console.error('Error loading events:', error);
+            // Keep existing hardcoded options as fallback
+        }
+    }
+
+    /**
+     * Populate event dropdown with database events
+     */
+    populateEventDropdown(events) {
+        if (!this.eventSelect) return;
+        
+        // Clear existing options except the first one
+        const firstOption = this.eventSelect.querySelector('option[value=""]');
+        this.eventSelect.innerHTML = '';
+        if (firstOption) {
+            this.eventSelect.appendChild(firstOption);
+        }
+        
+        // Add events from database
+        events.forEach(event => {
+            const option = document.createElement('option');
+            option.value = event.id; // Use UUID as value
+            option.textContent = `${event.title} - Ksh ${this.estimateEventFee(event)}`;
+            option.dataset.amount = this.estimateEventFee(event);
+            option.dataset.title = event.title;
+            option.dataset.date = event.eventDate;
+            this.eventSelect.appendChild(option);
+        });
+        
+        console.log(`Populated event dropdown with ${events.length} events`);
+    }
+
+    /**
+     * Estimate event fee based on event type or title
+     */
+    estimateEventFee(event) {
+        // You can customize this logic based on your event pricing
+        const typeFees = {
+            'workshop': 500,
+            'seminar': 300,
+            'social': 1000,
+            'fundraiser': 2000,
+            'sports': 200,
+            'meeting': 0, // Usually free
+            'other': 500
+        };
+        
+        // Check if fee can be determined from title
+        const title = event.title.toLowerCase();
+        if (title.includes('trip') || title.includes('tour')) return 2000;
+        if (title.includes('party') || title.includes('dinner')) return 1500;
+        if (title.includes('workshop') || title.includes('training')) return 500;
+        if (title.includes('sports') || title.includes('game')) return 200;
+        
+        // Use type-based fee
+        return typeFees[event.type] || 500;
+    }
+
+    /**
+     * Handle event selection change
+     */
+    handleEventChange(e) {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const amount = selectedOption?.dataset?.amount;
+        
+        if (amount && this.amount) {
+            this.setAmount(parseFloat(amount));
+            this.updateHint(`Event fee: Ksh ${parseFloat(amount).toLocaleString()}`);
+        }
+        
+        // Store event ID for payment linking
+        this.currentEventId = e.target.value;
+        console.log('Selected event ID:', this.currentEventId);
+    }
+
+    /**
+     * Load bereavement cases from database and populate dropdown
+     */
+    async loadBereavements() {
+        try {
+            console.log('Loading bereavement cases from database...');
+            
+            const response = await fetch(`${this.config.apiBaseUrl}/bereavement`);
+            if (!response.ok) {
+                throw new Error('Failed to load bereavement cases');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                this.populateBereavementDropdown(result.data);
+                console.log(`Loaded ${result.data.length} bereavement cases`);
+            } else {
+                console.warn('No bereavement cases found or API error:', result.message);
+                // Keep empty dropdown as fallback
+            }
+        } catch (error) {
+            console.error('Error loading bereavement cases:', error);
+            // Keep empty dropdown as fallback
+        }
+    }
+
+    /**
+     * Populate bereavement dropdown with database cases
+     */
+    populateBereavementDropdown(cases) {
+        if (!this.bereavementSelect) return;
+        
+        // Clear existing options except the first one
+        const firstOption = this.bereavementSelect.querySelector('option[value=""]');
+        this.bereavementSelect.innerHTML = '';
+        if (firstOption) {
+            this.bereavementSelect.appendChild(firstOption);
+        }
+        
+        // Add bereavement cases from database
+        cases.forEach(bereavement => {
+            const option = document.createElement('option');
+            option.value = bereavement.id; // Use UUID as value
+            option.textContent = `${bereavement.deceased?.name || 'Bereavement Case'} - Support Fund`;
+            option.dataset.deceased = bereavement.deceased?.name || '';
+            option.dataset.member = bereavement.member?.firstName + ' ' + bereavement.member?.lastName || '';
+            this.bereavementSelect.appendChild(option);
+        });
+        
+        console.log(`Populated bereavement dropdown with ${cases.length} cases`);
+    }
+
+    /**
+     * Handle bereavement selection change
+     */
+    handleBereavementChange(e) {
+        // Store bereavement ID for payment linking
+        this.currentBereavementId = e.target.value;
+        console.log('Selected bereavement ID:', this.currentBereavementId);
+        
+        // Update hint with selected case info
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const deceasedName = selectedOption?.dataset?.deceased;
+        if (deceasedName) {
+            this.updateHint(`Supporting bereavement case for ${deceasedName}`);
+        }
     }
 
     /**
@@ -453,6 +628,9 @@ class PaymentManager {
         if (selectedCategory !== 'event') {
             this.currentEventId = null;
         }
+        if (selectedCategory !== 'bereavement') {
+            this.currentBereavementId = null;
+        }
         if (selectedCategory !== 'fine') {
             this.currentFineId = null;
         }
@@ -481,9 +659,10 @@ class PaymentManager {
                 break;
                 
             case 'bereavement':
+                this.showElement(this.bereavementGroup);
                 this.setAmount(this.config.defaultAmounts.bereavement);
                 this.setMinAmount(this.config.minAmounts.bereavement);
-                this.updateHint('Minimum: Ksh ' + this.config.minAmounts.bereavement);
+                this.updateHint('Select a bereavement case to support');
                 break;
                 
             case 'loan':
@@ -788,6 +967,7 @@ class PaymentManager {
             paymentMethod: formData.get('paymentMethod'),
             transactionId: formData.get('transactionId'),
             event: formData.get('eventSelect'),
+            bereavement: formData.get('bereavementSelect'),
             paymentSchedule: formData.get('paymentSchedule'),
             notes: formData.get('notes'),
             status: 'pending',
@@ -808,7 +988,9 @@ class PaymentManager {
                 }
                 break;
             case 'bereavement':
-                // Could load bereavement ID from selection if needed
+                if (this.currentBereavementId && typeof this.currentBereavementId === 'string') {
+                    data.relatedTo = this.currentBereavementId;
+                }
                 break;
             case 'contribution':
             case 'shares':
@@ -854,6 +1036,11 @@ class PaymentManager {
         const category = document.querySelector('input[name="paymentCategory"]:checked')?.value;
         if (category === 'event' && !this.eventSelect?.value) {
             errors.push('Please select an event');
+        }
+        
+        // Validate bereavement selection for bereavement category
+        if (category === 'bereavement' && !this.bereavementSelect?.value) {
+            errors.push('Please select a bereavement case');
         }
         
         if (errors.length > 0) {
@@ -1136,8 +1323,10 @@ class PaymentManager {
 
     hideAllDynamicGroups() {
         this.hideElement(this.eventGroup);
+        this.hideElement(this.bereavementGroup);
         this.hideElement(this.loanBalanceGroup);
         this.hideElement(this.recurringGroup);
+        this.hideElement(this.uploadProofGroup);
     }
 }
 

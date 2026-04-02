@@ -220,11 +220,19 @@
                     <label for="eventSelect">Select Event <span class="required">*</span></label>
                     <select id="eventSelect" name="eventSelect">
                         <option value="">Select Event</option>
-                        <option value="trip" data-amount="2000">Annual Trip - Ksh 2000</option>
-                        <option value="party" data-amount="1500">End Year Party - Ksh 1500</option>
-                        <option value="workshop" data-amount="500">Career Workshop - Ksh 500</option>
-                        <option value="sports" data-amount="300">Sports Day - Ksh 300</option>
+                        <!-- Events will be populated dynamically from database -->
                     </select>
+                    <small class="form-hint">Choose from available events</small>
+                </div>
+                
+                <!-- Bereavement Selection (for bereavement contributions) -->
+                <div class="form-group" id="bereavementGroup" style="display: none;">
+                    <label for="bereavementSelect">Select Bereavement Case <span class="required">*</span></label>
+                    <select id="bereavementSelect" name="bereavementSelect">
+                        <option value="">Select Bereavement Case</option>
+                        <!-- Bereavement cases will be populated dynamically from database -->
+                    </select>
+                    <small class="form-hint">Choose a bereavement case to support</small>
                 </div>
                 
                 <!-- Loan Balance Display (for loan repayments) -->

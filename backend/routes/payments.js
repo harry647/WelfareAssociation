@@ -1020,6 +1020,36 @@ router.post('/submit', auth, [
                 }
             }
             
+            // For bereavement payments, try to find an active bereavement for the member
+            // If no active bereavement for paying member, search for any active bereavement
+            if (type === 'bereavement' && !relatedToId) {
+                const Bereavement = getModel('Bereavement');
+                let bereavement = await Bereavement.findOne({
+                    where: {
+                        memberId: payment.memberId,
+                        status: 'active'
+                    }
+                });
+                
+                // If no active bereavement for this member, search for any active bereavement
+                // (member might be contributing to another member's bereavement)
+                if (!bereavement) {
+                    bereavement = await Bereavement.findOne({
+                        where: {
+                            status: 'active'
+                        },
+                        order: [['createdAt', 'ASC']]
+                    });
+                }
+                
+                if (bereavement) {
+                    relatedToId = bereavement.id;
+                    console.log(`Found active bereavement ${bereavement.id} for payment`);
+                } else {
+                    console.log(`No active bereavement found in system for bereavement payment`);
+                }
+            }
+            
             if (relatedToId) {
             switch (type) {
                 case 'loan_repayment': {
@@ -1049,7 +1079,23 @@ router.post('/submit', auth, [
                 }
                 case 'event': {
                     const Event = getModel('Event');
-                    const event = await Event.findByPk(relatedToId);
+                    let event = null;
+                    
+                    // First try to find by UUID
+                    try {
+                        event = await Event.findByPk(relatedToId);
+                    } catch (uuidError) {
+                        // If not a valid UUID, try to find by title or other identifier
+                        event = await Event.findOne({
+                            where: {
+                                [sequelize.Sequelize.Op.or]: [
+                                    { title: { [sequelize.Sequelize.Op.iLike]: relatedToId } },
+                                    { type: { [sequelize.Sequelize.Op.iLike]: relatedToId } }
+                                ]
+                            }
+                        });
+                    }
+                    
                     if (event) {
                         // Track registered attendees or payments
                         const currentAttendees = event.registeredAttendees || 0;
@@ -1057,7 +1103,9 @@ router.post('/submit', auth, [
                             registeredAttendees: currentAttendees + 1,
                             updatedAt: new Date()
                         });
-                        console.log(`Event ${event.id} payment recorded, attendees: ${currentAttendees + 1}`);
+                        console.log(`Event ${event.id} (${event.title}) payment recorded, attendees: ${currentAttendees + 1}`);
+                    } else {
+                        console.log(`Event not found for relatedToId: ${relatedToId}`);
                     }
                     break;
                 }
@@ -1079,10 +1127,26 @@ router.post('/submit', auth, [
                     const Bereavement = getModel('Bereavement');
                     const bereavement = await Bereavement.findByPk(relatedToId);
                     if (bereavement) {
+                        // Update bereavement contributions instead of marking as completed
+                        const currentContributions = parseFloat(bereavement.totalContributions || 0);
+                        const newTotal = currentContributions + parseFloat(amount);
+                        
+                        // Get existing contributions array or initialize empty
+                        const existingContributions = bereavement.contributions || [];
+                        const newContribution = {
+                            memberId: payment.memberId,
+                            amount: parseFloat(amount),
+                            paymentId: payment.id,
+                            paymentMethod: payment.method,
+                            reference: payment.reference,
+                            date: new Date()
+                        };
+                        
                         await bereavement.update({
-                            status: 'completed'
+                            totalContributions: newTotal,
+                            contributions: [...existingContributions, newContribution]
                         });
-                        console.log(`Bereavement ${bereavement.id} updated`);
+                        console.log(`Bereavement ${bereavement.id} updated with contribution of ${amount}, total: ${newTotal}`);
                     }
                     break;
                 }
