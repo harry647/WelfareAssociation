@@ -1111,7 +1111,23 @@ router.post('/submit', auth, [
                 }
                 case 'fine': {
                     const Fine = getModel('Fine');
-                    const fine = await Fine.findByPk(relatedToId);
+                    let fine = null;
+                    
+                    // First try to find by UUID
+                    try {
+                        fine = await Fine.findByPk(relatedToId);
+                    } catch (uuidError) {
+                        // If not a valid UUID, try to find by fine number or other identifier
+                        fine = await Fine.findOne({
+                            where: {
+                                [sequelize.Sequelize.Op.or]: [
+                                    { fineNumber: { [sequelize.Sequelize.Op.iLike]: relatedToId } },
+                                    { description: { [sequelize.Sequelize.Op.iLike]: relatedToId } }
+                                ]
+                            }
+                        });
+                    }
+                    
                     if (fine) {
                         await fine.update({
                             status: 'paid',
@@ -1119,7 +1135,9 @@ router.post('/submit', auth, [
                             paymentMethod: payment.method,
                             paymentReference: payment.reference
                         });
-                        console.log(`Fine ${fine.id} marked as paid`);
+                        console.log(`Fine ${fine.id} (${fine.fineNumber}) marked as paid`);
+                    } else {
+                        console.log(`Fine not found for relatedToId: ${relatedToId}`);
                     }
                     break;
                 }
