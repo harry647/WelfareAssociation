@@ -280,6 +280,111 @@
 
   <script src="../../src/scripts/pages/dashboard/header-admin.js"></script>
 
+  <!-- Contribution History Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadContributions();
+    });
+    
+    async function loadContributions() {
+      const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      
+      if (!token || !userData) {
+        return;
+      }
+      
+      try {
+        // Fetch all contributions from API
+        const response = await fetch('/api/contributions/?limit=100', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          displayContributions(result.data);
+        } else {
+          showEmptyState();
+        }
+      } catch (error) {
+        console.error('Error loading contributions:', error);
+        showEmptyState();
+      }
+    }
+    
+    function displayContributions(contributions) {
+      const tbody = document.getElementById('contributions-history-table');
+      if (!tbody) return;
+      
+      // Update summary stats
+      const total = contributions.length;
+      const totalAmount = contributions.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
+      
+      // Filter this month's contributions
+      const now = new Date();
+      const thisMonth = contributions.filter(c => {
+        const date = new Date(c.createdAt);
+        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      });
+      const thisMonthAmount = thisMonth.reduce((sum, c) => sum + parseFloat(c.amount || 0), 0);
+      
+      // Category breakdown
+      const monthly = contributions.filter(c => c.type === 'monthly');
+      const welfare = contributions.filter(c => c.type === 'welfare');
+      const emergency = contributions.filter(c => c.type === 'emergency');
+      
+      // Update DOM elements
+      document.getElementById('totalContributions').textContent = total;
+      document.getElementById('totalAmount').textContent = 'Ksh ' + totalAmount.toLocaleString();
+      document.getElementById('thisMonthAmount').textContent = 'Ksh ' + thisMonthAmount.toLocaleString();
+      
+      // Breakdown cards
+      document.getElementById('monthlyAmount').textContent = 'Ksh ' + (monthly.reduce((s, c) => s + parseFloat(c.amount || 0), 0)).toLocaleString();
+      document.getElementById('monthlyCount').textContent = monthly.length + ' contributions';
+      document.getElementById('welfareAmount').textContent = 'Ksh ' + (welfare.reduce((s, c) => s + parseFloat(c.amount || 0), 0)).toLocaleString();
+      document.getElementById('welfareCount').textContent = welfare.length + ' contributions';
+      document.getElementById('emergencyAmount').textContent = 'Ksh ' + (emergency.reduce((s, c) => s + parseFloat(c.amount || 0), 0)).toLocaleString();
+      document.getElementById('emergencyCount').textContent = emergency.length + ' contributions';
+      
+      if (contributions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No contribution records found</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = contributions.map(c => {
+        const date = new Date(c.createdAt).toLocaleDateString();
+        const amount = 'Ksh ' + parseFloat(c.amount || 0).toLocaleString();
+        const type = c.type || 'monthly';
+        const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+        const statusClass = c.status === 'verified' ? 'status--success' : 'status--pending';
+        const statusLabel = c.status === 'verified' ? 'Verified' : 'Pending';
+        const memberName = c.member ? `${c.member.firstName} ${c.member.lastName}` : 'N/A';
+        
+        return `<tr>
+          <td>${date}</td>
+          <td><strong>${c.id}</strong></td>
+          <td>${typeLabel}</td>
+          <td><strong>${amount}</strong></td>
+          <td>${c.method || 'M-Pesa'}</td>
+          <td><span class="status ${statusClass}">${statusLabel}</span></td>
+          <td>
+            <button class="btn-sm" title="View Details"><i class="fas fa-eye"></i></button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+    
+    function showEmptyState() {
+      const tbody = document.getElementById('contributions-history-table');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No contribution records found</td></tr>';
+      }
+      document.getElementById('totalContributions').textContent = '0';
+      document.getElementById('totalAmount').textContent = 'Ksh 0';
+      document.getElementById('thisMonthAmount').textContent = 'Ksh 0';
+    }
+  </script>
+
   <script>
     // Initialize sidebar functionality after components are loaded
     document.addEventListener('DOMContentLoaded', function() {

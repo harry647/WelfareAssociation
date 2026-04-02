@@ -341,6 +341,161 @@
 
   <script src="../../src/scripts/pages/dashboard/header-admin.js"></script>
 
+  <!-- Payment History Script -->
+  <script type="module">
+    import { paymentService, authService } from '../../src/services/index.js';
+    
+    // Initialize on DOM ready
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initPaymentHistory();
+    });
+    
+    async function initPaymentHistory() {
+      const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      
+      if (!token || !userData) {
+        window.location.replace('../auth/login-page.html?redirect=../payments/history.html');
+        return;
+      }
+      
+      const user = JSON.parse(userData);
+      
+      try {
+        // Load user's payments
+        let myPayments = [];
+        let allPayments = [];
+        
+        // Get payments for current user
+        const myResponse = await fetch('/api/payments/', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const myResult = await myResponse.json();
+        if (myResult.success) {
+          myPayments = myResult.data || [];
+        }
+        
+        // Get all payments (if admin/treasurer/secretary)
+        if (['admin', 'treasurer', 'secretary'].includes(user.role)) {
+          const allResponse = await fetch('/api/payments/?limit=100', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const allResult = await allResponse.json();
+          if (allResult.success) {
+            allPayments = allResult.data || [];
+          }
+        }
+        
+        // Display data
+        displayMyPayments(myPayments);
+        if (['admin', 'treasurer', 'secretary'].includes(user.role)) {
+          displayAllPayments(allPayments);
+        } else {
+          // Hide admin view for non-admin
+          document.querySelector('[data-view="all-payments"]').style.display = 'none';
+        }
+        
+      } catch (error) {
+        console.error('Error loading payments:', error);
+      }
+    }
+    
+    function displayMyPayments(payments) {
+      const tbody = document.getElementById('myPaymentsBody');
+      const totalPayments = document.getElementById('myTotalPayments');
+      const totalAmount = document.getElementById('myTotalAmount');
+      const successful = document.getElementById('mySuccessful');
+      const pending = document.getElementById('myPending');
+      
+      if (!tbody) return;
+      
+      // Calculate stats
+      const completed = payments.filter(p => p.status === 'completed');
+      const pendingPay = payments.filter(p => p.status === 'pending');
+      const total = payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+      
+      if (totalPayments) totalPayments.textContent = payments.length;
+      if (totalAmount) totalAmount.textContent = 'Ksh ' + total.toLocaleString();
+      if (successful) successful.textContent = completed.length;
+      if (pending) pending.textContent = pendingPay.length;
+      
+      if (payments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No payment records found</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = payments.map(p => {
+        const statusClass = p.status === 'completed' ? 'status--success' : p.status === 'pending' ? 'status--pending' : 'status--failed';
+        const statusLabel = p.status === 'completed' ? 'Completed' : p.status === 'pending' ? 'Pending' : 'Failed';
+        const date = new Date(p.paymentDate || p.createdAt).toLocaleDateString();
+        const amount = 'Ksh ' + parseFloat(p.amount || 0).toLocaleString();
+        
+        return `<tr>
+          <td>${date}</td>
+          <td><strong>${p.reference || p.id}</strong></td>
+          <td>${p.type || 'Other'}</td>
+          <td><strong>${amount}</strong></td>
+          <td>${p.method || 'M-Pesa'}</td>
+          <td><span class="status ${statusClass}">${statusLabel}</span></td>
+          <td>
+            <button class="btn-sm" title="View Details"><i class="fas fa-eye"></i></button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+    
+    function displayAllPayments(payments) {
+      const tbody = document.getElementById('adminPaymentsBody');
+      const totalPayments = document.getElementById('adminTotalPayments');
+      const totalAmount = document.getElementById('adminTotalAmount');
+      const completed = document.getElementById('adminCompleted');
+      const pendingEl = document.getElementById('adminPending');
+      const failed = document.getElementById('adminFailed');
+      
+      if (!tbody) return;
+      
+      // Calculate stats
+      const completedPay = payments.filter(p => p.status === 'completed');
+      const pendingPay = payments.filter(p => p.status === 'pending');
+      const failedPay = payments.filter(p => p.status === 'failed');
+      const total = payments.reduce((sum, p) => sum + (p.status === 'completed' ? parseFloat(p.amount || 0) : 0), 0);
+      
+      if (totalPayments) totalPayments.textContent = payments.length;
+      if (totalAmount) totalAmount.textContent = 'Ksh ' + total.toLocaleString();
+      if (completed) completed.textContent = completedPay.length;
+      if (pendingEl) pendingEl.textContent = pendingPay.length;
+      if (failed) failed.textContent = failedPay.length;
+      
+      if (payments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">No payment records found</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = payments.map(p => {
+        const statusClass = p.status === 'completed' ? 'status--success' : p.status === 'pending' ? 'status--pending' : 'status--failed';
+        const statusLabel = p.status === 'completed' ? 'Completed' : p.status === 'pending' ? 'Pending' : 'Failed';
+        const date = new Date(p.paymentDate || p.createdAt).toLocaleDateString();
+        const amount = 'Ksh ' + parseFloat(p.amount || 0).toLocaleString();
+        const memberName = p.member ? `${p.member.firstName} ${p.member.lastName}` : 'N/A';
+        const memberNumber = p.member ? p.member.memberNumber : 'N/A';
+        
+        return `<tr>
+          <td>${date}</td>
+          <td><strong>${p.reference || p.id}</strong></td>
+          <td>${memberName}</td>
+          <td>${memberNumber}</td>
+          <td>${p.type || 'Other'}</td>
+          <td><strong>${amount}</strong></td>
+          <td>${p.method || 'M-Pesa'}</td>
+          <td><span class="status ${statusClass}">${statusLabel}</span></td>
+          <td>
+            <button class="btn-sm" title="View Details"><i class="fas fa-eye"></i></button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+  </script>
+
   <script>
     // Initialize sidebar functionality after components are loaded
     document.addEventListener('DOMContentLoaded', function() {
