@@ -16,6 +16,9 @@ const Bereavement = require('./Bereavement');
 const Debt = require('./Debt');
 const Fine = require('./Fine');
 const Savings = require('./Savings');
+const Share = require('./Share');
+const Registration = require('./Registration');
+const Subscription = require('./Subscription');
 const Announcement = require('./Announcement');
 const Document = require('./Document');
 const DocumentRequest = require('./DocumentRequest');
@@ -71,6 +74,18 @@ Volunteer.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
 Member.hasMany(Withdrawal, { foreignKey: 'memberId', as: 'withdrawals' });
 Withdrawal.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
 
+// Member - Share associations
+Member.hasMany(Share, { foreignKey: 'memberId', as: 'shares' });
+Share.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
+
+// Member - Registration associations
+Member.hasMany(Registration, { foreignKey: 'memberId', as: 'registrations' });
+Registration.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
+
+// Member - Subscription associations
+Member.hasMany(Subscription, { foreignKey: 'memberId', as: 'subscriptions' });
+Subscription.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
+
 // User - Contribution associations (recordedBy)
 Contribution.belongsTo(User, { foreignKey: 'recordedBy', as: 'recorder' });
 
@@ -107,6 +122,15 @@ Volunteer.belongsTo(User, { foreignKey: 'reviewedBy', as: 'reviewer' });
 // User - Withdrawal associations (processedBy)
 Withdrawal.belongsTo(User, { foreignKey: 'processedBy', as: 'processor' });
 Withdrawal.belongsTo(User, { foreignKey: 'recordedBy', as: 'recorder' });
+
+// User - Share associations (recordedBy)
+Share.belongsTo(User, { foreignKey: 'recordedBy', as: 'recorder' });
+
+// User - Registration associations (recordedBy)
+Registration.belongsTo(User, { foreignKey: 'recordedBy', as: 'recorder' });
+
+// User - Subscription associations (recordedBy)
+Subscription.belongsTo(User, { foreignKey: 'recordedBy', as: 'recorder' });
 
 // Event - Gallery associations
 Event.hasMany(Gallery, { foreignKey: 'eventId', as: 'galleries' });
@@ -169,6 +193,9 @@ module.exports = {
     Debt,
     Fine,
     Savings,
+    Share,
+    Registration,
+    Subscription,
     Announcement,
     Document,
     DocumentRequest,
@@ -180,5 +207,6 @@ module.exports = {
     Contact,
     Newsletter,
     Withdrawal,
-    PageContent
+    PageContent,
+    Settings
 };

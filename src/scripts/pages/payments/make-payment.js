@@ -807,11 +807,6 @@ class PaymentManager {
                     data.relatedTo = this.currentEventId;
                 }
                 break;
-            case 'fine':
-                if (this.currentFineId && typeof this.currentFineId === 'string') {
-                    data.relatedTo = this.currentFineId;
-                }
-                break;
             case 'bereavement':
                 // Could load bereavement ID from selection if needed
                 break;

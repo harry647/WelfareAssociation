@@ -11,6 +11,8 @@
     "init:db": "node backend/scripts/init-db.js",
     "init:keys": "node backend/utils/keyGenerator.js --init",
     "migrate": "node -e \"require('./backend/migrations')\"",
+    "migrate:payment": "node backend/migrations/run-payment-migrations.js",
+    "migrate:payment:rollback": "node backend/migrations/run-payment-migrations.js rollback",
     "reset": "del .initialized && node server.js",
     "rotate:keys": "node backend/utils/keyGenerator.js --rotate",
     "keys:status": "node backend/utils/keyGenerator.js --status",
