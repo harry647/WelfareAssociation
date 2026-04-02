@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult, query } = require('express-validator');
-const { Op } = require('sequelize');
+const { Op, sequelize } = require('sequelize');
 const Payment = require('../models/Payment');
 const Member = require('../models/Member');
 const User = require('../models/User');
@@ -14,6 +14,7 @@ const { auth, authorize } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { generatePDFReceipt, generateReceiptHTML } = require('../utils/pdf-receipt');
 
 // Configure multer for payment proof uploads
 const paymentProofStorage = multer.diskStorage({
@@ -44,6 +45,32 @@ const paymentProofUpload = multer({
     }
 });
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/receipts/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
+    storage, 
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|pdf/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype) || file.mimetype.includes('image') || file.mimetype.includes('pdf');
+        if (extname || mimetype) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+        }
+    }
+});
+
 // Map frontend category to model type
 const categoryToTypeMap = {
     'contribution': 'contribution',
@@ -68,14 +95,19 @@ const paymentMethodMap = {
 
 // Validation middleware
 const validate = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            success: false,
-            errors: errors.array()
-        });
+    try {
+        const errors = validationResult(req);
+        if (errors && !errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                errors: errors.array()
+            });
+        }
+        next();
+    } catch (error) {
+        console.error('Validation error:', error);
+        next();
     }
-    next();
 };
 
 /**
@@ -158,9 +190,9 @@ router.get('/config', auth, async (req, res) => {
     console.log('DEBUG: Config route reached');
     try {
         const config = {
-            availableMethods: [],
+            availableMethods: ['cash'], // Always enable cash by default
             mpesa: {
-                enabled: !!(paymentConfig.mpesa.consumerKey && paymentConfig.mpesa.consumerKey !== 'your_mpesa_consumer_key_here'),
+                enabled: !!(paymentConfig.mpesa.consumerKey && paymentConfig.mpesa.consumerKey.includes('placeholder')),
                 shortcode: paymentConfig.mpesa.shortcode || '123456',
                 paybill: paymentConfig.mpesa.paybill || '123456'
             },
@@ -169,10 +201,10 @@ router.get('/config', auth, async (req, res) => {
                 publicKey: paymentConfig.stripe.publicKey || ''
             },
             flutterwave: {
-                enabled: !!(paymentConfig.flutterwave.publicKey && paymentConfig.flutterwave.publicKey !== 'your_flutterwave_public_key')
+                enabled: !!(paymentConfig.flutterwave.publicKey && paymentConfig.flutterwave.publicKey.includes('placeholder')),
             },
             bank: {
-                enabled: !!(paymentConfig.bank.accountNumber && paymentConfig.bank.accountNumber !== '1234567890'),
+                enabled: !!(paymentConfig.bank.accountNumber && paymentConfig.bank.accountNumber.includes('placeholder')),
                 name: paymentConfig.bank.name,
                 accountName: paymentConfig.bank.accountName,
                 accountNumber: paymentConfig.bank.accountNumber,
@@ -779,6 +811,88 @@ router.post('/submit', auth, [
             processedBy: req.user.id
         });
         
+        // Update related entity based on payment type
+        if (payment.relatedTo) {
+            switch (type) {
+                case 'loan_repayment': {
+                    const Loan = require('../models/Loan');
+                    const loan = await Loan.findByPk(payment.relatedTo);
+                    if (loan) {
+                        const newBalance = parseFloat(loan.balance || 0) - parseFloat(amount);
+                        const newStatus = newBalance <= 0 ? 'completed' : 'active';
+                        await loan.update({
+                            balance: Math.max(0, newBalance),
+                            status: newStatus,
+                            updatedAt: new Date()
+                        });
+                        console.log(`Loan ${loan.id} updated: balance=${newBalance}, status=${newStatus}`);
+                    }
+                    break;
+                }
+                case 'contribution': {
+                    const Contribution = require('../models/Contribution');
+                    const contribution = await Contribution.findByPk(payment.relatedTo);
+                    if (contribution) {
+                        await contribution.update({
+                            amount: parseFloat(contribution.amount || 0) + parseFloat(amount),
+                            status: 'completed',
+                            paymentDate: new Date()
+                        });
+                        console.log(`Contribution ${contribution.id} updated`);
+                    }
+                    break;
+                }
+                case 'savings': {
+                    const Savings = require('../models/Savings');
+                    const savings = await Savings.findByPk(payment.relatedTo);
+                    if (savings) {
+                        await savings.update({
+                            amount: parseFloat(savings.amount || 0) + parseFloat(amount),
+                            status: 'completed'
+                        });
+                        console.log(`Savings ${savings.id} updated`);
+                    }
+                    break;
+                }
+                case 'bereavement': {
+                    const Bereavement = require('../models/Bereavement');
+                    const bereavement = await Bereavement.findByPk(payment.relatedTo);
+                    if (bereavement) {
+                        await bereavement.update({
+                            status: 'completed'
+                        });
+                        console.log(`Bereavement ${bereavement.id} updated`);
+                    }
+                    break;
+                }
+                case 'event': {
+                    const Event = require('../models/Event');
+                    const event = await Event.findByPk(payment.relatedTo);
+                    if (event) {
+                        await event.update({
+                            updatedAt: new Date()
+                        });
+                        console.log(`Event ${event.id} payment recorded`);
+                    }
+                    break;
+                }
+                case 'welfare': {
+                    // Update welfare balance
+                    const Settings = require('../models/Settings');
+                    const welfareSettings = await Settings.findOne({ where: { key: 'welfare_balance' } });
+                    if (welfareSettings) {
+                        await welfareSettings.update({
+                            value: (parseFloat(welfareSettings.value) + parseFloat(amount)).toString()
+                        });
+                        console.log(`Welfare balance updated`);
+                    }
+                    break;
+                }
+                default:
+                    console.log(`Payment type ${type} - no entity update needed`);
+            }
+        }
+        
         res.status(201).json({
             success: true,
             data: payment,
@@ -824,6 +938,133 @@ router.post('/upload-proof', auth, paymentProofUpload.single('paymentProof'), as
         res.status(500).json({
             success: false,
             message: 'Failed to upload payment proof'
+        });
+    }
+});
+
+/**
+ * POST /api/payments/receipt
+ * Generate PDF receipt for payment
+ */
+router.post('/receipt', auth, [
+    body('reference').notEmpty().withMessage('Reference number is required'),
+    body('studentId').notEmpty().withMessage('Student ID is required')
+], validate, async (req, res) => {
+    try {
+        const { reference, studentId } = req.body;
+        
+        // First, find member by studentId (which is stored in memberNumber field)
+        let member = await Member.findOne({
+            where: {
+                memberNumber: studentId
+            }
+        });
+        
+        // Try to find payment by reference first
+        let payment = await Payment.findOne({
+            where: { reference: reference },
+            include: [
+                { 
+                    model: Member, 
+                    as: 'member', 
+                    attributes: ['firstName', 'lastName', 'memberNumber', 'email'] 
+                }
+            ]
+        });
+        
+        // If payment found but member doesn't match, check if we have the right member
+        if (payment && !member) {
+            // Use the member from the payment record
+            member = payment.member;
+        }
+        
+        // If still no payment found, try with memberId if we have a member
+        if (!payment && member) {
+            payment = await Payment.findOne({
+                where: { reference: reference, memberId: member.id },
+                include: [
+                    { 
+                        model: Member, 
+                        as: 'member', 
+                        attributes: ['firstName', 'lastName', 'memberNumber', 'email'] 
+                    }
+                ]
+            });
+        }
+        
+        if (!payment) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Payment not found' 
+            });
+        }
+        
+        // Generate HTML receipt directly (simpler, no puppeteer needed)
+        const paymentDetails = {
+            referenceNumber: reference,
+            fullName: payment.member ? `${payment.member.firstName} ${payment.member.lastName}` : payment.fullName || 'N/A',
+            studentId: studentId || payment.studentId || 'N/A',
+            amount: payment.amount,
+            paymentMethod: payment.method,
+            status: payment.status,
+            transactionId: payment.transactionId,
+            paymentDate: payment.paymentDate,
+            category: payment.type || 'N/A',
+            logoUrl: '/images/logo.png',
+            mpesaPaybill: '247247',
+            bankAccount: 'Bank of Barichbank Plc - 01-2345678',
+            accountName: 'Student Welfare Association'
+        };
+        
+        const htmlContent = generateReceiptHTML(paymentDetails);
+        
+        // Return HTML content directly in response so frontend can display it
+        res.json({
+            success: true,
+            message: 'Receipt generated successfully',
+            data: {
+                htmlContent: htmlContent,
+                reference: reference
+            }
+        });
+    } catch (error) {
+        console.error('Error generating PDF receipt:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error generating PDF receipt: ' + error.message 
+        });
+    }
+});
+
+/**
+ * GET /api/payments/download/:reference
+ * Download generated PDF receipt
+ */
+router.get('/download/:reference', auth, async (req, res) => {
+    try {
+        const { reference } = req.params;
+        const receiptPath = path.join(__dirname, '../../receipts', `receipt-${reference}-${Date.now()}.pdf`);
+        
+        // Try to find any matching receipt file
+        const receiptsDir = path.join(__dirname, '../../receipts');
+        if (fs.existsSync(receiptsDir)) {
+            const files = fs.readdirSync(receiptsDir).filter(f => f.startsWith(`receipt-${reference}-`));
+            if (files.length > 0) {
+                const actualPath = path.join(receiptsDir, files[0]);
+                res.download(actualPath, `receipt-${reference}.pdf`);
+                return;
+            }
+        }
+        
+        res.status(404).json({ 
+            success: false, 
+            message: 'Receipt not found' 
+        });
+    } catch (error) {
+        console.error('Error downloading receipt:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error downloading receipt: ' + error.message 
         });
     }
 });

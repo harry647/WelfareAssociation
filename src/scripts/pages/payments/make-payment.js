@@ -301,6 +301,9 @@ class PaymentManager {
                 const loan = result.data;
                 const outstandingBalance = loan.remainingBalance || loan.balance || loan.outstandingBalance || 0;
                 
+                // Store loan ID for linking payment to loan
+                this.currentLoanId = loan.id;
+                
                 // Update loan balance display
                 this.updateLoanBalance(outstandingBalance);
                 
@@ -374,6 +377,9 @@ class PaymentManager {
         this.stkPushBtn = document.getElementById('stkPushBtn');
         this.cancelBtn = document.getElementById('cancelBtn');
         this.downloadReceiptBtn = document.getElementById('downloadReceiptBtn');
+        this.lastPaymentReference = null; // Store reference for receipt download
+        this.currentLoanId = null; // Store loaded loan ID for loan repayments
+        this.currentEventId = null; // Store selected event ID for event payments
         
         // Feedback elements
         this.paymentFeedback = document.getElementById('paymentFeedback');
@@ -438,6 +444,14 @@ class PaymentManager {
      */
     updateFormForCategory() {
         const selectedCategory = document.querySelector('input[name="paymentCategory"]:checked')?.value;
+        
+        // Reset stored entity IDs when changing category
+        if (selectedCategory !== 'loan') {
+            this.currentLoanId = null;
+        }
+        if (selectedCategory !== 'event') {
+            this.currentEventId = null;
+        }
         
         // Reset all groups
         this.hideAllDynamicGroups();
@@ -556,52 +570,25 @@ class PaymentManager {
     handleEventChange(e) {
         const selectedOption = e.target?.selectedOptions[0];
         const eventAmount = selectedOption?.getAttribute('data-amount');
+        const eventId = e.target?.value;
         
         if (eventAmount) {
             this.setAmount(parseInt(eventAmount));
             this.updateHint('Event fee: Ksh ' + eventAmount);
         }
+        
+        // Store current event ID
+        this.currentEventId = eventId || null;
     }
 
     /**
      * Fetch loan balance from API
      */
     async fetchLoanBalance() {
-        const studentId = this.studentId?.value;
-        
-        if (!studentId) {
-            this.updateLoanBalance(0);
-            return;
-        }
-        
-        // Show loading state
-        this.updateLoanBalance(0, true);
-        
-        try {
-            // Ready for Fetch API - uncomment when backend is ready
-            /*
-            const response = await fetch(`${this.config.apiBaseUrl}${this.config.loanBalanceEndpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ studentId })
-            });
-            
-            if (!response.ok) throw new Error('Failed to fetch loan balance');
-            
-            const data = await response.json();
-            this.updateLoanBalance(data.balance || 0);
-            */
-            
-            // Mock data for now - remove when backend is ready
-            setTimeout(() => {
-                const mockBalance = Math.floor(Math.random() * 50000) + 5000;
-                this.updateLoanBalance(mockBalance);
-            }, 500);
-            
-        } catch (error) {
-            console.error('Error fetching loan balance:', error);
-            this.updateLoanBalance(0);
-        }
+        // Since loan balance is already fetched from loan details, we don't need a separate API call
+        // The loan balance should be set by fetchLoanDetails method
+        console.log('Loan balance already available from loan details, skipping separate API call');
+        return;
     }
 
     /**
@@ -746,6 +733,11 @@ class PaymentManager {
                 throw new Error(data.message || data.errors?.[0]?.msg || 'Payment submission failed');
             }
             
+            // Store the reference from the API response for receipt download
+            if (data.data?.reference) {
+                this.lastPaymentReference = data.data.reference;
+            }
+            
             this.showSuccess(data.message || 'Payment submitted successfully!', data.data);
             
         } catch (error) {
@@ -781,7 +773,7 @@ class PaymentManager {
         const formData = new FormData(this.form);
         const category = document.querySelector('input[name="paymentCategory"]:checked')?.value;
         
-        return {
+        const data = {
             referenceNumber: this.referenceNumber?.value,
             fullName: formData.get('fullName'),
             studentId: formData.get('studentId'),
@@ -797,6 +789,32 @@ class PaymentManager {
             status: 'pending',
             createdAt: new Date().toISOString()
         };
+        
+        // Add related ID based on payment category
+        switch (category) {
+            case 'loan':
+            case 'loan_repayment':
+                if (this.currentLoanId) {
+                    data.relatedTo = this.currentLoanId;
+                }
+                break;
+            case 'event':
+                if (this.currentEventId) {
+                    data.relatedTo = this.currentEventId;
+                }
+                break;
+            case 'bereavement':
+                // Could load bereavement ID from selection if needed
+                break;
+            case 'contribution':
+            case 'shares':
+            case 'welfare':
+            default:
+                // No specific ID needed for these
+                break;
+        }
+        
+        return data;
     }
 
     /**
@@ -917,19 +935,30 @@ class PaymentManager {
         
         // Generate receipt details
         if (paymentData && this.receiptDetails) {
+            // Get current form values if paymentData is incomplete
+            const reference = paymentData.referenceNumber || this.referenceNumber?.value || 'N/A';
+            const fullName = paymentData.fullName || this.fullName?.value || 'N/A';
+            const studentId = paymentData.studentId || this.studentId?.value || 'N/A';
+            const amount = paymentData.amount || this.amount?.value || 0;
+            const category = paymentData.category || document.querySelector('input[name="paymentCategory"]:checked')?.value || 'N/A';
+            const paymentMethod = paymentData.paymentMethod || this.paymentMethod?.value || 'N/A';
+            
             this.receiptDetails.innerHTML = `
-                <p><strong>Reference:</strong> ${paymentData.referenceNumber}</p>
-                <p><strong>Name:</strong> ${paymentData.fullName}</p>
-                <p><strong>Student ID:</strong> ${paymentData.studentId}</p>
-                <p><strong>Amount:</strong> Ksh ${paymentData.amount}</p>
-                <p><strong>Category:</strong> ${paymentData.category}</p>
-                <p><strong>Method:</strong> ${paymentData.paymentMethod}</p>
+                <p><strong>Reference:</strong> ${reference}</p>
+                <p><strong>Name:</strong> ${fullName}</p>
+                <p><strong>Student ID:</strong> ${studentId}</p>
+                <p><strong>Amount:</strong> Ksh ${parseFloat(amount).toLocaleString()}</p>
+                <p><strong>Category:</strong> ${category}</p>
+                <p><strong>Method:</strong> ${paymentMethod}</p>
                 <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
             `;
         }
         
         this.showElement(this.paymentSuccess);
         this.updatePaymentStatus('completed');
+        
+        // Store the reference used for this payment before generating a new one
+        this.lastPaymentReference = this.referenceNumber?.value;
         
         // Generate new reference for next payment
         this.generateReferenceNumber();
@@ -976,38 +1005,85 @@ class PaymentManager {
 
     /**
      * Download PDF receipt
-     * Note: This requires a backend PDF generation service
+     * Note: This now uses the backend PDF generation service
      */
     async downloadReceipt() {
-        const reference = this.referenceNumber?.value;
+        // Use the stored reference from the last successful payment
+        const reference = this.lastPaymentReference || this.referenceNumber?.value;
+        const studentId = this.studentId?.value;
         
-        if (!reference) {
-            this.showError('No payment reference found');
+        if (!reference || !studentId) {
+            this.showError('Reference number and Student ID are required');
             return;
         }
         
         try {
-            // Ready for Fetch API - uncomment when backend is ready
-            /*
-            const response = await fetch(`${this.config.apiBaseUrl}${this.config.receiptEndpoint}?ref=${reference}`);
+            // Call the PDF receipt generation API (no query parameters)
+            const response = await fetch(`${this.config.apiBaseUrl}${this.config.receiptEndpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('swa_auth_token')}`
+                },
+                body: JSON.stringify({
+                    reference: reference,  // Backend expects 'reference', not 'referenceNumber'
+                    studentId: studentId   // Backend expects 'studentId'
+                })
+            });
             
-            if (!response.ok) throw new Error('Failed to generate receipt');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to generate receipt');
+            }
             
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `receipt-${reference}.pdf`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            */
+            const result = await response.json();
             
-            // Mock download for now
-            showAlert('PDF receipt download will be available once the backend is configured.', 'Information', 'info');
-            
+            if (result.success) {
+                // Show success message
+                this.showSuccess('Receipt generated successfully!');
+                
+                // Display the HTML receipt in a new window/tab
+                if (result.data.htmlContent) {
+                    // Open receipt in a new window
+                    const printWindow = window.open('', '_blank');
+                    if (printWindow) {
+                        printWindow.document.write(result.data.htmlContent);
+                        printWindow.document.close();
+                        // Add print button
+                        setTimeout(() => {
+                            const printBtn = printWindow.document.createElement('button');
+                            printBtn.textContent = 'Print Receipt';
+                            printBtn.className = 'btn btn-primary';
+                            printBtn.style.marginTop = '20px';
+                            printBtn.onclick = () => printWindow.print();
+                            printWindow.document.body.appendChild(printBtn);
+                        }, 500);
+                    }
+                }
+                
+                // Show receipt details
+                const category = document.querySelector('input[name="paymentCategory"]:checked')?.value || 'N/A';
+                const paymentMethod = this.paymentMethod?.value || 'N/A';
+                
+                if (this.receiptDetails) {
+                    this.receiptDetails.innerHTML = `
+                        <p><strong>Receipt Status:</strong> Ready</p>
+                        <p><strong>Reference:</strong> ${reference}</p>
+                        <p><strong>Name:</strong> ${this.fullName?.value || 'N/A'}</p>
+                        <p><strong>Student ID:</strong> ${studentId}</p>
+                        <p><strong>Amount:</strong> Ksh ${parseFloat(this.amount?.value || 0).toLocaleString()}</p>
+                        <p><strong>Category:</strong> ${category}</p>
+                        <p><strong>Method:</strong> ${paymentMethod}</p>
+                        <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+                    `;
+                }
+                
+            } else {
+                this.showError('Failed to generate receipt: ' + (result.message || 'Unknown error'));
+            }
         } catch (error) {
             console.error('Receipt download error:', error);
-            this.showError('Failed to download receipt');
+            this.showError('Failed to generate receipt: ' + error.message);
         }
     }
 
