@@ -392,10 +392,6 @@ const startServer = async () => {
             console.log('Initializing security keys...');
             await initializeKeys();
             
-            // Initialize database (sync tables only, don't create DB)
-            console.log('\nInitializing database...');
-            await initializeDatabase();
-            
             // Create admin user
             console.log('\nCreating admin user...');
             await createAdminUser();
@@ -408,6 +404,14 @@ const startServer = async () => {
             // Check key rotation on subsequent runs
             await checkKeyRotation();
         }
+        
+        // ALWAYS run database migrations to ensure schema consistency
+        // This ensures new columns are added even on subsequent runs
+        console.log('\n========================================');
+        console.log('Running Database Migrations');
+        console.log('========================================\n');
+        console.log('Syncing database schema...');
+        await initializeDatabase();
         
         // Connect to PostgreSQL
         await connectDB();

@@ -123,6 +123,28 @@ class WithdrawalService {
             true
         );
     }
+
+    /**
+     * Get system balance (Contributions - Withdrawals)
+     */
+    async getBalance() {
+        return apiService.get(
+            `${API_CONFIG.endpoints.withdrawals}/balance`,
+            {},
+            true
+        );
+    }
+
+    /**
+     * Get withdrawals by type (for reports)
+     */
+    async getByType(params = {}) {
+        return apiService.get(
+            `${API_CONFIG.endpoints.withdrawals}/by-type`,
+            params,
+            true
+        );
+    }
 }
 
 // Export singleton instance

@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { Op } = require('sequelize');
+const { sequelize } = require('../config/database');
 const Withdrawal = require('../models/Withdrawal');
 const Member = require('../models/Member');
 const User = require('../models/User');
@@ -112,6 +113,52 @@ router.get('/summary', auth, async (req, res) => {
     }
 });
 
+// Get system balance (Contributions - Withdrawals)
+// This is the KEY formula for system balance
+// NOTE: This route MUST be defined BEFORE /:id to avoid being caught by the :id parameter
+router.get('/balance', auth, async (req, res) => {
+    try {
+        const Contribution = require('../models/Contribution');
+        const Savings = require('../models/Savings');
+
+        // Get total contributions
+        const totalContributions = await Contribution.sum('amount') || 0;
+        
+        // Get total savings (sum of currentAmount from all savings goals)
+        const totalSavings = await Savings.sum('currentAmount') || 0;
+        
+        // Get total withdrawals (approved or processed ones - money that has gone out)
+        const totalWithdrawals = await Withdrawal.sum('amount', {
+            where: {
+                status: {
+                    [Op.in]: ['approved', 'processed']
+                }
+            }
+        }) || 0;
+
+        // System Balance = Total Contributions + Total Savings - Total Withdrawals
+        const systemBalance = (parseFloat(totalContributions) + parseFloat(totalSavings)) - parseFloat(totalWithdrawals);
+
+        res.json({
+            success: true,
+            data: {
+                totalContributions,
+                totalSavings,
+                totalWithdrawals,
+                systemBalance,
+                formula: 'Total Contributions + Total Savings - Total Withdrawals'
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching system balance:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch system balance',
+            error: error.message
+        });
+    }
+});
+
 // Get withdrawal by ID
 router.get('/:id', auth, async (req, res) => {
     try {
@@ -149,7 +196,7 @@ router.get('/:id', auth, async (req, res) => {
 // Create new withdrawal request
 router.post('/', auth, async (req, res) => {
     try {
-        const { memberId, amount, reason } = req.body;
+        const { memberId, amount, reason, type } = req.body;
 
         // Validate member exists
         const member = await Member.findByPk(memberId);
@@ -162,14 +209,18 @@ router.post('/', auth, async (req, res) => {
 
         // Generate withdrawal number
         const withdrawalCount = await Withdrawal.count();
-        const withdrawalNumber = `WTH/${String(withdrawalCount + 1).padStart(3, '0')}`;
+        const withdrawalNumber = `WTH/${String(withdrawalCount + 1).padStart(5, '0')}`;
+
+        // Get recordedBy - use null if user is 'admin' (not a valid UUID)
+        const recordedBy = (req.user.id === 'admin' || req.user.id === 'admin') ? null : req.user.id;
 
         const withdrawal = await Withdrawal.create({
             memberId,
             withdrawalNumber,
             amount,
             reason,
-            recordedBy: req.user.id
+            type: type || 'other',
+            recordedBy
         });
 
         const withdrawalWithMember = await Withdrawal.findByPk(withdrawal.id, {
@@ -314,10 +365,13 @@ router.post('/:id/approve', auth, async (req, res) => {
 
         const { approvalNotes, paymentMethod, paymentReference } = req.body;
 
+        // Handle admin user - set processedBy to null if user is 'admin'
+        const processedBy = (req.user.id === 'admin' || req.user.id === 'admin') ? null : req.user.id;
+
         await withdrawal.update({
             status: 'approved',
             processedDate: new Date(),
-            processedBy: req.user.id,
+            processedBy,
             approvalNotes,
             paymentMethod,
             paymentReference
@@ -369,10 +423,13 @@ router.post('/:id/reject', auth, async (req, res) => {
 
         const { approvalNotes } = req.body;
 
+        // Handle admin user - set processedBy to null if user is 'admin'
+        const processedBy = (req.user.id === 'admin' || req.user.id === 'admin') ? null : req.user.id;
+
         await withdrawal.update({
             status: 'rejected',
             processedDate: new Date(),
-            processedBy: req.user.id,
+            processedBy,
             approvalNotes
         });
 
@@ -454,6 +511,89 @@ router.get('/summary/stats', auth, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch withdrawal summary',
+            error: error.message
+        });
+    }
+});
+
+// Get system balance (Contributions - Withdrawals)
+// This is the KEY formula for system balance
+router.get('/balance', auth, async (req, res) => {
+    try {
+        const Contribution = require('../models/Contribution');
+        const Savings = require('../models/Savings');
+
+        // Get total contributions
+        const totalContributions = await Contribution.sum('amount') || 0;
+        
+        // Get total savings deposits
+        const totalSavings = await Savings.sum('amount') || 0;
+        
+        // Get total withdrawals (approved or disbursed ones - money that has gone out)
+        const totalWithdrawals = await Withdrawal.sum('amount', {
+            where: {
+                status: {
+                    [Op.in]: ['approved', 'disbursed']
+                }
+            }
+        }) || 0;
+
+        // System Balance = Total Contributions + Total Savings - Total Withdrawals
+        const systemBalance = (parseFloat(totalContributions) + parseFloat(totalSavings)) - parseFloat(totalWithdrawals);
+
+        res.json({
+            success: true,
+            data: {
+                totalContributions,
+                totalSavings,
+                totalWithdrawals,
+                systemBalance,
+                formula: 'Total Contributions + Total Savings - Total Withdrawals'
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching system balance:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch system balance',
+            error: error.message
+        });
+    }
+});
+
+// Get withdrawals by type (for reports)
+router.get('/by-type', auth, async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        const where = {};
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
+        }
+
+        // Get withdrawals grouped by type
+        const withdrawalsByType = await Withdrawal.findAll({
+            where,
+            attributes: [
+                'type',
+                [sequelize.fn('SUM', sequelize.col('amount')), 'total'],
+                [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+            ],
+            group: ['type'],
+            raw: true
+        });
+
+        res.json({
+            success: true,
+            data: withdrawalsByType
+        });
+    } catch (error) {
+        console.error('Error fetching withdrawals by type:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch withdrawals by type',
             error: error.message
         });
     }

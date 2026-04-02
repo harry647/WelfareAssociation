@@ -11,7 +11,180 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
   <link rel="stylesheet" href="../../../src/styles/pages/dashboard/withdrawals.css">
-  
+  <style>
+    /* Withdrawal Management Specific Styles */
+    .withdrawal-type-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .type-loan_disbursement { background: rgba(79, 70, 229, 0.15); color: #4f46e5; }
+    .type-welfare { background: rgba(16, 185, 129, 0.15); color: #059669; }
+    .type-event_expense { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+    .type-refund { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+    .type-other { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
+
+    .status-completed { background: rgba(16, 185, 129, 0.15); color: #059669; }
+    .status-pending { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+    .status-approved { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+    .status-rejected { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+    .status-disbursed { background: rgba(16, 185, 129, 0.25); color: #047857; }
+    .status-processed { background: rgba(79, 70, 229, 0.15); color: #4f46e5; }
+
+    .withdrawal-form-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .withdrawal-form-modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .form-row {
+      margin-bottom: 20px;
+    }
+    .form-row label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #374151;
+    }
+    .form-row input, .form-row select, .form-row textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .btn-primary {
+      background: #4f46e5;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-primary:hover {
+      background: #4338ca;
+    }
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .filter-btn.active {
+      background: #4f46e5;
+      color: white;
+      border-color: #4f46e5;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+    }
+    .btn-action {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .btn-approve {
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+    }
+    .btn-approve:hover {
+      background: rgba(16, 185, 129, 0.25);
+    }
+    .btn-reject {
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+    }
+    .btn-reject:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+    .btn-view {
+      background: rgba(59, 130, 246, 0.15);
+      color: #2563eb;
+    }
+    .btn-view:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    .type-legend {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .legend-badge {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+  </style>
 </head>
 <body>
   <div class="dashboard-container">
@@ -29,7 +202,21 @@
 
         <div class="page-header">
           <h1><i class="fas fa-wallet"></i> Withdrawals Management</h1>
-          <p>Manage member withdrawal requests</p>
+          <p>Manage member withdrawal requests - Money going OUT</p>
+        </div>
+
+        <!-- Golden Rule Banner -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+              <h3 style="margin: 0 0 5px 0;"><i class="fas fa-lightbulb"></i> Golden Rule</h3>
+              <p style="margin: 0; opacity: 0.9;">Contributions = Money IN | Withdrawals = Money OUT</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0; font-size: 13px;">System Balance</p>
+              <h2 style="margin: 5px 0 0 0; font-size: 28px;" id="systemBalance">Ksh 0</h2>
+            </div>
+          </div>
         </div>
 
         <!-- Stats Cards -->
@@ -37,65 +224,81 @@
           <div class="card">
             <h3><i class="fas fa-money-bill-wave"></i> Total Withdrawn</h3>
             <p class="stat-number">Ksh 0</p>
-            <p class="stat-label">This Month</p>
+            <p class="stat-label">All Time</p>
           </div>
           <div class="card">
-            <h class="card">
             <h3><i class="fas fa-clock"></i> Pending</h3>
             <p class="stat-number">0</p>
             <p class="stat-label">Requests</p>
           </div>
           <div class="card">
-            <h3><i class="fas fa-check"></i> Approved</h3>
+            <h3><i class="fas fa-check-circle"></i> Approved</h3>
             <p class="stat-number">0</p>
             <p class="stat-label">This Month</p>
           </div>
-          <div class="card">
-            <h3><i class="fas fa-times-circle"></i> Rejected</h3>
-            <p class="stat-number">0</p>
-            <p class="stat-label">This Month</p>
+          <div class="card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+            <h3><i class="fas fa-piggy-bank"></i> Cash Balance</h3>
+            <p class="stat-number" id="cashBalance">Ksh 0</p>
+            <p class="stat-label">Available</p>
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+          <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="pending">Pending</button>
+            <button class="filter-btn" data-filter="approved">Approved</button>
+            <button class="filter-btn" data-filter="disbursed">Disbursed</button>
+            <button class="filter-btn" data-filter="rejected">Rejected</button>
+          </div>
+          <button class="btn btn-primary" id="newWithdrawalBtn">
+            <i class="fas fa-plus"></i> New Withdrawal
+          </button>
+        </div>
+
+        <!-- Type Legend -->
+        <div class="type-legend">
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #4f46e5;"></span>
+            <span>Loan Disbursement</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #059669;"></span>
+            <span>Welfare</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #d97706;"></span>
+            <span>Event Expense</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #2563eb;"></span>
+            <span>Refund</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #6b7280;"></span>
+            <span>Other</span>
           </div>
         </div>
 
         <!-- Pending Withdrawals -->
         <section class="data-section">
-          <h2><i class="fas fa-hourglass-half"></i> Pending Withdrawal Requests</h2>
+          <h2><i class="fas fa-hourglass-half"></i> Withdrawal Requests</h2>
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Request ID</th>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
+                  <th>ID</th>
+                  <th>Member</th>
+                  <th>Type</th>
                   <th>Amount</th>
-                  <th>Request Date</th>
+                  <th>Reason</th>
+                  <th>Date</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Data will be populated by JavaScript -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Withdrawal History -->
-        <section class="data-section">
-          <h2><i class="fas fa-history"></i> Withdrawal History</h2>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Request ID</th>
-                  <th>Member Name</th>
-                  <th>Student ID</th>
-                  <th>Amount</th>
-                  <th>Processed Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
+              <tbody id="withdrawalsTableBody">
                 <!-- Data will be populated by JavaScript -->
               </tbody>
             </table>
@@ -111,6 +314,50 @@
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
+  <!-- Withdrawal Form Modal -->
+  <div class="withdrawal-form-modal" id="withdrawalModal">
+    <div class="modal-content">
+      <h2 style="margin-top: 0;"><i class="fas fa-plus-circle"></i> Create Withdrawal</h2>
+      <p style="color: #6b7280; margin-bottom: 20px;">Record a new withdrawal (money going OUT)</p>
+      
+      <form id="withdrawalForm">
+        <div class="form-row">
+          <label for="withdrawalMember">Member *</label>
+          <select id="withdrawalMember" required>
+            <option value="">Select Member</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <label for="withdrawalType">Withdrawal Type *</label>
+          <select id="withdrawalType" required>
+            <option value="">Select Type</option>
+            <option value="loan_disbursement">Loan Disbursement (Money to member)</option>
+            <option value="welfare">Welfare (Help to member)</option>
+            <option value="event_expense">Event Expense</option>
+            <option value="refund">Refund (Returning money)</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <label for="withdrawalAmount">Amount (Ksh) *</label>
+          <input type="number" id="withdrawalAmount" min="1" step="0.01" required placeholder="Enter amount">
+        </div>
+        
+        <div class="form-row">
+          <label for="withdrawalReason">Reason / Description</label>
+          <textarea id="withdrawalReason" rows="3" placeholder="Describe the reason for this withdrawal"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="withdrawalsPage.closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Withdrawal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>w3.includeHTML();</script>
 
   <script src="../../../src/scripts/pages/dashboard/header-admin.js"></script>
@@ -125,7 +372,6 @@
     });
 
     function initializeSidebar() {
-      // Sidebar toggle
       const sidebarToggle = document.getElementById('sidebarToggle');
       const sidebar = document.getElementById('sidebar');
       const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -146,14 +392,12 @@
     }
 
     function initializeHeader() {
-      // Set page title dynamically
       const pageTitle = document.getElementById('pageTitle');
       const pageSubtitle = document.getElementById('pageSubtitle');
       
       if (pageTitle) pageTitle.textContent = 'Withdrawals Management';
       if (pageSubtitle) pageSubtitle.textContent = 'Manage member withdrawal requests';
 
-      // Logout functionality
       const logoutBtn = document.getElementById('headerLogoutBtn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {

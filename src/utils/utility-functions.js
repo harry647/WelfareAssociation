@@ -161,23 +161,7 @@ export function showNotification(message, type = 'info', duration = 3000) {
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
     
-    // Add styles inline
-    Object.assign(notification.style, {
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        padding: '15px 20px',
-        borderRadius: '5px',
-        color: '#fff',
-        fontSize: '14px',
-        zIndex: '10000',
-        animation: 'slideIn 0.3s ease',
-        backgroundColor: 
-            type === 'success' ? '#28a745' :
-            type === 'error' ? '#dc3545' :
-            type === 'warning' ? '#ffc107' : '#17a2b8',
-    });
-
+    // Add to document
     document.body.appendChild(notification);
 
     // Remove after duration
@@ -257,6 +241,20 @@ export function smoothScrollTo(target) {
     }
 }
 
+/**
+ * Format file size
+ * @param {number} bytes - Bytes to format
+ */
+export function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 export default {
     formatDate,
     formatCurrency,
@@ -272,5 +270,5 @@ export default {
     copyToClipboard,
     generateId,
     isInViewport,
-    smoothScrollTo,
+    smoothScrollTo
 };

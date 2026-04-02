@@ -31,6 +31,9 @@ import { withdrawalService } from './withdrawal-service.js';
 import { pageContentService } from './page-content-service.js';
 import { userService } from './user-service.js';
 
+// Import configuration
+import { API_CONFIG, APP_CONFIG } from '../config/app-config.js';
+
 // Re-export all services for named imports
 export {
     apiService,
@@ -57,7 +60,9 @@ export {
     documentService,
     withdrawalService,
     pageContentService,
-    userService
+    userService,
+    API_CONFIG,
+    APP_CONFIG
 };
 
 // Default export for convenience

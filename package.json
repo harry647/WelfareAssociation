@@ -10,6 +10,7 @@
     "init": "node backend/scripts/init-app.js",
     "init:db": "node backend/scripts/init-db.js",
     "init:keys": "node backend/utils/keyGenerator.js --init",
+    "migrate": "node -e \"require('./backend/migrations')\"",
     "reset": "del .initialized && node server.js",
     "rotate:keys": "node backend/utils/keyGenerator.js --rotate",
     "keys:status": "node backend/utils/keyGenerator.js --status",

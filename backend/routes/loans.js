@@ -795,6 +795,36 @@ router.patch('/:id/approve', auth, authorize('admin', 'treasurer', 'secretary'),
         
         await loan.save();
 
+        // 🚀 IMPORTANT: Link Withdrawals to Loans
+        // When loan is approved, create a WITHDRAWAL REQUEST (pending)
+        // Admin reviews it → then treasurer processes payment → disbursed
+        try {
+            const Withdrawal = require('../models/Withdrawal');
+            const withdrawalCount = await Withdrawal.count();
+            const withdrawalNumber = `WTH/LOAN/${String(withdrawalCount + 1).padStart(5, '0')}`;
+            
+            // Create PENDING withdrawal request - admin must review, treasurer must pay
+            await Withdrawal.create({
+                memberId: loan.memberId,
+                withdrawalNumber,
+                amount: loan.amount,
+                type: 'loan_disbursement',
+                reason: `Loan disbursement - ${loan.loanNumber}`,
+                status: 'pending', // PENDING - requires admin approval + treasurer payment
+                loanId: loan.id, // Link to the loan
+                processedDate: null, // Will be set when treasurer processes
+                processedBy: null, // Will be set when treasurer processes
+                paymentMethod: null, // Will be set by treasurer
+                paymentReference: null, // Will be set by treasurer (M-Pesa code)
+                recordedBy: req.user.id
+            });
+            
+            console.log(`✅ Withdrawal request created for loan ${loan.loanNumber} - waiting for admin review & treasurer payment`);
+        } catch (withdrawalError) {
+            console.error('⚠️ Warning: Failed to create withdrawal record for loan:', withdrawalError.message);
+            // Don't fail the loan approval if withdrawal creation fails
+        }
+        
         res.json({
             success: true,
             message: 'Loan approved and disbursed',

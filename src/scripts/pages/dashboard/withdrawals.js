@@ -2,17 +2,21 @@
  * Withdrawals Script
  * Handles member withdrawals functionality
  * 
- * @version 1.0.0
+ * @version 2.0.0
+ * Implements: types, balance calculation, create/approve/reject workflow
  */
 
 // Import services
-import { authService, withdrawalService } from '../../../services/index.js';
+import { authService, withdrawalService, memberService, apiService, API_CONFIG } from '../../../services/index.js';
 import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
 
 class Withdrawals {
     constructor() {
         this.withdrawals = [];
         this.summary = {};
+        this.balance = {};
+        this.members = [];
+        this.currentFilter = 'all';
         this.init();
     }
 
@@ -20,8 +24,12 @@ class Withdrawals {
         await this.checkAuth();
         this.initSidebar();
         this.initEventListeners();
-        await this.loadWithdrawals();
-        await this.loadSummary();
+        await Promise.all([
+            this.loadMembers(),
+            this.loadWithdrawals(),
+            this.loadSummary(),
+            this.loadBalance()
+        ]);
     }
 
     async checkAuth() {
@@ -59,34 +67,27 @@ class Withdrawals {
     }
 
     initEventListeners() {
-        // Search functionality
-        const searchInput = document.querySelector('.search-box input');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => this.searchWithdrawals(e.target.value));
-        }
-
         // Filter buttons
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
-                this.filterWithdrawals(e.target.dataset.status);
+                this.currentFilter = e.target.dataset.filter;
+                this.renderWithdrawals();
             });
         });
 
-        // Approve/Reject buttons
-        document.querySelectorAll('.approve-btn, .reject-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const withdrawalId = e.target.closest('tr')?.dataset?.withdrawalId;
-                if (withdrawalId) {
-                    if (e.target.classList.contains('approve-btn')) {
-                        this.approveWithdrawal(withdrawalId);
-                    } else {
-                        this.rejectWithdrawal(withdrawalId);
-                    }
-                }
-            });
-        });
+        // New Withdrawal button
+        const newWithdrawalBtn = document.getElementById('newWithdrawalBtn');
+        if (newWithdrawalBtn) {
+            newWithdrawalBtn.addEventListener('click', () => this.openModal());
+        }
+
+        // Withdrawal form
+        const form = document.getElementById('withdrawalForm');
+        if (form) {
+            form.addEventListener('submit', (e) => this.handleCreateWithdrawal(e));
+        }
 
         const logoutBtn = document.querySelector('.logout-btn-header');
         if (logoutBtn) {
@@ -94,53 +95,47 @@ class Withdrawals {
         }
     }
 
+    async loadMembers() {
+        try {
+            const response = await memberService.getAllMembers();
+            if (response.success) {
+                this.members = response.data || [];
+                this.populateMemberSelect();
+            }
+        } catch (error) {
+            console.error('Error loading members:', error);
+        }
+    }
+
+    populateMemberSelect() {
+        const select = document.getElementById('withdrawalMember');
+        if (!select) return;
+
+        this.members.forEach(member => {
+            const option = document.createElement('option');
+            option.value = member.id;
+            option.textContent = `${member.firstName} ${member.lastName} (${member.memberNumber || member.studentId})`;
+            select.appendChild(option);
+        });
+    }
+
     async loadWithdrawals() {
         try {
             console.log('Loading withdrawals...');
-            const response = await withdrawalService.getAll();
+            const response = await withdrawalService.getAll({ limit: 100 });
             
             if (response.success) {
                 this.withdrawals = response.data;
-                this.renderPendingWithdrawals();
-                this.renderWithdrawalHistory();
+                this.renderWithdrawals();
             } else {
                 showNotification('Failed to load withdrawals', 'error');
-                // Show empty state
                 this.renderEmptyState();
             }
         } catch (error) {
             console.error('Error loading withdrawals:', error);
             showNotification('Failed to load withdrawals', 'error');
-            // Show empty state
             this.renderEmptyState();
         }
-    }
-
-    renderEmptyState() {
-        const pendingTbody = document.querySelector('section:first-of-type table tbody');
-        const historyTbody = document.querySelector('section:last-of-type table tbody');
-        
-        if (pendingTbody) {
-            pendingTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No withdrawal requests found</td></tr>';
-        }
-        
-        if (historyTbody) {
-            historyTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No withdrawal history found</td></tr>';
-        }
-        
-        // Reset summary cards to 0
-        this.updateSummaryCardsToZero();
-    }
-
-    updateSummaryCardsToZero() {
-        const cards = document.querySelectorAll('.stat-number');
-        cards.forEach(card => {
-            if (card.textContent.includes('Ksh')) {
-                card.textContent = 'Ksh 0';
-            } else {
-                card.textContent = '0';
-            }
-        });
     }
 
     async loadSummary() {
@@ -160,101 +155,204 @@ class Withdrawals {
         }
     }
 
-    renderPendingWithdrawals() {
-        const pendingWithdrawals = this.withdrawals.filter(w => w.status === 'pending');
-        const tbody = document.querySelector('section:first-of-type table tbody');
-        
-        if (!tbody) return;
-
-        if (pendingWithdrawals.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No pending withdrawal requests</td></tr>';
-            return;
+    async loadBalance() {
+        try {
+            const response = await apiService.get(`${API_CONFIG.endpoints.withdrawals}/balance`, {}, true);
+            
+            if (response.success) {
+                this.balance = response.data;
+                this.updateBalanceDisplay();
+            } else {
+                console.log('Failed to load balance');
+                this.updateBalanceToZero();
+            }
+        } catch (error) {
+            console.error('Error loading balance:', error);
+            this.updateBalanceToZero();
         }
-
-        tbody.innerHTML = pendingWithdrawals.map(withdrawal => `
-            <tr data-withdrawal-id="${withdrawal.id}">
-                <td>${withdrawal.withdrawalNumber}</td>
-                <td>${withdrawal.member ? `${withdrawal.member.firstName} ${withdrawal.member.lastName}` : 'Unknown'}</td>
-                <td>${withdrawal.member ? withdrawal.member.studentId : 'N/A'}</td>
-                <td>${formatCurrency(withdrawal.amount)}</td>
-                <td>${formatDate(withdrawal.requestDate)}</td>
-                <td><span style="background: rgba(245,158,11,0.12); color: #f59e0b; padding: 3px 10px; border-radius: 20px; font-size: 11.5px;">Pending</span></td>
-                <td>
-                    <button class="btn approve" onclick="withdrawalsPage.approveWithdrawal('${withdrawal.id}')">✓ Approve</button>
-                    <button class="btn btn-reject" onclick="withdrawalsPage.rejectWithdrawal('${withdrawal.id}')">✗ Reject</button>
-                </td>
-            </tr>
-        `).join('');
     }
 
-    renderWithdrawalHistory() {
-        const processedWithdrawals = this.withdrawals.filter(w => w.status !== 'pending');
-        const tbody = document.querySelector('section:last-of-type table tbody');
-        
-        if (!tbody) return;
-
-        if (processedWithdrawals.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No withdrawal history</td></tr>';
-            return;
+    updateBalanceDisplay() {
+        // System Balance
+        const balanceEl = document.getElementById('systemBalance');
+        if (balanceEl) {
+            balanceEl.textContent = `Ksh ${formatCurrency(this.balance.systemBalance || 0)}`;
         }
 
-        tbody.innerHTML = processedWithdrawals.map(withdrawal => `
-            <tr>
-                <td>${withdrawal.withdrawalNumber}</td>
-                <td>${withdrawal.member ? `${withdrawal.member.firstName} ${withdrawal.member.lastName}` : 'Unknown'}</td>
-                <td>${withdrawal.member ? withdrawal.member.studentId : 'N/A'}</td>
-                <td>${formatCurrency(withdrawal.amount)}</td>
-                <td>${formatDate(withdrawal.processedDate || withdrawal.requestDate)}</td>
-                <td>
-                    ${withdrawal.status === 'approved' ? 
-                        '<span class="status received">Approved</span>' : 
-                        '<span style="background: rgba(220,38,38,0.12); color: #dc3545; padding: 3px 10px; border-radius: 20px; font-size: 11.5px;">Rejected</span>'
-                    }
-                </td>
-            </tr>
-        `).join('');
+        // Cash Balance (available after withdrawals)
+        const cashBalanceEl = document.getElementById('cashBalance');
+        if (cashBalanceEl) {
+            const availableBalance = (parseFloat(this.balance.totalContributions) || 0) - (parseFloat(this.balance.totalWithdrawals) || 0);
+            cashBalanceEl.textContent = `Ksh ${formatCurrency(availableBalance)}`;
+        }
+    }
+
+    updateBalanceToZero() {
+        const balanceEl = document.getElementById('systemBalance');
+        if (balanceEl) balanceEl.textContent = 'Ksh 0';
+
+        const cashBalanceEl = document.getElementById('cashBalance');
+        if (cashBalanceEl) cashBalanceEl.textContent = 'Ksh 0';
+    }
+
+    renderEmptyState() {
+        const tbody = document.getElementById('withdrawalsTableBody');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No withdrawal requests found</td></tr>';
+        }
+        this.updateSummaryCardsToZero();
+    }
+
+    updateSummaryCardsToZero() {
+        const cards = document.querySelectorAll('.stat-number');
+        cards.forEach(card => {
+            const parent = card.closest('.card');
+            if (parent && card.id === 'cashBalance') return;
+            
+            if (card.textContent.includes('Ksh')) {
+                card.textContent = 'Ksh 0';
+            } else {
+                card.textContent = '0';
+            }
+        });
     }
 
     updateSummaryCards() {
-        // Update Total Withdrawn
+        // Total Withdrawn (all time approved)
         const totalCard = document.querySelector('.card:nth-child(1) .stat-number');
-        if (totalCard) totalCard.textContent = formatCurrency(this.summary.thisMonthWithdrawn || 0);
+        if (totalCard) totalCard.textContent = formatCurrency(this.summary.totalWithdrawn || this.summary.thisMonthWithdrawn || 0);
 
-        // Update Pending
+        // Pending
         const pendingCard = document.querySelector('.card:nth-child(2) .stat-number');
         if (pendingCard) pendingCard.textContent = this.summary.pendingCount || 0;
 
-        // Update Approved
+        // Approved This Month
         const approvedCard = document.querySelector('.card:nth-child(3) .stat-number');
         if (approvedCard) approvedCard.textContent = this.summary.approvedThisMonth || 0;
-
-        // Update Rejected
-        const rejectedCard = document.querySelector('.card:nth-child(4) .stat-number');
-        if (rejectedCard) rejectedCard.textContent = this.summary.rejectedThisMonth || 0;
     }
 
-    searchWithdrawals(query) {
-        console.log('Searching withdrawals:', query);
+    getTypeBadgeClass(type) {
+        const typeMap = {
+            'loan_disbursement': 'type-loan_disbursement',
+            'welfare': 'type-welfare',
+            'event_expense': 'type-event_expense',
+            'refund': 'type-refund',
+            'other': 'type-other'
+        };
+        return typeMap[type] || 'type-other';
     }
 
-    filterWithdrawals(status) {
-        console.log('Filtering by status:', status);
+    getTypeLabel(type) {
+        const labels = {
+            'loan_disbursement': 'Loan Disbursement',
+            'welfare': 'Welfare',
+            'event_expense': 'Event Expense',
+            'refund': 'Refund',
+            'other': 'Other'
+        };
+        return labels[type] || 'Other';
+    }
+
+    getStatusBadgeClass(status) {
+        return `status-${status}`;
+    }
+
+    getStatusLabel(status) {
+        const labels = {
+            'pending': 'Pending',
+            'approved': 'Approved',
+            'rejected': 'Rejected',
+            'processed': 'Processed',
+            'disbursed': 'Disbursed'
+        };
+        return labels[status] || status;
+    }
+
+    renderWithdrawals() {
+        const tbody = document.getElementById('withdrawalsTableBody');
+        if (!tbody) return;
+
+        let filteredWithdrawals = this.withdrawals;
+        
+        // Apply filter
+        if (this.currentFilter !== 'all') {
+            filteredWithdrawals = this.withdrawals.filter(w => w.status === this.currentFilter);
+        }
+
+        if (filteredWithdrawals.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No withdrawal requests found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filteredWithdrawals.map(withdrawal => `
+            <tr data-withdrawal-id="${withdrawal.id}">
+                <td><strong>${withdrawal.withdrawalNumber || 'N/A'}</strong></td>
+                <td>${withdrawal.member ? `${withdrawal.member.firstName} ${withdrawal.member.lastName}` : 'Unknown'}</td>
+                <td><span class="withdrawal-type-badge ${this.getTypeBadgeClass(withdrawal.type)}">${this.getTypeLabel(withdrawal.type)}</span></td>
+                <td><strong>${formatCurrency(withdrawal.amount)}</strong></td>
+                <td>${withdrawal.reason || '-'}</td>
+                <td>${formatDate(withdrawal.requestDate || withdrawal.createdAt)}</td>
+                <td><span class="withdrawal-type-badge ${this.getStatusBadgeClass(withdrawal.status)}" style="text-transform: capitalize;">${this.getStatusLabel(withdrawal.status)}</span></td>
+                <td class="action-buttons">
+                    ${withdrawal.status === 'pending' ? `
+                        <button class="btn-action btn-approve" onclick="withdrawalsPage.approveWithdrawal('${withdrawal.id}')" title="Approve">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn-action btn-reject" onclick="withdrawalsPage.rejectWithdrawal('${withdrawal.id}')" title="Reject">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : ''}
+                    <button class="btn-action btn-view" onclick="withdrawalsPage.viewWithdrawal('${withdrawal.id}')" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    viewWithdrawal(id) {
+        const withdrawal = this.withdrawals.find(w => w.id === id);
+        if (!withdrawal) return;
+
+        alert(`
+Withdrawal Details
+==================
+ID: ${withdrawal.withdrawalNumber}
+Member: ${withdrawal.member ? `${withdrawal.member.firstName} ${withdrawal.member.lastName}` : 'Unknown'}
+Type: ${this.getTypeLabel(withdrawal.type)}
+Amount: Ksh ${formatCurrency(withdrawal.amount)}
+Reason: ${withdrawal.reason || 'N/A'}
+Status: ${this.getStatusLabel(withdrawal.status)}
+Date: ${formatDate(withdrawal.requestDate || withdrawal.createdAt)}
+${withdrawal.approvalNotes ? `Notes: ${withdrawal.approvalNotes}` : ''}
+${withdrawal.paymentMethod ? `Payment Method: ${withdrawal.paymentMethod}` : ''}
+${withdrawal.paymentReference ? `Reference: ${withdrawal.paymentReference}` : ''}
+        `.trim());
     }
 
     async approveWithdrawal(id) {
-        if (confirm('Are you sure you want to approve this withdrawal?')) {
+        const method = prompt('Enter payment method (cash/mpesa/bank_transfer):', 'cash');
+        if (!method) return;
+
+        const reference = prompt('Enter payment reference (M-Pesa code or transaction ID):', '');
+        
+        if (confirm('Are you sure you want to APPROVE this withdrawal? This will mark it as DISBURSED.')) {
             try {
                 const response = await withdrawalService.approve(id, {
-                    approvalNotes: 'Approved by admin',
-                    paymentMethod: 'cash'
+                    approvalNotes: 'Approved and disbursed by admin',
+                    paymentMethod: method,
+                    paymentReference: reference
                 });
 
                 if (response.success) {
-                    showNotification('Withdrawal approved successfully!', 'success');
-                    await this.loadWithdrawals();
-                    await this.loadSummary();
+                    showNotification('Withdrawal approved and disbursed successfully!', 'success');
+                    await Promise.all([
+                        this.loadWithdrawals(),
+                        this.loadSummary(),
+                        this.loadBalance()
+                    ]);
                 } else {
-                    showNotification('Failed to approve withdrawal', 'error');
+                    showNotification(response.message || 'Failed to approve withdrawal', 'error');
                 }
             } catch (error) {
                 console.error('Error approving withdrawal:', error);
@@ -265,7 +363,10 @@ class Withdrawals {
 
     async rejectWithdrawal(id) {
         const reason = prompt('Please provide a reason for rejection:');
-        if (reason === null) return; // User cancelled
+        if (reason === null || reason.trim() === '') {
+            showNotification('Rejection reason is required', 'error');
+            return;
+        }
 
         try {
             const response = await withdrawalService.reject(id, {
@@ -274,14 +375,71 @@ class Withdrawals {
 
             if (response.success) {
                 showNotification('Withdrawal rejected successfully!', 'success');
-                await this.loadWithdrawals();
-                await this.loadSummary();
+                await Promise.all([
+                    this.loadWithdrawals(),
+                    this.loadSummary()
+                ]);
             } else {
-                showNotification('Failed to reject withdrawal', 'error');
+                showNotification(response.message || 'Failed to reject withdrawal', 'error');
             }
         } catch (error) {
             console.error('Error rejecting withdrawal:', error);
             showNotification('Failed to reject withdrawal', 'error');
+        }
+    }
+
+    openModal() {
+        const modal = document.getElementById('withdrawalModal');
+        if (modal) {
+            modal.classList.add('active');
+        }
+    }
+
+    closeModal() {
+        const modal = document.getElementById('withdrawalModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+        // Reset form
+        const form = document.getElementById('withdrawalForm');
+        if (form) form.reset();
+    }
+
+    async handleCreateWithdrawal(e) {
+        e.preventDefault();
+
+        const memberId = document.getElementById('withdrawalMember').value;
+        const type = document.getElementById('withdrawalType').value;
+        const amount = parseFloat(document.getElementById('withdrawalAmount').value);
+        const reason = document.getElementById('withdrawalReason').value;
+
+        if (!memberId || !type || !amount) {
+            showNotification('Please fill in all required fields', 'error');
+            return;
+        }
+
+        try {
+            const response = await withdrawalService.add({
+                memberId,
+                type,
+                amount,
+                reason
+            });
+
+            if (response.success) {
+                showNotification('Withdrawal request created successfully!', 'success');
+                this.closeModal();
+                await Promise.all([
+                    this.loadWithdrawals(),
+                    this.loadSummary(),
+                    this.loadBalance()
+                ]);
+            } else {
+                showNotification(response.message || 'Failed to create withdrawal', 'error');
+            }
+        } catch (error) {
+            console.error('Error creating withdrawal:', error);
+            showNotification('Failed to create withdrawal', 'error');
         }
     }
 
@@ -301,4 +459,6 @@ let withdrawalsPage;
 
 document.addEventListener('DOMContentLoaded', () => {
     withdrawalsPage = new Withdrawals();
+    // Make functions globally available for onclick handlers after initialization
+    window.withdrawalsPage = withdrawalsPage;
 });

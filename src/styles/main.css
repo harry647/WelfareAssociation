@@ -166,23 +166,27 @@ input:focus, textarea:focus, select:focus {
 
 @keyframes slideIn {
     from {
-        transform: translateX(100%);
+        transform: translateX(100%) translateY(-20px);
         opacity: 0;
+        filter: blur(5px);
     }
     to {
-        transform: translateX(0);
+        transform: translateX(0) translateY(0);
         opacity: 1;
+        filter: blur(0);
     }
 }
 
 @keyframes slideOut {
     from {
-        transform: translateX(0);
+        transform: translateX(0) translateY(0);
         opacity: 1;
+        filter: blur(0);
     }
     to {
-        transform: translateX(100%);
+        transform: translateX(100%) translateY(-20px);
         opacity: 0;
+        filter: blur(5px);
     }
 }
 
@@ -195,46 +199,60 @@ input:focus, textarea:focus, select:focus {
     border-radius: var(--radius-sm);
     color: #fff;
     font-size: 14px;
+    font-weight: 500;
     z-index: 10000;
     animation: slideIn 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-width: 280px;
-    max-width: 400px;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 450px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.notification:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .notification::before {
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
-    font-size: 16px;
+    font-size: 18px;
+    flex-shrink: 0;
 }
 
 .notification-success { 
-    background-color: var(--success-color); 
+    background: linear-gradient(135deg, var(--success-color), #218838);
+    border-color: rgba(40, 167, 69, 0.3);
 }
 .notification-success::before {
     content: '\f00c'; /* check mark */
 }
 
 .notification-error { 
-    background-color: var(--error-color); 
+    background: linear-gradient(135deg, var(--error-color), #c82333);
+    border-color: rgba(220, 53, 69, 0.3);
 }
 .notification-error::before {
     content: '\f00d'; /* x mark */
 }
 
 .notification-warning { 
-    background-color: var(--warning-color); 
+    background: linear-gradient(135deg, var(--warning-color), #e0a800);
     color: #000;
+    border-color: rgba(255, 193, 7, 0.3);
 }
 .notification-warning::before {
     content: '\f071'; /* warning */
 }
 
 .notification-info { 
-    background-color: var(--info-color); 
+    background: linear-gradient(135deg, var(--info-color), #138496);
+    border-color: rgba(23, 162, 184, 0.3);
 }
 .notification-info::before {
     content: '\f129'; /* info circle */

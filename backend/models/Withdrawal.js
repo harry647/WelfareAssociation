@@ -37,6 +37,12 @@ const Withdrawal = sequelize.define('Withdrawal', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    // Type of withdrawal (important for reports)
+    type: {
+        type: DataTypes.ENUM('loan_disbursement', 'welfare', 'event_expense', 'refund', 'other'),
+        allowNull: false,
+        defaultValue: 'other'
+    },
     // Request details
     requestDate: {
         type: DataTypes.DATE,
@@ -57,13 +63,31 @@ const Withdrawal = sequelize.define('Withdrawal', {
     },
     // Status
     status: {
-        type: DataTypes.ENUM('pending', 'approved', 'rejected', 'processed'),
+        type: DataTypes.ENUM('pending', 'approved', 'rejected', 'processed', 'disbursed'),
         defaultValue: 'pending'
     },
     // Approval/rejection details
     approvalNotes: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    // Who approved the withdrawal (for security/ accountability)
+    approvedBy: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
+    },
+    // Link to loan (for loan disbursements)
+    loanId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'loans',
+            key: 'id'
+        }
     },
     // Payment details (when approved)
     paymentMethod: {
