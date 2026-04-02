@@ -5,6 +5,8 @@
  * @version 1.0.0
  */
 
+import { showAlert } from '../../../utils/utility-functions.js';
+
 class WelcomePage {
     constructor() {
         this.loginForm = document.getElementById('loginForm');
@@ -79,7 +81,7 @@ class WelcomePage {
         const password = inputs[1]?.value;
 
         if (!username || !password) {
-            alert('Please enter both username and password');
+            showAlert('Please enter both username and password', 'Login Error', 'warning');
             return;
         }
 
@@ -94,12 +96,12 @@ class WelcomePage {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Show success and redirect
-            alert('Login successful! Redirecting to Member Portal...');
+            showAlert('Login successful! Redirecting to Member Portal...', 'Login Success', 'success');
             window.location.href = '../../pages/dashboard/member/member-portal.html';
 
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login failed. Please try again.');
+            showAlert('Login failed. Please try again.', 'Login Error', 'error');
         } finally {
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
@@ -119,14 +121,14 @@ class WelcomePage {
         const password = inputs[3]?.value;
 
         if (!fullName || !email || !studentId || !password) {
-            alert('Please fill in all fields');
+            showAlert('Please fill in all fields', 'Registration Error', 'warning');
             return;
         }
 
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address');
+            showAlert('Please enter a valid email address', 'Registration Error', 'warning');
             return;
         }
 
@@ -141,12 +143,12 @@ class WelcomePage {
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             // Show success and redirect
-            alert('Registration successful! Welcome to SWA!');
+            showAlert('Registration successful! Welcome to SWA!', 'Registration Success', 'success');
             window.location.href = '../../pages/dashboard/member/member-portal.html';
 
         } catch (error) {
             console.error('Registration error:', error);
-            alert('Registration failed. Please try again.');
+            showAlert('Registration failed. Please try again.', 'Registration Error', 'error');
         } finally {
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {

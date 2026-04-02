@@ -7,6 +7,10 @@ import { reportService } from '../../../services/report-service.js';
 import { bereavementService } from '../../../services/bereavement-service.js';
 import { formatCurrency, formatDate } from '../../../utils/utility-functions.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Bereavement report loaded');
     loadBereavementData();
@@ -392,11 +396,11 @@ async function handleCondolenceSubmit(e) {
     const anonymous = form.querySelector('#anonymousCheck')?.checked;
     
     if (!beneficiaryId) {
-        alert('Please select a member');
+        showAlert('Please select a member', 'Information', 'info');
         return;
     }
     
-    alert('This feature requires backend API support for messages. Please contact administrator.');
+    showAlert('This feature requires backend API support for messages. Please contact administrator.', 'Information', 'info');
     // Note: The backend currently doesn't have an endpoint for adding messages to bereavement cases.
     // Messages are stored in the bereavement.messages JSON field but there's no POST endpoint.
     // Form data: contributorName, beneficiaryId, message, anonymous
@@ -411,11 +415,11 @@ async function handleDocumentUpload(e) {
     const documentFile = form.querySelector('#documentFile')?.files[0];
     
     if (!caseId || !documentType || !documentFile) {
-        alert('Please fill all fields');
+        showAlert('Please fill all fields', 'Information', 'info');
         return;
     }
     
-    alert('This feature requires backend API support for document uploads. Please contact administrator.');
+    showAlert('This feature requires backend API support for document uploads. Please contact administrator.', 'Information', 'info');
     // Note: The backend currently doesn't have an endpoint for uploading documents to bereavement cases.
     // Form data: caseId, documentType, documentFile
 }

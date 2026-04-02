@@ -1,3 +1,5 @@
+import { showConfirm } from '../../../utils/utility-functions.js';
+
 /**
  * Archive Documents Script
  * Handles document archive functionality
@@ -69,7 +71,7 @@ class ArchiveDocuments {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

@@ -8,6 +8,14 @@ import { memberService } from '../../../services/member-service.js';
 import { eventService } from '../../../services/event-service.js';
 import { formatDate } from '../../../utils/utility-functions.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Export data loaded');
     bindExportButtons();
@@ -31,7 +39,7 @@ async function handleExport(type, format) {
         // Get token
         const token = localStorage.getItem('accessToken');
         if (!token) {
-            alert('Please log in to export data');
+            showAlert('Please log in to export data', 'Information', 'info');
             return;
         }
         
@@ -57,7 +65,7 @@ async function handleExport(type, format) {
         }
         
         if (!data) {
-            alert('No data available to export');
+            showAlert('No data available to export', 'Information', 'info');
             return;
         }
         
@@ -69,7 +77,7 @@ async function handleExport(type, format) {
         
     } catch (error) {
         console.error('Export error:', error);
-        alert('Failed to export data: ' + error.message);
+        showAlert(`Failed to export data: ` + error.message);
     }
 }
 
@@ -145,7 +153,7 @@ function addToExportHistory(type, format) {
     const row = document.createElement('tr');
     row.innerHTML = `
         <td>${formatDate(new Date())}</td>
-        <td>${type.charAt(0).toUpperCase() + type.slice(1)}</td>
+        <td>${type.charAt(0).toUpperCase(, 'Information', 'info') + type.slice(1)}</td>
         <td>${format.toUpperCase()}</td>
         <td><span class="status verified">Completed</span></td>
         <td><button class="btn btn-sm">Download Again</button></td>

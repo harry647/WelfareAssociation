@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Send Announcement Script
  * Handles sending announcements to members
@@ -69,12 +73,12 @@ class SendAnnouncement {
         };
 
         console.log('Sending announcement:', announcement);
-        alert('Announcement sent successfully!');
+        showAlert('Announcement sent successfully!', 'Information', 'info');
         window.location.href = 'notices.html';
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

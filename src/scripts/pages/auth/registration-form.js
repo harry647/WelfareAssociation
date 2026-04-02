@@ -104,8 +104,8 @@ class RegistrationForm {
         // Reset button
         const resetBtn = this.form.querySelector('button[type="reset"]');
         if (resetBtn) {
-            resetBtn.addEventListener('click', (e) => {
-                if (!confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
+            resetBtn.addEventListener('click', async (e) => {
+                if (!await showConfirm('Are you sure you want to reset the form? All entered data will be lost.')) {
                     e.preventDefault();
                 }
             });

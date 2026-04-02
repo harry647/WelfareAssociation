@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Donations Page Script
  * Handles all donation form interactions with Fetch API integration
@@ -312,13 +316,13 @@ class DonationsPage {
         // Validate
         const amount = parseFloat(formData.get('donationAmount'));
         if (amount < this.config.minAmounts.oneTime) {
-            alert(`Minimum donation amount is Ksh ${this.config.minAmounts.oneTime}`);
+            showAlert(`Minimum donation amount is Ksh ${this.config.minAmounts.oneTime}`, 'Information', 'info');
             return;
         }
         
         const phone = formData.get('donorPhone');
         if (phone && !this.validatePhone(phone)) {
-            alert('Please enter a valid phone number (format: 254XXXXXXXXX)');
+            showAlert('Please enter a valid phone number (format: 254XXXXXXXXX)', 'Information', 'info');
             return;
         }
         
@@ -366,13 +370,13 @@ class DonationsPage {
         // Validate
         const amount = parseFloat(formData.get('monthlyAmount'));
         if (amount < this.config.minAmounts.monthly) {
-            alert(`Minimum monthly donation amount is Ksh ${this.config.minAmounts.monthly}`);
+            showAlert(`Minimum monthly donation amount is Ksh ${this.config.minAmounts.monthly}`, 'Information', 'info');
             return;
         }
         
         const phone = formData.get('monthlyDonorPhone');
         if (!this.validatePhone(phone)) {
-            alert('Please enter a valid phone number (format: 254XXXXXXXXX)');
+            showAlert('Please enter a valid phone number (format: 254XXXXXXXXX)', 'Information', 'info');
             return;
         }
         
@@ -429,7 +433,7 @@ class DonationsPage {
         } else if (sponsorshipType === 'custom') {
             amount = parseFloat(formData.get('scholarshipAmount'));
             if (amount < this.config.minAmounts.scholarship) {
-                alert(`Minimum scholarship amount is Ksh ${this.config.minAmounts.scholarship}`);
+                showAlert(`Minimum scholarship amount is Ksh ${this.config.minAmounts.scholarship}`, 'Information', 'info');
                 return;
             }
         }
@@ -437,7 +441,7 @@ class DonationsPage {
         // Validate phone if provided
         const phone = formData.get('scholarPhone');
         if (phone && !this.validatePhone(phone)) {
-            alert('Please enter a valid phone number (format: 254XXXXXXXXX)');
+            showAlert('Please enter a valid phone number (format: 254XXXXXXXXX)', 'Information', 'info');
             return;
         }
         
@@ -526,7 +530,7 @@ class DonationsPage {
         // Validate phone if provided
         const phone = formData.get('inkindPhone');
         if (phone && !this.validatePhone(phone)) {
-            alert('Please enter a valid phone number (format: 254XXXXXXXXX)');
+            showAlert('Please enter a valid phone number (format: 254XXXXXXXXX)', 'Information', 'info');
             return;
         }
         

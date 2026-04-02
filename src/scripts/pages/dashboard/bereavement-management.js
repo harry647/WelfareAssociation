@@ -7,6 +7,9 @@ import { bereavementService, memberService } from '../../../services/index.js';
 import { formatCurrency, formatDate } from '../../../utils/utility-functions.js';
 import { showNotification } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 // State
 let bereavementCases = [];
 let members = [];
@@ -350,7 +353,7 @@ window.viewCase = function(caseId) {
     const member = members.find(m => m.id === caseData.memberId);
     const deceased = caseData.deceased || {};
     
-    alert(`Bereavement Case Details\n\n` +
+    const message = `Bereavement Case Details\n\n` +
         `Member: ${member ? `${member.firstName} ${member.lastName}` : 'Unknown'}\n` +
         `Student ID: ${member?.studentId || member?.memberNumber || 'N/A'}\n\n` +
         `Deceased: ${deceased.name || 'N/A'}\n` +
@@ -359,11 +362,13 @@ window.viewCase = function(caseId) {
         `Date of Burial: ${deceased.dateOfBurial ? formatDate(deceased.dateOfBurial) : 'N/A'}\n\n` +
         `Status: ${caseData.status}\n` +
         `Amount Raised: ${formatCurrency(parseFloat(caseData.totalContributions) || 0)}\n\n` +
-        `Notes: ${caseData.notes || 'None'}`);
+        `Notes: ${caseData.notes || 'None'}`;
+    
+    showAlert(message, 'Bereavement Case Details', 'info');
 };
 
 window.deleteCase = async function(caseId) {
-    if (!confirm('Are you sure you want to delete this bereavement case? This action cannot be undone.')) {
+    if (!await showConfirm('Are you sure you want to delete this bereavement case? This action cannot be undone.')) {
         return;
     }
     

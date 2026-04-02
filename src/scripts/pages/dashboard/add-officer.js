@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Add Officer Script
  * Handles adding new executive officers
@@ -69,16 +73,16 @@ class AddOfficer {
         try {
             // Simulate API call
             console.log('Adding officer:', officerData);
-            alert('Officer added successfully!');
+            showAlert('Officer added successfully!', 'Information', 'info');
             form.reset();
         } catch (error) {
             console.error('Error adding officer:', error);
-            alert('Failed to add officer. Please try again.');
+            showAlert('Failed to add officer. Please try again.', 'Information', 'info');
         }
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

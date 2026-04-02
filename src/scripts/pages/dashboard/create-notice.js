@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Create Notice Script
  * Handles creating new notices/announcements
@@ -69,12 +73,12 @@ class CreateNotice {
         };
 
         console.log('Creating notice:', notice);
-        alert('Notice published successfully!');
+        showAlert('Notice published successfully!', 'Information', 'info');
         window.location.href = 'notices.html';
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

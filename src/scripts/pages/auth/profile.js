@@ -1,3 +1,5 @@
+import { showConfirm } from '../../../utils/utility-functions.js';
+
 /**
  * Profile Page Script
  * Handles profile form validation, data loading, and saving
@@ -162,7 +164,7 @@ class ProfileManager {
         const cancelBtn = document.getElementById('cancel-btn');
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                if (await showConfirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
                     window.location.href = '/pages/dashboard/member/member-portal.html';
                 }
             });

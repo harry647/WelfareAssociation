@@ -8,8 +8,10 @@
 import { reportService } from '../../../services/index.js';
 
 // Import utility functions
-import { formatCurrency, formatDate } from '../../../utils/utility-functions.js';
+import { formatCurrency, formatDate, showAlert } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class ReportsDashboard {
     constructor() {
         this.statCards = document.querySelectorAll('.stat-card');
@@ -63,7 +65,7 @@ class ReportsDashboard {
         if (href && href !== '#') {
             window.location.href = href;
         } else {
-            alert(`Report: "${title}"\n\nThis report is currently under development.`);
+            showAlert(`Report: "${title}"\n\nThis report is currently under development.`, 'Report Information', 'info');
         }
     }
 
@@ -221,7 +223,7 @@ class ReportsDashboard {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

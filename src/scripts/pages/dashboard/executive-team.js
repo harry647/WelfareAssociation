@@ -12,6 +12,8 @@ import { authService, userService } from '../../../services/index.js';
 // Import utility functions
 import { showNotification, formatDate } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class ExecutiveTeam {
     constructor() {
         this.executives = [];
@@ -651,7 +653,7 @@ class ExecutiveTeam {
      * Handle logout
      */
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../../index.html';
         }

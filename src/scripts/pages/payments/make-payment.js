@@ -7,6 +7,14 @@
 // Import auth service for user data
 import { authService } from '../../../services/index.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 class PaymentManager {
     constructor() {
         // Configuration
@@ -934,7 +942,7 @@ class PaymentManager {
      * Show error message
      */
     showError(message) {
-        alert('Error: ' + message);
+        showAlert(`Error: ` + message);
     }
 
     /**
@@ -998,7 +1006,7 @@ class PaymentManager {
             */
             
             // Mock download for now
-            alert('PDF receipt download will be available once the backend is configured.');
+            showAlert('PDF receipt download will be available once the backend is configured.', 'Information', 'info');
             
         } catch (error) {
             console.error('Receipt download error:', error);
@@ -1073,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('swa_auth_token');
             
             if (!token) {
-                alert('Please login first');
+                showAlert('Please login first', 'Information', 'info');
                 return;
             }
             
@@ -1098,11 +1106,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('refPaybill').textContent = data.data.mpesaPaybill || '123456';
                     document.getElementById('refAccountNo').textContent = data.data.reference;
                 } else {
-                    alert(data.message || 'Error generating reference');
+                    showAlert(data.message || 'Error generating reference', 'Error', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error generating reference');
+                showAlert('Error generating reference', 'Error', 'error');
             }
         });
     }

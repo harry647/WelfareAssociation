@@ -10,6 +10,14 @@
 // Import services from src for consistency
 import { authService, documentService, policyService } from '../../../services/index.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 /**
  * Documentation Class
  * Manages the documentation dashboard page
@@ -593,7 +601,7 @@ class Documentation {
      * Handle logout
      */
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
@@ -609,7 +617,7 @@ class Documentation {
      */
     async handleRequest(requestId, status) {
         try {
-            const confirmed = confirm(`Are you sure you want to ${status} this request?`);
+            const confirmed = await showConfirm(Are you sure you want to ${status} this request?);
             if (!confirmed) return;
 
             const response = await documentService.updateRequestStatus(requestId, status);
@@ -618,11 +626,11 @@ class Documentation {
                 // Reload dashboard data to refresh the table
                 await this.loadDocumentationData();
             } else {
-                alert('Failed to process request: ' + (response.message || 'Unknown error'));
+                showAlert(`Failed to process request: ` + (response.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error processing request:', error);
-            alert('Error processing request. Please try again.');
+            showAlert('Error processing request. Please try again.', 'Information', 'info');
         }
     }
 }
@@ -632,4 +640,4 @@ document.addEventListener('DOMContentLoaded', () => {
     const docs = new Documentation();
     // Make handleRequest available globally for onclick handlers
     window.handleRequest = (requestId, status) => docs.handleRequest(requestId, status);
-});
+}, 'Information', 'info');

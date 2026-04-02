@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Gallery Page Script
  * Handles gallery filtering and lightbox functionality
@@ -131,7 +135,7 @@ class GalleryPage {
 
     openVideoPlaceholder(card) {
         const title = card.querySelector('h3')?.textContent || 'Video';
-        alert(`Video: "${title}"\n\nVideo playback is currently not available. Check back soon!`);
+        showAlert(`Video: "${title}"\n\nVideo playback is currently not available. Check back soon!`, 'Information', 'info');
     }
 }
 

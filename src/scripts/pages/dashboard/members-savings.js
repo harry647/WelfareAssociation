@@ -12,6 +12,8 @@ import { authService, savingsService } from '../../../services/index.js';
 // Import utility functions
 import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class MembersSavings {
     constructor() {
         this.savings = [];
@@ -382,7 +384,7 @@ class MembersSavings {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../../index.html';
         }

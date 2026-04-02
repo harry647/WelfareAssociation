@@ -9,6 +9,9 @@
 import { authService, debtService } from '../../../services/index.js';
 import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 class Debts {
     constructor() {
         this.debts = [];
@@ -230,7 +233,7 @@ class Debts {
     }
 
     async sendReminder(debtId) {
-        if (confirm('Are you sure you want to send a reminder for this debt?')) {
+        if (await showConfirm('Are you sure you want to send a reminder for this debt?')) {
             try {
                 const response = await debtService.sendReminder(debtId);
                 
@@ -247,10 +250,10 @@ class Debts {
     }
 
     async recordPayment(debtId) {
-        const amount = prompt('Enter payment amount:');
+        const amount = await showPrompt('Enter payment amount:');
         if (amount === null) return; // User cancelled
 
-        const method = prompt('Enter payment method (cash, mpesa, bank_transfer, cheque, other):', 'cash');
+        const method = await showPrompt('Enter payment method (cash, mpesa, bank_transfer, cheque, other):', 'cash');
         if (method === null) return;
 
         try {
@@ -274,7 +277,7 @@ class Debts {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

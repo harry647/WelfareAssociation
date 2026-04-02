@@ -20,6 +20,10 @@ import {
 // Import configuration
 import { APP_CONFIG } from '../config/app-config.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 /**
  * Application Class - Main application controller
  */
@@ -187,7 +191,7 @@ class Application {
         } catch (error) {
             console.error('Contact form submission error:', error);
             // Fallback to alert for demo
-            alert('Thank you for your message! We will get back to you soon.');
+            showAlert('Thank you for your message! We will get back to you soon.', 'Information', 'info');
         }
     }
 
@@ -218,7 +222,7 @@ class Application {
             console.error('Login error:', error);
             showNotification(error.message || 'Login failed. Please try again.', 'error');
             // Fallback for demo
-            alert('Login successful! (Demo mode)');
+            showAlert('Login successful! (Demo mode)', 'Information', 'info');
         }
     }
 
@@ -247,7 +251,7 @@ class Application {
             console.error('Registration error:', error);
             showNotification(error.message || 'Registration failed. Please try again.', 'error');
             // Fallback for demo
-            alert('Registration successful! (Demo mode)');
+            showAlert('Registration successful! (Demo mode)', 'Information', 'info');
         }
     }
 

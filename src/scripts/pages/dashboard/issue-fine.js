@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Issue Fine Script
  * Handles issuing fines to members
@@ -69,12 +73,12 @@ class IssueFine {
         };
 
         console.log('Issuing fine:', fine);
-        alert('Fine issued successfully!');
+        showAlert('Fine issued successfully!', 'Information', 'info');
         window.location.href = 'fines-collection.html';
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

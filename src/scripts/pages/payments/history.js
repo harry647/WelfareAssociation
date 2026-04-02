@@ -8,6 +8,14 @@
 import { paymentService, authService } from '../../../services/index.js';
 import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 // Payment data store
 let paymentStore = {
     myPayments: [],
@@ -68,7 +76,7 @@ function initLogout() {
     const logoutBtn = document.querySelector('.logout-btn-header');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to logout?')) {
+            if (await showConfirm(Are you sure you want to logout?)) {
                 sessionStorage.clear();
                 localStorage.removeItem('swa_auth_token');
                 localStorage.removeItem('swa_refresh_token');
@@ -669,7 +677,7 @@ async function viewPaymentDetails(paymentId) {
         const methodName = CONFIG.methods[payment.method] || payment.method || 'Unknown';
         
         // Show in alert for now (in production, show modal)
-        alert(`
+        showAlert(`
 Payment Details
 ================
 Reference: ${payment.reference || payment.receiptNumber || payment.id || 'N/A'}
@@ -682,7 +690,7 @@ Method: ${methodName}
 Status: ${statusInfo.label}
 Phone: ${payment.phone || payment.payerPhone || 'N/A'}
 Transaction ID: ${payment.transactionId || payment.mpesaRef || 'N/A'}
-        `);
+        `, 'Information', 'info');
     } catch (error) {
         console.error('Error viewing payment details:', error);
         showNotification('Failed to load payment details', 'error');
@@ -691,7 +699,7 @@ Transaction ID: ${payment.transactionId || payment.mpesaRef || 'N/A'}
 
 function downloadReceipt(paymentId) {
     // In production, this would generate PDF
-    alert(`Downloading receipt for ${paymentId}...`);
+    showAlert(`Downloading receipt for ${paymentId}...`, 'Information', 'info');
 }
 
 async function verifyPayment(paymentId) {

@@ -12,6 +12,10 @@ import { eventService } from '../../../services/event-service.js';
 import { savingsService } from '../../../services/savings-service.js';
 import { reportService } from '../../../services/report-service.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 class Analytics {
     constructor() {
         this.analyticsData = {
@@ -619,11 +623,11 @@ class Analytics {
 
     exportData() {
         console.log('Exporting analytics data...');
-        alert('Analytics data exported successfully!');
+        showAlert('Analytics data exported successfully!', 'Information', 'info');
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

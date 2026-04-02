@@ -6,6 +6,8 @@
 import { loanService } from '../../../services/index.js';
 import { API_CONFIG } from '../../../config/app-config.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 // Initialize the loan application functionality
 document.addEventListener('DOMContentLoaded', async () => {
     await initLoanApplication();
@@ -880,7 +882,7 @@ function autoFillUserData(userData) {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to logout?')) {
+            if (await showConfirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('userSession');
                 window.location.href = '../../index.html';
             }

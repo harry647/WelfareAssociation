@@ -9,6 +9,14 @@ import { userService } from '../../../services/user-service.js';
 import { apiService } from '../../../services/api-service.js';
 import { API_CONFIG } from '../../../config/app-config.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 class SecuritySettings {
     constructor() {
         this.securityData = {
@@ -463,22 +471,22 @@ class SecuritySettings {
         const confirmPassword = form.querySelector('input[name="confirmPassword"]')?.value;
 
         if (newPassword !== confirmPassword) {
-            alert('Passwords do not match!');
+            showAlert('Passwords do not match!', 'Information', 'info');
             return;
         }
 
         console.log('Changing password...');
-        alert('Password changed successfully!');
+        showAlert('Password changed successfully!', 'Information', 'info');
         form.reset();
     }
 
     toggleTwoFactor(enabled) {
         console.log('Two-factor authentication:', enabled ? 'enabled' : 'disabled');
-        alert(`Two-factor authentication ${enabled ? 'enabled' : 'disabled'} successfully!`);
+        showAlert(`Two-factor authentication ${enabled ? 'enabled' : 'disabled'} successfully!`, 'Information', 'info');
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
@@ -563,12 +571,12 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                alert('M-Pesa settings saved successfully!');
+                showAlert('M-Pesa settings saved successfully!', 'Information', 'info');
             } else {
-                alert('Error: ' + data.message);
+                showAlert(`Error: ` + data.message);
             }
-        } catch (error) {
-            alert('Error saving settings: ' + error.message);
+        } catch (error, 'Information', 'info') {
+            showAlert(`Error saving settings: ` + error.message);
         }
     }
     
@@ -593,12 +601,12 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                alert('Stripe settings saved successfully!');
+                showAlert('Stripe settings saved successfully!', 'Information', 'info', 'Information', 'info');
             } else {
-                alert('Error: ' + data.message);
+                showAlert(`Error: ` + data.message);
             }
-        } catch (error) {
-            alert('Error saving settings: ' + error.message);
+        } catch (error, 'Information', 'info') {
+            showAlert(`Error saving settings: ` + error.message);
         }
     }
     
@@ -624,12 +632,12 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                alert('Bank settings saved successfully!');
+                showAlert('Bank settings saved successfully!', 'Information', 'info', 'Information', 'info');
             } else {
-                alert('Error: ' + data.message);
+                showAlert(`Error: ` + data.message);
             }
-        } catch (error) {
-            alert('Error saving settings: ' + error.message);
+        } catch (error, 'Information', 'info') {
+            showAlert(`Error saving settings: ` + error.message);
         }
     }
     
@@ -645,16 +653,16 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                alert('C2B callback registered!');
+                showAlert('C2B callback registered!', 'Information', 'info', 'Information', 'info');
             } else {
-                alert('Error: ' + data.message);
+                showAlert(`Error: ` + data.message);
             }
-        } catch (error) {
-            alert('Error: ' + error.message);
+        } catch (error, 'Information', 'info') {
+            showAlert(`Error: ` + error.message);
         }
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     new SecuritySettings();
-});
+}, 'Information', 'info');

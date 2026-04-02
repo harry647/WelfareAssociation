@@ -1,3 +1,11 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 /**
  * Admin Dashboard JavaScript
  * Handles all functionality for the admin dashboard including page management and HTML editing
@@ -339,27 +347,27 @@ async function saveContentItem(e) {
         document.getElementById('contentModal').classList.remove('active');
         await loadPageContent(pagePath);
     } catch (error) {
-        alert('Error saving content: ' + error.message);
+        showAlert(`Error saving content: ` + error.message);
     }
 }
 
 function editContentItem(id) {
     apiCall(`/page-content/${id}`).then(result => {
         openContentModal(result.data);
-    }).catch(error => {
-        alert('Error loading content: ' + error.message);
+    }, 'Information', 'info').catch(error => {
+        showAlert(`Error loading content: ` + error.message);
     });
 }
 
 async function deleteContentItem(id) {
-    if (!confirm('Are you sure you want to delete this content?')) return;
+    if (!await showConfirm(Are you sure you want to delete this content?)) return;
     
     try {
         await apiCall(`/page-content/${id}`, { method: 'DELETE' });
         const pagePath = document.querySelector('#selectedPageName').textContent;
         await loadPageContent(pagePath);
-    } catch (error) {
-        alert('Error deleting content: ' + error.message);
+    } catch (error, 'Information', 'info') {
+        showAlert(`Error deleting content: ` + error.message);
     }
 }
 
@@ -385,7 +393,7 @@ function renderMessages(messages) {
     let html = '';
     for (const msg of messages) {
         const statusClass = msg.status === 'read' ? 'read' : (msg.status === 'replied' ? 'replied' : 'unread');
-        const statusText = msg.status === 'read' ? 'Read' : (msg.status === 'replied' ? 'Replied' : 'Unread');
+        const statusText = msg.status === 'read' ? 'Read' : (msg.status === 'replied' ? 'Replied' : 'Unread', 'Information', 'info');
         html += `
             <tr>
                 <td>${msg.name || '-'}</td>
@@ -408,7 +416,7 @@ async function viewMessage(messageId) {
     try {
         const result = await apiCall(`/contact/${messageId}`);
         const msg = result.data;
-        alert(`From: ${msg.name}\nEmail: ${msg.email}\nSubject: ${msg.subject}\n\n${msg.message}`);
+        showAlert(`From: ${msg.name}\nEmail: ${msg.email}\nSubject: ${msg.subject}\n\n${msg.message}`, 'Information', 'info');
         // Mark as read if unread
         if (msg.status !== 'read') {
             await apiCall(`/contact/${messageId}/read`, { method: 'PATCH' });
@@ -416,19 +424,19 @@ async function viewMessage(messageId) {
         }
     } catch (error) {
         console.error('Error viewing message:', error);
-        alert('Failed to load message: ' + error.message);
+        showAlert(`Failed to load message: ` + error.message);
     }
 }
 
 async function deleteMessage(messageId) {
-    if (!confirm('Are you sure you want to delete this message?')) return;
+    if (!await showConfirm(Are you sure you want to delete this message?)) return;
     
     try {
         await apiCall(`/contact/${messageId}`, { method: 'DELETE' });
         loadMessages(); // Reload the messages list
     } catch (error) {
-        console.error('Error deleting message:', error);
-        alert('Failed to delete message: ' + error.message);
+        console.error('Error deleting message:', error, 'Information', 'info');
+        showAlert(`Failed to delete message: ` + error.message);
     }
 }
 
@@ -470,7 +478,7 @@ async function loadDashboardStats() {
                     const date = new Date(c.createdAt || c.paymentDate);
                     return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
                 })
-                .reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
+                .reduce((sum, c, 'Information', 'info') => sum + (parseFloat(c.amount) || 0), 0);
             contributionsEl.textContent = `Ksh ${monthlyTotal.toLocaleString()}`;
         }
         
@@ -779,10 +787,10 @@ async function viewDebt(debtId) {
     try {
         const result = await apiCall(`/debts/${debtId}`);
         const debt = result.data;
-        alert(`Debt Details:\n\nMember: ${debt.memberName || 'N/A'}\nStudent ID: ${debt.memberId_display || debt.memberId || 'N/A'}\nAmount: Ksh ${(debt.amount || 0).toLocaleString()}\nDue Date: ${debt.dueDate ? new Date(debt.dueDate).toLocaleDateString() : 'N/A'}\nStatus: ${debt.status || 'Pending'}\nDescription: ${debt.description || 'N/A'}`);
+        showAlert(`Debt Details:\n\nMember: ${debt.memberName || 'N/A'}\nStudent ID: ${debt.memberId_display || debt.memberId || 'N/A'}\nAmount: Ksh ${(debt.amount || 0).toLocaleString()}\nDue Date: ${debt.dueDate ? new Date(debt.dueDate).toLocaleDateString() : 'N/A'}\nStatus: ${debt.status || 'Pending'}\nDescription: ${debt.description || 'N/A'}`, 'Information', 'info');
     } catch (error) {
         console.error('Error viewing debt:', error);
-        alert('Failed to load debt details: ' + error.message);
+        showAlert(`Failed to load debt details: ` + error.message);
     }
 }
 
@@ -830,7 +838,7 @@ function renderLoanRequestsTable(loans) {
     }
     
     let html = '';
-    for (const l of loans) {
+    for (const l of loans, 'Information', 'info') {
         html += `
             <tr>
                 <td>${l.memberName || '-'}</td>
@@ -868,10 +876,10 @@ async function viewLoan(loanId) {
             ``,
             `Description: ${loan.description || 'N/A'}`
         ].join('\n');
-        alert(details);
+        showAlert(details, 'Information', 'info');
     } catch (error) {
         console.error('Error viewing loan:', error);
-        alert('Failed to load loan details: ' + error.message);
+        showAlert(`Failed to load loan details: ` + error.message);
     }
 }
 
@@ -925,7 +933,7 @@ function showSection(sectionName) {
     });
     
     // Show corresponding content section
-    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'), 'Information', 'info');
     const target = document.getElementById('section-' + sectionName);
     if (target) {
         target.classList.add('active');
@@ -1049,24 +1057,24 @@ function formatGuarantorStatus(status) {
 
 async function viewLoanDetails(loanId) {
     // For now, just show an alert. In a real implementation, this would open a modal or navigate to details page
-    alert(`View details for loan ${loanId}. This would open a detailed view modal.`);
+    showAlert(`View details for loan ${loanId}. This would open a detailed view modal.`, 'Information', 'info');
 }
 
 async function approveLoan(loanId) {
-    if (!confirm('Are you sure you want to approve this loan?')) return;
+    if (!await showConfirm(Are you sure you want to approve this loan?)) return;
     
     try {
         await apiCall(`/loans/${loanId}/approve`, { method: 'POST' });
-        alert('Loan approved successfully!');
+        showAlert('Loan approved successfully!', 'Information', 'info');
         loadLoans(); // Reload the loans list
     } catch (error) {
         console.error('Error approving loan:', error);
-        alert('Failed to approve loan: ' + error.message);
+        showAlert(`Failed to approve loan: ` + error.message);
     }
 }
 
 async function rejectLoan(loanId) {
-    const reason = prompt('Please provide a reason for rejecting this loan:');
+    const reason = await showPrompt(Please provide a reason for rejecting this loan:);
     if (reason === null) return; // User cancelled
     
     try {
@@ -1074,11 +1082,11 @@ async function rejectLoan(loanId) {
             method: 'POST',
             body: JSON.stringify({ reason })
         });
-        alert('Loan rejected successfully!');
+        showAlert('Loan rejected successfully!', 'Information', 'info');
         loadLoans(); // Reload the loans list
     } catch (error) {
-        console.error('Error rejecting loan:', error);
-        alert('Failed to reject loan: ' + error.message);
+        console.error('Error rejecting loan:', error, 'Information', 'info');
+        showAlert(`Failed to reject loan: ` + error.message);
     }
 }
 
@@ -1133,4 +1141,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // Otherwise, let the normal link behavior happen
     });
-});
+}, 'Information', 'info');

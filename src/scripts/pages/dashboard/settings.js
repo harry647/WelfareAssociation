@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Settings Script
  * Handles general settings functionality
@@ -60,7 +64,7 @@ class Settings {
 
     updateProfile(e) {
         console.log('Updating profile...');
-        alert('Profile updated successfully!');
+        showAlert('Profile updated successfully!', 'Information', 'info');
     }
 
     updateNotificationSetting(setting, enabled) {
@@ -68,7 +72,7 @@ class Settings {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

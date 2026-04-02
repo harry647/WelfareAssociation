@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Student Portal Script
  * Handles student portal functionality including login and registration
@@ -50,7 +54,7 @@ class StudentPortal {
 
         // Basic validation
         if (!username || !password) {
-            alert('Please enter both username and password');
+            showAlert('Please enter both username and password', 'Information', 'info');
             return;
         }
 
@@ -73,12 +77,12 @@ class StudentPortal {
             localStorage.setItem('swa_session', JSON.stringify(sessionData));
 
             // Show success and redirect
-            alert('Login successful! Redirecting to Member Portal...');
+            showAlert('Login successful! Redirecting to Member Portal...', 'Information', 'info');
             window.location.href = '/pages/dashboard/member/member-portal.html';
 
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login failed. Please check your credentials and try again.');
+            showAlert('Login failed. Please check your credentials and try again.', 'Information', 'info');
         } finally {
             const submitBtn = this.loginForm.querySelector('button[type="submit"]');
             if (submitBtn) {

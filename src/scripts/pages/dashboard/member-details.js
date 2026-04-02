@@ -2,6 +2,8 @@
 import { authService, memberService } from '../../../services/index.js';
 import { showNotification, formatDate } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class MemberDetails {
     constructor() {
         this.memberId = null;
@@ -268,7 +270,7 @@ class MemberDetails {
     }
 
     async deleteMember() {
-        if (!confirm('Are you sure you want to delete this member? This action cannot be undone.')) {
+        if (!await showConfirm('Are you sure you want to delete this member? This action cannot be undone.')) {
             return;
         }
 
@@ -290,8 +292,8 @@ class MemberDetails {
         window.location.href = '/pages/dashboard/member/member-contribution-history.html?memberId=' + this.memberId;
     }
 
-    handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+    async handleLogout() {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

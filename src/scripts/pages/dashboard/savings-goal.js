@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Savings Goal Script
  * Handles savings goal functionality
@@ -58,11 +62,11 @@ class SavingsGoal {
 
     createGoal(e) {
         console.log('Creating savings goal...');
-        alert('Savings goal created successfully!');
+        showAlert('Savings goal created successfully!', 'Information', 'info');
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

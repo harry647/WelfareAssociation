@@ -1,6 +1,10 @@
 import { newsService } from '../../../services/index.js';
 import { showNotification } from '../../../utils/utility-functions.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 /**
  * News Page Script
  * Handles news page functionality including newsletter signup
@@ -90,7 +94,7 @@ class NewsPage {
         const newsCard = btn.closest('.news-card');
         const title = newsCard?.querySelector('h3')?.textContent || 'this article';
         
-        alert(`Full article: "${title}"\n\nFull article content is coming soon!`);
+        showAlert(`Full article: "${title}"\n\nFull article content is coming soon!`, 'Information', 'info');
     }
 }
 

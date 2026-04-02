@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Login Page Script
  * Handles login form functionality and validation
@@ -158,7 +162,7 @@ class LoginPage {
     }
 
     handleForgotPassword() {
-        alert('Please contact the SWA administrator to reset your password.\n\nEmail: swateam@gmail.com\nPhone: +254 123 439 040');
+        showAlert('Please contact the SWA administrator to reset your password.\n\nEmail: swateam@gmail.com\nPhone: +254 123 439 040', 'Information', 'info');
     }
 
     checkSavedCredentials() {

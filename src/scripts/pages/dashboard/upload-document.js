@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Upload Document Script
  * Handles document upload functionality
@@ -74,12 +78,12 @@ class UploadDocument {
 
     uploadDocument(e) {
         console.log('Uploading document...');
-        alert('Document uploaded successfully!');
+        showAlert('Document uploaded successfully!', 'Information', 'info');
         window.location.href = 'documentation.html';
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

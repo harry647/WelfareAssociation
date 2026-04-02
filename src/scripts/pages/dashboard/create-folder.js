@@ -1,3 +1,7 @@
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
+
 /**
  * Create Folder Script
  * Handles creating new folders for document organization
@@ -63,13 +67,13 @@ class CreateFolder {
         
         if (folderName) {
             console.log('Creating folder:', folderName);
-            alert('Folder created successfully!');
+            showAlert('Folder created successfully!', 'Information', 'info');
             window.location.href = 'documentation.html';
         }
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm(Are you sure you want to logout?)) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

@@ -2,6 +2,10 @@
 import { authService, memberService } from '../../../services/index.js';
 import { showNotification, formatDate } from '../../../utils/utility-functions.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 class EditMember {
     constructor() {
         this.memberId = null;
@@ -71,7 +75,7 @@ class EditMember {
         const memberId = this.getMemberIdFromURL();
         
         if (!memberId) {
-            alert('No member ID provided');
+            showAlert('No member ID provided', 'Information', 'info');
             window.location.href = '/pages/dashboard/shared/members.html';
             return;
         }
@@ -195,8 +199,8 @@ class EditMember {
         }
     }
 
-    handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+    async handleLogout() {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

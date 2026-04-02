@@ -6,6 +6,10 @@
 import { contributionService } from '../../../services/index.js';
 import { formatDate } from '../../../utils/utility-functions.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 // Store contributions data globally for filtering
 let contributionsData = [];
 
@@ -19,7 +23,7 @@ function initLogout() {
     const logoutBtn = document.querySelector('.logout-btn-header');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to logout?')) {
+            if (await showConfirm(Are you sure you want to logout?)) {
                 sessionStorage.clear();
                 localStorage.removeItem('swa_auth_token');
                 localStorage.removeItem('swa_refresh_token');
@@ -478,7 +482,7 @@ function renderContributions(contributions) {
 window.viewContribution = function(contributionId) {
     console.log('Viewing contribution:', contributionId);
     // Could open a modal or navigate to details page
-    alert(`Viewing contribution: ${contributionId}`);
+    showAlert(`Viewing contribution: ${contributionId}`, 'Information', 'info');
 };
 
 // Export for potential module use

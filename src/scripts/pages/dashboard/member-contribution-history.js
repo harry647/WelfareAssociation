@@ -8,6 +8,8 @@
 // Import services
 import { authService, contributionService, apiService } from '../../../services/index.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class MemberContributionHistory {
     constructor() {
         this.contributions = [];
@@ -391,7 +393,7 @@ class MemberContributionHistory {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../auth/login-page.html';
         }

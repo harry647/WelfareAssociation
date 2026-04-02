@@ -8,6 +8,10 @@
 // Import services
 import { authService, memberService, contributionService, loanService, paymentService, apiService } from '/src/services/index.js';
 
+
+import { showAlert } from '../../../utils/utility-functions.js';
+import { showConfirm } from '../../../utils/utility-functions.js';
+import { showPrompt } from '../../../utils/utility-functions.js';
 class MemberPortal {
     constructor() {
         this.contributionForm = document.querySelector('.make-contribution form');
@@ -240,17 +244,17 @@ class MemberPortal {
 
         // Validation
         if (!amount || amount < 100) {
-            alert('Minimum contribution amount is Ksh 100');
+            showAlert('Minimum contribution amount is Ksh 100', 'Information', 'info');
             return;
         }
 
         if (!method) {
-            alert('Please select a payment method');
+            showAlert('Please select a payment method', 'Information', 'info');
             return;
         }
 
         if (method !== 'cash' && !transactionId) {
-            alert('Please enter the transaction ID');
+            showAlert('Please enter the transaction ID', 'Information', 'info');
             return;
         }
 
@@ -259,7 +263,7 @@ class MemberPortal {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Show success
-            alert('Contribution submitted successfully! Pending verification.');
+            showAlert('Contribution submitted successfully! Pending verification.', 'Information', 'info');
             
             // Reset form
             form.reset();
@@ -269,7 +273,7 @@ class MemberPortal {
 
         } catch (error) {
             console.error('Contribution error:', error);
-            alert('Failed to submit contribution. Please try again.');
+            showAlert('Failed to submit contribution. Please try again.', 'Information', 'info');
         }
     }
 
@@ -294,7 +298,7 @@ class MemberPortal {
 
         if (value > maxAmount) {
             input.value = maxAmount;
-            alert(`Maximum loan amount is Ksh ${maxAmount.toLocaleString()}`);
+            showAlert(`Maximum loan amount is Ksh ${maxAmount.toLocaleString()}`, 'Information', 'info');
         } else if (value < minAmount) {
             input.value = '';
         }
@@ -309,22 +313,22 @@ class MemberPortal {
 
         // Validation
         if (!amount || amount < 500) {
-            alert('Minimum loan amount is Ksh 500');
+            showAlert('Minimum loan amount is Ksh 500', 'Information', 'info');
             return;
         }
 
         if (!purpose) {
-            alert('Please select a loan purpose');
+            showAlert('Please select a loan purpose', 'Information', 'info');
             return;
         }
 
         if (!period) {
-            alert('Please select a repayment period');
+            showAlert('Please select a repayment period', 'Information', 'info');
             return;
         }
 
         if (!guarantor) {
-            alert('Please enter guarantor name');
+            showAlert('Please enter guarantor name', 'Information', 'info');
             return;
         }
 
@@ -333,19 +337,19 @@ class MemberPortal {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Show success
-            alert('Loan application submitted successfully! You will be notified once processed.');
+            showAlert('Loan application submitted successfully! You will be notified once processed.', 'Information', 'info');
             
             // Reset form
             form.reset();
 
         } catch (error) {
             console.error('Loan application error:', error);
-            alert('Failed to submit loan application. Please try again.');
+            showAlert('Failed to submit loan application. Please try again.', 'Information', 'info');
         }
     }
 
     handleProfileEdit() {
-        alert('Profile editing feature coming soon! Please contact support for profile updates.');
+        showAlert('Profile editing feature coming soon! Please contact support for profile updates.', 'Information', 'info');
     }
 
     loadMemberData() {
@@ -838,9 +842,9 @@ class MemberPortal {
     /**
      * Handle logout
      */
-    handleLogout() {
+    async handleLogout() {
         console.log('handleLogout called');
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             console.log('User confirmed logout, calling authService.logout()');
             authService.logout();
         } else {
@@ -1234,13 +1238,13 @@ class MemberPortal {
             ? 'Are you sure you want to accept this guarantor request? You will be legally responsible for this loan if the borrower defaults.'
             : 'Are you sure you want to reject this guarantor request?';
             
-        if (!confirm(confirmMessage)) {
+        if (!await showConfirm(confirmMessage)) {
             return;
         }
 
         let note = '';
         if (response === 'rejected') {
-            note = prompt('Please provide a reason for rejecting this guarantor request (optional):');
+            note = await showPrompt('Please provide a reason for rejecting this guarantor request (optional):');
             if (note === null) return; // User cancelled
         }
 
@@ -1251,7 +1255,7 @@ class MemberPortal {
             }, true);
 
             if (result.success) {
-                alert(`Guarantor request ${response} successfully!`);
+                showAlert(`Guarantor request ${response} successfully!`, 'Information', 'info');
                 // Reload the guarantor requests
                 this.loadGuarantorRequests();
             } else {
@@ -1259,7 +1263,7 @@ class MemberPortal {
             }
         } catch (error) {
             console.error('Error responding to guarantor request:', error);
-            alert('Failed to submit response. Please try again.');
+            showAlert('Failed to submit response. Please try again.', 'Information', 'info');
         }
     }
 }

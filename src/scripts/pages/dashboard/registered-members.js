@@ -12,6 +12,8 @@ import { authService, memberService } from '../../../services/index.js';
 // Import utility functions
 import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class RegisteredMembers {
     constructor() {
         this.members = [];
@@ -279,7 +281,7 @@ class RegisteredMembers {
      * Handle logout
      */
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../../index.html';
         }

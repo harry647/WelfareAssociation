@@ -6,6 +6,7 @@
  */
 
 import { APP_CONFIG } from '../config/app-config.js';
+import { ModalHelper } from './modal-helper.js';
 
 /**
  * Format date to specified format
@@ -255,6 +256,53 @@ export function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// Global modal helper instance for easy access
+let globalModalHelper = null;
+
+/**
+ * Get global modal helper instance
+ */
+export function getModalHelper() {
+    if (!globalModalHelper) {
+        globalModalHelper = new ModalHelper();
+    }
+    return globalModalHelper;
+}
+
+/**
+ * Show alert modal (replaces alert())
+ * @param {string} message - Message to display
+ * @param {string} title - Modal title (optional)
+ * @param {string} type - Modal type: info, success, warning, error
+ */
+export async function showAlert(message, title = 'Information', type = 'info') {
+    const modalHelper = getModalHelper();
+    return await modalHelper.alert(message, title, type);
+}
+
+/**
+ * Show confirm modal (replaces confirm())
+ * @param {string} message - Message to display
+ * @param {string} title - Modal title (optional)
+ * @returns {Promise<boolean>} - True if confirmed, false if cancelled
+ */
+export async function showConfirm(message, title = 'Confirm Action') {
+    const modalHelper = getModalHelper();
+    return await modalHelper.confirm(message, title);
+}
+
+/**
+ * Show prompt modal (replaces prompt())
+ * @param {string} message - Message to display
+ * @param {string} defaultValue - Default value for input
+ * @param {string} title - Modal title (optional)
+ * @returns {Promise<string|null>} - User input or null if cancelled
+ */
+export async function showPrompt(message, defaultValue = '', title = 'Input Required') {
+    const modalHelper = getModalHelper();
+    return await modalHelper.prompt(message, defaultValue, title);
+}
+
 export default {
     formatDate,
     formatCurrency,
@@ -270,5 +318,10 @@ export default {
     copyToClipboard,
     generateId,
     isInViewport,
-    smoothScrollTo
+    smoothScrollTo,
+    ModalHelper,
+    getModalHelper,
+    showAlert,
+    showConfirm,
+    showPrompt
 };

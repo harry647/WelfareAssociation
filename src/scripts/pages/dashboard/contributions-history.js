@@ -2,6 +2,8 @@
 import { authService, contributionService } from '../../../services/index.js';
 import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class ContributionsHistory {
     constructor() {
         this.contributions = [];
@@ -162,7 +164,7 @@ class ContributionsHistory {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

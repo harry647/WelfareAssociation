@@ -8,6 +8,8 @@
 // Import services
 import { authService, loanService, apiService } from '../../../services/index.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class MemberLoanHistory {
     constructor() {
         this.loans = [];
@@ -431,7 +433,7 @@ class MemberLoanHistory {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../auth/login-page.html';
         }

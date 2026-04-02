@@ -8,6 +8,8 @@
 // Import services
 import { authService, paymentService, apiService } from '../../../services/index.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class MemberPaymentHistory {
     constructor() {
         this.payments = [];
@@ -405,7 +407,7 @@ class MemberPaymentHistory {
     }
 
     handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../auth/login-page.html';
         }

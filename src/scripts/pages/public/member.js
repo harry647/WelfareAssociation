@@ -8,6 +8,8 @@
 import { authService, memberService, contributionService, loanService } from '../../services/index.js';
 import { showNotification, formatCurrency, formatDate } from '../../utils/utility-functions.js';
 
+
+import { showPrompt } from '../../../utils/utility-functions.js';
 /**
  * MemberDashboard Class
  */
@@ -111,7 +113,7 @@ class MemberDashboard {
     }
 
     async handleForgotPassword() {
-        const email = prompt('Please enter your email address:');
+        const email = await showPrompt('Please enter your email address:');
         
         if (email) {
             try {

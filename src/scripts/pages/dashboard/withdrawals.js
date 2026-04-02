@@ -8,8 +8,10 @@
 
 // Import services
 import { authService, withdrawalService, memberService, apiService, API_CONFIG } from '../../../services/index.js';
-import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
+import { showNotification, formatDate, formatCurrency, showPrompt, showConfirm } from '../../../utils/utility-functions.js';
 
+
+import { showConfirm } from '../../../utils/utility-functions.js';
 class Withdrawals {
     constructor() {
         this.withdrawals = [];
@@ -314,29 +316,265 @@ class Withdrawals {
         const withdrawal = this.withdrawals.find(w => w.id === id);
         if (!withdrawal) return;
 
-        alert(`
-Withdrawal Details
-==================
-ID: ${withdrawal.withdrawalNumber}
-Member: ${withdrawal.member ? `${withdrawal.member.firstName} ${withdrawal.member.lastName}` : 'Unknown'}
-Type: ${this.getTypeLabel(withdrawal.type)}
-Amount: Ksh ${formatCurrency(withdrawal.amount)}
-Reason: ${withdrawal.reason || 'N/A'}
-Status: ${this.getStatusLabel(withdrawal.status)}
-Date: ${formatDate(withdrawal.requestDate || withdrawal.createdAt)}
-${withdrawal.approvalNotes ? `Notes: ${withdrawal.approvalNotes}` : ''}
-${withdrawal.paymentMethod ? `Payment Method: ${withdrawal.paymentMethod}` : ''}
-${withdrawal.paymentReference ? `Reference: ${withdrawal.paymentReference}` : ''}
-        `.trim());
+        // Create modal content
+        const modalContent = `
+            <div class="withdrawal-details-modal">
+                <div class="modal-header">
+                    <h2><i class="fas fa-info-circle"></i> Withdrawal Details</h2>
+                    <button class="modal-close" onclick="this.closest('.withdrawal-details-modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Withdrawal Number:</label>
+                            <span>${withdrawal.withdrawalNumber}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Member:</label>
+                            <span>${withdrawal.member ? `${withdrawal.member.firstName} ${withdrawal.member.lastName}` : 'Unknown'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Type:</label>
+                            <span class="type-badge type-${withdrawal.type}">${this.getTypeLabel(withdrawal.type)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Amount:</label>
+                            <span class="amount">Ksh ${formatCurrency(withdrawal.amount)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Status:</label>
+                            <span class="status-badge status-${withdrawal.status}">${this.getStatusLabel(withdrawal.status)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Request Date:</label>
+                            <span>${formatDate(withdrawal.requestDate || withdrawal.createdAt)}</span>
+                        </div>
+                        ${withdrawal.reason ? `
+                        <div class="detail-item full-width">
+                            <label>Reason:</label>
+                            <span>${withdrawal.reason}</span>
+                        </div>
+                        ` : ''}
+                        ${withdrawal.approvalNotes ? `
+                        <div class="detail-item full-width">
+                            <label>Approval Notes:</label>
+                            <span>${withdrawal.approvalNotes}</span>
+                        </div>
+                        ` : ''}
+                        ${withdrawal.paymentMethod ? `
+                        <div class="detail-item">
+                            <label>Payment Method:</label>
+                            <span class="payment-method">${withdrawal.paymentMethod}</span>
+                        </div>
+                        ` : ''}
+                        ${withdrawal.paymentReference ? `
+                        <div class="detail-item">
+                            <label>Payment Reference:</label>
+                            <span class="payment-reference">${withdrawal.paymentReference}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Create and show modal
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = modalContent;
+        document.body.appendChild(modal);
+
+        // Add styles
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .withdrawal-details-modal {
+                background: white;
+                border-radius: 12px;
+                max-width: 600px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideUp 0.3s ease;
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 24px;
+                border-bottom: 1px solid #e0e0e0;
+                background: linear-gradient(135deg, #2d7c5b, #1a5c4a);
+                color: white;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .modal-header h2 {
+                margin: 0;
+                font-size: 1.5em;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .modal-close {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.2em;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 4px;
+                transition: background 0.3s ease;
+            }
+
+            .modal-close:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .modal-body {
+                padding: 24px;
+            }
+
+            .detail-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .detail-item {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .detail-item.full-width {
+                grid-column: 1 / -1;
+            }
+
+            .detail-item label {
+                font-weight: 600;
+                color: #666;
+                font-size: 0.9em;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .detail-item span {
+                font-size: 1.1em;
+                color: #333;
+                padding: 8px 12px;
+                background: #f8f9fa;
+                border-radius: 6px;
+                border: 1px solid #e9ecef;
+            }
+
+            .amount {
+                font-weight: 600;
+                color: #2d7c5b !important;
+                font-size: 1.2em !important;
+            }
+
+            .type-badge {
+                padding: 6px 12px !important;
+                border-radius: 20px !important;
+                font-size: 0.9em !important;
+                font-weight: 500 !important;
+                text-transform: capitalize !important;
+                border: none !important;
+            }
+
+            .type-loan_disbursement { background: #e3f2fd; color: #1976d2; }
+            .type-welfare { background: #f3e5f5; color: #7b1fa2; }
+            .type-event_expense { background: #fff3e0; color: #f57c00; }
+            .type-refund { background: #e8f5e8; color: #388e3c; }
+            .type-other { background: #f5f5f5; color: #616161; }
+
+            .status-badge {
+                padding: 6px 12px !important;
+                border-radius: 20px !important;
+                font-size: 0.9em !important;
+                font-weight: 500 !important;
+                text-transform: capitalize !important;
+                border: none !important;
+            }
+
+            .status-pending { background: #fff3cd; color: #856404; }
+            .status-approved { background: #d4edda; color: #155724; }
+            .status-rejected { background: #f8d7da; color: #721c24; }
+            .status-processed { background: #cce5ff; color: #004085; }
+            .status-disbursed { background: #d1ecf1; color: #0c5460; }
+
+            .payment-method, .payment-reference {
+                font-family: 'Courier New', monospace !important;
+                text-transform: uppercase !important;
+                font-weight: 600 !important;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes slideUp {
+                from { transform: translateY(50px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+
+            @media (max-width: 768px) {
+                .withdrawal-details-modal {
+                    width: 95%;
+                    margin: 20px;
+                }
+                
+                .detail-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .modal-body {
+                    padding: 16px;
+                }
+            }
+        `;
+        
+        document.head.appendChild(styleElement);
+
+        // Close modal when clicking overlay
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     }
 
     async approveWithdrawal(id) {
-        const method = prompt('Enter payment method (cash/mpesa/bank_transfer):', 'cash');
+        const method = await showPrompt('Enter payment method:', 'cash', 'Payment Method');
         if (!method) return;
 
-        const reference = prompt('Enter payment reference (M-Pesa code or transaction ID):', '');
+        const reference = await showPrompt('Enter payment reference (M-Pesa code or transaction ID):', '', 'Payment Reference');
         
-        if (confirm('Are you sure you want to APPROVE this withdrawal? This will mark it as DISBURSED.')) {
+        const confirmed = await showConfirm(
+            'Are you sure you want to APPROVE this withdrawal? This will mark it as DISBURSED.',
+            'Confirm Withdrawal Approval'
+        );
+        
+        if (confirmed) {
             try {
                 const response = await withdrawalService.approve(id, {
                     approvalNotes: 'Approved and disbursed by admin',
@@ -362,7 +600,7 @@ ${withdrawal.paymentReference ? `Reference: ${withdrawal.paymentReference}` : ''
     }
 
     async rejectWithdrawal(id) {
-        const reason = prompt('Please provide a reason for rejection:');
+        const reason = await showPrompt('Please provide a reason for rejection:', '', 'Rejection Reason');
         if (reason === null || reason.trim() === '') {
             showNotification('Rejection reason is required', 'error');
             return;
@@ -443,8 +681,8 @@ ${withdrawal.paymentReference ? `Reference: ${withdrawal.paymentReference}` : ''
         }
     }
 
-    handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
+    async handleLogout() {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
