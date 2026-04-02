@@ -16,6 +16,24 @@ const path = require('path');
 const fs = require('fs');
 const { generatePDFReceipt, generateReceiptHTML } = require('../utils/pdf-receipt');
 
+// Lazy load models to avoid circular dependencies
+const getModel = (modelName) => {
+    switch (modelName) {
+        case 'Loan': return require('../models/Loan');
+        case 'Contribution': return require('../models/Contribution');
+        case 'Savings': return require('../models/Savings');
+        case 'Bereavement': return require('../models/Bereavement');
+        case 'Event': return require('../models/Event');
+        case 'Fine': return require('../models/Fine');
+        case 'Settings': return require('../models/Settings');
+        case 'Donation': return require('../models/Donation');
+        case 'Share': return require('../models/Share');
+        case 'Registration': return require('../models/Registration');
+        case 'Subscription': return require('../models/Subscription');
+        default: return null;
+    }
+};
+
 // Configure multer for payment proof uploads
 const paymentProofStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -805,6 +823,7 @@ router.post('/submit', auth, [
             notes,
             reference: referenceNumber,
             receipt: receipt || null,
+            relatedTo: req.body.relatedTo || {}, // Include relatedTo from frontend
             status: 'completed', // Manual payments marked as completed
             paymentDate: new Date(),
             processedDate: new Date(),
@@ -812,26 +831,46 @@ router.post('/submit', auth, [
         });
         
         // Update related entity based on payment type
+        // Handle both string ID and object formats for relatedTo
+        let relatedToId = null;
         if (payment.relatedTo) {
+            if (typeof payment.relatedTo === 'string') {
+                relatedToId = payment.relatedTo;
+            } else if (payment.relatedTo.id) {
+                relatedToId = payment.relatedTo.id;
+            }
+        }
+        
+        if (relatedToId) {
             switch (type) {
                 case 'loan_repayment': {
-                    const Loan = require('../models/Loan');
-                    const loan = await Loan.findByPk(payment.relatedTo);
+                    const Loan = getModel('Loan');
+                    const loan = await Loan.findByPk(relatedToId);
                     if (loan) {
-                        const newBalance = parseFloat(loan.balance || 0) - parseFloat(amount);
+                        const currentBalance = parseFloat(loan.remainingBalance || loan.balance || 0);
+                        const newBalance = currentBalance - parseFloat(amount);
                         const newStatus = newBalance <= 0 ? 'completed' : 'active';
                         await loan.update({
-                            balance: Math.max(0, newBalance),
+                            remainingBalance: Math.max(0, newBalance).toString(),
                             status: newStatus,
                             updatedAt: new Date()
                         });
                         console.log(`Loan ${loan.id} updated: balance=${newBalance}, status=${newStatus}`);
                     }
+                    // Update member's total loans
+                    const member = await Member.findByPk(payment.memberId);
+                    if (member) {
+                        const currentTotal = parseFloat(member.totalLoans || 0);
+                        await member.update({
+                            totalLoans: Math.max(0, currentTotal - parseFloat(amount))
+                        });
+                        console.log(`Member ${member.id} totalLoans updated`);
+                    }
                     break;
                 }
                 case 'contribution': {
-                    const Contribution = require('../models/Contribution');
-                    const contribution = await Contribution.findByPk(payment.relatedTo);
+                    const Contribution = getModel('Contribution');
+                    const contribution = await Contribution.findByPk(relatedToId);
                     if (contribution) {
                         await contribution.update({
                             amount: parseFloat(contribution.amount || 0) + parseFloat(amount),
@@ -840,11 +879,20 @@ router.post('/submit', auth, [
                         });
                         console.log(`Contribution ${contribution.id} updated`);
                     }
+                    // Also update member's total contributions
+                    const member = await Member.findByPk(payment.memberId);
+                    if (member) {
+                        const currentTotal = parseFloat(member.totalContributions || 0);
+                        await member.update({
+                            totalContributions: currentTotal + parseFloat(amount)
+                        });
+                        console.log(`Member ${member.id} totalContributions updated to ${currentTotal + parseFloat(amount)}`);
+                    }
                     break;
                 }
                 case 'savings': {
-                    const Savings = require('../models/Savings');
-                    const savings = await Savings.findByPk(payment.relatedTo);
+                    const Savings = getModel('Savings');
+                    const savings = await Savings.findByPk(relatedToId);
                     if (savings) {
                         await savings.update({
                             amount: parseFloat(savings.amount || 0) + parseFloat(amount),
@@ -852,11 +900,20 @@ router.post('/submit', auth, [
                         });
                         console.log(`Savings ${savings.id} updated`);
                     }
+                    // Also update member's total savings
+                    const member = await Member.findByPk(payment.memberId);
+                    if (member) {
+                        const currentTotal = parseFloat(member.totalSavings || 0);
+                        await member.update({
+                            totalSavings: currentTotal + parseFloat(amount)
+                        });
+                        console.log(`Member ${member.id} totalSavings updated to ${currentTotal + parseFloat(amount)}`);
+                    }
                     break;
                 }
                 case 'bereavement': {
-                    const Bereavement = require('../models/Bereavement');
-                    const bereavement = await Bereavement.findByPk(payment.relatedTo);
+                    const Bereavement = getModel('Bereavement');
+                    const bereavement = await Bereavement.findByPk(relatedToId);
                     if (bereavement) {
                         await bereavement.update({
                             status: 'completed'
@@ -866,19 +923,36 @@ router.post('/submit', auth, [
                     break;
                 }
                 case 'event': {
-                    const Event = require('../models/Event');
-                    const event = await Event.findByPk(payment.relatedTo);
+                    const Event = getModel('Event');
+                    const event = await Event.findByPk(relatedToId);
                     if (event) {
+                        // Track registered attendees or payments
+                        const currentAttendees = event.registeredAttendees || 0;
                         await event.update({
+                            registeredAttendees: currentAttendees + 1,
                             updatedAt: new Date()
                         });
-                        console.log(`Event ${event.id} payment recorded`);
+                        console.log(`Event ${event.id} payment recorded, attendees: ${currentAttendees + 1}`);
+                    }
+                    break;
+                }
+                case 'fine': {
+                    const Fine = getModel('Fine');
+                    const fine = await Fine.findByPk(relatedToId);
+                    if (fine) {
+                        await fine.update({
+                            status: 'paid',
+                            paidDate: new Date(),
+                            paymentMethod: payment.method,
+                            paymentReference: payment.reference
+                        });
+                        console.log(`Fine ${fine.id} marked as paid`);
                     }
                     break;
                 }
                 case 'welfare': {
                     // Update welfare balance
-                    const Settings = require('../models/Settings');
+                    const Settings = getModel('Settings');
                     const welfareSettings = await Settings.findOne({ where: { key: 'welfare_balance' } });
                     if (welfareSettings) {
                         await welfareSettings.update({
@@ -888,9 +962,69 @@ router.post('/submit', auth, [
                     }
                     break;
                 }
+                case 'donation': {
+                    const Donation = getModel('Donation');
+                    const donation = await Donation.findByPk(relatedToId);
+                    if (donation) {
+                        await donation.update({
+                            status: 'completed',
+                            paymentDate: new Date(),
+                            paymentReference: payment.reference
+                        });
+                        console.log(`Donation ${donation.id} marked as completed`);
+                    }
+                    break;
+                }
+                case 'shares': {
+                    const Share = getModel('Share');
+                    const share = await Share.findByPk(relatedToId);
+                    if (share) {
+                        await share.update({
+                            status: 'paid',
+                            paymentDate: new Date(),
+                            paymentReference: payment.reference
+                        });
+                        console.log(`Share ${share.id} marked as paid`);
+                    }
+                    break;
+                }
+                case 'registration': {
+                    const Registration = getModel('Registration');
+                    const registration = await Registration.findByPk(relatedToId);
+                    if (registration) {
+                        await registration.update({
+                            status: 'completed',
+                            paymentDate: new Date(),
+                            paymentReference: payment.reference
+                        });
+                        console.log(`Registration ${registration.id} marked as completed`);
+                    }
+                    break;
+                }
+                case 'subscription': {
+                    const Subscription = getModel('Subscription');
+                    const subscription = await Subscription.findByPk(relatedToId);
+                    if (subscription) {
+                        await subscription.update({
+                            status: 'active',
+                            paymentDate: new Date(),
+                            paymentReference: payment.reference,
+                            lastPaymentDate: new Date()
+                        });
+                        console.log(`Subscription ${subscription.id} updated`);
+                    }
+                    break;
+                }
+                case 'other': {
+                    // Generic payment - no specific entity to update
+                    console.log(`Generic payment recorded: ${payment.reference} - amount: ${amount}`);
+                    break;
+                }
                 default:
                     console.log(`Payment type ${type} - no entity update needed`);
             }
+        } else {
+            console.log(`No relatedTo ID found for payment type ${type}`);
         }
         
         res.status(201).json({

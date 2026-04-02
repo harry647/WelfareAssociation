@@ -380,6 +380,7 @@ class PaymentManager {
         this.lastPaymentReference = null; // Store reference for receipt download
         this.currentLoanId = null; // Store loaded loan ID for loan repayments
         this.currentEventId = null; // Store selected event ID for event payments
+        this.currentFineId = null; // Store selected fine ID for fine payments
         
         // Feedback elements
         this.paymentFeedback = document.getElementById('paymentFeedback');
@@ -451,6 +452,9 @@ class PaymentManager {
         }
         if (selectedCategory !== 'event') {
             this.currentEventId = null;
+        }
+        if (selectedCategory !== 'fine') {
+            this.currentFineId = null;
         }
         
         // Reset all groups
@@ -790,17 +794,22 @@ class PaymentManager {
             createdAt: new Date().toISOString()
         };
         
-        // Add related ID based on payment category
+        // Add related ID based on payment category (ensure string IDs)
         switch (category) {
             case 'loan':
             case 'loan_repayment':
-                if (this.currentLoanId) {
+                if (this.currentLoanId && typeof this.currentLoanId === 'string') {
                     data.relatedTo = this.currentLoanId;
                 }
                 break;
             case 'event':
-                if (this.currentEventId) {
+                if (this.currentEventId && typeof this.currentEventId === 'string') {
                     data.relatedTo = this.currentEventId;
+                }
+                break;
+            case 'fine':
+                if (this.currentFineId && typeof this.currentFineId === 'string') {
+                    data.relatedTo = this.currentFineId;
                 }
                 break;
             case 'bereavement':
