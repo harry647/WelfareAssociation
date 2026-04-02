@@ -9,18 +9,18 @@
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/members.css">
+  <link rel="stylesheet" href="/src/styles/pages/dashboard/unified-dashboard.css">
+  <link rel="stylesheet" href="/src/styles/pages/dashboard/members.css">
 </head>
 <body>
   <div class="dashboard-container">
     <!-- Sidebar Component -->
-    <div w3-include-html="../components/sidebar-admin.html"></div>
+    <div w3-include-html="/pages/dashboard/components/sidebar-admin.html"></div>
 
     <!-- Main Content -->
     <div class="main-content">
       <!-- Header Component -->
-      <div w3-include-html="../components/header-admin.html"></div>
+      <div w3-include-html="/pages/dashboard/components/header-admin.html"></div>
 
       <!-- Page Content -->
       <div class="content-section active">
@@ -62,12 +62,12 @@
   </div><!-- /dashboard-container -->
 
   <!-- Footer Component -->
-  <div w3-include-html="../components/footer-dashboard.html"></div>
+  <div w3-include-html="/pages/dashboard/components/footer-dashboard.html"></div>
 
   <script>w3.includeHTML();</script>
 
-  <script src="../../../src/scripts/pages/dashboard/header-admin.js"></script>
+  <script src="/src/scripts/pages/dashboard/header-admin.js"></script>
 
-  <script type="module" src="../../../src/scripts/pages/dashboard/member-details.js"></script>
+  <script type="module" src="/src/scripts/pages/dashboard/member-details.js"></script>
 </body>
 </html>

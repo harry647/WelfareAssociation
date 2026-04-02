@@ -49,8 +49,8 @@ const Member = sequelize.define('Member', {
         allowNull: true
     },
     gender: {
-        type: DataTypes.ENUM('male', 'female', 'other'),
-        defaultValue: 'other'
+        type: DataTypes.ENUM('Male', 'Female', 'Other'),
+        defaultValue: 'Other'
     },
     // Address (stored as JSON)
     address: {
@@ -71,8 +71,8 @@ const Member = sequelize.define('Member', {
         defaultValue: {}
     },
     membershipType: {
-        type: DataTypes.ENUM('student', 'alumni', 'staff', 'honorary'),
-        defaultValue: 'student'
+        type: DataTypes.ENUM('Regular', 'Student', 'Staff', 'Alumni', 'Honorary'),
+        defaultValue: 'Regular'
     },
     membershipStatus: {
         type: DataTypes.ENUM('active', 'inactive', 'suspended', 'archived'),

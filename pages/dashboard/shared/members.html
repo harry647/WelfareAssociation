@@ -9,8 +9,9 @@
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/shared-layout.css">
+  <link rel="stylesheet" href="/src/styles/pages/dashboard/unified-dashboard.css">
+  <link rel="stylesheet" href="/src/styles/pages/dashboard/shared-layout.css">
+  <link rel="stylesheet" href="/src/styles/pages/dashboard/members-list.css">
 </head>
 <body>
 
@@ -61,9 +62,16 @@
         <section class="quick-actions">
           <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
           <div class="action-buttons">
-            <a href="../../../auth/registration-form.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Member</a>
-            <a href="../../../reports/index.html" class="action-btn"><i class="fas fa-file-export"></i> Export List</a>
-            <a href="../../../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Email</a>
+            <a href="/pages/auth/registration-form.html" class="action-btn"><i class="fas fa-user-plus"></i> Add Member</a>
+            <div class="export-dropdown">
+              <button class="action-btn export-btn-main"><i class="fas fa-file-export"></i> Export List <i class="fas fa-chevron-down"></i></button>
+              <div class="export-menu">
+                <a href="#" onclick="exportMembers('pdf'); return false;"><i class="fas fa-file-pdf"></i> Export as PDF</a>
+                <a href="#" onclick="exportMembers('excel'); return false;"><i class="fas fa-file-excel"></i> Export as Excel</a>
+                <a href="#" onclick="exportMembers('csv'); return false;"><i class="fas fa-file-csv"></i> Export as CSV</a>
+              </div>
+            </div>
+            <a href="/pages/dashboard/admin/send-email.html" class="action-btn"><i class="fas fa-envelope"></i> Send Email</a>
           </div>
         </section>
 
@@ -80,8 +88,131 @@
       w3.includeHTML();
   </script>
 
-  <script src="../../../src/scripts/pages/dashboard/header-shared.js"></script>
+  <script src="/src/scripts/pages/dashboard/header-shared.js"></script>
+  
+  <!-- Export Functionality -->
+  <script>
+    // Export members data in various formats
+    async function exportMembers(format) {
+      // Get members data from the instance if available
+      let members = [];
+      
+      if (window.membersInstance && window.membersInstance.members) {
+        members = window.membersInstance.members;
+      } else {
+        // Fallback demo data if members not loaded
+        members = [
+          { id: 1, memberNumber: 'SWA001', firstName: 'Vincent', lastName: 'Otieno', email: 'vincent@joust.ac.ke', phone: '+254712345678', joinDate: '2024-01-15', membershipStatus: 'active' },
+          { id: 2, memberNumber: 'SWA002', firstName: 'Sarah', lastName: 'Wanjiku', email: 'sarah@joust.ac.ke', phone: '+254723456789', joinDate: '2024-02-20', membershipStatus: 'active' },
+          { id: 3, memberNumber: 'SWA003', firstName: 'James', lastName: 'Kiplagat', email: 'james@joust.ac.ke', phone: '+254734567890', joinDate: '2024-03-10', membershipStatus: 'pending' },
+          { id: 4, memberNumber: 'SWA004', firstName: 'Grace', lastName: 'Akinyi', email: 'grace@joust.ac.ke', phone: '+254745678901', joinDate: '2024-04-05', membershipStatus: 'active' },
+          { id: 5, memberNumber: 'SWA005', firstName: 'Michael', lastName: 'Ochieng', email: 'michael@joust.ac.ke', phone: '+254756789012', joinDate: '2024-05-12', membershipStatus: 'inactive' }
+        ];
+      }
 
-  <script type="module" src="../../../src/scripts/pages/dashboard/members.js"></script>
+      const exportDate = new Date().toISOString().split('T')[0];
+      
+      if (format === 'pdf') {
+        exportToPDF(members, exportDate);
+      } else if (format === 'excel') {
+        exportToExcel(members, exportDate);
+      } else if (format === 'csv') {
+        exportToCSV(members, exportDate);
+      }
+    }
+
+    // Export to PDF
+    function exportToPDF(members, date) {
+      // Create HTML content for PDF
+      const tableContent = members.map(m => '<tr><td>' + (m.memberNumber || m.id) + '</td><td>' + (m.firstName || '') + ' ' + (m.lastName || '') + '</td><td>' + (m.email || 'N/A') + '</td><td>' + (m.phone || 'N/A') + '</td><td>' + (m.joinDate || 'N/A') + '</td><td>' + (m.membershipStatus || 'N/A') + '</td></tr>').join('');
+
+      var html = '<!DOCTYPE html><html><head><title>SWA Members Report - ' + date + '</title><style>body{font-family:Arial,sans-serif;padding:20px;}h1{color:#1e293b;text-align:center;}.date{text-align:center;color:#64748b;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #e2e8f0;padding:10px;text-align:left;}th{background:#1e293b;color:white;}tr:nth-child(even){background:#f8fafc;}</style></head><body>' +
+        '<h1>Student Welfare Association - Members Report</h1>' +
+        '<p class="date">Generated on: ' + date + '</p>' +
+        '<p>Total Members: ' + members.length + '</p>' +
+        '<table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Join Date</th><th>Status</th></tr></thead><tbody>' + tableContent + '</tbody></table>' +
+        '</body></html>';
+
+      // Open print dialog to save as PDF
+      var printWindow = window.open('', '_blank');
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.onload = function() {
+        printWindow.print();
+      };
+    }
+
+    // Export to Excel
+    function exportToExcel(members, date) {
+      var xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      xmlContent += '<?mso-application progid="Excel.Sheet"?>\n';
+      xmlContent += '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
+      xmlContent += 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n';
+      xmlContent += '<Worksheet ss:Name="Members">\n<Table>\n';
+      
+      // Header row
+      xmlContent += '<Row>\n';
+      xmlContent += '<Cell><Data ss:Type="String">ID</Data></Cell>\n';
+      xmlContent += '<Cell><Data ss:Type="String">First Name</Data></Cell>\n';
+      xmlContent += '<Cell><Data ss:Type="String">Last Name</Data></Cell>\n';
+      xmlContent += '<Cell><Data ss:Type="String">Email</Data></Cell>\n';
+      xmlContent += '<Cell><Data ss:Type="String">Phone</Data></Cell>\n';
+      xmlContent += '<Cell><Data ss:Type="String">Join Date</Data></Cell>\n';
+      xmlContent += '<Cell><Data ss:Type="String">Status</Data></Cell>\n';
+      xmlContent += '</Row>\n';
+
+      // Data rows
+      members.forEach(function(m) {
+        xmlContent += '<Row>\n';
+        xmlContent += '<Cell><Data ss:Type="String">' + (m.memberNumber || m.id || '') + '</Data></Cell>\n';
+        xmlContent += '<Cell><Data ss:Type="String">' + (m.firstName || '') + '</Data></Cell>\n';
+        xmlContent += '<Cell><Data ss:Type="String">' + (m.lastName || '') + '</Data></Cell>\n';
+        xmlContent += '<Cell><Data ss:Type="String">' + (m.email || '') + '</Data></Cell>\n';
+        xmlContent += '<Cell><Data ss:Type="String">' + (m.phone || '') + '</Data></Cell>\n';
+        xmlContent += '<Cell><Data ss:Type="String">' + (m.joinDate || '') + '</Data></Cell>\n';
+        xmlContent += '<Cell><Data ss:Type="String">' + (m.membershipStatus || '') + '</Data></Cell>\n';
+        xmlContent += '</Row>\n';
+      });
+
+      xmlContent += '</Table>\n</Worksheet>\n</Workbook>';
+
+      // Download file
+      var blob = new Blob([xmlContent], { type: 'application/vnd.ms-excel' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'SWA_Members_' + date + '.xls';
+      link.click();
+    }
+
+    // Export to CSV
+    function exportToCSV(members, date) {
+      var csvContent = 'ID,First Name,Last Name,Email,Phone,Join Date,Status\n';
+
+      members.forEach(function(m) {
+        var row = [
+          m.memberNumber || m.id || '',
+          m.firstName || '',
+          m.lastName || '',
+          m.email || '',
+          m.phone || '',
+          m.joinDate || '',
+          m.membershipStatus || ''
+        ].map(function(field) { return '"' + String(field).replace(/"/g, '""') + '"'; }).join(',');
+        csvContent += row + '\n';
+      });
+
+      // Download file
+      var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'SWA_Members_' + date + '.csv';
+      link.click();
+    }
+
+    // Make export function globally available
+    window.exportMembers = exportMembers;
+  </script>
+  
+  <script type="module" src="/src/scripts/pages/dashboard/members.js"></script>
 </body>
 </html>

@@ -7,9 +7,8 @@ const express = require('express');
 const router = express.Router();
 const { body, query, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
-const { sequelize } = require('../models');
-const Member = require('../models/Member');
-const User = require('../models/User');
+const { sequelize } = require('../config/database');
+const { Member, User } = require('../models');
 const { auth, authorize } = require('../middleware/auth');
 
 // Validation middleware
@@ -152,6 +151,7 @@ router.get('/:id', auth, async (req, res) => {
         const member = await Member.findByPk(req.params.id, {
             include: [{
                 model: User,
+                as: 'user',
                 attributes: ['email', 'role']
             }]
         });
@@ -178,9 +178,11 @@ router.get('/:id', auth, async (req, res) => {
             data: member
         });
     } catch (error) {
+        console.error('Error fetching member:', error);
         res.status(500).json({
             success: false,
-            message: 'Error fetching member'
+            message: 'Error fetching member',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
@@ -289,7 +291,7 @@ router.put('/:id', auth, async (req, res) => {
  */
 router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     try {
-        const member = await Member.findById(req.params.id);
+        const member = await Member.findByPk(req.params.id);
         if (!member) {
             return res.status(404).json({
                 success: false,

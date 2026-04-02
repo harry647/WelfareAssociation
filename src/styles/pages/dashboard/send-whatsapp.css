@@ -1,0 +1,624 @@
+/* =============================================================================
+   Send WhatsApp Page Specific Styles
+   Only styles that are unique to this page - no duplicates from unified-dashboard.css
+   ============================================================================= */
+
+/* Additional Color Variables for Send WhatsApp */
+:root {
+  --whatsapp-green: #25D366;
+  --whatsapp-dark-green: #128C7E;
+  --whatsapp-light-green: rgba(37, 211, 102, 0.1);
+  --whatsapp-teal: #075E54;
+  --accent-light: rgba(45, 124, 91, 0.1);
+  --success-color: #10b981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --warning-color: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.1);
+  --error-color: #ef4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+  --message-bg: #f8fafc;
+  --template-bg: #f1f5f9;
+  --media-bg: #ffffff;
+}
+
+/* ── PAGE HEADER ── */
+.page-header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-header h1 i.fab.fa-whatsapp {
+  color: var(--whatsapp-green);
+  font-size: 18px;
+}
+
+.page-header p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ── FORM GRID ── */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── FORM CONTAINER ── */
+.form-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── FORM SECTIONS ── */
+.form-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base);
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.form-section:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.form-section h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-section h3 i.fab.fa-whatsapp {
+  color: var(--whatsapp-green);
+  font-size: 15px;
+  background: var(--whatsapp-light-green);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── FORM GROUPS ── */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--whatsapp-green);
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+  border-color: var(--border-color);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5568' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── TOGGLE SWITCHES ── */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 12px 16px;
+  background: var(--message-bg);
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.toggle-label:hover {
+  background: var(--template-bg);
+  border-color: var(--whatsapp-green);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: #ccc;
+  border-radius: 13px;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="checkbox"]:checked + .toggle-switch {
+  background: var(--whatsapp-green);
+}
+
+input[type="checkbox"]:checked + .toggle-switch::after {
+  transform: translateX(24px);
+}
+
+.toggle-text {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ── MEMBER SELECTION ── */
+#memberSelectGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#memberSelectGroup select {
+  flex: 1;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--whatsapp-green);
+  cursor: pointer;
+  padding: 8px 12px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-link:hover {
+  background: var(--whatsapp-light-green);
+  text-decoration: none;
+}
+
+/* ── TEMPLATE BUTTONS ── */
+.template-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.template-btn {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  transition: all var(--transition-base);
+  border: 1px solid var(--border-color);
+  background: var(--template-bg);
+  color: var(--text-secondary);
+}
+
+.template-btn:hover {
+  background: var(--whatsapp-green);
+  border-color: var(--whatsapp-green);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(37, 211, 102, 0.2);
+}
+
+.template-btn:active {
+  transform: translateY(0);
+}
+
+/* ── MEDIA UPLOAD SECTION ── */
+.media-upload-section {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--media-bg);
+  padding: 16px;
+}
+
+.media-preview {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--message-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  display: none;
+}
+
+.media-preview img {
+  max-width: 200px;
+  max-height: 150px;
+  border-radius: var(--radius-sm);
+}
+
+.media-preview .media-info {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ── CHECKBOX STYLES ── */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 400;
+  transition: color var(--transition-base);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.checkbox-label:hover {
+  color: var(--whatsapp-green);
+  background: var(--whatsapp-light-green);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--whatsapp-green);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  display: none;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+}
+
+.btn-primary.whatsapp-btn {
+  background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-dark-green) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.btn-primary.whatsapp-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  background: linear-gradient(135deg, var(--whatsapp-dark-green) 0%, var(--whatsapp-green) 100%);
+}
+
+.btn-primary.whatsapp-btn:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+  border-color: var(--whatsapp-green);
+  color: var(--whatsapp-green);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--whatsapp-green);
+  color: var(--whatsapp-green);
+}
+
+.btn-outline:hover {
+  background: var(--whatsapp-green);
+  color: white;
+}
+
+/* ── FORM ACTIONS ── */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+/* ── MESSAGE CONTAINER ── */
+.message-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: none;
+  max-width: 400px;
+}
+
+.message {
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease;
+}
+
+.message-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.message-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.7;
+  font-size: 14px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.message-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* ── CHARACTER COUNTER ── */
+.char-counter {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.char-counter.warning {
+  color: var(--warning-color);
+}
+
+.char-counter.error {
+  color: var(--error-color);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}
+
+/* ── RESPONSIVE DESIGN ── */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 20px;
+    max-width: 100%;
+  }
+  
+  .form-section {
+    padding: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 15px;
+  }
+  
+  .form-section h3 i {
+    font-size: 13px;
+    padding: 6px;
+  }
+  
+  #memberSelectGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .template-buttons {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
+  }
+  
+  .message-container {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 16px;
+  }
+  
+  .form-section {
+    padding: 12px;
+  }
+  
+  .form-section h3 {
+    font-size: 14px;
+    gap: 8px;
+  }
+  
+  .form-section h3 i {
+    font-size: 12px;
+    padding: 6px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  
+  .toggle-label {
+    padding: 10px 12px;
+  }
+  
+  .template-btn {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+  
+  .checkbox-label {
+    font-size: 12px;
+    gap: 8px;
+    padding: 6px 10px;
+  }
+  
+  .checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+  }
+}

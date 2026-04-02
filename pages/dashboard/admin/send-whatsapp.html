@@ -10,7 +10,7 @@
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/send-sms.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/send-whatsapp.css">
   
   <script>
     (function() {
@@ -29,26 +29,6 @@
       document.documentElement.style.visibility = 'visible';
     })();
   </script>
-  
-  <style>
-    /* WhatsApp specific colors */
-    .whatsapp-header {
-      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
-    }
-    
-    .whatsapp-btn {
-      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
-      border-color: #25D366 !important;
-    }
-    
-    .whatsapp-btn:hover {
-      background: linear-gradient(135deg, #128C7E 0%, #25D366 100%) !important;
-    }
-    
-    .fab-whatsapp {
-      color: #25D366;
-    }
-  </style>
 </head>
 <body>
   <div class="dashboard-container">
@@ -398,138 +378,5 @@
       fetchMembers();
     });
   </script>
-  
-  <style>
-    /* Additional styles for the message container */
-    .message-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      display: none;
-      max-width: 400px;
-    }
-    
-    .message {
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      animation: slideIn 0.3s ease;
-    }
-    
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-    
-    .message-success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    
-    .message-error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    
-    .message-close {
-      margin-left: auto;
-      background: none;
-      border: none;
-      cursor: pointer;
-      opacity: 0.7;
-      font-size: 14px;
-    }
-    
-    .message-close:hover {
-      opacity: 1;
-    }
-    
-    .toggle-label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      padding: 10px 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      border: 2px solid #e9ecef;
-      transition: all 0.3s ease;
-    }
-    
-    .toggle-label:hover {
-      background: #e9ecef;
-    }
-    
-    .toggle-switch {
-      position: relative;
-      width: 50px;
-      height: 26px;
-      background: #ccc;
-      border-radius: 13px;
-      transition: 0.3s;
-    }
-    
-    .toggle-switch::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: 0.3s;
-    }
-    
-    input[type="checkbox"]:checked + .toggle-switch {
-      background: #25D366;
-    }
-    
-    input[type="checkbox"]:checked + .toggle-switch::after {
-      transform: translateX(24px);
-    }
-    
-    .toggle-text {
-      font-weight: 500;
-      color: #333;
-    }
-    
-    #memberSelectGroup {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    #memberSelectGroup select {
-      flex: 1;
-    }
-    
-    .btn-link {
-      background: none;
-      border: none;
-      color: #25D366;
-      cursor: pointer;
-      padding: 8px 12px;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    
-    .btn-link:hover {
-      text-decoration: underline;
-    }
-  </style>
 </body>
 </html>

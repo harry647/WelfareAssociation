@@ -158,12 +158,12 @@ class Members {
     // Static methods for member actions
     static viewMember(memberId) {
         console.log('Viewing member:', memberId);
-        window.location.href = `member-details.html?id=${memberId}`;
+        window.location.href = '/pages/dashboard/admin/member-details.html?id=' + memberId;
     }
 
     static editMember(memberId) {
         console.log('Editing member:', memberId);
-        window.location.href = `edit-member.html?id=${memberId}`;
+        window.location.href = '/pages/dashboard/admin/edit-member.html?id=' + memberId;
     }
 }
 
