@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SWA Send SMS - Admin Panel">
-  <title>Send SMS - Student Welfare Association | JOOUST</title>
+  <meta name="description" content="SWA Send Email - Admin Panel">
+  <title>Send Email - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
-  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/send-sms.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/send-email.css">
   
   <script>
     (function() {
@@ -18,7 +17,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/send-sms.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/send-email.html');
         return;
       }
       const user = JSON.parse(userData);
@@ -44,13 +43,13 @@
       <div class="content-section active">
         <div class="page-body">
           <div class="page-header">
-            <h1><i class="fas fa-sms"></i> Send SMS</h1>
-            <p>Send SMS messages to members</p>
+            <h1><i class="fas fa-envelope"></i> Send Email</h1>
+            <p>Send emails to members</p>
           </div>
-
-          <!-- Send SMS Form -->
+          
+          <!-- Email Form -->
           <div class="form-container">
-            <form id="sendSMSForm" class="form-grid">
+            <form id="sendEmailForm" class="form-grid">
               <!-- Recipient Selection -->
               <div class="form-section">
                 <h3><i class="fas fa-users"></i> Recipients</h3>
@@ -76,44 +75,43 @@
                 </div>
                 
                 <div class="form-group">
-                  <label for="additionalPhones">Additional Phone Numbers</label>
-                  <textarea id="additionalPhones" name="additionalPhones" rows="2" placeholder="Enter phone numbers separated by commas...&#10;Example: +254712345678, +254723456789"></textarea>
+                  <label for="additionalEmails">Additional Email Addresses</label>
+                  <textarea id="additionalEmails" name="additionalEmails" rows="2" placeholder="Enter additional email addresses separated by commas..."></textarea>
                   <small>Use this field for recipients not in the member list</small>
                 </div>
               </div>
 
-              <!-- Message Composition -->
+              <!-- Email Composition -->
               <div class="form-section">
-                <h3><i class="fas fa-comment-alt"></i> Message Composition</h3>
+                <h3><i class="fas fa-pen"></i> Email Content</h3>
                 <div class="form-group">
-                  <label for="message">Message *</label>
-                  <textarea id="message" name="message" rows="6" required placeholder="Type your SMS message here..." maxlength="160"></textarea>
-                  <div class="sms-counter">
-                    <span id="charCount">0</span> / 160 characters
-                    <span id="messageCount" class="message-count">1 SMS</span>
-                  </div>
+                  <label for="subject">Subject *</label>
+                  <input type="text" id="subject" name="subject" required placeholder="Enter email subject">
+                </div>
+                <div class="form-group">
+                  <label for="body">Email Body *</label>
+                  <textarea id="body" name="body" rows="10" required placeholder="Type your email message here..."></textarea>
                 </div>
                 <div class="form-group">
                   <label>Quick Templates</label>
                   <div class="template-buttons">
-                    <button type="button" class="btn btn-outline template-btn" data-template="meeting">Meeting Reminder</button>
+                    <button type="button" class="btn btn-outline template-btn" data-template="meeting">Meeting Notice</button>
                     <button type="button" class="btn btn-outline template-btn" data-template="payment">Payment Reminder</button>
-                    <button type="button" class="btn btn-outline template-btn" data-template="event">Event Update</button>
-                    <button type="button" class="btn btn-outline template-btn" data-template="urgent">Urgent Notice</button>
+                    <button type="button" class="btn btn-outline template-btn" data-template="event">Event Invitation</button>
+                    <button type="button" class="btn btn-outline template-btn" data-template="announcement">General Announcement</button>
                   </div>
                 </div>
               </div>
 
-              <!-- Sending Options -->
+              <!-- Email Options -->
               <div class="form-section">
-                <h3><i class="fas fa-cog"></i> Sending Options</h3>
+                <h3><i class="fas fa-cog"></i> Email Options</h3>
                 <div class="form-group">
-                  <label for="senderId">Sender ID</label>
-                  <select id="senderId" name="senderId">
-                    <option value="SWA">SWA</option>
-                    <option value="JOOUST">JOOUST</option>
-                    <option value="WELFARE">WELFARE</option>
-                  </select>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="highPriority" name="highPriority">
+                    <span class="checkmark"></span>
+                    Mark as high priority
+                  </label>
                 </div>
                 <div class="form-group">
                   <label class="checkbox-label">
@@ -127,10 +125,10 @@
               <!-- Form Actions -->
               <div class="form-actions">
                 <button type="submit" class="btn btn-primary" id="sendBtn">
-                  <i class="fas fa-paper-plane"></i> Send SMS
+                  <i class="fas fa-paper-plane"></i> Send Email
                 </button>
-                <button type="button" class="btn btn-secondary" id="testSMS">
-                  <i class="fas fa-vial"></i> Test Send
+                <button type="button" class="btn btn-secondary" id="sendTest">
+                  <i class="fas fa-vial"></i> Send Test
                 </button>
                 <button type="button" class="btn btn-outline" onclick="window.location.href='admin-dashboard.html'">
                   <i class="fas fa-times"></i> Cancel
@@ -156,6 +154,7 @@
   <script type="module">
     const API_BASE = '/api';
     let members = [];
+    let isLoading = false;
 
     function getAuthHeaders() {
       const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
@@ -191,6 +190,7 @@
       `;
       container.style.display = 'block';
       
+      // Auto-hide after 5 seconds
       setTimeout(() => {
         const msg = container.querySelector('.message');
         if (msg) msg.remove();
@@ -218,39 +218,23 @@
       select.innerHTML = '<option value="">Loading members...</option>';
       
       try {
-        const result = await apiCall('/sms/members');
+        const result = await apiCall('/email/members');
         members = result.data || [];
         
         if (members.length === 0) {
-          select.innerHTML = '<option value="">No members with phones found</option>';
+          select.innerHTML = '<option value="">No members found</option>';
           return;
         }
         
         select.innerHTML = '<option value="">Select a member...</option>' + 
           members.map(m => 
-            `<option value="${m.id}" data-phone="${m.phone}">${m.name} - ${m.phone}</option>`
+            `<option value="${m.id}" data-email="${m.email}">${m.name} - ${m.email}</option>`
           ).join('');
       } catch (error) {
         console.error('Error fetching members:', error);
         select.innerHTML = '<option value="">Failed to load members</option>';
         showMessage('Failed to load members: ' + error.message, 'error');
       }
-    }
-
-    // Character counter for SMS
-    function updateCharCount() {
-      const message = document.getElementById('message');
-      const charCount = document.getElementById('charCount');
-      const messageCount = document.getElementById('messageCount');
-      
-      if (!message) return;
-      
-      const length = message.value.length;
-      charCount.textContent = length;
-      
-      // Calculate SMS segments (160 chars per segment for single SMS)
-      const segments = Math.ceil(length / 160);
-      messageCount.textContent = segments === 1 ? '1 SMS' : `${segments} SMS (${length}/160)`;
     }
 
     // Toggle send to all
@@ -275,37 +259,34 @@
       setLoading('refreshMembers', false, '<i class="fas fa-sync-alt"></i> Refresh');
     });
 
-    // Character count listener
-    document.getElementById('message')?.addEventListener('input', updateCharCount);
-
     // Template buttons
     const templates = {
-      meeting: 'Dear Member,\n\nThis is to remind you about our upcoming meeting on [DATE] at [TIME].\n\nPlease confirm your attendance.\n\nSWA Administration',
-      payment: 'Dear Member,\n\nThis is a reminder that your contribution payment is due. Please make your payment by [DUE DATE].\n\nThank you for your support.\n\nSWA Administration',
-      event: 'Dear Members,\n\nWe are pleased to invite you to our upcoming event:\n\nEvent: [EVENT NAME]\nDate: [DATE]\nTime: [TIME]\n\nPlease confirm your attendance.\n\nSWA Administration',
-      urgent: 'Dear Members,\n\nURGENT: [YOUR URGENT MESSAGE HERE]\n\nPlease respond as soon as possible.\n\nSWA Administration'
+      meeting: 'Dear Members,\n\nThis is to inform you that there will be a general meeting scheduled for [DATE] at [TIME].\n\nPlease confirm your attendance.\n\nBest regards,\nSWA Administration',
+      payment: 'Dear Member,\n\nThis is a reminder that your contribution payment is due. Please make your payment by [DUE DATE].\n\nThank you for your continued support.\n\nBest regards,\nSWA Administration',
+      event: 'Dear Members,\n\nWe are pleased to invite you to our upcoming event:\n\nEvent: [EVENT NAME]\nDate: [DATE]\nTime: [TIME]\nLocation: [LOCATION]\n\nPlease register to confirm your attendance.\n\nBest regards,\nSWA Administration',
+      announcement: 'Dear Members,\n\n[YOUR ANNOUNCEMENT MESSAGE HERE]\n\nWe will keep you updated on any further developments.\n\nBest regards,\nSWA Administration'
     };
 
     document.querySelectorAll('.template-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const template = templates[this.dataset.template];
         if (template) {
-          document.getElementById('message').value = template;
-          updateCharCount();
+          document.getElementById('body').value = template;
         }
       });
     });
 
     // Form submission
-    document.getElementById('sendSMSForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('sendEmailForm')?.addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const sendToAll = document.getElementById('sendToAll').checked;
       const selectedMemberId = document.getElementById('memberSelect').value;
-      const message = document.getElementById('message').value.trim();
-      const senderId = document.getElementById('senderId').value;
+      const subject = document.getElementById('subject').value.trim();
+      const body = document.getElementById('body').value.trim();
+      const highPriority = document.getElementById('highPriority').checked;
       const sendToActiveOnly = document.getElementById('sendToActiveOnly').checked;
-      const additionalPhones = document.getElementById('additionalPhones').value.trim();
+      const additionalEmails = document.getElementById('additionalEmails').value.trim();
       
       // Validation
       if (!sendToAll && !selectedMemberId) {
@@ -313,30 +294,36 @@
         return;
       }
       
-      if (!message) {
-        showMessage('Please enter a message', 'error');
+      if (!subject) {
+        showMessage('Please enter a subject', 'error');
+        return;
+      }
+      
+      if (!body) {
+        showMessage('Please enter a message body', 'error');
         return;
       }
       
       const sendBtn = document.getElementById('sendBtn');
-      setLoading('sendBtn', true, '<i class="fas fa-paper-plane"></i> Send SMS');
+      setLoading('sendBtn', true, '<i class="fas fa-paper-plane"></i> Send Email');
       
       try {
         let result;
         
         if (sendToAll) {
-          // Send bulk SMS
-          result = await apiCall('/sms/send-bulk', {
+          // Send bulk email
+          result = await apiCall('/email/send-bulk', {
             method: 'POST',
             body: JSON.stringify({
-              message,
-              senderId,
+              subject,
+              messageBody: body,
+              highPriority,
               sendToActiveOnly,
-              additionalPhones: additionalPhones ? additionalPhones.split(',').map(p => p.trim()).filter(Boolean) : []
+              additionalEmails: additionalEmails ? additionalEmails.split(',').map(e => e.trim()).filter(Boolean) : []
             })
           });
           
-          showMessage(`SMS sent successfully to ${result.data?.sentCount || 'all'} members!`, 'success');
+          showMessage(`Email sent successfully to ${result.data?.sentCount || 'all'} members!`, 'success');
         } else {
           // Send to single member
           const selectedMember = members.find(m => m.id === selectedMemberId);
@@ -345,63 +332,65 @@
             throw new Error('Selected member not found');
           }
           
-          result = await apiCall('/sms/send', {
+          result = await apiCall('/email/send', {
             method: 'POST',
             body: JSON.stringify({
-              recipientPhone: selectedMember.phone,
-              message,
-              senderId
+              recipientEmail: selectedMember.email,
+              subject,
+              messageBody: body,
+              highPriority
             })
           });
           
-          showMessage(`SMS sent successfully to ${selectedMember.name}!`, 'success');
+          showMessage(`Email sent successfully to ${selectedMember.name}!`, 'success');
         }
         
         // Reset form on success
-        document.getElementById('sendSMSForm').reset();
+        document.getElementById('sendEmailForm').reset();
         document.getElementById('sendToAll').checked = false;
         document.getElementById('memberSelectGroup').style.display = 'block';
         document.getElementById('memberSelect').setAttribute('required', 'required');
-        updateCharCount();
         
+        // Optional redirect after success
+        // window.location.href = 'admin-dashboard.html';
       } catch (error) {
-        console.error('Error sending SMS:', error);
-        showMessage('Failed to send SMS: ' + error.message, 'error');
+        console.error('Error sending email:', error);
+        showMessage('Failed to send email: ' + error.message, 'error');
       } finally {
-        setLoading('sendBtn', false, '<i class="fas fa-paper-plane"></i> Send SMS');
+        setLoading('sendBtn', false, '<i class="fas fa-paper-plane"></i> Send Email');
       }
     });
 
-    // Test SMS button
-    document.getElementById('testSMS')?.addEventListener('click', async function() {
-      const message = document.getElementById('message').value.trim();
+    // Test email button
+    document.getElementById('sendTest')?.addEventListener('click', async function() {
+      const subject = document.getElementById('subject').value.trim();
+      const body = document.getElementById('body').value.trim();
       
-      if (!message) {
-        showMessage('Please enter a message before sending a test', 'error');
+      if (!subject || !body) {
+        showMessage('Please fill in both subject and body before sending a test', 'error');
         return;
       }
       
-      setLoading('testSMS', true, '<i class="fas fa-vial"></i> Test Send');
+      setLoading('sendTest', true, '<i class="fas fa-vial"></i> Send Test');
       
       try {
-        const result = await apiCall('/sms/test', {
+        const result = await apiCall('/email/test', {
           method: 'POST',
-          body: JSON.stringify({ message })
+          body: JSON.stringify({ subject, messageBody: body })
         });
         
-        showMessage(result.message || 'Test SMS sent successfully!', 'success');
+        showMessage(result.message || 'Test email sent successfully!', 'success');
       } catch (error) {
-        console.error('Error sending test SMS:', error);
-        showMessage('Failed to send test SMS: ' + error.message, 'error');
+        console.error('Error sending test email:', error);
+        showMessage('Failed to send test email: ' + error.message, 'error');
       } finally {
-        setLoading('testSMS', false, '<i class="fas fa-vial"></i> Test Send');
+        setLoading('sendTest', false, '<i class="fas fa-vial"></i> Send Test');
       }
     });
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
       fetchMembers();
-      updateCharCount();
     });
   </script>
   
@@ -535,19 +524,6 @@
     
     .btn-link:hover {
       text-decoration: underline;
-    }
-    
-    .sms-counter {
-      text-align: right;
-      font-size: 12px;
-      color: #666;
-      margin-top: 5px;
-    }
-    
-    .message-count {
-      margin-left: 10px;
-      font-weight: 500;
-      color: #4a90d9;
     }
   </style>
 </body>

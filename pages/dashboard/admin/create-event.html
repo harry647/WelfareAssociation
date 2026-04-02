@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SWA Create Event - Admin Panel">
+  <title>Create Event - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/create-event.css">
+  
+  <script>
+    (function() {
+      document.documentElement.style.visibility = 'hidden';
+      const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      const userData = localStorage.getItem('swa_user');
+      if (!authToken || !userData) {
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/create-event.html');
+        return;
+      }
+      const user = JSON.parse(userData);
+      if (user.role !== 'admin') {
+        window.location.replace('../member/member-portal.html');
+        return;
+      }
+      document.documentElement.style.visibility = 'visible';
+    })();
+  </script>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
+
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fas fa-calendar-plus"></i> Create Event</h1>
+            <p>Create and manage events for the association</p>
+          </div>
+          
+          <!-- Event Form -->
+          <div class="form-container">
+            <form id="createEventForm" class="form-grid">
+              <!-- Basic Event Info -->
+              <div class="form-section">
+                <h3><i class="fas fa-info-circle"></i> Event Details</h3>
+                <div class="form-group">
+                  <label for="title">Event Title *</label>
+                  <input type="text" id="title" name="title" required placeholder="Enter event title">
+                </div>
+                <div class="form-group">
+                  <label for="description">Description *</label>
+                  <textarea id="description" name="description" rows="4" required placeholder="Describe the event..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="type">Event Type</label>
+                  <select id="type" name="type">
+                    <option value="general">General Meeting</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="seminar">Seminar</option>
+                    <option value="social">Social Event</option>
+                    <option value="sports">Sports</option>
+                    <option value="fundraiser">Fundraiser</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Date and Time -->
+              <div class="form-section">
+                <h3><i class="fas fa-clock"></i> Date & Time</h3>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="eventDate">Start Date & Time *</label>
+                    <input type="datetime-local" id="eventDate" name="eventDate" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="endDate">End Date & Time</label>
+                    <input type="datetime-local" id="endDate" name="endDate">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="location">Location</label>
+                  <input type="text" id="location" name="location" placeholder="Event venue or online link">
+                </div>
+              </div>
+
+              <!-- Registration Settings -->
+              <div class="form-section">
+                <h3><i class="fas fa-users"></i> Registration Settings</h3>
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="requiresRegistration" name="requiresRegistration">
+                    <span class="checkmark"></span>
+                    Requires Registration
+                  </label>
+                </div>
+                <div class="form-group" id="maxAttendeesGroup" style="display: none;">
+                  <label for="maxAttendees">Maximum Attendees</label>
+                  <input type="number" id="maxAttendees" name="maxAttendees" min="1" placeholder="Leave empty for unlimited">
+                </div>
+              </div>
+
+              <!-- Event Image -->
+              <div class="form-section">
+                <h3><i class="fas fa-image"></i> Event Image</h3>
+                <div class="form-group">
+                  <label for="imageUrl">Image URL</label>
+                  <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                  <small>Or upload an image below</small>
+                </div>
+                <div class="form-group">
+                  <label>Upload Image</label>
+                  <div class="file-upload">
+                    <input type="file" id="eventImage" name="eventImage" accept="image/*">
+                    <div class="file-upload-preview" id="imagePreview"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional Options -->
+              <div class="form-section">
+                <h3><i class="fas fa-cog"></i> Additional Options</h3>
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="sendNotifications" name="sendNotifications" checked>
+                    <span class="checkmark"></span>
+                    Send email notifications to members
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="isPublic" name="isPublic" checked>
+                    <span class="checkmark"></span>
+                    Make event public (visible on website)
+                  </label>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Create Event
+                </button>
+                <button type="button" class="btn btn-secondary" id="previewEvent">
+                  <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='admin-dashboard.html'">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
+
+  <!-- Footer Component -->
+  <div w3-include-html="../components/footer-dashboard.html"></div>
+
+  <script>w3.includeHTML();</script>
+
+  <script src="../../../src/scripts/pages/dashboard/header-admin.js"></script>
+
+  <script type="module">
+    const API_BASE = '/api';
+
+    function getAuthHeaders() {
+      const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+      };
+    }
+
+    async function apiCall(endpoint, options = {}) {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers: { ...getAuthHeaders(), ...options.headers }
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'API request failed');
+      }
+      return data;
+    }
+
+    // Toggle max attendees field
+    document.getElementById('requiresRegistration')?.addEventListener('change', function() {
+      const maxAttendeesGroup = document.getElementById('maxAttendeesGroup');
+      if (this.checked) {
+        maxAttendeesGroup.style.display = 'block';
+      } else {
+        maxAttendeesGroup.style.display = 'none';
+      }
+    });
+
+    // Image preview
+    document.getElementById('eventImage')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('imagePreview');
+          if (preview) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; border-radius: 8px;">`;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Form submission
+    document.getElementById('createEventForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        type: document.getElementById('type').value,
+        eventDate: document.getElementById('eventDate').value,
+        endDate: document.getElementById('endDate').value || null,
+        // Location should be stored as JSON object
+        location: document.getElementById('location').value ? { address: document.getElementById('location').value } : null,
+        requiresRegistration: document.getElementById('requiresRegistration').checked,
+        maxAttendees: document.getElementById('maxAttendees').value ? parseInt(document.getElementById('maxAttendees').value) : null,
+        image: document.getElementById('imageUrl').value || null,
+        status: 'published' // Auto-publish events created from admin
+      };
+
+      try {
+        const result = await apiCall('/events', {
+          method: 'POST',
+          body: JSON.stringify(formData)
+        });
+        
+        alert('Event created successfully!');
+        window.location.href = 'admin-dashboard.html';
+      } catch (error) {
+        console.error('Error creating event:', error);
+        alert('Failed to create event: ' + error.message);
+      }
+    });
+
+    // Preview button
+    document.getElementById('previewEvent')?.addEventListener('click', function() {
+      const title = document.getElementById('title').value || 'Event Title';
+      const description = document.getElementById('description').value || 'Event Description';
+      const eventDate = document.getElementById('eventDate').value || '';
+      const location = document.getElementById('location').value || 'TBA';
+      
+      alert(`Event Preview:\n\nTitle: ${title}\nDescription: ${description}\nDate: ${eventDate ? new Date(eventDate).toLocaleString() : 'TBA'}\nLocation: ${location}`);
+    });
+  </script>
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SWA Send SMS - Admin Panel">
-  <title>Send SMS - Student Welfare Association | JOOUST</title>
+  <meta name="description" content="SWA Send WhatsApp - Admin Panel">
+  <title>Send WhatsApp - Student Welfare Association | JOOUST</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <!-- W3.js for component includes -->
   <script src="https://www.w3schools.com/lib/w3.js"></script>
@@ -18,7 +18,7 @@
       const authToken = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
       const userData = localStorage.getItem('swa_user');
       if (!authToken || !userData) {
-        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/send-sms.html');
+        window.location.replace('../../../pages/auth/login-page.html?redirect=../dashboard/admin/send-whatsapp.html');
         return;
       }
       const user = JSON.parse(userData);
@@ -29,6 +29,26 @@
       document.documentElement.style.visibility = 'visible';
     })();
   </script>
+  
+  <style>
+    /* WhatsApp specific colors */
+    .whatsapp-header {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+    }
+    
+    .whatsapp-btn {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+      border-color: #25D366 !important;
+    }
+    
+    .whatsapp-btn:hover {
+      background: linear-gradient(135deg, #128C7E 0%, #25D366 100%) !important;
+    }
+    
+    .fab-whatsapp {
+      color: #25D366;
+    }
+  </style>
 </head>
 <body>
   <div class="dashboard-container">
@@ -44,13 +64,13 @@
       <div class="content-section active">
         <div class="page-body">
           <div class="page-header">
-            <h1><i class="fas fa-sms"></i> Send SMS</h1>
-            <p>Send SMS messages to members</p>
+            <h1><i class="fab fa-whatsapp"></i> Send WhatsApp</h1>
+            <p>Send WhatsApp messages to members</p>
           </div>
 
-          <!-- Send SMS Form -->
+          <!-- Send WhatsApp Form -->
           <div class="form-container">
-            <form id="sendSMSForm" class="form-grid">
+            <form id="sendWhatsAppForm" class="form-grid">
               <!-- Recipient Selection -->
               <div class="form-section">
                 <h3><i class="fas fa-users"></i> Recipients</h3>
@@ -84,15 +104,19 @@
 
               <!-- Message Composition -->
               <div class="form-section">
-                <h3><i class="fas fa-comment-alt"></i> Message Composition</h3>
+                <h3><i class="fab fa-whatsapp"></i> Message Composition</h3>
                 <div class="form-group">
                   <label for="message">Message *</label>
-                  <textarea id="message" name="message" rows="6" required placeholder="Type your SMS message here..." maxlength="160"></textarea>
-                  <div class="sms-counter">
-                    <span id="charCount">0</span> / 160 characters
-                    <span id="messageCount" class="message-count">1 SMS</span>
-                  </div>
+                  <textarea id="message" name="message" rows="8" required placeholder="Type your WhatsApp message here..."></textarea>
                 </div>
+                
+                <!-- Media Attachment -->
+                <div class="form-group">
+                  <label for="mediaUrl">Media Attachment (Optional)</label>
+                  <input type="url" id="mediaUrl" name="mediaUrl" placeholder="Enter image or document URL...">
+                  <small>Supported: Images (JPG, PNG), Documents (PDF), Audio</small>
+                </div>
+                
                 <div class="form-group">
                   <label>Quick Templates</label>
                   <div class="template-buttons">
@@ -108,14 +132,6 @@
               <div class="form-section">
                 <h3><i class="fas fa-cog"></i> Sending Options</h3>
                 <div class="form-group">
-                  <label for="senderId">Sender ID</label>
-                  <select id="senderId" name="senderId">
-                    <option value="SWA">SWA</option>
-                    <option value="JOOUST">JOOUST</option>
-                    <option value="WELFARE">WELFARE</option>
-                  </select>
-                </div>
-                <div class="form-group">
                   <label class="checkbox-label">
                     <input type="checkbox" id="sendToActiveOnly" name="sendToActiveOnly" checked>
                     <span class="checkmark"></span>
@@ -126,10 +142,10 @@
 
               <!-- Form Actions -->
               <div class="form-actions">
-                <button type="submit" class="btn btn-primary" id="sendBtn">
-                  <i class="fas fa-paper-plane"></i> Send SMS
+                <button type="submit" class="btn btn-primary whatsapp-btn" id="sendBtn">
+                  <i class="fab fa-whatsapp"></i> Send WhatsApp
                 </button>
-                <button type="button" class="btn btn-secondary" id="testSMS">
+                <button type="button" class="btn btn-secondary" id="testWhatsApp">
                   <i class="fas fa-vial"></i> Test Send
                 </button>
                 <button type="button" class="btn btn-outline" onclick="window.location.href='admin-dashboard.html'">
@@ -218,7 +234,7 @@
       select.innerHTML = '<option value="">Loading members...</option>';
       
       try {
-        const result = await apiCall('/sms/members');
+        const result = await apiCall('/whatsapp/members');
         members = result.data || [];
         
         if (members.length === 0) {
@@ -235,22 +251,6 @@
         select.innerHTML = '<option value="">Failed to load members</option>';
         showMessage('Failed to load members: ' + error.message, 'error');
       }
-    }
-
-    // Character counter for SMS
-    function updateCharCount() {
-      const message = document.getElementById('message');
-      const charCount = document.getElementById('charCount');
-      const messageCount = document.getElementById('messageCount');
-      
-      if (!message) return;
-      
-      const length = message.value.length;
-      charCount.textContent = length;
-      
-      // Calculate SMS segments (160 chars per segment for single SMS)
-      const segments = Math.ceil(length / 160);
-      messageCount.textContent = segments === 1 ? '1 SMS' : `${segments} SMS (${length}/160)`;
     }
 
     // Toggle send to all
@@ -275,9 +275,6 @@
       setLoading('refreshMembers', false, '<i class="fas fa-sync-alt"></i> Refresh');
     });
 
-    // Character count listener
-    document.getElementById('message')?.addEventListener('input', updateCharCount);
-
     // Template buttons
     const templates = {
       meeting: 'Dear Member,\n\nThis is to remind you about our upcoming meeting on [DATE] at [TIME].\n\nPlease confirm your attendance.\n\nSWA Administration',
@@ -291,19 +288,18 @@
         const template = templates[this.dataset.template];
         if (template) {
           document.getElementById('message').value = template;
-          updateCharCount();
         }
       });
     });
 
     // Form submission
-    document.getElementById('sendSMSForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('sendWhatsAppForm')?.addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const sendToAll = document.getElementById('sendToAll').checked;
       const selectedMemberId = document.getElementById('memberSelect').value;
       const message = document.getElementById('message').value.trim();
-      const senderId = document.getElementById('senderId').value;
+      const mediaUrl = document.getElementById('mediaUrl').value.trim();
       const sendToActiveOnly = document.getElementById('sendToActiveOnly').checked;
       const additionalPhones = document.getElementById('additionalPhones').value.trim();
       
@@ -319,24 +315,24 @@
       }
       
       const sendBtn = document.getElementById('sendBtn');
-      setLoading('sendBtn', true, '<i class="fas fa-paper-plane"></i> Send SMS');
+      setLoading('sendBtn', true, '<i class="fab fa-whatsapp"></i> Send WhatsApp');
       
       try {
         let result;
         
         if (sendToAll) {
-          // Send bulk SMS
-          result = await apiCall('/sms/send-bulk', {
+          // Send bulk WhatsApp
+          result = await apiCall('/whatsapp/send-bulk', {
             method: 'POST',
             body: JSON.stringify({
               message,
-              senderId,
+              mediaUrl: mediaUrl || null,
               sendToActiveOnly,
               additionalPhones: additionalPhones ? additionalPhones.split(',').map(p => p.trim()).filter(Boolean) : []
             })
           });
           
-          showMessage(`SMS sent successfully to ${result.data?.sentCount || 'all'} members!`, 'success');
+          showMessage(`WhatsApp message sent successfully to ${result.data?.sentCount || 'all'} members!`, 'success');
         } else {
           // Send to single member
           const selectedMember = members.find(m => m.id === selectedMemberId);
@@ -345,35 +341,34 @@
             throw new Error('Selected member not found');
           }
           
-          result = await apiCall('/sms/send', {
+          result = await apiCall('/whatsapp/send', {
             method: 'POST',
             body: JSON.stringify({
               recipientPhone: selectedMember.phone,
               message,
-              senderId
+              mediaUrl: mediaUrl || null
             })
           });
           
-          showMessage(`SMS sent successfully to ${selectedMember.name}!`, 'success');
+          showMessage(`WhatsApp message sent successfully to ${selectedMember.name}!`, 'success');
         }
         
         // Reset form on success
-        document.getElementById('sendSMSForm').reset();
+        document.getElementById('sendWhatsAppForm').reset();
         document.getElementById('sendToAll').checked = false;
         document.getElementById('memberSelectGroup').style.display = 'block';
         document.getElementById('memberSelect').setAttribute('required', 'required');
-        updateCharCount();
         
       } catch (error) {
-        console.error('Error sending SMS:', error);
-        showMessage('Failed to send SMS: ' + error.message, 'error');
+        console.error('Error sending WhatsApp:', error);
+        showMessage('Failed to send WhatsApp message: ' + error.message, 'error');
       } finally {
-        setLoading('sendBtn', false, '<i class="fas fa-paper-plane"></i> Send SMS');
+        setLoading('sendBtn', false, '<i class="fab fa-whatsapp"></i> Send WhatsApp');
       }
     });
 
-    // Test SMS button
-    document.getElementById('testSMS')?.addEventListener('click', async function() {
+    // Test WhatsApp button
+    document.getElementById('testWhatsApp')?.addEventListener('click', async function() {
       const message = document.getElementById('message').value.trim();
       
       if (!message) {
@@ -381,27 +376,26 @@
         return;
       }
       
-      setLoading('testSMS', true, '<i class="fas fa-vial"></i> Test Send');
+      setLoading('testWhatsApp', true, '<i class="fas fa-vial"></i> Test Send');
       
       try {
-        const result = await apiCall('/sms/test', {
+        const result = await apiCall('/whatsapp/test', {
           method: 'POST',
           body: JSON.stringify({ message })
         });
         
-        showMessage(result.message || 'Test SMS sent successfully!', 'success');
+        showMessage(result.message || 'Test WhatsApp message sent successfully!', 'success');
       } catch (error) {
-        console.error('Error sending test SMS:', error);
-        showMessage('Failed to send test SMS: ' + error.message, 'error');
+        console.error('Error sending test WhatsApp:', error);
+        showMessage('Failed to send test WhatsApp message: ' + error.message, 'error');
       } finally {
-        setLoading('testSMS', false, '<i class="fas fa-vial"></i> Test Send');
+        setLoading('testWhatsApp', false, '<i class="fas fa-vial"></i> Test Send');
       }
     });
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
       fetchMembers();
-      updateCharCount();
     });
   </script>
   
@@ -501,7 +495,7 @@
     }
     
     input[type="checkbox"]:checked + .toggle-switch {
-      background: #4a90d9;
+      background: #25D366;
     }
     
     input[type="checkbox"]:checked + .toggle-switch::after {
@@ -526,7 +520,7 @@
     .btn-link {
       background: none;
       border: none;
-      color: #4a90d9;
+      color: #25D366;
       cursor: pointer;
       padding: 8px 12px;
       text-decoration: none;
@@ -535,19 +529,6 @@
     
     .btn-link:hover {
       text-decoration: underline;
-    }
-    
-    .sms-counter {
-      text-align: right;
-      font-size: 12px;
-      color: #666;
-      margin-top: 5px;
-    }
-    
-    .message-count {
-      margin-left: 10px;
-      font-weight: 500;
-      color: #4a90d9;
     }
   </style>
 </body>

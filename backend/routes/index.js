@@ -32,6 +32,9 @@ const paymentRoutes = require('./payments');
 const settingsRoutes = require('./settings');
 const mpesaRoutes = require('./mpesa');
 const uploadRoutes = require('./upload');
+const emailRoutes = require('./email');
+const smsRoutes = require('./sms');
+const whatsappRoutes = require('./whatsapp');
 
 module.exports = (app) => {
     // API Routes
@@ -64,6 +67,9 @@ module.exports = (app) => {
     app.use('/api/payments', paymentRoutes);
     app.use('/api/settings', settingsRoutes);
     app.use('/api/mpesa', mpesaRoutes);    app.use('/api/upload', uploadRoutes);
+    app.use('/api/email', emailRoutes);
+    app.use('/api/sms', smsRoutes);
+    app.use('/api/whatsapp', whatsappRoutes);
     
     // Health check endpoint
     app.get('/api/health', (req, res) => {

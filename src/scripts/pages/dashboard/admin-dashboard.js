@@ -435,51 +435,56 @@ async function deleteMessage(messageId) {
 // ==================== DASHBOARD STATS ====================
 async function loadDashboardStats() {
     try {
-        // Load various stats in parallel
-        const [membersRes, contributionsRes, debtsRes, eventsRes, announcementsRes, paymentsStatsRes] = await Promise.all([
-            apiCall('/members'),
-            apiCall('/contributions'),
-            apiCall('/debts'),
+        // Load various stats in parallel using dedicated statistics endpoints where available
+        const [membersRes, contributionsRes, debtsStatsRes, loansStatsRes, eventsRes, announcementsRes, paymentsStatsRes] = await Promise.all([
+            apiCall('/members?limit=100'),  // Get all members with high limit
+            apiCall('/contributions?limit=100'),
+            apiCall('/debts/statistics').catch(() => ({ data: { totalOutstanding: 0 } })),
+            apiCall('/loans/statistics').catch(() => ({ data: { totalOutstanding: 0, totalLoans: 0 } })),
             apiCall('/events'),
             apiCall('/announcements'),
-            apiCall('/payments/stats/summary').catch(() => ({ data: null })) // Gracefully handle if endpoint doesn't exist
+            apiCall('/payments/stats/summary').catch(() => ({ data: null }))
         ]);
         
         const members = membersRes.data || [];
         const contributions = contributionsRes.data || [];
-        const debts = debtsRes.data || [];
+        const debtsStats = debtsStatsRes.data;
+        const loansStats = loansStatsRes.data;
         const events = eventsRes.data || [];
         const announcements = announcementsRes.data || [];
         const paymentsStats = paymentsStatsRes.data;
         
-        // Update DOM elements
+        // Update DOM elements - Total Members (Active only)
         const totalMembersEl = document.querySelector('[data-stat="total-members"]');
-        if (totalMembersEl) totalMembersEl.textContent = members.filter(m => m.status === 'active').length;
+        if (totalMembersEl) {
+            const activeMembers = members.filter(m => m.membershipStatus === 'active').length;
+            totalMembersEl.textContent = activeMembers;
+        }
         
+        // Monthly Contributions
         const contributionsEl = document.querySelector('[data-stat="monthly-contributions"]');
         if (contributionsEl) {
+            const now = new Date();
             const monthlyTotal = contributions
                 .filter(c => {
-                    const date = new Date(c.createdAt);
-                    const now = new Date();
+                    const date = new Date(c.createdAt || c.paymentDate);
                     return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
                 })
-                .reduce((sum, c) => sum + (c.amount || 0), 0);
+                .reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
             contributionsEl.textContent = `Ksh ${monthlyTotal.toLocaleString()}`;
         }
         
+        // Pending Debts - Use loans statistics for total outstanding (sum of all active loans)
         const pendingDebtsEl = document.querySelector('[data-stat="pending-debts"]');
         if (pendingDebtsEl) {
-            const pendingTotal = debts
-                .filter(d => d.status === 'pending')
-                .reduce((sum, d) => sum + (d.amount || 0), 0);
-            pendingDebtsEl.textContent = `Ksh ${pendingTotal.toLocaleString()}`;
+            // Use loans statistics - total outstanding from active/overdue loans
+            const totalOutstanding = loansStats?.totalOutstanding || debtsStats?.totalOutstanding || 0;
+            pendingDebtsEl.textContent = `Ksh ${parseFloat(totalOutstanding).toLocaleString()}`;
         }
         
-        // Update Available Balance from payments stats
+        // Available Balance from payments stats or calculate from contributions
         const balanceEl = document.querySelector('[data-stat="available-balance"]');
         if (balanceEl) {
-            // Try to get balance from payment stats, or calculate from contributions minus withdrawals
             let balance = 0;
             if (paymentsStats && paymentsStats.totalBalance !== undefined) {
                 balance = paymentsStats.totalBalance;
@@ -487,7 +492,7 @@ async function loadDashboardStats() {
                 balance = paymentsStats.balance;
             } else {
                 // Calculate: sum of all contributions - sum of all withdrawals
-                const totalContributions = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+                const totalContributions = contributions.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
                 // Try to get withdrawals total if endpoint exists
                 try {
                     const withdrawalsRes = await apiCall('/withdrawals/summary');
@@ -500,13 +505,15 @@ async function loadDashboardStats() {
             balanceEl.textContent = `Ksh ${balance.toLocaleString()}`;
         }
         
-        // Update Overview Statistics
+        // Update Overview Statistics - Total Registered (all members)
         const totalRegisteredEl = document.querySelector('[data-stat="total-registered"]');
-        if (totalRegisteredEl) totalRegisteredEl.textContent = members.length;
+        if (totalRegisteredEl) {
+            totalRegisteredEl.textContent = members.length;
+        }
         
         const welfarePackagesEl = document.querySelector('[data-stat="welfare-packages"]');
         if (welfarePackagesEl) {
-            // Count welfare-related announcements or use announcements with category 'welfare'
+            // Count welfare-related announcements
             const welfareCount = announcements.filter(a => 
                 (a.category === 'welfare' || a.title?.toLowerCase().includes('welfare'))
             ).length;
@@ -539,10 +546,10 @@ async function loadActivityLog() {
     try {
         // Combine recent contributions, loans, debts, and other activities
         const [contributionsRes, loansRes, debtsRes, membersRes] = await Promise.all([
-            apiCall('/contributions?limit=10'),
+            apiCall('/contributions?limit=10&status=completed'),
             apiCall('/loans?status=pending'),
-            apiCall('/debts'),
-            apiCall('/members')
+            apiCall('/debts?status=pending'),
+            apiCall('/members?limit=100')
         ]);
         
         const activities = [];
@@ -551,7 +558,7 @@ async function loadActivityLog() {
         for (const c of (contributionsRes.data || []).slice(0, 5)) {
             activities.push({
                 type: 'contribution',
-                text: `${c.memberName || 'A member'} contributed Ksh ${(c.amount || 0).toLocaleString()}`,
+                text: `${c.memberName || 'A member'} contributed Ksh ${(parseFloat(c.amount) || 0).toLocaleString()}`,
                 time: c.createdAt,
                 icon: 'fa-money-bill-wave'
             });
@@ -561,7 +568,7 @@ async function loadActivityLog() {
         for (const l of (loansRes.data || []).slice(0, 5)) {
             activities.push({
                 type: 'loan',
-                text: `${l.memberName || 'A member'} requested a loan of Ksh ${(l.amount || 0).toLocaleString()}`,
+                text: `${l.memberName || 'A member'} requested a loan of Ksh ${(parseFloat(l.principalAmount || l.amount) || 0).toLocaleString()}`,
                 time: l.createdAt,
                 icon: 'fa-hand-holding-usd'
             });
@@ -587,7 +594,7 @@ async function loadActivityLog() {
         for (const d of pendingDebts) {
             activities.push({
                 type: 'debt',
-                text: `Debt of Ksh ${(d.amount || 0).toLocaleString()} for ${d.memberName || 'member'}`,
+                text: `Debt of Ksh ${(parseFloat(d.amount) || 0).toLocaleString()} for ${d.memberName || 'member'}`,
                 time: d.createdAt,
                 icon: 'fa-exclamation-triangle'
             });
@@ -623,22 +630,23 @@ function renderActivityLog(activities) {
 // ==================== RECENT CONTRIBUTIONS TABLE ====================
 async function loadRecentContributions() {
     try {
-        const result = await apiCall('/contributions?limit=10');
+        const result = await apiCall('/contributions?limit=10&status=completed');
         
         // Enrich contributions with member data if needed
         const contributions = result.data || [];
         try {
-            const membersRes = await apiCall('/members');
+            const membersRes = await apiCall('/members?limit=100');
             const membersMap = {};
             (membersRes.data || []).forEach(m => {
                 membersMap[m.id] = m;
             });
             // Add studentId if not present
             contributions.forEach(c => {
-                if (!c.memberId_display && c.memberId) {
+                if (!c.memberName && c.memberId) {
                     const member = membersMap[c.memberId];
                     if (member) {
-                        c.memberId_display = member.studentId || c.memberId;
+                        c.memberName = `${member.firstName || ''} ${member.lastName || ''}`.trim();
+                        c.memberId_display = member.memberNumber || c.memberId;
                     }
                 }
             });
@@ -677,37 +685,69 @@ function renderContributionsTable(contributions) {
     table.innerHTML = html;
 }
 
-// ==================== PENDING DEBTS TABLE ====================
+// ==================== PENDING DEBTS TABLE (Now Active Loans) ====================
 async function loadPendingDebts() {
     try {
-        const result = await apiCall('/debts?status=pending');
+        // Load all loans and filter for active/overdue on client side
+        const result = await apiCall('/loans?limit=100');
         
-        // Enrich debts with member data if needed
-        const debts = result.data || [];
+        // Filter for active and overdue loans
+        const allLoans = result.data || [];
+        const activeLoans = allLoans.filter(loan => loan.status === 'active' || loan.status === 'overdue');
+        
+        // Enrich loans with member data if needed
+        const loans = activeLoans;
         try {
-            const membersRes = await apiCall('/members');
+            const membersRes = await apiCall('/members?limit=100');
             const membersMap = {};
             (membersRes.data || []).forEach(m => {
                 membersMap[m.id] = m;
             });
-            // Add memberName and studentId if not present
-            debts.forEach(d => {
-                if (!d.memberName && d.memberId) {
-                    const member = membersMap[d.memberId];
+            // Add memberName and memberNumber if not present
+            loans.forEach(loan => {
+                if (!loan.memberName && loan.memberId) {
+                    const member = membersMap[loan.memberId];
                     if (member) {
-                        d.memberName = `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name;
-                        d.memberId_display = member.studentId || d.memberId;
+                        loan.memberName = `${member.firstName || ''} ${member.lastName || ''}`.trim() || member.name;
+                        loan.memberId_display = member.memberNumber || loan.memberId;
                     }
                 }
             });
         } catch (e) {
-            console.log('Could not fetch member data for debts:', e);
+            console.log('Could not fetch member data for loans:', e);
         }
         
-        renderDebtsTable(debts);
+        renderActiveLoansTable(loans);
     } catch (error) {
-        console.error('Error loading debts:', error);
+        console.error('Error loading active loans:', error);
     }
+}
+
+function renderActiveLoansTable(loans) {
+    const table = document.getElementById('pending-debts-table');
+    if (!table) return;
+    
+    if (!loans || loans.length === 0) {
+        table.innerHTML = '<tr><td colspan="6" class="no-data-message">No active loans</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    for (const l of loans) {
+        const amount = parseFloat(l.principalAmount || l.totalAmount || l.amount || 0);
+        const statusClass = l.status === 'overdue' ? 'overdue' : 'active';
+        html += `
+            <tr>
+                <td>${l.memberName || '-'}</td>
+                <td>${l.memberId_display || l.memberId || '-'}</td>
+                <td>Ksh ${amount.toLocaleString()}</td>
+                <td>${l.purpose || '-'}</td>
+                <td><span class="status-badge ${statusClass}">${l.status || 'Active'}</span></td>
+                <td><button class="btn-small" onclick="viewLoan('${l.id}')">View</button></td>
+            </tr>
+        `;
+    }
+    table.innerHTML = html;
 }
 
 function renderDebtsTable(debts) {
@@ -749,12 +789,13 @@ async function viewDebt(debtId) {
 // ==================== LOAN REQUESTS TABLE ====================
 async function loadLoanRequests() {
     try {
+        // Load pending loan requests
         const result = await apiCall('/loans?status=pending');
         
         // Enrich loans with member data if needed
         const loans = result.data || [];
         try {
-            const membersRes = await apiCall('/members');
+            const membersRes = await apiCall('/members?limit=100');
             const membersMap = {};
             (membersRes.data || []).forEach(m => {
                 membersMap[m.id] = m;
@@ -765,7 +806,7 @@ async function loadLoanRequests() {
                     const member = membersMap[loan.memberId];
                     if (member) {
                         loan.memberName = `${member.firstName || ''} ${member.lastName || ''}`.trim();
-                        loan.memberId_display = member.studentId || loan.memberId;
+                        loan.memberId_display = member.memberNumber || loan.memberId;
                     }
                 }
             });
@@ -794,7 +835,7 @@ function renderLoanRequestsTable(loans) {
             <tr>
                 <td>${l.memberName || '-'}</td>
                 <td>${l.memberId_display || l.memberId || '-'}</td>
-                <td>Ksh ${(l.amount || 0).toLocaleString()}</td>
+                <td>Ksh ${parseFloat(l.principalAmount || l.totalAmount || l.amount || 0).toLocaleString()}</td>
                 <td>${l.purpose || '-'}</td>
                 <td>${l.createdAt ? new Date(l.createdAt).toLocaleDateString() : '-'}</td>
                 <td>
@@ -812,12 +853,13 @@ async function viewLoan(loanId) {
     try {
         const result = await apiCall(`/loans/${loanId}`);
         const loan = result.data;
+        const amount = parseFloat(loan.principalAmount || loan.totalAmount || loan.amount || 0);
         const details = [
             `Loan Details:`,
             ``,
             `Loan Number: ${loan.loanNumber || loan.id}`,
             `Member: ${loan.memberName || 'N/A'}`,
-            `Amount: Ksh ${(loan.amount || 0).toLocaleString()}`,
+            `Amount: Ksh ${amount.toLocaleString()}`,
             `Purpose: ${loan.purpose || 'N/A'}`,
             `Status: ${loan.status || 'Pending'}`,
             `Application Date: ${loan.applicationDate ? new Date(loan.applicationDate).toLocaleDateString() : 'N/A'}`,
@@ -904,7 +946,30 @@ async function loadLoans() {
         
         const result = await apiCall('/loans?' + params.toString());
         loansCache = result.data;
-        renderLoansTable(result.data);
+        
+        // Enrich loans with member data if needed
+        const loans = result.data || [];
+        try {
+            const membersRes = await apiCall('/members?limit=100');
+            const membersMap = {};
+            (membersRes.data || []).forEach(m => {
+                membersMap[m.id] = m;
+            });
+            // Add memberName if not present
+            loans.forEach(loan => {
+                if (!loan.memberName && loan.memberId) {
+                    const member = membersMap[loan.memberId];
+                    if (member) {
+                        loan.memberName = `${member.firstName || ''} ${member.lastName || ''}`.trim();
+                        loan.memberId_display = member.memberNumber || loan.memberId;
+                    }
+                }
+            });
+        } catch (e) {
+            console.log('Could not fetch member data for loans:', e);
+        }
+        
+        renderLoansTable(loans);
     } catch (error) {
         console.error('Error loading loans:', error);
         document.getElementById('loans-table').innerHTML = 
@@ -925,7 +990,7 @@ function renderLoansTable(loans) {
         <tr>
             <td><strong>${loan.loanNumber || loan.id}</strong></td>
             <td>${loan.memberName || 'N/A'}</td>
-            <td>Ksh ${parseFloat(loan.amount || 0).toLocaleString()}</td>
+            <td>Ksh ${parseFloat(loan.principalAmount || loan.totalAmount || loan.amount || 0).toLocaleString()}</td>
             <td>${loan.purpose || 'N/A'}</td>
             <td>${new Date(loan.applicationDate || loan.createdAt).toLocaleDateString()}</td>
             <td><span class="status ${getLoanStatusClass(loan.status)}">${formatLoanStatus(loan.status)}</span></td>
