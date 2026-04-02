@@ -383,7 +383,7 @@ class MembersSavings {
         });
     }
 
-    handleLogout() {
+    async handleLogout() {
         if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../../index.html';

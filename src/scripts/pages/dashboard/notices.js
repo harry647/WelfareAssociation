@@ -8,12 +8,7 @@
 import { noticeService } from '../../../services/notice-service.js';
 
 
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
-
-import { showAlert } from '../../../utils/utility-functions.js';
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
+import { showAlert, showConfirm, showPrompt } from '../../../utils/utility-functions.js';
 class Notices {
     constructor() {
         this.notices = [];
@@ -390,8 +385,8 @@ class Notices {
         `).join('');
     }
 
-    handleLogout() {
-        if (await showConfirm(Are you sure you want to logout?)) {
+    async handleLogout() {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
@@ -468,15 +463,15 @@ function editNotice(id) {
     window.location.href = `create-notice.html?id=${id}`;
 }
 
-function cancelNotice(id) {
-    if (await showConfirm(Are you sure you want to cancel this scheduled notice?)) {
+async function cancelNotice(id) {
+    if (await showConfirm('Are you sure you want to cancel this scheduled notice?')) {
         console.log('Cancel notice:', id);
         // Implement cancel notice functionality
     }
 }
 
-function publishNotice(id) {
-    if (await showConfirm(Are you sure you want to publish this draft notice?)) {
+async function publishNotice(id) {
+    if (await showConfirm('Are you sure you want to publish this draft notice?')) {
         console.log('Publish notice:', id);
         // Implement publish notice functionality
     }

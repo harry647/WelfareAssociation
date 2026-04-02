@@ -11,13 +11,7 @@
 import { authService, documentService, policyService } from '../../../services/index.js';
 
 
-import { showAlert } from '../../../utils/utility-functions.js';
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
-
-import { showAlert } from '../../../utils/utility-functions.js';
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
+import { showAlert, showConfirm, showPrompt } from '../../../utils/utility-functions.js';
 /**
  * Documentation Class
  * Manages the documentation dashboard page
@@ -600,8 +594,8 @@ class Documentation {
     /**
      * Handle logout
      */
-    handleLogout() {
-        if (await showConfirm(Are you sure you want to logout?)) {
+    async handleLogout() {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
@@ -617,7 +611,7 @@ class Documentation {
      */
     async handleRequest(requestId, status) {
         try {
-            const confirmed = await showConfirm(Are you sure you want to ${status} this request?);
+            const confirmed = await showConfirm(`Are you sure you want to ${status} this request?`);
             if (!confirmed) return;
 
             const response = await documentService.updateRequestStatus(requestId, status);

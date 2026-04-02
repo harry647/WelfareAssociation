@@ -485,8 +485,8 @@ class SecuritySettings {
         showAlert(`Two-factor authentication ${enabled ? 'enabled' : 'disabled'} successfully!`, 'Information', 'info');
     }
 
-    handleLogout() {
-        if (await showConfirm(Are you sure you want to logout?)) {
+    async handleLogout() {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
@@ -573,10 +573,10 @@ class SecuritySettings {
             if (data.success) {
                 showAlert('M-Pesa settings saved successfully!', 'Information', 'info');
             } else {
-                showAlert(`Error: ` + data.message);
+                showAlert(`Error: ${data.message}`, 'Error', 'error');
             }
-        } catch (error, 'Information', 'info') {
-            showAlert(`Error saving settings: ` + error.message);
+        } catch (error) {
+            showAlert(`Error saving settings: ${error.message}`, 'Error', 'error');
         }
     }
     
@@ -601,12 +601,12 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                showAlert('Stripe settings saved successfully!', 'Information', 'info', 'Information', 'info');
+                showAlert('Stripe settings saved successfully!', 'Information', 'info');
             } else {
-                showAlert(`Error: ` + data.message);
+                showAlert(`Error: ${data.message}`, 'Error', 'error');
             }
-        } catch (error, 'Information', 'info') {
-            showAlert(`Error saving settings: ` + error.message);
+        } catch (error) {
+            showAlert(`Error saving settings: ${error.message}`, 'Error', 'error');
         }
     }
     
@@ -632,12 +632,12 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                showAlert('Bank settings saved successfully!', 'Information', 'info', 'Information', 'info');
+                showAlert('Bank settings saved successfully!', 'Information', 'info');
             } else {
-                showAlert(`Error: ` + data.message);
+                showAlert(`Error: ${data.message}`, 'Error', 'error');
             }
-        } catch (error, 'Information', 'info') {
-            showAlert(`Error saving settings: ` + error.message);
+        } catch (error) {
+            showAlert(`Error saving settings: ${error.message}`, 'Error', 'error');
         }
     }
     
@@ -653,12 +653,12 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                showAlert('C2B callback registered!', 'Information', 'info', 'Information', 'info');
+                showAlert('C2B callback registered!', 'Information', 'info');
             } else {
-                showAlert(`Error: ` + data.message);
+                showAlert(`Error: ${data.message}`, 'Error', 'error');
             }
-        } catch (error, 'Information', 'info') {
-            showAlert(`Error: ` + error.message);
+        } catch (error) {
+            showAlert(`Error: ${error.message}`, 'Error', 'error');
         }
     }
 }

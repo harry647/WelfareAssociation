@@ -163,7 +163,7 @@ class ContributionsHistory {
         if (pendingCard) pendingCard.textContent = pendingContributions;
     }
 
-    handleLogout() {
+    async handleLogout() {
         if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');

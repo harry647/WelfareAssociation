@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function initLogout() {
     const logoutBtn = document.querySelector('.logout-btn-header');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            if (await showConfirm(Are you sure you want to logout?)) {
+        logoutBtn.addEventListener('click', async () => {
+            if (await showConfirm('Are you sure you want to logout?')) {
                 sessionStorage.clear();
                 localStorage.removeItem('swa_auth_token');
                 localStorage.removeItem('swa_refresh_token');

@@ -406,7 +406,7 @@ class MemberPaymentHistory {
         return statusMap[status] || status || 'Unknown';
     }
 
-    handleLogout() {
+    async handleLogout() {
         if (await showConfirm('Are you sure you want to logout?')) {
             authService.logout();
             window.location.href = '../auth/login-page.html';

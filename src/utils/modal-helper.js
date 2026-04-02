@@ -376,4 +376,3 @@ window.modalHelper = modalHelper;
 
 // Export for module usage
 export default modalHelper;
-export { ModalHelper };

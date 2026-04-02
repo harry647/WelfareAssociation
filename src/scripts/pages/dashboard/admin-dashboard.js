@@ -1,11 +1,4 @@
-import { showAlert } from '../../../utils/utility-functions.js';
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
-
-
-import { showAlert } from '../../../utils/utility-functions.js';
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
+import { showAlert, showConfirm, showPrompt } from '../../../utils/utility-functions.js';
 /**
  * Admin Dashboard JavaScript
  * Handles all functionality for the admin dashboard including page management and HTML editing
@@ -360,14 +353,14 @@ function editContentItem(id) {
 }
 
 async function deleteContentItem(id) {
-    if (!await showConfirm(Are you sure you want to delete this content?)) return;
+    if (!await showConfirm('Are you sure you want to delete this content?')) return;
     
     try {
         await apiCall(`/page-content/${id}`, { method: 'DELETE' });
         const pagePath = document.querySelector('#selectedPageName').textContent;
         await loadPageContent(pagePath);
-    } catch (error, 'Information', 'info') {
-        showAlert(`Error deleting content: ` + error.message);
+    } catch (error) {
+        showAlert(`Error deleting content: ${error.message}`, 'Error', 'error');
     }
 }
 
@@ -424,19 +417,19 @@ async function viewMessage(messageId) {
         }
     } catch (error) {
         console.error('Error viewing message:', error);
-        showAlert(`Failed to load message: ` + error.message);
+        showAlert(`Failed to load message: ${error.message}`, 'Error', 'error');
     }
 }
 
 async function deleteMessage(messageId) {
-    if (!await showConfirm(Are you sure you want to delete this message?)) return;
+    if (!await showConfirm('Are you sure you want to delete this message?')) return;
     
     try {
         await apiCall(`/contact/${messageId}`, { method: 'DELETE' });
         loadMessages(); // Reload the messages list
     } catch (error) {
-        console.error('Error deleting message:', error, 'Information', 'info');
-        showAlert(`Failed to delete message: ` + error.message);
+        console.error('Error deleting message:', error);
+        showAlert(`Failed to delete message: ${error.message}`, 'Error', 'error');
     }
 }
 
@@ -478,7 +471,7 @@ async function loadDashboardStats() {
                     const date = new Date(c.createdAt || c.paymentDate);
                     return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
                 })
-                .reduce((sum, c, 'Information', 'info') => sum + (parseFloat(c.amount) || 0), 0);
+                .reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
             contributionsEl.textContent = `Ksh ${monthlyTotal.toLocaleString()}`;
         }
         
@@ -838,7 +831,7 @@ function renderLoanRequestsTable(loans) {
     }
     
     let html = '';
-    for (const l of loans, 'Information', 'info') {
+    for (const l of loans) {
         html += `
             <tr>
                 <td>${l.memberName || '-'}</td>
@@ -1061,7 +1054,7 @@ async function viewLoanDetails(loanId) {
 }
 
 async function approveLoan(loanId) {
-    if (!await showConfirm(Are you sure you want to approve this loan?)) return;
+    if (!await showConfirm('Are you sure you want to approve this loan?')) return;
     
     try {
         await apiCall(`/loans/${loanId}/approve`, { method: 'POST' });
@@ -1069,12 +1062,12 @@ async function approveLoan(loanId) {
         loadLoans(); // Reload the loans list
     } catch (error) {
         console.error('Error approving loan:', error);
-        showAlert(`Failed to approve loan: ` + error.message);
+        showAlert(`Failed to approve loan: ${error.message}`, 'Error', 'error');
     }
 }
 
 async function rejectLoan(loanId) {
-    const reason = await showPrompt(Please provide a reason for rejecting this loan:);
+    const reason = await showPrompt('Please provide a reason for rejecting this loan:');
     if (reason === null) return; // User cancelled
     
     try {

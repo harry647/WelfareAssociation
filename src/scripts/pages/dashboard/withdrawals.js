@@ -9,9 +9,6 @@
 // Import services
 import { authService, withdrawalService, memberService, apiService, API_CONFIG } from '../../../services/index.js';
 import { showNotification, formatDate, formatCurrency, showPrompt, showConfirm } from '../../../utils/utility-functions.js';
-
-
-import { showConfirm } from '../../../utils/utility-functions.js';
 class Withdrawals {
     constructor() {
         this.withdrawals = [];

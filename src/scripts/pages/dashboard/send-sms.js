@@ -75,8 +75,8 @@ class SendSMS {
         window.location.href = '../admin/admin-dashboard.html';
     }
 
-    handleLogout() {
-        if (await showConfirm(Are you sure you want to logout?)) {
+    async handleLogout() {
+        if (await showConfirm('Are you sure you want to logout?')) {
             sessionStorage.clear();
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');

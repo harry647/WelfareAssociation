@@ -506,7 +506,7 @@ async function bulkAction(action) {
     
     if (selectedIds.length === 0) return;
     
-    const confirmed = await showConfirm(Are you sure you want to ${action} ${selectedIds.length} loan(s)?);
+    const confirmed = await showConfirm(`Are you sure you want to ${action} ${selectedIds.length} loan(s)?`);
     if (!confirmed) return;
     
     try {
@@ -598,7 +598,7 @@ function exportData(format, selectedIds = null) {
 }
 
 async function sendManualReminders() {
-    const confirmed = await showConfirm(Send payment reminders to all borrowers with overdue loans?);
+    const confirmed = await showConfirm('Send payment reminders to all borrowers with overdue loans?');
     if (!confirmed) return;
     
     try {
@@ -615,8 +615,8 @@ async function sendManualReminders() {
     }
 }
 
-function toggleAutoReminders() {
-    const confirmed = await showConfirm(Enable automatic payment reminders?);
+async function toggleAutoReminders() {
+    const confirmed = await showConfirm('Enable automatic payment reminders?');
     if (!confirmed) return;
     
     try {
@@ -684,7 +684,7 @@ async function handleLoanAction(action) {
     const loanId = window.currentSelectedLoanId;
     if (!loanId) return;
     
-    const confirmed = await showConfirm(Are you sure you want to ${action} this loan?);
+    const confirmed = await showConfirm(`Are you sure you want to ${action} this loan?`);
     if (!confirmed) return;
     
     try {

@@ -6,7 +6,7 @@
  */
 
 /* Base styles and resets */
-@import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;600;700&display=swap');
+/* Arial is a system font, no need to import from Google Fonts */
 
 /* CSS Variables */
 :root {
