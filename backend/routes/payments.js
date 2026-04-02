@@ -1020,34 +1020,14 @@ router.post('/submit', auth, [
                 }
             }
             
-            // For bereavement payments, try to find an active bereavement for the member
-            // If no active bereavement for paying member, search for any active bereavement
-            if (type === 'bereavement' && !relatedToId) {
-                const Bereavement = getModel('Bereavement');
-                let bereavement = await Bereavement.findOne({
-                    where: {
-                        memberId: payment.memberId,
-                        status: 'active'
-                    }
-                });
-                
-                // If no active bereavement for this member, search for any active bereavement
-                // (member might be contributing to another member's bereavement)
-                if (!bereavement) {
-                    bereavement = await Bereavement.findOne({
-                        where: {
-                            status: 'active'
-                        },
-                        order: [['createdAt', 'ASC']]
-                    });
-                }
-                
-                if (bereavement) {
-                    relatedToId = bereavement.id;
-                    console.log(`Found active bereavement ${bereavement.id} for payment`);
-                } else {
-                    console.log(`No active bereavement found in system for bereavement payment`);
-                }
+            // For fine payments, also check if fine was selected in form
+            if (type === 'fine' && !relatedToId && payment.fine) {
+                relatedToId = payment.fine; // Use the fine object directly
+            }
+            
+            // For event payments, also check if event was selected in form
+            if (type === 'event' && !relatedToId && payment.event) {
+                relatedToId = payment.event; // Use the event object directly
             }
             
             if (relatedToId) {

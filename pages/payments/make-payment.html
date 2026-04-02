@@ -235,6 +235,16 @@
                     <small class="form-hint">Choose a bereavement case to support</small>
                 </div>
                 
+                <!-- Fine Selection (for fine payments) -->
+                <div class="form-group" id="fineGroup" style="display: none;">
+                    <label for="fineSelect">Select Fine <span class="required">*</span></label>
+                    <select id="fineSelect" name="fineSelect">
+                        <option value="">Select Fine</option>
+                        <!-- Fines will be populated dynamically from database -->
+                    </select>
+                    <small class="form-hint">Choose a fine to pay</small>
+                </div>
+                
                 <!-- Loan Balance Display (for loan repayments) -->
                 <div class="form-group" id="loanBalanceGroup" style="display: none;">
                     <label for="loanBalance">Outstanding Loan Balance</label>

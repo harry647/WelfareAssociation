@@ -342,6 +342,7 @@ class PaymentManager {
         this.generateReferenceNumber();
         this.loadEvents(); // Load events from database
         this.loadBereavements(); // Load bereavement cases from database
+        this.loadFines(); // Load fines from database
         this.prefillUserData();
         this.updateFormForCategory();
         
@@ -371,6 +372,8 @@ class PaymentManager {
         this.eventSelect = document.getElementById('eventSelect');
         this.bereavementGroup = document.getElementById('bereavementGroup');
         this.bereavementSelect = document.getElementById('bereavementSelect');
+        this.fineGroup = document.getElementById('fineGroup');
+        this.fineSelect = document.getElementById('fineSelect');
         this.loanBalanceGroup = document.getElementById('loanBalanceGroup');
         this.loanBalance = document.getElementById('loanBalance');
         this.recurringGroup = document.getElementById('recurringGroup');
@@ -410,6 +413,9 @@ class PaymentManager {
 
         // Bereavement selection change
         this.bereavementSelect?.addEventListener('change', (e) => this.handleBereavementChange(e));
+
+        // Fine selection change
+        this.fineSelect?.addEventListener('change', (e) => this.handleFineChange(e));
 
         // Student ID change (for loan balance lookup)
         this.studentId?.addEventListener('change', () => this.fetchLoanBalance());
@@ -600,6 +606,83 @@ class PaymentManager {
     }
 
     /**
+     * Load fines from database and populate dropdown
+     */
+    async loadFines() {
+        try {
+            console.log('Loading fines from database...');
+            
+            const response = await fetch(`${this.config.apiBaseUrl}/fines`);
+            if (!response.ok) {
+                throw new Error('Failed to load fines');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                this.populateFineDropdown(result.data);
+                console.log(`Loaded ${result.data.length} fines`);
+            } else {
+                console.warn('No fines found or API error:', result.message);
+                // Keep empty dropdown as fallback
+            }
+        } catch (error) {
+            console.error('Error loading fines:', error);
+            // Keep empty dropdown as fallback
+        }
+    }
+
+    /**
+     * Populate fine dropdown with database fines
+     */
+    populateFineDropdown(fines) {
+        if (!this.fineSelect) return;
+        
+        // Clear existing options except the first one
+        const firstOption = this.fineSelect.querySelector('option[value=""]');
+        this.fineSelect.innerHTML = '';
+        if (firstOption) {
+            this.fineSelect.appendChild(firstOption);
+        }
+        
+        // Add fines from database
+        fines.forEach(fine => {
+            const option = document.createElement('option');
+            option.value = fine.id; // Use UUID as value
+            option.textContent = `${fine.fineNumber || fine.description} - Ksh ${fine.amount}`;
+            option.dataset.amount = fine.amount;
+            option.dataset.fineNumber = fine.fineNumber;
+            option.dataset.description = fine.description;
+            option.dataset.member = fine.member?.firstName + ' ' + fine.member?.lastName || '';
+            this.fineSelect.appendChild(option);
+        });
+        
+        console.log(`Populated fine dropdown with ${fines.length} fines`);
+    }
+
+    /**
+     * Handle fine selection change
+     */
+    handleFineChange(e) {
+        // Store fine ID for payment linking
+        this.currentFineId = e.target.value;
+        console.log('Selected fine ID:', this.currentFineId);
+        
+        // Update hint and amount with selected fine info
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const amount = selectedOption?.dataset?.amount;
+        const description = selectedOption?.dataset?.description;
+        
+        if (amount && this.amount) {
+            this.setAmount(parseFloat(amount));
+        }
+        
+        if (description) {
+            this.updateHint(`Fine: ${description}`);
+        }
+    }
+
+    /**
      * Generate unique reference number
      * Format: SWA-YYYY-XXXXXX
      */
@@ -679,8 +762,9 @@ class PaymentManager {
                 break;
                 
             case 'fine':
+                this.showElement(this.fineGroup);
                 this.setMinAmount(this.config.minAmounts.fine);
-                this.updateHint('Enter fine amount');
+                this.updateHint('Select a fine to pay');
                 break;
                 
             case 'registration':
@@ -968,6 +1052,7 @@ class PaymentManager {
             transactionId: formData.get('transactionId'),
             event: formData.get('eventSelect'),
             bereavement: formData.get('bereavementSelect'),
+            fine: formData.get('fineSelect'),
             paymentSchedule: formData.get('paymentSchedule'),
             notes: formData.get('notes'),
             status: 'pending',
@@ -985,6 +1070,11 @@ class PaymentManager {
             case 'event':
                 if (this.currentEventId && typeof this.currentEventId === 'string') {
                     data.relatedTo = this.currentEventId;
+                }
+                break;
+            case 'fine':
+                if (this.currentFineId && typeof this.currentFineId === 'string') {
+                    data.relatedTo = this.currentFineId;
                 }
                 break;
             case 'bereavement':
@@ -1041,6 +1131,11 @@ class PaymentManager {
         // Validate bereavement selection for bereavement category
         if (category === 'bereavement' && !this.bereavementSelect?.value) {
             errors.push('Please select a bereavement case');
+        }
+        
+        // Validate fine selection for fine category
+        if (category === 'fine' && !this.fineSelect?.value) {
+            errors.push('Please select a fine');
         }
         
         if (errors.length > 0) {
@@ -1324,6 +1419,7 @@ class PaymentManager {
     hideAllDynamicGroups() {
         this.hideElement(this.eventGroup);
         this.hideElement(this.bereavementGroup);
+        this.hideElement(this.fineGroup);
         this.hideElement(this.loanBalanceGroup);
         this.hideElement(this.recurringGroup);
         this.hideElement(this.uploadProofGroup);
