@@ -110,6 +110,9 @@ class PaymentManager {
                 // Update bank details in instructions
                 this.updateBankDetails(config.bank || {});
                 
+                // Update M-Pesa paybill details
+                this.updateMpesaDetails(config.mpesa || {});
+                
                 // Disable unavailable payment methods
                 this.updateAvailableMethods(config.availableMethods || []);
             }
@@ -143,6 +146,19 @@ class PaymentManager {
         const bankAccountNameElements = document.querySelectorAll('[data-bank-account-name]');
         bankAccountNameElements.forEach(el => {
             if (accountName || bankConfig.accountName) el.textContent = accountName || bankConfig.accountName;
+        });
+    }
+    
+    /**
+     * Update M-Pesa paybill details in the payment form instructions
+     */
+    updateMpesaDetails(mpesaConfig) {
+        if (!mpesaConfig || !mpesaConfig.enabled) return;
+        
+        // Update M-Pesa paybill in instructions
+        const mpesaPaybillElements = document.querySelectorAll('[data-mpesa-paybill]');
+        mpesaPaybillElements.forEach(el => {
+            if (mpesaConfig.paybill) el.textContent = mpesaConfig.paybill;
         });
     }
     

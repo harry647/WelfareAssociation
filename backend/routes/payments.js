@@ -161,7 +161,8 @@ router.get('/config', auth, async (req, res) => {
             availableMethods: [],
             mpesa: {
                 enabled: !!(paymentConfig.mpesa.consumerKey && paymentConfig.mpesa.consumerKey !== 'your_mpesa_consumer_key_here'),
-                shortcode: paymentConfig.mpesa.shortcode || '123456'
+                shortcode: paymentConfig.mpesa.shortcode || '123456',
+                paybill: paymentConfig.mpesa.paybill || '123456'
             },
             stripe: {
                 enabled: !!(paymentConfig.stripe.publicKey && paymentConfig.stripe.publicKey.startsWith('pk_')),
