@@ -36,7 +36,7 @@ async function createTestMembers() {
                 lastName: 'Doe',
                 email: 'john.doe@test.com',
                 phone: '+254712345678',
-                membershipType: 'student',
+                membershipType: 'Student',
                 membershipStatus: 'active'
             },
             {
@@ -44,7 +44,7 @@ async function createTestMembers() {
                 lastName: 'Smith',
                 email: 'jane.smith@test.com',
                 phone: '+254723456789',
-                membershipType: 'student',
+                membershipType: 'Student',
                 membershipStatus: 'active'
             },
             {
@@ -52,7 +52,7 @@ async function createTestMembers() {
                 lastName: 'Wilson',
                 email: 'bob.wilson@test.com',
                 phone: '+254734567890',
-                membershipType: 'alumni',
+                membershipType: 'Alumni',
                 membershipStatus: 'active'
             }
         ];

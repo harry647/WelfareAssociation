@@ -151,7 +151,7 @@ class Members {
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
             localStorage.removeItem('swa_user');
-            window.location.href = '../../index.html';
+            window.location.href = '/index.html';
         }
     }
 

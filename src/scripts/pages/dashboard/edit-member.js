@@ -18,13 +18,13 @@ class EditMember {
 
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../../auth/login-page.html';
+            window.location.href = '/pages/auth/login-page.html';
             return false;
         }
         
         const user = authService.getCurrentUser();
         if (!user || user.role !== 'admin') {
-            window.location.href = '../../auth/login-page.html';
+            window.location.href = '/pages/auth/login-page.html';
             return false;
         }
         return true;
@@ -72,7 +72,7 @@ class EditMember {
         
         if (!memberId) {
             alert('No member ID provided');
-            window.location.href = 'members.html';
+            window.location.href = '/pages/dashboard/shared/members.html';
             return;
         }
 
@@ -98,8 +98,8 @@ class EditMember {
             email: 'vincent@joust.ac.ke',
             phone: '+254712345678',
             dateOfBirth: '1995-06-15',
-            gender: 'Male',
-            membershipType: 'Regular',
+            gender: 'male',
+            membershipType: 'regular',
             membershipStatus: 'active',
             joinDate: '2024-01-15',
             address: '123 Campus Road, JOOUST',
@@ -124,13 +124,17 @@ class EditMember {
         document.getElementById('lastName').value = this.member.lastName || '';
         document.getElementById('email').value = this.member.email || '';
         document.getElementById('phone').value = this.member.phone || '';
-        document.getElementById('dateOfBirth').value = this.member.dateOfBirth || '';
+        document.getElementById('dateOfBirth').value = this.member.dateOfBirth ? 
+            new Date(this.member.dateOfBirth).toISOString().split('T')[0] : '';
         document.getElementById('gender').value = this.member.gender || '';
-        document.getElementById('address').value = this.member.address || '';
+        document.getElementById('address').value = 
+            (typeof this.member.address === 'string' ? this.member.address : 
+             this.member.address?.fullAddress || this.member.address || '');
         document.getElementById('memberNumber').value = this.member.memberNumber || '';
-        document.getElementById('membershipType').value = this.member.membershipType || 'Regular';
+        document.getElementById('membershipType').value = this.member.membershipType || 'regular';
         document.getElementById('membershipStatus').value = this.member.membershipStatus || 'active';
-        document.getElementById('joinDate').value = this.member.joinDate || '';
+        document.getElementById('joinDate').value = this.member.joinDate ? 
+            new Date(this.member.joinDate).toISOString().split('T')[0] : '';
 
         // Emergency Contact
         if (this.member.emergencyContact) {
@@ -150,6 +154,8 @@ class EditMember {
     async handleSubmit(e) {
         e.preventDefault();
 
+        const addressValue = document.getElementById('address').value;
+        
         const formData = {
             firstName: document.getElementById('firstName').value,
             lastName: document.getElementById('lastName').value,
@@ -157,7 +163,7 @@ class EditMember {
             phone: document.getElementById('phone').value,
             dateOfBirth: document.getElementById('dateOfBirth').value,
             gender: document.getElementById('gender').value,
-            address: document.getElementById('address').value,
+            address: addressValue ? { fullAddress: addressValue } : null,
             membershipType: document.getElementById('membershipType').value,
             membershipStatus: document.getElementById('membershipStatus').value,
             emergencyContact: {
@@ -173,15 +179,19 @@ class EditMember {
         };
 
         try {
-            // In a real app, you would call the API to update
-            // await memberService.updateMember(this.memberId, formData);
+            // Call API to update member
+            await memberService.updateMember(this.memberId, formData);
             
-            // For demo, just show success
-            alert('Member updated successfully!');
-            window.location.href = `member-details.html?id=${this.memberId}`;
+            // Show success notification
+            showNotification('Member updated successfully!', 'success');
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = '/pages/dashboard/admin/member-details.html?id=' + this.memberId;
+            }, 1500);
         } catch (error) {
             console.error('Failed to update member:', error);
-            alert('Failed to update member. Please try again.');
+            showNotification('Failed to update member. Please try again.', 'error');
         }
     }
 
@@ -191,7 +201,7 @@ class EditMember {
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
             localStorage.removeItem('swa_user');
-            window.location.href = '../../index.html';
+            window.location.href = '/index.html';
         }
     }
 }

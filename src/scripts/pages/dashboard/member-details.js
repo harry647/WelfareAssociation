@@ -18,13 +18,13 @@ class MemberDetails {
 
     async checkAuth() {
         if (!authService.isAuthenticated()) {
-            window.location.href = '../../auth/login-page.html';
+            window.location.href = '/pages/auth/login-page.html';
             return false;
         }
         
         const user = authService.getCurrentUser();
         if (!user || user.role !== 'admin') {
-            window.location.href = '../../auth/login-page.html';
+            window.location.href = '/pages/auth/login-page.html';
             return false;
         }
         return true;
@@ -118,7 +118,7 @@ class MemberDetails {
             phone: '+254712345678',
             dateOfBirth: '1995-06-15',
             gender: 'Male',
-            membershipType: 'Regular',
+            membershipType: 'regular',
             membershipStatus: 'active',
             joinDate: '2024-01-15',
             address: '123 Campus Road, JOOUST',
@@ -189,7 +189,7 @@ class MemberDetails {
                             </div>
                             <div class="info-item">
                                 <label>Address</label>
-                                <span>${this.member.address || 'N/A'}</span>
+                                <span>${typeof this.member.address === 'object' ? this.member.address?.fullAddress || this.member.address?.street || JSON.stringify(this.member.address) : this.member.address || 'N/A'}</span>
                             </div>
                         </div>
                     </div>
@@ -203,7 +203,7 @@ class MemberDetails {
                             </div>
                             <div class="info-item">
                                 <label>Membership Type</label>
-                                <span>${this.member.membershipType || 'Regular'}</span>
+                                <span>${this.member.membershipType || 'regular'}</span>
                             </div>
                             <div class="info-item">
                                 <label>Join Date</label>
@@ -264,7 +264,7 @@ class MemberDetails {
     }
 
     editMember() {
-        window.location.href = `edit-member.html?id=${this.memberId}`;
+        window.location.href = '/pages/dashboard/admin/edit-member.html?id=' + this.memberId;
     }
 
     async deleteMember() {
@@ -273,19 +273,21 @@ class MemberDetails {
         }
 
         try {
-            // In a real app, you would call an API to delete the member
-            // await memberService.deleteMember(this.memberId);
-            alert('Member deleted successfully!');
-            window.location.href = 'members.html';
+            // Call API to delete the member
+            await memberService.deleteMember(this.memberId);
+            showNotification('Member deleted successfully!', 'success');
+            setTimeout(() => {
+                window.location.href = '/pages/dashboard/shared/members.html';
+            }, 1500);
         } catch (error) {
             console.error('Failed to delete member:', error);
-            alert('Failed to delete member. Please try again.');
+            showNotification('Failed to delete member. Please try again.', 'error');
         }
     }
 
     viewContributions() {
         // Navigate to contributions page with member filter
-        window.location.href = `../contributions/history.html?memberId=${this.memberId}`;
+        window.location.href = '/pages/dashboard/member/member-contribution-history.html?memberId=' + this.memberId;
     }
 
     handleLogout() {
@@ -294,7 +296,7 @@ class MemberDetails {
             localStorage.removeItem('swa_auth_token');
             localStorage.removeItem('swa_refresh_token');
             localStorage.removeItem('swa_user');
-            window.location.href = '../../index.html';
+            window.location.href = '/index.html';
         }
     }
 }

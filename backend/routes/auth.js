@@ -83,7 +83,13 @@ router.post('/register', [
             lastName,
             email,
             phone,
-            memberNumber: `SWA${Date.now()}`
+            memberNumber: `SWA${Date.now()}`,
+            gender: 'Other',
+            membershipType: 'regular',
+            membershipStatus: 'active',
+            address: {},
+            emergencyContact: {},
+            nextOfKin: {}
         });
 
         // Link member to user
@@ -313,7 +319,7 @@ router.get('/profile', auth, async (req, res) => {
                     lastName: 'User',
                     email: process.env.ADMIN_EMAIL || 'admin@swa.org',
                     phone: process.env.ADMIN_PHONE || '+254700000000',
-                    membershipType: 'staff',
+                    membershipType: 'Staff',
                     membershipStatus: 'active',
                     totalContributions: 0,
                     totalLoans: 0,

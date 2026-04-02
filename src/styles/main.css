@@ -197,12 +197,48 @@ input:focus, textarea:focus, select:focus {
     font-size: 14px;
     z-index: 10000;
     animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 280px;
+    max-width: 400px;
 }
 
-.notification-success { background-color: var(--success-color); }
-.notification-error { background-color: var(--error-color); }
-.notification-warning { background-color: var(--warning-color); color: #000; }
-.notification-info { background-color: var(--info-color); }
+.notification::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 16px;
+}
+
+.notification-success { 
+    background-color: var(--success-color); 
+}
+.notification-success::before {
+    content: '\f00c'; /* check mark */
+}
+
+.notification-error { 
+    background-color: var(--error-color); 
+}
+.notification-error::before {
+    content: '\f00d'; /* x mark */
+}
+
+.notification-warning { 
+    background-color: var(--warning-color); 
+    color: #000;
+}
+.notification-warning::before {
+    content: '\f071'; /* warning */
+}
+
+.notification-info { 
+    background-color: var(--info-color); 
+}
+.notification-info::before {
+    content: '\f129'; /* info circle */
+}
 
 /* Responsive utilities */
 @media (max-width: 768px) {

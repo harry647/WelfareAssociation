@@ -196,10 +196,25 @@ router.post('/', auth, authorize('admin'), [
     body('lastName').notEmpty().trim(),
     body('email').isEmail(),
     body('phone').optional().trim(),
+    body('gender').optional().isIn(['male', 'female', 'other']),
+    body('membershipType').optional().isIn(['regular', 'student', 'staff', 'alumni', 'honorary']),
+    body('membershipStatus').optional().isIn(['active', 'inactive', 'suspended', 'archived']),
     validate
 ], async (req, res) => {
     try {
-        const { firstName, lastName, email, phone, dateOfBirth, gender, address, membershipType } = req.body;
+        const { 
+            firstName, 
+            lastName, 
+            email, 
+            phone, 
+            dateOfBirth, 
+            gender, 
+            address, 
+            membershipType, 
+            membershipStatus,
+            emergencyContact,
+            nextOfKin
+        } = req.body;
 
         // Check if email exists
         const existingMember = await Member.findOne({ where: { email } });
@@ -210,6 +225,16 @@ router.post('/', auth, authorize('admin'), [
             });
         }
 
+        // Handle address field - convert string to JSON if needed
+        let addressData = {};
+        if (address) {
+            if (typeof address === 'string') {
+                addressData = { fullAddress: address };
+            } else {
+                addressData = address;
+            }
+        }
+
         const member = await Member.create({
             userId: req.user.id,
             firstName,
@@ -217,9 +242,12 @@ router.post('/', auth, authorize('admin'), [
             email,
             phone,
             dateOfBirth,
-            gender,
-            address,
-            membershipType
+            gender: gender || 'Other',
+            address: addressData,
+            membershipType: membershipType || 'regular',
+            membershipStatus: membershipStatus || 'active',
+            emergencyContact: emergencyContact || {},
+            nextOfKin: nextOfKin || {}
         });
 
         res.status(201).json({
@@ -228,9 +256,11 @@ router.post('/', auth, authorize('admin'), [
             data: member
         });
     } catch (error) {
+        console.error('Error creating member:', error);
         res.status(500).json({
             success: false,
-            message: 'Error creating member'
+            message: 'Error creating member',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
@@ -239,9 +269,28 @@ router.post('/', auth, authorize('admin'), [
  * PUT /api/members/:id
  * Update member
  */
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, [
+    body('firstName').optional().notEmpty().trim(),
+    body('lastName').optional().notEmpty().trim(),
+    body('phone').optional().trim(),
+    body('gender').optional().isIn(['male', 'female', 'other']),
+    body('membershipType').optional().isIn(['regular', 'student', 'staff', 'alumni', 'honorary']),
+    body('membershipStatus').optional().isIn(['active', 'inactive', 'suspended', 'archived']),
+    validate
+], async (req, res) => {
     try {
-        const { firstName, lastName, phone, dateOfBirth, gender, address, emergencyContact, nextOfKin } = req.body;
+        const { 
+            firstName, 
+            lastName, 
+            phone, 
+            dateOfBirth, 
+            gender, 
+            address, 
+            membershipType,
+            membershipStatus,
+            emergencyContact, 
+            nextOfKin 
+        } = req.body;
 
         const member = await Member.findByPk(req.params.id);
         if (!member) {
@@ -266,7 +315,18 @@ router.put('/:id', auth, async (req, res) => {
         if (phone) member.phone = phone;
         if (dateOfBirth) member.dateOfBirth = dateOfBirth;
         if (gender) member.gender = gender;
-        if (address) member.address = address;
+        if (membershipType) member.membershipType = membershipType;
+        if (membershipStatus) member.membershipStatus = membershipStatus;
+        
+        // Handle address field - convert string to JSON if needed
+        if (address) {
+            if (typeof address === 'string') {
+                member.address = { fullAddress: address };
+            } else {
+                member.address = address;
+            }
+        }
+        
         if (emergencyContact) member.emergencyContact = emergencyContact;
         if (nextOfKin) member.nextOfKin = nextOfKin;
 
@@ -278,9 +338,11 @@ router.put('/:id', auth, async (req, res) => {
             data: member
         });
     } catch (error) {
+        console.error('Error updating member:', error);
         res.status(500).json({
             success: false,
-            message: 'Error updating member'
+            message: 'Error updating member',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
