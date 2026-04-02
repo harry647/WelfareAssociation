@@ -35,7 +35,8 @@ const Bereavement = sequelize.define('Bereavement', {
     // Contributions from other members (stored as JSON)
     contributions: {
         type: DataTypes.JSONB,
-        defaultValue: []
+        allowNull: true,
+        defaultValue: null
     },
     totalContributions: {
         type: DataTypes.DECIMAL(15, 2),
@@ -44,7 +45,8 @@ const Bereavement = sequelize.define('Bereavement', {
     // Messages of condolence (stored as JSON)
     messages: {
         type: DataTypes.JSONB,
-        defaultValue: []
+        allowNull: true,
+        defaultValue: null
     },
     // Notes
     notes: {

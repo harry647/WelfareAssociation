@@ -52,10 +52,38 @@ router.get('/', optionalAuth, async (req, res) => {
             limit: parseInt(limit),
             offset: parseInt(offset)
         });
-
+        
+        // Convert Sequelize instances to plain objects
+        const data = cases.map(c => {
+            const json = c.toJSON();
+            // Ensure JSON fields are properly parsed
+            if (json.deceased && typeof json.deceased === 'string') {
+                try {
+                    json.deceased = JSON.parse(json.deceased);
+                } catch (e) {
+                    json.deceased = {};
+                }
+            }
+            if (json.contributions && typeof json.contributions === 'string') {
+                try {
+                    json.contributions = JSON.parse(json.contributions);
+                } catch (e) {
+                    json.contributions = [];
+                }
+            }
+            if (json.messages && typeof json.messages === 'string') {
+                try {
+                    json.messages = JSON.parse(json.messages);
+                } catch (e) {
+                    json.messages = [];
+                }
+            }
+            return json;
+        });
+        
         res.json({
             success: true,
-            data: cases || [],
+            data: data,
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
@@ -165,9 +193,9 @@ router.get('/statistics', auth, authorize('admin', 'treasurer', 'chairman', 'sec
 
 /**
  * GET /api/bereavement/:id
- * Get bereavement case by ID
+ * Get bereavement case by ID (public endpoint)
  */
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
     try {
         const bereavement = await Bereavement.findByPk(req.params.id, {
             include: [
@@ -183,7 +211,31 @@ router.get('/:id', auth, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Bereavement case not found' });
         }
 
-        res.json({ success: true, data: bereavement });
+        // Convert to JSON and parse JSON fields
+        let data = bereavement.toJSON();
+        if (data.deceased && typeof data.deceased === 'string') {
+            try {
+                data.deceased = JSON.parse(data.deceased);
+            } catch (e) {
+                data.deceased = {};
+            }
+        }
+        if (data.contributions && typeof data.contributions === 'string') {
+            try {
+                data.contributions = JSON.parse(data.contributions);
+            } catch (e) {
+                data.contributions = [];
+            }
+        }
+        if (data.messages && typeof data.messages === 'string') {
+            try {
+                data.messages = JSON.parse(data.messages);
+            } catch (e) {
+                data.messages = [];
+            }
+        }
+
+        res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching bereavement case:', error);
         res.status(500).json({ success: false, message: 'Error fetching bereavement case' });
@@ -295,9 +347,9 @@ router.put('/:id', auth, authorize('admin', 'secretary', 'treasurer'), async (re
 
 /**
  * POST /api/bereavement/:id/contribute
- * Add contribution to a bereavement case
+ * Add contribution to a bereavement case (authentication optional)
  */
-router.post('/:id/contribute', auth, [
+router.post('/:id/contribute', optionalAuth, [
     body('amount').isNumeric().withMessage('Amount is required'),
 ], validate, async (req, res) => {
     try {
@@ -311,25 +363,33 @@ router.post('/:id/contribute', auth, [
             return res.status(400).json({ success: false, message: 'Case is closed, cannot contribute' });
         }
 
-        const { amount, paymentMethod, reference, message, contributorId } = req.body;
+        const { amount, paymentMethod, reference, message, contributorId, contributorName } = req.body;
 
         // Parse existing contributions or create new array
-        const contributions = typeof bereavement.contributions === 'string' 
-            ? JSON.parse(bereavement.contributions) 
-            : (bereavement.contributions || []);
+        let contributions = [];
+        if (bereavement.contributions) {
+            if (typeof bereavement.contributions === 'string') {
+                contributions = JSON.parse(bereavement.contributions);
+            } else if (Array.isArray(bereavement.contributions)) {
+                contributions = [...bereavement.contributions];
+            }
+        }
         
         contributions.push({
-            contributorId: contributorId || req.user.id,
+            contributorId: contributorId || (req.user ? req.user.id : null),
+            contributorName: contributorName || (req.user ? `${req.user.firstName} ${req.user.lastName}` : 'Anonymous'),
             amount: parseFloat(amount),
             paymentMethod: paymentMethod || 'cash',
             reference: reference || '',
             message: message || '',
-            date: new Date()
+            date: new Date().toISOString()
         });
 
         // Update total contributions
         const totalContributions = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
-        bereavement.contributions = contributions;
+        
+        // Create a new array to force Sequelize to detect the change
+        bereavement.contributions = JSON.parse(JSON.stringify(contributions));
         bereavement.totalContributions = totalContributions;
 
         // Update status to active if pending
@@ -338,6 +398,12 @@ router.post('/:id/contribute', auth, [
         }
 
         await bereavement.save();
+        
+        // Reload from database to verify
+        await bereavement.reload();
+        
+        console.log('=== CONTRIBUTION ADDED ===');
+        console.log('Contributions after save:', JSON.stringify(bereavement.contributions));
 
         res.json({
             success: true,
@@ -347,6 +413,62 @@ router.post('/:id/contribute', auth, [
     } catch (error) {
         console.error('Error adding contribution:', error);
         res.status(500).json({ success: false, message: 'Error adding contribution' });
+    }
+});
+
+/**
+ * POST /api/bereavement/:id/messages
+ * Add condolence message to a bereavement case
+ */
+router.post('/:id/messages', async (req, res) => {
+    try {
+        const bereavement = await Bereavement.findByPk(req.params.id);
+
+        if (!bereavement) {
+            return res.status(404).json({ success: false, message: 'Bereavement case not found' });
+        }
+
+        const { author, message } = req.body;
+
+        if (!message) {
+            return res.status(400).json({ success: false, message: 'Message is required' });
+        }
+
+        // Parse existing messages or create new array
+        let messages = [];
+        if (bereavement.messages) {
+            if (typeof bereavement.messages === 'string') {
+                messages = JSON.parse(bereavement.messages);
+            } else if (Array.isArray(bereavement.messages)) {
+                messages = [...bereavement.messages];
+            }
+        }
+        
+        messages.push({
+            author: author || 'Anonymous',
+            message: message,
+            date: new Date().toISOString()
+        });
+
+        // Create a new array to force Sequelize to detect the change
+        bereavement.messages = JSON.parse(JSON.stringify(messages));
+        
+        await bereavement.save();
+        
+        // Reload from database to verify
+        await bereavement.reload();
+        
+        console.log('=== MESSAGE ADDED ===');
+        console.log('Messages after save:', JSON.stringify(bereavement.messages));
+
+        res.json({
+            success: true,
+            message: 'Message added successfully',
+            data: bereavement
+        });
+    } catch (error) {
+        console.error('Error adding message:', error);
+        res.status(500).json({ success: false, message: 'Error adding message' });
     }
 });
 

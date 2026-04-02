@@ -17,7 +17,7 @@ let contributionsData = [];
 let messagesData = [];
 
 // Initialize the page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('Bereavement support page loaded');
     
     // Initialize all components
@@ -27,8 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuickContribute();
     initDocumentUpload();
     
-    // Load data from API
-    loadBereavementData();
+    // Load data from API (await to ensure data is loaded before processing)
+    await loadBereavementData();
+    
+    // Load contributions and messages after bereavement data is ready
     loadContributions();
     loadMessages();
 });
@@ -124,10 +126,17 @@ function openDetailsModal(id) {
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
     
-    const caseData = bereavementData.find(c => c.id === id);
+    // Find the case - handle both string and number comparison for UUIDs
+    const caseData = bereavementData.find(c => String(c.id) === String(id));
     
     if (caseData && modal && modalTitle && modalBody) {
         const progressPercent = Math.round((caseData.amountRaised / caseData.targetAmount) * 100);
+        
+        // Get additional details from API response
+        const deceased = caseData.deceased || {};
+        const member = caseData.member || {};
+        const contributions = caseData.contributions || [];
+        const messages = caseData.messages || [];
         
         modalTitle.textContent = caseData.name || caseData.memberName;
         modalBody.innerHTML = `
@@ -141,8 +150,17 @@ function openDetailsModal(id) {
             </div>
             
             <div class="detail-section">
+                <h4><i class="fas fa-user-slash"></i> Deceased Information</h4>
+                <p><strong>Name:</strong> ${deceased.name || 'Not specified'}</p>
+                <p><strong>Relationship:</strong> ${getBereavementTypeLabel(deceased.relationship)}</p>
+                <p><strong>Date of Death:</strong> ${formatDate(deceased.dateOfDeath)}</p>
+                <p><strong>Date of Burial:</strong> ${formatDate(deceased.dateOfBurial)}</p>
+            </div>
+            
+            <div class="detail-section">
                 <h4><i class="fas fa-info-circle"></i> Case Details</h4>
                 <p>${caseData.description || 'No description available'}</p>
+                ${caseData.notes ? `<p><strong>Notes:</strong> ${caseData.notes}</p>` : ''}
             </div>
             
             <div class="detail-section">
@@ -154,18 +172,39 @@ function openDetailsModal(id) {
             </div>
             
             <div class="detail-section">
+                <h4><i class="fas fa-users"></i> Supporters</h4>
+                <p>${caseData.supporters || 0} supporters have contributed</p>
+                ${contributions.length > 0 ? `
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    ${contributions.slice(0, 5).map(c => `<li>${c.contributor || 'Anonymous'}: Ksh ${(c.amount || 0).toLocaleString()}</li>`).join('')}
+                    ${contributions.length > 5 ? `<li>...and ${contributions.length - 5} more</li>` : ''}
+                </ul>` : ''}
+            </div>
+            
+            <div class="detail-section">
+                <h4><i class="fas fa-comment"></i> Condolence Messages</h4>
+                <p>${messages.length} message(s) of support</p>
+                ${messages.length > 0 ? `
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    ${messages.slice(0, 3).map(m => `<li><strong>${m.author || 'Anonymous'}:</strong> ${m.message?.substring(0, 50)}${m.message?.length > 50 ? '...' : ''}</li>`).join('')}
+                </ul>` : ''}
+            </div>
+            
+            <div class="detail-section">
                 <h4><i class="fas fa-mobile-alt"></i> M-Pesa Payment</h4>
                 <p><strong>Paybill:</strong> 123456</p>
                 <p><strong>Account:</strong> ${(caseData.name || caseData.memberName || 'Bereavement').replace(/\s/g, '')}</p>
+                <p style="margin-top: 8px; font-size: 0.9em; color: #666;"><em>Use this account number when making payment via M-Pesa</em></p>
             </div>
         `;
         
-        // Set contribute button
+        // Set contribute button to link directly to payment page
         const contributeBtn = document.getElementById('modalContributeBtn');
         if (contributeBtn) {
             contributeBtn.onclick = () => {
                 closeModal(modal);
-                openContributeModal(id, caseData.name || caseData.memberName);
+                // Direct link to payment page with bereavement category
+                window.location.href = '../payments/make-payment.html?category=bereavement';
             };
         }
         
@@ -398,6 +437,8 @@ async function loadBereavementData() {
         // Fetch from API (public, no auth required)
         const response = await bereavementService.getAll();
         
+        console.log('API Response:', response);
+        
         if (response && response.data) {
             // Transform API data to expected format
             bereavementData = response.data.map(transformBereavementData);
@@ -408,6 +449,7 @@ async function loadBereavementData() {
         }
         
         console.log('Bereavement data loaded:', bereavementData.length, 'cases');
+        console.log('First case data:', JSON.stringify(bereavementData[0], null, 2));
     } catch (error) {
         console.error('Error loading bereavement data:', error);
         // Show error message but don't redirect
@@ -438,8 +480,45 @@ async function loadBereavementData() {
  * Transform API data to frontend expected format
  */
 function transformBereavementData(apiData) {
-    const deceased = apiData.deceased || {};
+    // Handle JSON fields that might be stringified
+    let deceased = apiData.deceased;
+    if (typeof deceased === 'string') {
+        try {
+            deceased = JSON.parse(deceased);
+        } catch (e) {
+            deceased = {};
+        }
+    }
+    deceased = deceased || {};
+    
+    let contributions = apiData.contributions;
+    if (typeof contributions === 'string') {
+        try {
+            contributions = JSON.parse(contributions);
+        } catch (e) {
+            contributions = [];
+        }
+    }
+    contributions = contributions || [];
+    
+    let messages = apiData.messages;
+    if (typeof messages === 'string') {
+        try {
+            messages = JSON.parse(messages);
+        } catch (e) {
+            messages = [];
+        }
+    }
+    messages = messages || [];
+    
     const member = apiData.member || {};
+    
+    console.log('Transforming case:', apiData.id);
+    console.log('  - deceased:', JSON.stringify(deceased));
+    console.log('  - member:', JSON.stringify(member));
+    console.log('  - contributions:', JSON.stringify(contributions));
+    console.log('  - messages:', JSON.stringify(messages));
+    console.log('  - totalContributions:', apiData.totalContributions);
     
     return {
         id: apiData.id,
@@ -449,7 +528,8 @@ function transformBereavementData(apiData) {
         memberName: member.firstName && member.lastName ? `${member.firstName} ${member.lastName}` : 'Unknown',
         memberId: member.id,
         studentId: member.memberNumber,
-        // Deceased info
+        // Deceased info - store full object for modal display
+        deceased: deceased,
         type: deceased.relationship || 'other',
         description: deceased.name ? `Lost: ${deceased.relationship}` : 'No description',
         date: deceased.dateOfDeath || apiData.createdAt,
@@ -459,10 +539,12 @@ function transformBereavementData(apiData) {
         // Status
         status: apiData.status || 'pending',
         urgent: apiData.status === 'active',
-        // Relations
-        contributions: apiData.contributions || [],
-        messages: apiData.messages || [],
-        supporters: (apiData.contributions || []).length,
+        // Relations - store parsed data
+        contributions: contributions,
+        messages: messages,
+        supporters: contributions.length,
+        // Notes
+        notes: apiData.notes || '',
         // Dates
         createdAt: apiData.createdAt,
         updatedAt: apiData.updatedAt
@@ -482,7 +564,10 @@ async function loadContributions() {
         // Contributions are stored within bereavement records
         // Extract all contributions from all cases
         contributionsData = [];
+        
+        console.log('Processing contributions for', bereavementData.length, 'cases');
         bereavementData.forEach(caseData => {
+            console.log('Case:', caseData.id, 'contributions:', caseData.contributions);
             if (caseData.contributions && Array.isArray(caseData.contributions)) {
                 caseData.contributions.forEach(contribution => {
                     contributionsData.push({
@@ -520,7 +605,10 @@ async function loadMessages() {
         // Messages are stored within bereavement records
         // Extract all messages from all cases
         messagesData = [];
+        
+        console.log('Processing messages for', bereavementData.length, 'cases');
         bereavementData.forEach(caseData => {
+            console.log('Case:', caseData.id, 'messages:', caseData.messages);
             if (caseData.messages && Array.isArray(caseData.messages)) {
                 caseData.messages.forEach(message => {
                     messagesData.push({
@@ -578,7 +666,7 @@ function renderBereavementCards() {
 function createBereavementCard(caseData) {
     const card = document.createElement('div');
     card.className = 'bereavement-card';
-    card.dataset.id = caseData.id;
+    card.dataset.id = caseData.id; // Keep UUID as-is
     card.dataset.name = (caseData.name || caseData.memberName || '').toLowerCase();
     card.dataset.type = caseData.type || '';
     card.dataset.status = caseData.status || 'active';
@@ -638,19 +726,18 @@ function attachCardEventListeners() {
     viewButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const id = parseInt(btn.dataset.id);
+            const id = btn.dataset.id; // Keep as string (UUID)
             openDetailsModal(id);
         });
     });
     
-    // Quick Contribute buttons
+    // Quick Contribute buttons - direct link to payment page
     const quickContributeButtons = document.querySelectorAll('.quick-contribute-btn');
     quickContributeButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const id = btn.dataset.id;
-            const name = btn.dataset.name;
-            openContributeModal(id, name);
+            // Direct link to payment page with bereavement category
+            window.location.href = '../payments/make-payment.html?category=bereavement';
         });
     });
 }

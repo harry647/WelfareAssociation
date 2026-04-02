@@ -686,6 +686,66 @@ router.post('/submit', auth, [
         // Map payment method
         const method = paymentMethodMap[paymentMethod] || paymentMethod || 'cash';
         
+        // Handle admin user case - admin doesn't have a member record
+        if (req.user.id === 'admin') {
+            // Try to find a member by the provided studentId or name
+            let member = null;
+            
+            if (studentId) {
+                member = await Member.findOne({ where: { memberNumber: studentId } });
+            }
+            
+            if (!member && fullName) {
+                // Try to find by name
+                const names = fullName.split(' ');
+                if (names.length >= 2) {
+                    member = await Member.findOne({
+                        where: {
+                            firstName: names[0],
+                            lastName: names[names.length - 1]
+                        }
+                    });
+                }
+            }
+            
+            if (!member) {
+                // Find any active member as fallback
+                member = await Member.findOne({
+                    where: { membershipStatus: 'active' },
+                    order: [['createdAt', 'ASC']]
+                });
+            }
+            
+            // Generate payment number
+            const count = await Payment.count() || 0;
+            const paymentNumber = `PAY-${Date.now()}-${(count + 1).toString().padStart(4, '0')}`;
+            
+            const payment = await Payment.create({
+                memberId: member ? member.id : null,
+                paymentNumber,
+                type,
+                amount,
+                method,
+                fullName: fullName || 'Guest Payment',
+                phone: phone || null,
+                studentId: studentId || (member ? member.memberNumber : 'GUEST'),
+                transactionId,
+                notes,
+                reference: referenceNumber,
+                receipt: receipt || null,
+                status: 'completed', // Manual payments marked as completed
+                paymentDate: new Date(),
+                processedDate: new Date(),
+                processedBy: req.user.id
+            });
+            
+            return res.json({
+                success: true,
+                data: { paymentId: payment.id, paymentNumber: payment.paymentNumber },
+                message: 'Payment recorded successfully'
+            });
+        }
+        
         // Get member from auth
         const member = await Member.findOne({ where: { userId: req.user.id } });
         
