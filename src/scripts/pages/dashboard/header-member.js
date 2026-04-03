@@ -1,14 +1,14 @@
 /**
- * Header Shared Component Initialization
- * This file handles button click events for the shared header component
- * Include this AFTER w3.includeHTML() in shared dashboard pages
+ * Header Member Component Initialization
+ * This file handles button click events for the member header component
+ * Include this AFTER w3.includeHTML() in member dashboard pages
  * Enhanced version with all functionality from components folder
  */
 
 (function() {
     'use strict';
 
-    console.log('Header Shared JS loaded');
+    console.log('Header Member JS loaded');
 
     // Simple notification service implementation (self-contained)
     var notificationService = {
@@ -17,7 +17,7 @@
         
         init: function() {
             this.loadStoredNotifications();
-            console.log('Shared notification service initialized');
+            console.log('Member notification service initialized');
         },
         
         loadStoredNotifications: function() {
@@ -49,99 +49,9 @@
         destroy: function() {
             this.notifications = [];
             this.unreadCount = 0;
-            console.log('Shared notification service destroyed');
+            console.log('Member notification service destroyed');
         }
     };
-
-    /**
-     * Show confirmation dialog
-     */
-    function showConfirmDialog(message) {
-        return new Promise(function(resolve) {
-            var result = confirm(message);
-            resolve(result);
-        });
-    }
-
-    /**
-     * Update user information
-     */
-    function updateUserInfo(userInfo) {
-        try {
-            var userName = document.getElementById('headerUserName');
-            var userRole = document.getElementById('headerUserRole');
-            var userAvatar = document.getElementById('headerUserAvatar');
-
-            if (userName && userInfo.firstName) {
-                userName.textContent = (userInfo.firstName + ' ' + (userInfo.lastName || '')).trim();
-            }
-
-            if (userRole && userInfo.role) {
-                userRole.textContent = userInfo.role.charAt(0).toUpperCase() + userInfo.role.slice(1);
-            }
-
-            if (userAvatar && userInfo.firstName) {
-                userAvatar.textContent = userInfo.firstName.charAt(0).toUpperCase();
-            }
-        } catch (error) {
-            console.error('Error updating user info:', error);
-        }
-    }
-
-    /**
-     * Update page title and subtitle
-     */
-    function updatePageInfo(title, subtitle) {
-        try {
-            var pageTitle = document.getElementById('pageTitle');
-            var pageSubtitle = document.getElementById('pageSubtitle');
-
-            if (pageTitle && title) {
-                pageTitle.innerHTML = title;
-            }
-
-            if (pageSubtitle && subtitle) {
-                pageSubtitle.textContent = subtitle;
-            }
-        } catch (error) {
-            console.error('Error updating page info:', error);
-        }
-    }
-
-    /**
-     * Load shared user info and update header
-     */
-    function loadSharedUserInfo() {
-        // Get user from localStorage
-        var userData = localStorage.getItem('swa_user');
-        var user = userData ? JSON.parse(userData) : null;
-        var userNameEl = document.getElementById('headerUserName');
-        var userRoleEl = document.getElementById('headerUserRole');
-        var pageSubtitle = document.getElementById('pageSubtitle');
-        var userAvatar = document.getElementById('headerUserAvatar');
-        
-        if (user) {
-            var name = user.name || user.firstName || user.email || 'User';
-            var firstName = name.split(' ')[0];
-            var role = user.role || 'member';
-            
-            if (userNameEl) {
-                userNameEl.textContent = name;
-            }
-            if (userRoleEl) {
-                userRoleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1);
-            }
-            if (pageSubtitle) {
-                pageSubtitle.textContent = 'Welcome back, ' + firstName;
-            }
-            if (userAvatar) {
-                userAvatar.textContent = firstName.charAt(0).toUpperCase();
-            }
-            console.log('Shared user info loaded:', firstName);
-        } else {
-            console.log('No user data found in localStorage');
-        }
-    }
 
     /**
      * Create and show a dropdown menu
@@ -206,42 +116,114 @@
     }
 
     /**
+     * Show confirmation dialog
+     */
+    function showConfirmDialog(message) {
+        return new Promise(function(resolve) {
+            var result = confirm(message);
+            resolve(result);
+        });
+    }
+
+    /**
+     * Update member avatar and user info
+     */
+    function updateMemberAvatar(userInfo) {
+        try {
+            var memberAvatar = document.getElementById('memberAvatar');
+            var welcomeMessage = document.getElementById('welcomeMessage');
+
+            if (memberAvatar && userInfo.firstName) {
+                memberAvatar.textContent = userInfo.firstName.charAt(0).toUpperCase();
+            }
+
+            if (welcomeMessage && userInfo.firstName) {
+                welcomeMessage.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + userInfo.firstName;
+            }
+        } catch (error) {
+            console.error('Error updating member avatar:', error);
+        }
+    }
+
+    /**
+     * Show fine alert
+     */
+    function showFineAlert(amount) {
+        try {
+            var fineAlert = document.getElementById('fineAlert');
+            var fineAlertText = document.getElementById('fineAlertText');
+
+            if (fineAlert && fineAlertText) {
+                fineAlertText.textContent = 'You have unpaid fines of Ksh ' + amount;
+                fineAlert.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Error showing fine alert:', error);
+        }
+    }
+
+    /**
+     * Hide fine alert
+     */
+    function hideFineAlert() {
+        try {
+            var fineAlert = document.getElementById('fineAlert');
+            if (fineAlert) {
+                fineAlert.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error hiding fine alert:', error);
+        }
+    }
+
+    /**
+     * Load member user info and update header
+     */
+    function loadMemberUserInfo() {
+        // Get user from localStorage
+        var userData = localStorage.getItem('swa_user');
+        var user = userData ? JSON.parse(userData) : null;
+        var memberAvatar = document.getElementById('memberAvatar');
+        var welcomeMessage = document.getElementById('welcomeMessage');
+        
+        if (user) {
+            var name = user.name || user.firstName || user.email || 'Member';
+            var firstName = name.split(' ')[0];
+            
+            if (memberAvatar) {
+                memberAvatar.textContent = firstName.charAt(0).toUpperCase();
+            }
+            if (welcomeMessage) {
+                welcomeMessage.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + firstName;
+            }
+            console.log('Member user info loaded:', firstName);
+        } else {
+            console.log('No user data found in localStorage');
+        }
+    }
+
+    /**
      * Initialize all header button event handlers
      */
     function initHeaderButtons() {
-        console.log('Initializing shared header buttons...');
+        console.log('Initializing member header buttons...');
         
         // Initialize notification service
         notificationService.init();
         
-        // Load shared user info
-        loadSharedUserInfo();
+        // Load member user info
+        loadMemberUserInfo();
         
         // Get all button elements
-        var sidebarToggle = document.getElementById('sidebarToggle');
         var notificationBell = document.getElementById('notificationBell');
-        var userProfile = document.getElementById('userProfile');
-        var logoutBtn = document.getElementById('headerLogoutBtn');
+        var logoutBtn = document.getElementById('memberLogoutBtn');
+        var profileLink = document.querySelector('.profile-link');
 
         console.log('Elements found:', {
-            sidebarToggle: !!sidebarToggle,
             notificationBell: !!notificationBell,
-            userProfile: !!userProfile,
-            logoutBtn: !!logoutBtn
+            logoutBtn: !!logoutBtn,
+            profileLink: !!profileLink
         });
-
-        // Sidebar toggle
-        if (sidebarToggle) {
-            sidebarToggle.onclick = function(e) {
-                e.preventDefault();
-                var sidebar = document.getElementById('sidebar');
-                if (sidebar) {
-                    sidebar.classList.toggle('active');
-                }
-                console.log('Shared sidebar toggle clicked');
-            };
-            console.log('Shared sidebar toggle handler attached');
-        }
 
         // Notification bell - show notifications dropdown
         if (notificationBell) {
@@ -249,7 +231,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                console.log('Shared notification bell clicked');
+                console.log('Member notification bell clicked');
                 
                 // Mark all notifications as read
                 notificationService.markAllAsRead();
@@ -265,7 +247,7 @@
                     }
                 }));
                 
-                // Create notifications dropdown as fallback
+                // Create simple notification dropdown as fallback
                 createDropdownMenu(notificationBell, 'notifications-menu', [
                     { text: 'No new notifications', action: null },
                     { text: 'View all notifications', action: function() { 
@@ -273,41 +255,16 @@
                     }}
                 ]);
             };
-            console.log('Shared notification bell handler attached');
+            console.log('Member notification bell handler attached');
         }
 
-        // User profile - show user menu
-        if (userProfile) {
-            userProfile.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                console.log('Shared user profile clicked');
-                
-                // Emit custom event
-                document.dispatchEvent(new CustomEvent('toggleUserMenu'));
-                
-                // Get user info
-                var userName = document.getElementById('headerUserName');
-                var userRole = document.getElementById('headerUserRole');
-                
-                // Create user dropdown as fallback
-                createDropdownMenu(userProfile, 'user-menu', [
-                    { text: userName ? userName.textContent : 'User', action: null },
-                    { text: userRole ? userRole.textContent : 'Member', action: null },
-                    { text: '---', action: null },
-                    { text: 'My Profile', action: function() { 
-                        window.location.href = '/pages/auth/profile.html';
-                    }},
-                    { text: 'My Contributions', action: function() { 
-                        window.location.href = '/pages/dashboard/member/member-contribution-history.html';
-                    }},
-                    { text: 'My Loans', action: function() { 
-                        window.location.href = '/pages/dashboard/member/member-loans-history.html';
-                    }}
-                ]);
+        // Profile link - allow default navigation
+        if (profileLink) {
+            profileLink.onclick = function(e) {
+                console.log('Member profile link clicked');
+                // Allow default navigation to profile page
             };
-            console.log('Shared user profile handler attached');
+            console.log('Member profile link handler attached');
         }
 
         // Logout button
@@ -316,7 +273,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                console.log('Shared logout button clicked');
+                console.log('Member logout button clicked');
                 
                 // Show confirmation dialog
                 var confirmed = await showConfirmDialog('Are you sure you want to logout?');
@@ -334,37 +291,38 @@
                 // Redirect to homepage
                 window.location.href = '/index.html';
             };
-            console.log('Shared logout button handler attached');
+            console.log('Member logout button handler attached');
         }
 
-        console.log('All shared header button handlers initialized');
+        console.log('All member header button handlers initialized');
     }
 
     // Expose utility functions globally for external use
-    window.sharedHeaderUtils = {
-        updateUserInfo: updateUserInfo,
-        updatePageInfo: updatePageInfo,
+    window.memberHeaderUtils = {
+        updateMemberAvatar: updateMemberAvatar,
+        showFineAlert: showFineAlert,
+        hideFineAlert: hideFineAlert,
         showConfirmDialog: showConfirmDialog,
         notificationService: notificationService
     };
 
     // Try to initialize immediately if elements exist
     function tryInit() {
-        var logoutBtn = document.getElementById('headerLogoutBtn');
+        var logoutBtn = document.getElementById('memberLogoutBtn');
         
         if (logoutBtn) {
-            console.log('Shared header elements found immediately');
+            console.log('Member header elements found immediately');
             initHeaderButtons();
         } else {
-            console.log('Shared header elements not found, waiting...');
+            console.log('Member header elements not found, waiting...');
             // Try again after a delay
             setTimeout(function() {
-                var logoutBtn2 = document.getElementById('headerLogoutBtn');
+                var logoutBtn2 = document.getElementById('memberLogoutBtn');
                 if (logoutBtn2) {
-                    console.log('Shared header elements found after delay');
+                    console.log('Member header elements found after delay');
                     initHeaderButtons();
                 } else {
-                    console.log('Still waiting for shared header elements...');
+                    console.log('Still waiting for member header elements...');
                     // One more try
                     setTimeout(function() {
                         initHeaderButtons();
