@@ -41,12 +41,18 @@
         // Fetch real notifications from database (general audience)
         fetchNotifications: function() {
             var self = this;
+            console.log('Fetching notifications...');
             return Promise.all([
                 this.apiCall('/api/notices?limit=5&audience=all'),
-                this.apiCall('/api/announcements?status=active&targetAudience=all&limit=5')
+                this.apiCall('/api/announcements?limit=5')
             ]).then(function(results) {
+                console.log('API Results:', results);
                 var notices = results[0].success ? (results[0].notices || []) : [];
                 var announcements = results[1].success ? (results[1].announcements || []) : [];
+                
+                console.log('Notices:', notices);
+                console.log('Announcements:', announcements);
+                console.log('Announcements count:', announcements.length);
                 
                 // Combine and format notifications
                 self.notifications = [];
@@ -68,6 +74,7 @@
                 
                 // Add announcements
                 announcements.forEach(function(announcement) {
+                    console.log('Processing announcement:', announcement);
                     self.notifications.push({
                         id: announcement.id,
                         type: 'announcement',
@@ -80,6 +87,8 @@
                         actionUrl: '/pages/dashboard/shared/notices.html'
                     });
                 });
+                
+                console.log('Total notifications after combining:', self.notifications.length);
                 
                 // Sort by priority and timestamp
                 self.notifications.sort(function(a, b) {
@@ -99,6 +108,7 @@
                 
             }).catch(function(error) {
                 console.error('Error fetching notifications:', error);
+                console.error('Error details:', error.message);
             });
         },
         

@@ -54,19 +54,18 @@
                       <option value="">Select category...</option>
                       <option value="general">General</option>
                       <option value="urgent">Urgent</option>
-                      <option value="meeting">Meeting</option>
+                      <option value="reminder">Reminder</option>
                       <option value="event">Event</option>
-                      <option value="financial">Financial</option>
-                      <option value="academic">Academic</option>
+                      <option value="news">News</option>
                     </select>
                   </div>
                   <div class="form-group">
                     <label for="priority">Priority Level</label>
                     <select id="priority" name="priority">
                       <option value="low">Low</option>
-                      <option value="medium">Medium</option>
+                      <option value="medium" selected>Medium</option>
                       <option value="high">High</option>
-                      <option value="urgent">Urgent</option>
+                      <option value="critical">Critical</option>
                     </select>
                   </div>
                 </div>
@@ -80,10 +79,10 @@
                   <select id="recipients" name="recipients" required>
                     <option value="">Select recipients...</option>
                     <option value="all">All Members</option>
-                    <option value="active">Active Members Only</option>
-                    <option value="executive">Executive Team</option>
-                    <option value="committee">Committee Heads</option>
-                    <option value="custom">Custom Selection</option>
+                    <option value="members">Members Only</option>
+                    <option value="officers">Officers Only</option>
+                    <option value="executives">Executives Only</option>
+                    <option value="specific">Specific Members</option>
                   </select>
                 </div>
                 <div class="form-group" id="customRecipients" style="display: none;">
@@ -212,7 +211,7 @@
                 <button type="button" class="btn btn-outline cancel-btn">
                   <i class="fas fa-times"></i> Cancel
                 </button>
-                <button type="button" class="btn btn-outline" onclick="window.location.href='notices.html'">
+                <button type="button" class="btn btn-outline" onclick="window.location.href='../shared/notices.html'">
                   <i class="fas fa-list"></i> View Announcements
                 </button>
               </div>

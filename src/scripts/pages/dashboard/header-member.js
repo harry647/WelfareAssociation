@@ -41,12 +41,18 @@
         // Fetch real notifications from database (member-focused)
         fetchNotifications: function() {
             var self = this;
+            console.log('Fetching notifications...');
             return Promise.all([
-                this.apiCall('/api/notices?limit=5&audience=members'),
-                this.apiCall('/api/announcements?status=active&targetAudience=members&limit=5')
+                this.apiCall('/api/notices?limit=5&audience=all'),
+                this.apiCall('/api/announcements?limit=5')
             ]).then(function(results) {
+                console.log('API Results:', results);
                 var notices = results[0].success ? (results[0].notices || []) : [];
                 var announcements = results[1].success ? (results[1].announcements || []) : [];
+                
+                console.log('Notices:', notices);
+                console.log('Announcements:', announcements);
+                console.log('Announcements count:', announcements.length);
                 
                 // Combine and format notifications
                 self.notifications = [];
@@ -68,6 +74,7 @@
                 
                 // Add announcements
                 announcements.forEach(function(announcement) {
+                    console.log('Processing announcement:', announcement);
                     self.notifications.push({
                         id: announcement.id,
                         type: 'announcement',
@@ -80,6 +87,8 @@
                         actionUrl: '/pages/dashboard/shared/notices.html'
                     });
                 });
+                
+                console.log('Total notifications after combining:', self.notifications.length);
                 
                 // Sort by priority and timestamp
                 self.notifications.sort(function(a, b) {
@@ -99,6 +108,7 @@
                 
             }).catch(function(error) {
                 console.error('Error fetching notifications:', error);
+                console.error('Error details:', error.message);
             });
         },
         
@@ -223,91 +233,10 @@
         return Math.floor(diff / 604800) + 'w ago';
     }
     
-    function createEnhancedDropdownMenu(button, menuId, items, type) {
-        // Remove existing menu if any
-        var existingMenu = document.getElementById(menuId);
-        if (existingMenu) {
-            existingMenu.remove();
-        }
+    // Update badge
+    var badge = document.getElementById('notificationBadge');
+    if (badge) badge.style.display = 'none';
 
-        // Create menu element
-        var menu = document.createElement('div');
-        menu.id = menuId;
-        menu.className = 'header-dropdown-menu enhanced';
-        menu.style.cssText = 'position: absolute; top: 100%; right: 0; margin-top: 8px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px 0; min-width: 320px; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000;';
-
-        // Add header for notifications
-        if (type === 'notifications') {
-            var header = document.createElement('div');
-            header.style.cssText = 'padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; font-weight: 600; color: #f8fafc;';
-            header.textContent = 'Notifications';
-            menu.appendChild(header);
-        }
-
-        // Add items
-        items.forEach(function(item) {
-            if (item.text === '---') {
-                var divider = document.createElement('div');
-                divider.style.cssText = 'height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;';
-                menu.appendChild(divider);
-                return;
-            }
-            
-            var menuItem = document.createElement('div');
-            menuItem.style.cssText = 'padding: 12px 20px; cursor: pointer; color: #e2e8f0; font-size: 14px; transition: background 0.2s; display: flex; flex-direction: column; gap: 4px;';
-            
-            if (item.subtitle) {
-                var titleSpan = document.createElement('div');
-                titleSpan.style.cssText = 'font-weight: 500; line-height: 1.3;';
-                titleSpan.textContent = item.text;
-                menuItem.appendChild(titleSpan);
-                
-                var subtitleSpan = document.createElement('div');
-                subtitleSpan.style.cssText = 'font-size: 12px; color: #94a3b8; line-height: 1.3;';
-                subtitleSpan.textContent = item.subtitle;
-                menuItem.appendChild(subtitleSpan);
-            } else {
-                menuItem.textContent = item.text;
-            }
-            
-            menuItem.addEventListener('mouseenter', function() {
-                menuItem.style.background = 'rgba(74, 222, 128, 0.1)';
-            });
-            menuItem.addEventListener('mouseleave', function() {
-                menuItem.style.background = 'transparent';
-            });
-            menuItem.addEventListener('click', function() {
-                if (item.action) item.action();
-                menu.remove();
-            });
-            menu.appendChild(menuItem);
-        });
-
-        // Position the menu
-        var rect = button.getBoundingClientRect();
-        menu.style.position = 'fixed';
-        menu.style.top = (rect.bottom + 8) + 'px';
-        menu.style.right = (window.innerWidth - rect.right) + 'px';
-
-        document.body.appendChild(menu);
-
-        // Close menu when clicking outside
-        var closeMenu = function(e) {
-            if (!menu.contains(e.target) && e.target !== button && !button.contains(e.target)) {
-                menu.remove();
-                document.removeEventListener('click', closeMenu);
-            }
-        };
-        setTimeout(function() {
-            document.addEventListener('click', closeMenu);
-        }, 100);
-
-        return menu;
-    }
-
-    /**
-     * Show notification dialog for regular users
-     */
     function showNotificationDialog(notification) {
         // Mark as read
         notificationService.markAsRead(notification.id);
@@ -369,7 +298,7 @@
         var menu = document.createElement('div');
         menu.id = menuId;
         menu.className = 'header-dropdown-menu';
-        menu.style.cssText = 'position: absolute; top: 100%; right: 0; margin-top: 8px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px 0; min-width: 200px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000;';
+        menu.style.cssText = 'position: absolute; top: 100%; right: 0; margin-top: 8px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0; min-width: 320px; max-width: 400px; max-height: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000; overflow: hidden; display: flex; flex-direction: column;';
 
         // Add items
         items.forEach(function(item) {
@@ -580,7 +509,7 @@
                     });
                 }
                 
-                createEnhancedDropdownMenu(notificationBell, 'notifications-menu', dropdownItems, 'notifications');
+                createDropdownMenu(notificationBell, 'notifications-menu', dropdownItems);
             };
             console.log('Member notification bell handler attached');
         }

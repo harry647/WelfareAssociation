@@ -1,14 +1,14 @@
 /**
- * Header Admin Component Initialization
- * This file handles button click events for the admin header component
- * Include this AFTER w3.includeHTML() in admin dashboard pages
+ * Header Member Component Initialization
+ * This file handles button click events for the member header component
+ * Include this AFTER w3.includeHTML() in member dashboard pages
  * Enhanced version with all functionality from components folder
  */
 
 (function() {
     'use strict';
 
-    console.log('Header Admin JS loaded');
+    console.log('Header Member JS loaded');
 
     // Enhanced notification service with real database integration
     var notificationService = {
@@ -19,7 +19,7 @@
         init: function() {
             this.loadStoredNotifications();
             this.startPolling();
-            console.log('Admin notification service initialized');
+            console.log('Member notification service initialized');
         },
         
         // API helper function
@@ -38,7 +38,7 @@
             });
         },
         
-        // Fetch real notifications from database
+        // Fetch real notifications from database (member-focused)
         fetchNotifications: function() {
             var self = this;
             console.log('Fetching notifications...');
@@ -84,7 +84,7 @@
                         category: announcement.type,
                         timestamp: announcement.sentAt || announcement.createdAt,
                         read: false,
-                        actionUrl: '/pages/dashboard/admin/send-announcement.html'
+                        actionUrl: '/pages/dashboard/shared/notices.html'
                     });
                 });
                 
@@ -202,38 +202,87 @@
             }
             this.notifications = [];
             this.unreadCount = 0;
-            console.log('Admin notification service destroyed');
+            console.log('Member notification service destroyed');
         }
     };
 
     /**
-     * Smart hash link handler - decides whether to use hash or full URL
-     * Works on all admin pages
+     * Helper functions for enhanced notifications
      */
-    function initSmartHashLinks() {
-        document.addEventListener('click', function(e) {
-            const link = e.target.closest('.smart-hash');
-            if (!link) return;
-            
-            const section = link.dataset.section;
-            const fullUrl = link.dataset.url;
-            
-            // Check if we're already on admin-dashboard.html
-            if (window.location.pathname.includes('admin-dashboard.html')) {
-                // Use hash navigation (stay on same page)
-                e.preventDefault();
-                window.location.hash = section;
-            } else if (fullUrl) {
-                // Navigate to admin-dashboard with the hash
-                e.preventDefault();
-                window.location.href = fullUrl;
-            }
-            // Otherwise, let the normal link behavior happen
-        });
+    function getPriorityIcon(priority) {
+        var icons = {
+            'critical': '🔴',
+            'high': '🟠', 
+            'urgent': '🟠',
+            'medium': '🟡',
+            'normal': '🔵',
+            'low': '⚪'
+        };
+        return icons[priority] || '🔵';
     }
     
-    // Initialize smart hash links
-    initSmartHashLinks();
+    function getTimeAgo(timestamp) {
+        var now = new Date();
+        var time = new Date(timestamp);
+        var diff = Math.floor((now - time) / 1000); // seconds
+        
+        if (diff < 60) return 'just now';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+        return Math.floor(diff / 604800) + 'w ago';
+    }
+    
+    // Update badge
+    var badge = document.getElementById('notificationBadge');
+    if (badge) badge.style.display = 'none';
+},
+    function showNotificationDialog(notification) {
+        // Mark as read
+        notificationService.markAsRead(notification.id);
+        
+        // Create dialog overlay
+        var overlay = document.createElement('div');
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease;';
+        
+        // Create dialog content
+        var dialog = document.createElement('div');
+        dialog.style.cssText = 'background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;';
+        
+        var priorityIcon = getPriorityIcon(notification.priority);
+        var timeAgo = getTimeAgo(notification.timestamp);
+        
+        dialog.innerHTML = '\
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">\
+                <h3 style="color: #f8fafc; margin: 0; font-size: 18px; font-weight: 600;">' + priorityIcon + ' ' + notification.title + '</h3>\
+                <button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; padding: 0; line-height: 1;">&times;</button>\
+            </div>\
+            <div style="color: #94a3b8; font-size: 12px; margin-bottom: 16px;">' + timeAgo + ' • ' + notification.category + '</div>\
+            <div style="color: #e2e8f0; line-height: 1.6; margin-bottom: 20px;">' + notification.content + '</div>\
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">\
+                <button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background: #374151; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px;">Close</button>\
+            </div>';
+        
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+        
+        // Close on overlay click
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                overlay.remove();
+            }
+        });
+        
+        // Add CSS animations
+        if (!document.getElementById('notification-dialog-styles')) {
+            var style = document.createElement('style');
+            style.id = 'notification-dialog-styles';
+            style.textContent = '\
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }\
+                @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }';
+            document.head.appendChild(style);
+        }
+    }
 
     /**
      * Create and show a dropdown menu
@@ -308,261 +357,104 @@
     }
 
     /**
-     * Update header user information
+     * Update member avatar and user info
      */
-    function updateUserInfo(userInfo) {
+    function updateMemberAvatar(userInfo) {
         try {
-            var userName = document.getElementById('headerUserName');
-            var userRole = document.getElementById('headerUserRole');
-            var userAvatar = document.getElementById('headerUserAvatar');
+            var memberAvatar = document.getElementById('memberAvatar');
+            var welcomeMessage = document.getElementById('welcomeMessage');
 
-            if (userName && userInfo.firstName) {
-                userName.textContent = (userInfo.firstName + ' ' + (userInfo.lastName || '')).trim();
+            if (memberAvatar && userInfo.firstName) {
+                memberAvatar.textContent = userInfo.firstName.charAt(0).toUpperCase();
             }
 
-            if (userRole && userInfo.role) {
-                userRole.textContent = userInfo.role.charAt(0).toUpperCase() + userInfo.role.slice(1);
-            }
-
-            if (userAvatar && userInfo.firstName) {
-                userAvatar.textContent = userInfo.firstName.charAt(0).toUpperCase();
+            if (welcomeMessage && userInfo.firstName) {
+                welcomeMessage.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + userInfo.firstName;
             }
         } catch (error) {
-            console.error('Error updating user info:', error);
+            console.error('Error updating member avatar:', error);
         }
     }
 
     /**
-     * Update page title and subtitle
+     * Show fine alert
      */
-    function updatePageInfo(title, subtitle) {
+    function showFineAlert(amount) {
         try {
-            var pageTitle = document.getElementById('pageTitle');
-            var pageSubtitle = document.getElementById('pageSubtitle');
+            var fineAlert = document.getElementById('fineAlert');
+            var fineAlertText = document.getElementById('fineAlertText');
 
-            if (pageTitle && title) {
-                pageTitle.innerHTML = title;
-            }
-
-            if (pageSubtitle && subtitle) {
-                pageSubtitle.textContent = subtitle;
+            if (fineAlert && fineAlertText) {
+                fineAlertText.textContent = 'You have unpaid fines of Ksh ' + amount;
+                fineAlert.style.display = 'flex';
             }
         } catch (error) {
-            console.error('Error updating page info:', error);
+            console.error('Error showing fine alert:', error);
         }
     }
 
     /**
-     * Load admin user info and update header
+     * Hide fine alert
      */
-    function loadAdminUserInfo() {
+    function hideFineAlert() {
+        try {
+            var fineAlert = document.getElementById('fineAlert');
+            if (fineAlert) {
+                fineAlert.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error hiding fine alert:', error);
+        }
+    }
+
+    /**
+     * Load member user info and update header
+     */
+    function loadMemberUserInfo() {
         // Get user from localStorage
         var userData = localStorage.getItem('swa_user');
         var user = userData ? JSON.parse(userData) : null;
-        var userNameEl = document.getElementById('headerUserName');
-        var userRoleEl = document.getElementById('headerUserRole');
-        var pageSubtitle = document.getElementById('pageSubtitle');
-        var userAvatar = document.getElementById('headerUserAvatar');
+        var memberAvatar = document.getElementById('memberAvatar');
+        var welcomeMessage = document.getElementById('welcomeMessage');
         
         if (user) {
-            var name = user.name || user.firstName || user.email || 'Admin';
+            var name = user.name || user.firstName || user.email || 'Member';
             var firstName = name.split(' ')[0];
-            var role = user.role || 'Administrator';
             
-            if (userNameEl) {
-                userNameEl.textContent = name;
+            if (memberAvatar) {
+                memberAvatar.textContent = firstName.charAt(0).toUpperCase();
             }
-            if (userRoleEl) {
-                userRoleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+            if (welcomeMessage) {
+                welcomeMessage.innerHTML = '<i class="fas fa-user-circle"></i> Welcome, ' + firstName;
             }
-            if (pageSubtitle) {
-                pageSubtitle.textContent = 'Welcome back, ' + firstName;
-            }
-            if (userAvatar) {
-                userAvatar.textContent = firstName.charAt(0).toUpperCase();
-            }
-            console.log('Admin user info loaded:', firstName);
+            console.log('Member user info loaded:', firstName);
         } else {
             console.log('No user data found in localStorage');
         }
     }
-    
+
     /**
      * Initialize all header button event handlers
      */
     function initHeaderButtons() {
-        console.log('Initializing header buttons...');
+        console.log('Initializing member header buttons...');
         
         // Initialize notification service
         notificationService.init();
         
-        // Load admin user info
-        loadAdminUserInfo();
+        // Load member user info
+        loadMemberUserInfo();
         
         // Get all button elements
-        var sidebarToggle = document.getElementById('sidebarToggle');
         var notificationBell = document.getElementById('notificationBell');
-        var quickActionsBtn = document.getElementById('quickActionsBtn');
-        var userProfile = document.getElementById('userProfile');
-        var logoutBtn = document.getElementById('headerLogoutBtn');
+        var logoutBtn = document.getElementById('memberLogoutBtn');
+        var profileLink = document.querySelector('.profile-link');
 
         console.log('Elements found:', {
-            sidebarToggle: !!sidebarToggle,
             notificationBell: !!notificationBell,
-            quickActionsBtn: !!quickActionsBtn,
-            userProfile: !!userProfile,
-            logoutBtn: !!logoutBtn
+            logoutBtn: !!logoutBtn,
+            profileLink: !!profileLink
         });
-
-        // Sidebar toggle
-        if (sidebarToggle) {
-            sidebarToggle.onclick = function(e) {
-                e.preventDefault();
-                var sidebar = document.getElementById('sidebar');
-                if (sidebar) {
-                    sidebar.classList.toggle('active');
-                }
-                console.log('Sidebar toggle clicked');
-            };
-            console.log('Sidebar toggle handler attached');
-        }
-
-        /**
-     * Helper functions for enhanced notifications
-     */
-    function getPriorityIcon(priority) {
-        var icons = {
-            'critical': '🔴',
-            'high': '🟠', 
-            'urgent': '🟠',
-            'medium': '🟡',
-            'normal': '🔵',
-            'low': '⚪'
-        };
-        return icons[priority] || '🔵';
-    }
-    
-    function getTimeAgo(timestamp) {
-        var now = new Date();
-        var time = new Date(timestamp);
-        var diff = Math.floor((now - time) / 1000); // seconds
-        
-        if (diff < 60) return 'just now';
-        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-        if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-        return Math.floor(diff / 604800) + 'w ago';
-    }
-    
-    function createEnhancedDropdownMenu(button, menuId, items, type) {
-        // Remove existing menu if any
-        var existingMenu = document.getElementById(menuId);
-        if (existingMenu) {
-            existingMenu.remove();
-        }
-
-        // Create menu element
-        var menu = document.createElement('div');
-        menu.id = menuId;
-        menu.className = 'header-dropdown-menu enhanced';
-        menu.style.cssText = 'position: absolute; top: 100%; right: 0; margin-top: 8px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0; min-width: 320px; max-width: 400px; max-height: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000; overflow: hidden; display: flex; flex-direction: column;';
-
-        // Add header for notifications
-        if (type === 'notifications') {
-            var header = document.createElement('div');
-            header.style.cssText = 'padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; font-weight: 600; color: #f8fafc; flex-shrink: 0;';
-            header.textContent = 'Notifications';
-            menu.appendChild(header);
-        }
-
-        // Create scrollable content area
-        var contentArea = document.createElement('div');
-        contentArea.style.cssText = 'overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: #4b5563 #1e293b;';
-
-        // Add items to scrollable content
-        items.forEach(function(item) {
-            if (item.text === '---') {
-                var divider = document.createElement('div');
-                divider.style.cssText = 'height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;';
-                contentArea.appendChild(divider);
-                return;
-            }
-            
-            var menuItem = document.createElement('div');
-            menuItem.style.cssText = 'padding: 12px 20px; cursor: pointer; color: #e2e8f0; font-size: 14px; transition: background 0.2s; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);';
-            
-            if (item.subtitle) {
-                var titleSpan = document.createElement('div');
-                titleSpan.style.cssText = 'font-weight: 500; line-height: 1.3; word-wrap: break-word;';
-                titleSpan.textContent = item.text;
-                menuItem.appendChild(titleSpan);
-                
-                var subtitleSpan = document.createElement('div');
-                subtitleSpan.style.cssText = 'font-size: 12px; color: #94a3b8; line-height: 1.3; word-wrap: break-word;';
-                subtitleSpan.textContent = item.subtitle;
-                menuItem.appendChild(subtitleSpan);
-            } else {
-                menuItem.textContent = item.text;
-            }
-            
-            menuItem.addEventListener('mouseenter', function() {
-                menuItem.style.background = 'rgba(74, 222, 128, 0.1)';
-            });
-            menuItem.addEventListener('mouseleave', function() {
-                menuItem.style.background = 'transparent';
-            });
-            menuItem.addEventListener('click', function() {
-                if (item.action) item.action();
-                menu.remove();
-            });
-            contentArea.appendChild(menuItem);
-        });
-
-        menu.appendChild(contentArea);
-
-        // Add custom scrollbar styles
-        if (!document.getElementById('notification-scrollbar-styles')) {
-            var style = document.createElement('style');
-            style.id = 'notification-scrollbar-styles';
-            style.textContent = `
-                .header-dropdown-menu.enhanced::-webkit-scrollbar {
-                    width: 6px;
-                }
-                .header-dropdown-menu.enhanced::-webkit-scrollbar-track {
-                    background: #1e293b;
-                }
-                .header-dropdown-menu.enhanced::-webkit-scrollbar-thumb {
-                    background: #4b5563;
-                    border-radius: 3px;
-                }
-                .header-dropdown-menu.enhanced::-webkit-scrollbar-thumb:hover {
-                    background: #6b7280;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // Position menu
-        var rect = button.getBoundingClientRect();
-        menu.style.position = 'fixed';
-        menu.style.top = (rect.bottom + 8) + 'px';
-        menu.style.right = (window.innerWidth - rect.right) + 'px';
-
-        document.body.appendChild(menu);
-
-        // Close menu when clicking outside
-        var closeMenu = function(e) {
-            if (!menu.contains(e.target) && e.target !== button && !button.contains(e.target)) {
-                menu.remove();
-                document.removeEventListener('click', closeMenu);
-            }
-        };
-        setTimeout(function() {
-            document.addEventListener('click', closeMenu);
-        }, 100);
-
-        return menu;
-    }
 
         // Notification bell - show notifications dropdown
         if (notificationBell) {
@@ -570,7 +462,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                console.log('Admin notification bell clicked');
+                console.log('Member notification bell clicked');
                 
                 // Mark all notifications as read
                 notificationService.markAllAsRead();
@@ -602,9 +494,8 @@
                             text: priorityIcon + ' ' + notification.title + ' - ' + timeAgo,
                             subtitle: preview,
                             action: function() {
-                                // Mark as read and navigate to admin notices page
-                                notificationService.markAsRead(notification.id);
-                                window.location.href = '/pages/dashboard/shared/notices.html';
+                                // Show dialog for regular users
+                                showNotificationDialog(notification);
                             }
                         });
                     });
@@ -620,68 +511,16 @@
                 
                 createEnhancedDropdownMenu(notificationBell, 'notifications-menu', dropdownItems, 'notifications');
             };
-            console.log('Admin notification bell handler attached');
+            console.log('Member notification bell handler attached');
         }
 
-        // Quick actions button - show quick actions menu
-        if (quickActionsBtn) {
-            quickActionsBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                console.log('Quick actions button clicked');
-                
-                // Emit custom event
-                document.dispatchEvent(new CustomEvent('toggleQuickActions'));
-                
-                // Create quick actions dropdown as fallback
-                createDropdownMenu(quickActionsBtn, 'quick-actions-menu', [
-                    { text: 'Add New Member', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/edit-member.html';
-                    }},
-                    { text: 'Create Announcement', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/send-announcement.html';
-                    }},
-                    { text: 'Upload Document', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/upload-document.html';
-                    }},
-                    { text: 'Create Notice', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/create-notice.html';
-                    }}
-                ]);
+        // Profile link - allow default navigation
+        if (profileLink) {
+            profileLink.onclick = function(e) {
+                console.log('Member profile link clicked');
+                // Allow default navigation to profile page
             };
-            console.log('Quick actions button handler attached');
-        }
-
-        // User profile - show user menu
-        if (userProfile) {
-            userProfile.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                console.log('User profile clicked');
-                
-                // Emit custom event
-                document.dispatchEvent(new CustomEvent('toggleUserMenu'));
-                
-                // Get user info
-                var userName = document.getElementById('headerUserName');
-                var userRole = document.getElementById('headerUserRole');
-                
-                // Create user dropdown as fallback
-                createDropdownMenu(userProfile, 'user-menu', [
-                    { text: userName ? userName.textContent : 'Admin User', action: null },
-                    { text: userRole ? userRole.textContent : 'Administrator', action: null },
-                    { text: '---', action: null },
-                    { text: 'Profile Settings', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/settings.html';
-                    }},
-                    { text: 'Security Settings', action: function() { 
-                        window.location.href = '/pages/dashboard/admin/security-settings.html';
-                    }}
-                ]);
-            };
-            console.log('User profile handler attached');
+            console.log('Member profile link handler attached');
         }
 
         // Logout button
@@ -690,7 +529,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                console.log('Logout button clicked');
+                console.log('Member logout button clicked');
                 
                 // Show confirmation dialog
                 var confirmed = await showConfirmDialog('Are you sure you want to logout?');
@@ -708,37 +547,38 @@
                 // Redirect to homepage
                 window.location.href = '/index.html';
             };
-            console.log('Logout button handler attached');
+            console.log('Member logout button handler attached');
         }
 
-        console.log('All header button handlers initialized');
+        console.log('All member header button handlers initialized');
     }
 
     // Expose utility functions globally for external use
-    window.adminHeaderUtils = {
-        updateUserInfo: updateUserInfo,
-        updatePageInfo: updatePageInfo,
+    window.memberHeaderUtils = {
+        updateMemberAvatar: updateMemberAvatar,
+        showFineAlert: showFineAlert,
+        hideFineAlert: hideFineAlert,
         showConfirmDialog: showConfirmDialog,
         notificationService: notificationService
     };
 
     // Try to initialize immediately if elements exist
     function tryInit() {
-        var logoutBtn = document.getElementById('headerLogoutBtn');
+        var logoutBtn = document.getElementById('memberLogoutBtn');
         
         if (logoutBtn) {
-            console.log('Header elements found immediately');
+            console.log('Member header elements found immediately');
             initHeaderButtons();
         } else {
-            console.log('Header elements not found, waiting...');
+            console.log('Member header elements not found, waiting...');
             // Try again after a delay
             setTimeout(function() {
-                var logoutBtn2 = document.getElementById('headerLogoutBtn');
+                var logoutBtn2 = document.getElementById('memberLogoutBtn');
                 if (logoutBtn2) {
-                    console.log('Header elements found after delay');
+                    console.log('Member header elements found after delay');
                     initHeaderButtons();
                 } else {
-                    console.log('Still waiting for header elements...');
+                    console.log('Still waiting for member header elements...');
                     // One more try
                     setTimeout(function() {
                         initHeaderButtons();

@@ -44,7 +44,13 @@ class AnnouncementService {
      * @param {Object} data - Announcement data
      */
     async create(data) {
-        return apiService.post(API_CONFIG.endpoints.announcements, data, true);
+        const response = await apiService.post(API_CONFIG.endpoints.announcements, data, true);
+        // Backend returns { success: true, data: announcement }
+        return {
+            success: response.success,
+            message: response.message,
+            announcement: response.data // Extract the actual announcement data
+        };
     }
 
     /**

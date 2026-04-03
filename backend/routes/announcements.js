@@ -9,6 +9,7 @@ const { body, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const Announcement = require('../models/Announcement');
 const Member = require('../models/Member');
+const User = require('../models/User');
 const { auth, authorize } = require('../middleware/auth');
 
 const validate = (req, res, next) => {
@@ -19,17 +20,62 @@ const validate = (req, res, next) => {
     next();
 };
 
+// Helper function to get proper user UUID
+async function getUserUuid(userId) {
+    try {
+        // If it's already a valid UUID format, return it
+        if (typeof userId === 'string' && userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+            return userId;
+        }
+        
+        // For non-UUID values, only search by email or other non-UUID fields
+        const user = await User.findOne({
+            where: {
+                [Op.or]: [
+                    { email: userId },
+                    { email: userId + '@example.com' }, // Handle simple usernames
+                    { email: userId + '@swa.com' },      // Handle organization usernames
+                    { role: userId }                     // Handle role-based lookup (e.g., 'admin')
+                ]
+            }
+        });
+        
+        if (user) {
+            console.log('Found user:', user.id, 'for input:', userId);
+            return user.id;
+        }
+        
+        // If still not found, try to find any admin user as fallback
+        const adminUser = await User.findOne({
+            where: { role: 'admin' }
+        });
+        
+        if (adminUser) {
+            console.log('Using fallback admin user:', adminUser.id);
+            return adminUser.id;
+        }
+        
+        console.log('Could not find user for ID:', userId);
+        return null;
+    } catch (error) {
+        console.error('Error getting user UUID:', error);
+        return null;
+    }
+}
+
 /**
  * GET /api/announcements
  * Get all announcements
  */
 router.get('/', auth, async (req, res) => {
     try {
-        const { type, priority, status, page = 1, limit = 10 } = req.query;
+        console.log('Announcements API called with query:', req.query);
+        const { type, priority, status, targetAudience, page = 1, limit = 10 } = req.query;
         const where = {};
 
         if (type) where.type = type;
         if (priority) where.priority = priority;
+        if (targetAudience) where.targetAudience = targetAudience;
         
         if (status === 'active') {
             where.isActive = true;
@@ -39,6 +85,8 @@ router.get('/', auth, async (req, res) => {
             ];
         }
 
+        console.log('Announcements WHERE clause:', where);
+
         const offset = (page - 1) * limit;
         const { count, rows: announcements } = await Announcement.findAndCountAll({
             where,
@@ -46,6 +94,9 @@ router.get('/', auth, async (req, res) => {
             limit: parseInt(limit),
             offset: parseInt(offset)
         });
+
+        console.log('Found announcements:', announcements.length);
+        console.log('Announcements data:', announcements);
 
         res.json({
             success: true,
@@ -97,6 +148,12 @@ router.post('/', auth, authorize('admin', 'chairman', 'secretary'), [
     try {
         const { title, content, type, priority, targetAudience, specificMembers, expiresAt } = req.body;
 
+        // Get proper user UUID for sentBy
+        const sentByUuid = await getUserUuid(req.user.id);
+        if (!sentByUuid) {
+            return res.status(400).json({ success: false, message: 'Invalid user ID' });
+        }
+
         const announcement = await Announcement.create({
             title,
             content,
@@ -104,7 +161,7 @@ router.post('/', auth, authorize('admin', 'chairman', 'secretary'), [
             priority: priority || 'medium',
             targetAudience: targetAudience || 'all',
             specificMembers: specificMembers || [],
-            sentBy: req.user.id,
+            sentBy: sentByUuid,
             expiresAt: expiresAt || null
         });
 
