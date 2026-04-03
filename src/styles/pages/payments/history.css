@@ -3,8 +3,39 @@
    Only styles that are unique to this page - no duplicates from unified-dashboard.css
    ============================================================================= */
 
-/* Additional Color Variables for Payment History */
+/* Additional Color Variables for Payment History - ADD to existing :root, don't replace */
 :root {
+  /* Keep all unified-dashboard.css variables */
+  /* Layout Dimensions */
+  --sidebar-width: 240px;
+  --header-height: 64px;
+  --footer-height: 60px;
+  
+  /* Colors - from unified-dashboard.css */
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f2f5;
+  --border-color: #e2e5ea;
+  --accent-color: #2d7c5b;
+  --accent-dark: #1e5c3f;
+  --text-primary: #1a1f2e;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 16px rgba(0,0,0,0.12);
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s cubic-bezier(.4,0,.2,1);
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+
+  /* Additional Payment History variables */
   --accent-light: rgba(45, 124, 91, 0.1);
   --success-color: #10b981;
   --success-light: rgba(16, 185, 129, 0.1);
@@ -78,10 +109,29 @@
 
 /* ── PAYMENT SUMMARY CARDS ── */
 .payment-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 24px;
   margin-bottom: 32px;
+}
+
+.payment-summary h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.payment-summary h2 i {
+  color: var(--accent-color);
+  font-size: 18px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
 }
 
 .summary-card {
@@ -89,7 +139,9 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 24px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-base);
   position: relative;
@@ -101,10 +153,10 @@
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent-color), var(--accent-light));
-  transform: scaleX(0);
+  width: 4px;
+  height: 100%;
+  background: var(--accent-color);
+  transform: scaleY(0);
   transition: transform var(--transition-base);
 }
 
@@ -114,34 +166,21 @@
 }
 
 .summary-card:hover::before {
-  transform: scaleX(1);
+  transform: scaleY(1);
 }
 
-.summary-card__icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--accent-light);
-  color: var(--accent-color);
-  font-size: 24px;
-}
-
-.summary-card h3 {
+.summary-info h3 {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-secondary);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.summary-card .stat-number {
+.summary-info .stat-number {
   font-family: 'Syne', sans-serif;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -233,31 +272,6 @@
 
 .payment-records__table tbody tr:last-child td {
   border-bottom: none;
-}
-
-/* ── BUTTON VARIANTS ── */
-.btn-primary {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
-  color: white;
-}
-
-.btn-primary:hover {
-  background: var(--accent-dark);
-  border-color: var(--accent-dark);
-  color: white;
-}
-
-.btn-secondary {
-  background: var(--bg-tertiary);
-  border-color: var(--border-color);
-  color: var(--text-secondary);
-}
-
-.btn-secondary:hover {
-  background: var(--bg-secondary);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
 }
 
 /* ── STATUS BADGES ── */

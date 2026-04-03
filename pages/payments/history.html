@@ -86,25 +86,37 @@
         <section id="myPaymentsView">
             <!-- My Summary -->
             <section class="payment-summary">
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-receipt"></i></div>
-                    <h3>My Total Payments</h3>
-                    <p class="stat-number" id="myTotalPayments">0</p>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-money-bill-wave"></i></div>
-                    <h3>Total Amount Paid</h3>
-                    <p class="stat-number" id="myTotalAmount">Ksh 0</p>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-check-circle"></i></div>
-                    <h3>Successful</h3>
-                    <p class="stat-number" id="mySuccessful">0</p>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-clock"></i></div>
-                    <h3>Pending</h3>
-                    <p class="stat-number" id="myPending">0</p>
+                <h2><i class="fas fa-chart-pie"></i> My Payment Summary</h2>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <i class="fas fa-receipt"></i>
+                        <div class="summary-info">
+                            <h3>My Total Payments</h3>
+                            <p class="stat-number" id="myTotalPayments">0</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <div class="summary-info">
+                            <h3>Total Amount Paid</h3>
+                            <p class="stat-number" id="myTotalAmount">Ksh 0</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="summary-info">
+                            <h3>Successful</h3>
+                            <p class="stat-number" id="mySuccessful">0</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-clock"></i>
+                        <div class="summary-info">
+                            <h3>Pending</h3>
+                            <p class="stat-number" id="myPending">0</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -184,30 +196,44 @@
         <section id="allPaymentsView" style="display: none;">
             <!-- Admin Summary Cards -->
             <section class="payment-summary">
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-receipt"></i></div>
-                    <h3>Total Payments</h3>
-                    <p class="stat-number" id="adminTotalPayments">0</p>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-money-bill-wave"></i></div>
-                    <h3>Total Amount</h3>
-                    <p class="stat-number" id="adminTotalAmount">Ksh 0</p>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-check-circle"></i></div>
-                    <h3>Completed</h3>
-                    <p class="stat-number" id="adminCompleted">0</p>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-clock"></i></div>
-                    <h3>Pending</h3>
-                    <p class="stat-number" id="adminPending">0</p>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card__icon"><i class="fas fa-times-circle"></i></div>
-                    <h3>Failed</h3>
-                    <p class="stat-number" id="adminFailed">0</p>
+                <h2><i class="fas fa-chart-pie"></i> Payment Analytics</h2>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <i class="fas fa-receipt"></i>
+                        <div class="summary-info">
+                            <h3>Total Payments</h3>
+                            <p class="stat-number" id="adminTotalPayments">0</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <div class="summary-info">
+                            <h3>Total Amount</h3>
+                            <p class="stat-number" id="adminTotalAmount">Ksh 0</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="summary-info">
+                            <h3>Completed</h3>
+                            <p class="stat-number" id="adminCompleted">0</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-clock"></i>
+                        <div class="summary-info">
+                            <h3>Pending</h3>
+                            <p class="stat-number" id="adminPending">0</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-times-circle"></i>
+                        <div class="summary-info">
+                            <h3>Failed</h3>
+                            <p class="stat-number" id="adminFailed">0</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -395,9 +421,37 @@
           document.querySelector('[data-view="all-payments"]').style.display = 'none';
         }
         
+        // Setup view toggle functionality
+        setupViewToggle();
+        
       } catch (error) {
         console.error('Error loading payments:', error);
       }
+    }
+    
+    function setupViewToggle() {
+      const toggleBtns = document.querySelectorAll('.toggle-btn');
+      const myPaymentsView = document.getElementById('myPaymentsView');
+      const allPaymentsView = document.getElementById('allPaymentsView');
+      
+      toggleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const view = this.getAttribute('data-view');
+          
+          // Update active button
+          toggleBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Show/hide views
+          if (view === 'my-payments') {
+            myPaymentsView.style.display = 'block';
+            allPaymentsView.style.display = 'none';
+          } else if (view === 'all-payments') {
+            myPaymentsView.style.display = 'none';
+            allPaymentsView.style.display = 'block';
+          }
+        });
+      });
     }
     
     function displayMyPayments(payments) {
