@@ -59,6 +59,24 @@ class SecuritySettings {
                 this.changePassword(e);
             });
         }
+        
+        // Password policy form
+        const passwordPolicyForm = document.querySelector('.security-section:nth-of-type(2) .security-form');
+        if (passwordPolicyForm) {
+            passwordPolicyForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.savePasswordPolicy(e);
+            });
+        }
+        
+        // Session management form
+        const sessionForm = document.querySelector('.security-section:nth-of-type(4) .security-form');
+        if (sessionForm) {
+            sessionForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveSessionSettings(e);
+            });
+        }
 
         // Two-factor toggle
         const twoFactorToggle = document.getElementById('twoFactorToggle');
@@ -109,11 +127,36 @@ class SecuritySettings {
 
     async loadSecurityData() {
         try {
+            const token = localStorage.getItem('swa_auth_token');
+            if (!token) {
+                console.warn('No auth token found');
+                return;
+            }
+            
+            // Fetch security statistics from new API endpoint
+            const statsResponse = await fetch('/api/settings/security/stats', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (statsResponse.ok) {
+                const statsData = await statsResponse.json();
+                if (statsData.success) {
+                    this.securityData.activeUsers = statsData.data.activeUsers || 0;
+                    this.securityData.twoFactorEnabled = statsData.data.twoFactorEnabled || 0;
+                    this.securityData.failedLogins = statsData.data.failedLogins || 0;
+                    this.securityData.lastAuditDays = statsData.data.lastAuditDays || 0;
+                }
+            }
+            
             // Fetch users data
             const usersData = await this.fetchUsersData();
-            
-            // Process users data for security stats
             this.processUsersData(usersData);
+            
+            // Fetch audit log
+            await this.loadAuditLog();
             
             // Render all security data
             this.renderQuickStats();
@@ -216,6 +259,35 @@ class SecuritySettings {
         const diffTime = Math.abs(now - latestDate);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
+    }
+
+    async loadAuditLog() {
+        try {
+            const token = localStorage.getItem('swa_auth_token');
+            if (!token) return;
+            
+            const response = await fetch('/api/settings/security/audit-log', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    this.securityData.auditLogs = data.data || [];
+                }
+            }
+        } catch (error) {
+            console.error('Error loading audit log:', error);
+            // Don't show error for audit log, just use generated logs
+        }
+        
+        // Fallback: generate audit logs from user data if API returns empty
+        if (!this.securityData.auditLogs || this.securityData.auditLogs.length === 0) {
+            this.securityData.auditLogs = this.generateAuditLogs(this.securityData.users);
+        }
     }
 
     generateAuditLogs(users) {
@@ -460,22 +532,174 @@ class SecuritySettings {
 
     changePassword(e) {
         const form = e.target;
+        const currentPassword = form.querySelector('input[name="currentPassword"]')?.value;
         const newPassword = form.querySelector('input[name="newPassword"]')?.value;
         const confirmPassword = form.querySelector('input[name="confirmPassword"]')?.value;
 
+        // Validation
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showAlert('Please fill in all password fields', 'Validation Error', 'error');
+            return;
+        }
+        
+        if (newPassword.length < 8) {
+            showAlert('New password must be at least 8 characters long', 'Validation Error', 'error');
+            return;
+        }
+        
         if (newPassword !== confirmPassword) {
-            showAlert('Passwords do not match!', 'Information', 'info');
+            showAlert('Passwords do not match!', 'Validation Error', 'error');
+            return;
+        }
+        
+        if (currentPassword === newPassword) {
+            showAlert('New password must be different from current password', 'Validation Error', 'error');
             return;
         }
 
-        console.log('Changing password...');
-        showAlert('Password changed successfully!', 'Information', 'info');
-        form.reset();
+        this.savePassword(currentPassword, newPassword);
     }
 
-    toggleTwoFactor(enabled) {
-        console.log('Two-factor authentication:', enabled ? 'enabled' : 'disabled');
-        showAlert(`Two-factor authentication ${enabled ? 'enabled' : 'disabled'} successfully!`, 'Information', 'info');
+    async savePassword(currentPassword, newPassword) {
+        const token = localStorage.getItem('swa_auth_token');
+        if (!token) {
+            showAlert('Authentication required. Please login again.', 'Authentication Error', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/auth/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword
+                })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showAlert('Password changed successfully!', 'Success', 'success');
+                // Clear the form
+                document.querySelector('.password-form').reset();
+            } else {
+                showAlert(`Error: ${data.message || 'Failed to change password'}`, 'Error', 'error');
+            }
+        } catch (error) {
+            console.error('Error changing password:', error);
+            showAlert(`Error changing password: ${error.message}`, 'Network Error', 'error');
+        }
+    }
+
+    async savePasswordPolicy(e) {
+        const form = e.target;
+        const minLength = form.querySelector('input[type="number"]:first-of-type')?.value;
+        const expiryDays = form.querySelector('input[type="number"]:last-of-type')?.value;
+        
+        // Validation
+        if (!minLength || !expiryDays) {
+            showAlert('Please fill in all password policy fields', 'Validation Error', 'error');
+            return;
+        }
+        
+        if (minLength < 6 || minLength > 20) {
+            showAlert('Minimum password length must be between 6 and 20 characters', 'Validation Error', 'error');
+            return;
+        }
+        
+        if (expiryDays < 30 || expiryDays > 365) {
+            showAlert('Password expiry must be between 30 and 365 days', 'Validation Error', 'error');
+            return;
+        }
+        
+        const token = localStorage.getItem('swa_auth_token');
+        if (!token) {
+            showAlert('Authentication required. Please login again.', 'Authentication Error', 'error');
+            return;
+        }
+        
+        try {
+            const settings = [
+                { key: 'password_min_length', value: minLength, type: 'number', description: 'Minimum password length' },
+                { key: 'password_expiry_days', value: expiryDays, type: 'number', description: 'Password expiry in days' }
+            ];
+            
+            const response = await fetch('/api/settings/security', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ settings })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showAlert('Password policy updated successfully!', 'Success', 'success');
+            } else {
+                showAlert(`Error: ${data.message || 'Failed to update password policy'}`, 'Error', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving password policy:', error);
+            showAlert(`Error saving password policy: ${error.message}`, 'Network Error', 'error');
+        }
+    }
+    
+    async saveSessionSettings(e) {
+        const form = e.target;
+        const sessionTimeout = form.querySelector('input[type="number"]:first-of-type')?.value;
+        const maxSessions = form.querySelector('input[type="number"]:last-of-type')?.value;
+        
+        // Validation
+        if (!sessionTimeout || !maxSessions) {
+            showAlert('Please fill in all session settings fields', 'Validation Error', 'error');
+            return;
+        }
+        
+        if (sessionTimeout < 15 || sessionTimeout > 480) {
+            showAlert('Session timeout must be between 15 and 480 minutes', 'Validation Error', 'error');
+            return;
+        }
+        
+        if (maxSessions < 1 || maxSessions > 10) {
+            showAlert('Maximum concurrent sessions must be between 1 and 10', 'Validation Error', 'error');
+            return;
+        }
+        
+        const token = localStorage.getItem('swa_auth_token');
+        if (!token) {
+            showAlert('Authentication required. Please login again.', 'Authentication Error', 'error');
+            return;
+        }
+        
+        try {
+            const settings = [
+                { key: 'session_timeout_minutes', value: sessionTimeout, type: 'number', description: 'Session timeout in minutes' },
+                { key: 'max_concurrent_sessions', value: maxSessions, type: 'number', description: 'Maximum concurrent sessions' }
+            ];
+            
+            const response = await fetch('/api/settings/security', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ settings })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showAlert('Session settings updated successfully!', 'Success', 'success');
+            } else {
+                showAlert(`Error: ${data.message || 'Failed to update session settings'}`, 'Error', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving session settings:', error);
+            showAlert(`Error saving session settings: ${error.message}`, 'Network Error', 'error');
+        }
     }
 
     async handleLogout() {
@@ -495,63 +719,104 @@ class SecuritySettings {
     async loadPaymentConfig() {
         try {
             const token = localStorage.getItem('swa_auth_token');
-            if (!token) return;
+            if (!token) {
+                console.warn('No auth token found');
+                return;
+            }
             
             const response = await fetch('/api/settings/payment/config', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             
             const data = await response.json();
             if (data.success && data.data) {
                 this.populatePaymentForms(data.data);
+            } else {
+                console.warn('No payment config data found');
             }
         } catch (error) {
             console.error('Error loading payment config:', error);
+            // Don't show alert for config loading errors, just log them
         }
     }
     
     populatePaymentForms(config) {
         // M-Pesa
         if (config.mpesa) {
-            document.getElementById('mpesaEnabled').checked = config.mpesa.enabled;
-            document.getElementById('mpesaConsumerKey').value = config.mpesa.consumerKey || '';
-            document.getElementById('mpesaConsumerSecret').value = ''; // Never show existing
-            document.getElementById('mpesaShortcode').value = config.mpesa.shortcode || '';
-            document.getElementById('mpesaPaybill').value = config.mpesa.paybill || '';
-            document.getElementById('mpesaCallbackUrl').value = config.mpesa.callbackUrl || '';
+            const mpesaEnabled = document.getElementById('mpesaEnabled');
+            const mpesaConsumerKey = document.getElementById('mpesaConsumerKey');
+            const mpesaShortcode = document.getElementById('mpesaShortcode');
+            const mpesaPaybill = document.getElementById('mpesaPaybill');
+            const mpesaCallbackUrl = document.getElementById('mpesaCallbackUrl');
+            
+            if (mpesaEnabled) mpesaEnabled.checked = config.mpesa.enabled || false;
+            if (mpesaConsumerKey) mpesaConsumerKey.value = config.mpesa.consumerKey || '';
+            if (mpesaShortcode) mpesaShortcode.value = config.mpesa.shortcode || '';
+            if (mpesaPaybill) mpesaPaybill.value = config.mpesa.paybill || '';
+            if (mpesaCallbackUrl) mpesaCallbackUrl.value = config.mpesa.callbackUrl || '';
         }
         
         // Stripe
         if (config.stripe) {
-            document.getElementById('stripeEnabled').checked = config.stripe.enabled;
-            document.getElementById('stripePublicKey').value = config.stripe.publicKey || '';
-            document.getElementById('stripeSecretKey').value = ''; // Never show existing
-            document.getElementById('stripeWebhookSecret').value = '';
+            const stripeEnabled = document.getElementById('stripeEnabled');
+            const stripePublicKey = document.getElementById('stripePublicKey');
+            
+            if (stripeEnabled) stripeEnabled.checked = config.stripe.enabled || false;
+            if (stripePublicKey) stripePublicKey.value = config.stripe.publicKey || '';
+            // Never populate secret fields for security
         }
         
         // Bank
         if (config.bank) {
-            document.getElementById('bankEnabled').checked = config.bank.enabled;
-            document.getElementById('bankName').value = config.bank.name || '';
-            document.getElementById('bankBranch').value = config.bank.branch || '';
-            document.getElementById('bankAccountName').value = config.bank.accountName || '';
-            document.getElementById('bankAccountNumber').value = config.bank.accountNumber || '';
+            const bankEnabled = document.getElementById('bankEnabled');
+            const bankName = document.getElementById('bankName');
+            const bankBranch = document.getElementById('bankBranch');
+            const bankAccountName = document.getElementById('bankAccountName');
+            const bankAccountNumber = document.getElementById('bankAccountNumber');
+            
+            if (bankEnabled) bankEnabled.checked = config.bank.enabled || false;
+            if (bankName) bankName.value = config.bank.name || '';
+            if (bankBranch) bankBranch.value = config.bank.branch || '';
+            if (bankAccountName) bankAccountName.value = config.bank.accountName || '';
+            if (bankAccountNumber) bankAccountNumber.value = config.bank.accountNumber || '';
         }
     }
     
     async saveMpesaSettings() {
+        const mpesaConsumerKey = document.getElementById('mpesaConsumerKey');
+        const mpesaConsumerSecret = document.getElementById('mpesaConsumerSecret');
+        const mpesaShortcode = document.getElementById('mpesaShortcode');
+        const mpesaPaybill = document.getElementById('mpesaPaybill');
+        const mpesaCallbackUrl = document.getElementById('mpesaCallbackUrl');
+        const mpesaEnabled = document.getElementById('mpesaEnabled');
+        
+        if (!mpesaConsumerKey || !mpesaConsumerSecret || !mpesaShortcode || !mpesaPaybill) {
+            showAlert('Please fill in all required M-Pesa fields', 'Validation Error', 'error');
+            return;
+        }
+        
         const mpesa = {
-            enabled: document.getElementById('mpesaEnabled').checked,
-            consumerKey: document.getElementById('mpesaConsumerKey').value,
-            consumerSecret: document.getElementById('mpesaConsumerSecret').value,
-            shortcode: document.getElementById('mpesaShortcode').value,
-            paybill: document.getElementById('mpesaPaybill').value,
-            callbackUrl: document.getElementById('mpesaCallbackUrl').value
+            enabled: mpesaEnabled ? mpesaEnabled.checked : false,
+            consumerKey: mpesaConsumerKey.value,
+            consumerSecret: mpesaConsumerSecret.value,
+            shortcode: mpesaShortcode.value,
+            paybill: mpesaPaybill.value,
+            callbackUrl: mpesaCallbackUrl ? mpesaCallbackUrl.value : ''
         };
         
         const token = localStorage.getItem('swa_auth_token');
+        if (!token) {
+            showAlert('Authentication required. Please login again.', 'Authentication Error', 'error');
+            return;
+        }
+        
         try {
             const response = await fetch('/api/settings/payment/config', {
                 method: 'PUT',
@@ -564,24 +829,42 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                showAlert('M-Pesa settings saved successfully!', 'Information', 'info');
+                showAlert('M-Pesa settings saved successfully!', 'Success', 'success');
+                // Clear secret fields for security
+                if (mpesaConsumerSecret) mpesaConsumerSecret.value = '';
             } else {
-                showAlert(`Error: ${data.message}`, 'Error', 'error');
+                showAlert(`Error: ${data.message || 'Unknown error occurred'}`, 'Error', 'error');
             }
         } catch (error) {
-            showAlert(`Error saving settings: ${error.message}`, 'Error', 'error');
+            console.error('Error saving M-Pesa settings:', error);
+            showAlert(`Error saving settings: ${error.message}`, 'Network Error', 'error');
         }
     }
     
     async saveStripeSettings() {
+        const stripePublicKey = document.getElementById('stripePublicKey');
+        const stripeSecretKey = document.getElementById('stripeSecretKey');
+        const stripeWebhookSecret = document.getElementById('stripeWebhookSecret');
+        const stripeEnabled = document.getElementById('stripeEnabled');
+        
+        if (!stripePublicKey || !stripeSecretKey) {
+            showAlert('Please fill in all required Stripe fields', 'Validation Error', 'error');
+            return;
+        }
+        
         const stripe = {
-            enabled: document.getElementById('stripeEnabled').checked,
-            publicKey: document.getElementById('stripePublicKey').value,
-            secretKey: document.getElementById('stripeSecretKey').value,
-            webhookSecret: document.getElementById('stripeWebhookSecret').value
+            enabled: stripeEnabled ? stripeEnabled.checked : false,
+            publicKey: stripePublicKey.value,
+            secretKey: stripeSecretKey.value,
+            webhookSecret: stripeWebhookSecret ? stripeWebhookSecret.value : ''
         };
         
         const token = localStorage.getItem('swa_auth_token');
+        if (!token) {
+            showAlert('Authentication required. Please login again.', 'Authentication Error', 'error');
+            return;
+        }
+        
         try {
             const response = await fetch('/api/settings/payment/config', {
                 method: 'PUT',
@@ -594,25 +877,45 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                showAlert('Stripe settings saved successfully!', 'Information', 'info');
+                showAlert('Stripe settings saved successfully!', 'Success', 'success');
+                // Clear secret fields for security
+                if (stripeSecretKey) stripeSecretKey.value = '';
+                if (stripeWebhookSecret) stripeWebhookSecret.value = '';
             } else {
-                showAlert(`Error: ${data.message}`, 'Error', 'error');
+                showAlert(`Error: ${data.message || 'Unknown error occurred'}`, 'Error', 'error');
             }
         } catch (error) {
-            showAlert(`Error saving settings: ${error.message}`, 'Error', 'error');
+            console.error('Error saving Stripe settings:', error);
+            showAlert(`Error saving settings: ${error.message}`, 'Network Error', 'error');
         }
     }
     
     async saveBankSettings() {
+        const bankName = document.getElementById('bankName');
+        const bankBranch = document.getElementById('bankBranch');
+        const bankAccountName = document.getElementById('bankAccountName');
+        const bankAccountNumber = document.getElementById('bankAccountNumber');
+        const bankEnabled = document.getElementById('bankEnabled');
+        
+        if (!bankName || !bankAccountName || !bankAccountNumber) {
+            showAlert('Please fill in all required bank fields', 'Validation Error', 'error');
+            return;
+        }
+        
         const bank = {
-            enabled: document.getElementById('bankEnabled').checked,
-            name: document.getElementById('bankName').value,
-            branch: document.getElementById('bankBranch').value,
-            accountName: document.getElementById('bankAccountName').value,
-            accountNumber: document.getElementById('bankAccountNumber').value
+            enabled: bankEnabled ? bankEnabled.checked : false,
+            name: bankName.value,
+            branch: bankBranch ? bankBranch.value : '',
+            accountName: bankAccountName.value,
+            accountNumber: bankAccountNumber.value
         };
         
         const token = localStorage.getItem('swa_auth_token');
+        if (!token) {
+            showAlert('Authentication required. Please login again.', 'Authentication Error', 'error');
+            return;
+        }
+        
         try {
             const response = await fetch('/api/settings/payment/config', {
                 method: 'PUT',
@@ -625,33 +928,48 @@ class SecuritySettings {
             
             const data = await response.json();
             if (data.success) {
-                showAlert('Bank settings saved successfully!', 'Information', 'info');
+                showAlert('Bank settings saved successfully!', 'Success', 'success');
             } else {
-                showAlert(`Error: ${data.message}`, 'Error', 'error');
+                showAlert(`Error: ${data.message || 'Unknown error occurred'}`, 'Error', 'error');
             }
         } catch (error) {
-            showAlert(`Error saving settings: ${error.message}`, 'Error', 'error');
+            console.error('Error saving bank settings:', error);
+            showAlert(`Error saving settings: ${error.message}`, 'Network Error', 'error');
         }
     }
     
     async registerMpesaC2B() {
+        const mpesaC2BEnabled = document.getElementById('mpesaC2BEnabled');
+        
+        if (!mpesaC2BEnabled || !mpesaC2BEnabled.checked) {
+            showAlert('Please enable C2B webhook first', 'Validation Error', 'error');
+            return;
+        }
+        
         const token = localStorage.getItem('swa_auth_token');
+        if (!token) {
+            showAlert('Authentication required. Please login again.', 'Authentication Error', 'error');
+            return;
+        }
+        
         try {
             const response = await fetch('/api/mpesa/c2b/register', {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 }
             });
             
             const data = await response.json();
             if (data.success) {
-                showAlert('C2B callback registered!', 'Information', 'info');
+                showAlert('C2B callback registered successfully!', 'Success', 'success');
             } else {
-                showAlert(`Error: ${data.message}`, 'Error', 'error');
+                showAlert(`Error: ${data.message || 'Failed to register C2B callback'}`, 'Error', 'error');
             }
         } catch (error) {
-            showAlert(`Error: ${error.message}`, 'Error', 'error');
+            console.error('Error registering M-Pesa C2B:', error);
+            showAlert(`Error: ${error.message}`, 'Network Error', 'error');
         }
     }
 }

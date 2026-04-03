@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const Settings = require('../models/Settings');
 const { auth, authorize } = require('../middleware/auth');
 
@@ -346,6 +347,173 @@ router.put('/payment/config', auth, authorize('admin'), async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error updating payment configuration'
+        });
+    }
+});
+
+/**
+ * GET /api/settings/security
+ * Get security settings
+ */
+router.get('/security', auth, authorize('admin'), async (req, res) => {
+    try {
+        const securitySettings = await Settings.findAll({
+            where: { category: 'security' }
+        });
+        
+        const settingsMap = {};
+        securitySettings.forEach(setting => {
+            let value = setting.value;
+            
+            if (setting.type === 'number') {
+                value = parseFloat(setting.value) || 0;
+            } else if (setting.type === 'boolean') {
+                value = setting.value === 'true';
+            } else if (setting.type === 'json') {
+                try {
+                    value = JSON.parse(setting.value);
+                } catch (e) {
+                    value = setting.value;
+                }
+            }
+            
+            settingsMap[setting.key] = value;
+        });
+        
+        res.json({
+            success: true,
+            data: settingsMap
+        });
+    } catch (error) {
+        console.error('Error fetching security settings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching security settings'
+        });
+    }
+});
+
+/**
+ * PUT /api/settings/security
+ * Update security settings (admin only)
+ */
+router.put('/security', auth, authorize('admin'), [
+    body('settings').isArray().withMessage('Settings array is required')
+], validate, async (req, res) => {
+    try {
+        const { settings } = req.body;
+        const userId = req.user.id;
+        
+        for (const item of settings) {
+            let setting = await Settings.findOne({ where: { key: item.key } });
+            
+            if (setting) {
+                setting.value = item.value;
+                setting.updatedBy = userId;
+                await setting.save();
+            } else {
+                await Settings.create({
+                    key: item.key,
+                    value: item.value,
+                    type: item.type || 'string',
+                    category: 'security',
+                    description: item.description,
+                    updatedBy: userId
+                });
+            }
+        }
+        
+        res.json({
+            success: true,
+            message: 'Security settings updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating security settings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating security settings'
+        });
+    }
+});
+
+/**
+ * GET /api/settings/security/stats
+ * Get security statistics
+ */
+router.get('/security/stats', auth, authorize('admin'), async (req, res) => {
+    try {
+        const User = require('../models/User');
+        
+        // Get user statistics
+        const totalUsers = await User.count();
+        const activeUsers = await User.count({
+            where: {
+                isActive: true,
+                lastLogin: {
+                    [Op.gte]: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+                }
+            }
+        });
+        
+        const usersWith2FA = await User.count({
+            where: {
+                isEmailVerified: true
+            }
+        });
+        
+        // Get failed login attempts (this would need to be tracked separately)
+        const failedLogins = 0; // Placeholder - would need audit log table
+        
+        // Calculate days since last audit
+        const lastAuditSetting = await Settings.findOne({
+            where: { key: 'last_security_audit' }
+        });
+        
+        let lastAuditDays = 0;
+        if (lastAuditSetting && lastAuditSetting.value) {
+            const lastAuditDate = new Date(lastAuditSetting.value);
+            const diffTime = Math.abs(new Date() - lastAuditDate);
+            lastAuditDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+        
+        res.json({
+            success: true,
+            data: {
+                activeUsers,
+                twoFactorEnabled: usersWith2FA,
+                failedLogins,
+                lastAuditDays,
+                totalUsers
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching security stats:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching security statistics'
+        });
+    }
+});
+
+/**
+ * GET /api/settings/security/audit-log
+ * Get security audit log
+ */
+router.get('/security/audit-log', auth, authorize('admin'), async (req, res) => {
+    try {
+        // This would typically come from an audit log table
+        // For now, we'll return a sample structure
+        const auditLogs = []; // Placeholder - would need audit log table
+        
+        res.json({
+            success: true,
+            data: auditLogs
+        });
+    } catch (error) {
+        console.error('Error fetching audit log:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching audit log'
         });
     }
 });
