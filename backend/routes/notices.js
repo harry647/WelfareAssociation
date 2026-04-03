@@ -50,7 +50,7 @@ router.get('/', optionalAuth, async (req, res) => {
             // Fetch author information if author ID exists
             if (noticeData.author) {
                 try {
-                    const User = require('../models/User').default;
+                    const User = require('../models/User');
                     const authorUser = await User.findByPk(noticeData.author, {
                         attributes: ['id', 'firstName', 'lastName', 'email']
                     });
@@ -73,7 +73,7 @@ router.get('/', optionalAuth, async (req, res) => {
 
         res.json({
             success: true,
-            data: noticesWithAuthor || [],
+            notices: noticesWithAuthor || [],
             pagination: { 
                 page: parseInt(page), 
                 limit: parseInt(limit), 
@@ -107,7 +107,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
         const noticeData = notice.toJSON();
         if (noticeData.author) {
             try {
-                const User = require('../models/User').default;
+                const User = require('../models/User');
                 const authorUser = await User.findByPk(noticeData.author, {
                     attributes: ['id', 'firstName', 'lastName', 'email']
                 });
@@ -199,7 +199,7 @@ router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
         const noticeData = notice.toJSON();
         if (noticeData.author) {
             try {
-                const User = require('../models/User').default;
+                const User = require('../models/User');
                 const authorUser = await User.findByPk(noticeData.author, {
                     attributes: ['id', 'firstName', 'lastName', 'email']
                 });

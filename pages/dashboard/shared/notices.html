@@ -37,6 +37,11 @@
             <p class="stat-label">Published</p>
           </div>
           <div class="card">
+            <h3><i class="fas fa-bullhorn"></i> Total Announcements</h3>
+            <p class="stat-number" id="totalAnnouncements">0</p>
+            <p class="stat-label">Sent</p>
+          </div>
+          <div class="card">
             <h3><i class="fas fa-paper-plane"></i> Sent This Month</h3>
             <p class="stat-number" id="sentThisMonth">0</p>
             <p class="stat-label">Announcements</p>
@@ -102,6 +107,33 @@
                   <td colspan="8" style="text-align: center; padding: 40px;">
                     <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
                     Loading notices...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Announcements -->
+        <section class="data-section">
+          <h2><i class="fas fa-bullhorn"></i> Announcements</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Priority</th>
+                  <th>Audience</th>
+                  <th>Sent Date</th>
+                  <th>Views</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="announcementsTable">
+                <tr class="loading-row">
+                  <td colspan="6" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    <p>Loading announcements...</p>
                   </td>
                 </tr>
               </tbody>

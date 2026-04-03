@@ -49,7 +49,7 @@ router.get('/', auth, async (req, res) => {
 
         res.json({
             success: true,
-            data: announcements || [],
+            announcements: announcements || [],
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),

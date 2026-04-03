@@ -6,11 +6,13 @@
  */
 
 import { noticeService } from '../../../services/notice-service.js';
+import { announcementService } from '../../../services/announcement-service.js';
 
 import { showAlert, showConfirm, showPrompt } from '../../../utils/utility-functions.js';
 
 // Global variable to store notices data for access by global functions
 let noticesData = [];
+let announcementsData = [];
 
 // Global utility functions for access by global functions
 function formatDate(date) {
@@ -21,10 +23,12 @@ function formatDate(date) {
 class Notices {
     constructor() {
         this.notices = [];
+        this.announcements = [];
         this.drafts = [];
         this.scheduled = [];
         this.stats = {
             totalNotices: 0,
+            totalAnnouncements: 0,
             sentThisMonth: 0,
             totalDrafts: 0,
             readRate: 0,
@@ -87,23 +91,35 @@ class Notices {
 
     async loadNotices() {
         try {
-            // Load all notices with higher limit to get all data for stats
-            const response = await noticeService.getAll({ limit: 100 });
+            // Load all notices and announcements with higher limit to get all data for stats
+            const [noticesResponse, announcementsResponse] = await Promise.all([
+                noticeService.getAll({ limit: 100 }),
+                announcementService.getAll({ limit: 100 })
+            ]);
             
-            if (response.success && response.data) {
-                this.notices = response.data;
-                noticesData = response.data; // Also update global variable
+            if (noticesResponse.success && noticesResponse.notices) {
+                this.notices = noticesResponse.notices;
+                noticesData = noticesResponse.notices; // Also update global variable
+            }
+            
+            if (announcementsResponse.success && announcementsResponse.announcements) {
+                this.announcements = announcementsResponse.announcements;
+                announcementsData = announcementsResponse.announcements; // Update global variable
+            }
+            
+            if (this.notices.length > 0 || this.announcements.length > 0) {
                 this.processNotices();
                 this.renderStats();
                 this.renderPublishedNotices();
                 this.renderScheduledNotices();
                 this.renderDraftNotices();
                 this.renderDeliveryStats();
+                this.renderAnnouncements(); // New method for announcements
             } else {
                 this.handleNoData();
             }
         } catch (error) {
-            console.error('Error loading notices:', error);
+            console.error('Error loading communications:', error);
             this.handleError();
         }
     }
@@ -120,6 +136,7 @@ class Notices {
 
         // Calculate stats
         this.stats.totalNotices = this.publishedNotices.length;
+        this.stats.totalAnnouncements = this.announcements.length;
         this.stats.totalDrafts = this.drafts.length;
 
         // Count notices sent this month
@@ -145,11 +162,13 @@ class Notices {
     renderStats() {
         // Update quick stats
         const totalNoticesEl = document.getElementById('totalNotices');
+        const totalAnnouncementsEl = document.getElementById('totalAnnouncements');
         const sentThisMonthEl = document.getElementById('sentThisMonth');
         const readRateEl = document.getElementById('readRate');
         const totalDraftsEl = document.getElementById('totalDrafts');
 
         if (totalNoticesEl) totalNoticesEl.textContent = this.stats.totalNotices;
+        if (totalAnnouncementsEl) totalAnnouncementsEl.textContent = this.stats.totalAnnouncements;
         if (sentThisMonthEl) sentThisMonthEl.textContent = this.stats.sentThisMonth;
         if (readRateEl) readRateEl.textContent = `${this.stats.readRate}%`;
         if (totalDraftsEl) totalDraftsEl.textContent = this.stats.totalDrafts;
@@ -331,12 +350,57 @@ class Notices {
         tbody.innerHTML = stats.join('');
     }
 
+    renderAnnouncements() {
+        const tbody = document.getElementById('announcementsTable');
+        if (!tbody) return;
+
+        // Show announcements
+        if (this.announcements.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-bullhorn" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i><br>
+                        <p style="color: #666; font-size: 16px;">No announcements available</p>
+                        <p style="color: #999; font-size: 14px;">Create announcements to send to members</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = this.announcements.map(announcement => {
+            const sentAt = announcement.sentAt || announcement.createdAt;
+            const priority = announcement.priority || 'medium';
+            const priorityClass = priority === 'high' || priority === 'critical' ? 'priority-high' : 
+                                 priority === 'medium' ? 'priority-medium' : 'priority-low';
+            
+            return `
+                <tr>
+                    <td>${this.escapeHtml(announcement.title)}</td>
+                    <td><span class="priority-badge ${priorityClass}">${priority}</span></td>
+                    <td>${announcement.targetAudience || 'all'}</td>
+                    <td>${formatDate(sentAt)}</td>
+                    <td>${announcement.viewCount || 0}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="window.editAnnouncement('${announcement.id}')" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-action btn-delete" onclick="window.deleteAnnouncement('${announcement.id}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
     handleNoData() {
         // Show empty state for all tables
         const tables = [
             { id: 'publishedNoticesTable', colspan: 8 },
             { id: 'scheduledNoticesTable', colspan: 7 },
             { id: 'draftNoticesTable', colspan: 7 },
+            { id: 'announcementsTable', colspan: 6 },
             { id: 'deliveryStatsTable', colspan: 6 }
         ];
         tables.forEach(({ id, colspan }) => {
@@ -584,12 +648,49 @@ async function publishNotice(id) {
     }
 }
 
+// Announcement management functions
+function editAnnouncement(id) {
+    // Find announcement data
+    const announcement = announcementsData.find(a => a.id === id);
+    if (!announcement) {
+        showAlert('Announcement not found', 'error');
+        return;
+    }
+    
+    // Redirect to edit page or open modal
+    window.location.href = `/pages/dashboard/admin/send-announcement.html?id=${id}`;
+}
+
+function deleteAnnouncement(id) {
+    showConfirm(
+        'Are you sure you want to delete this announcement?',
+        async () => {
+            try {
+                const response = await announcementService.delete(id);
+                if (response.success) {
+                    showAlert('Announcement deleted successfully', 'success');
+                    // Reload the data
+                    const noticesInstance = new Notices();
+                    await noticesInstance.loadNotices();
+                } else {
+                    showAlert('Failed to delete announcement', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting announcement:', error);
+                showAlert('Error deleting announcement', 'error');
+            }
+        }
+    );
+}
+
 // Make global functions available to window for inline onclick handlers
 window.viewNotice = viewNotice;
 window.closeNoticeModal = closeNoticeModal;
 window.editNotice = editNotice;
 window.cancelNotice = cancelNotice;
 window.publishNotice = publishNotice;
+window.editAnnouncement = editAnnouncement;
+window.deleteAnnouncement = deleteAnnouncement;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {

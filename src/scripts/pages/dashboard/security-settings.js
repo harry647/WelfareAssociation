@@ -8,15 +8,8 @@
 import { userService } from '../../../services/user-service.js';
 import { apiService } from '../../../services/api-service.js';
 import { API_CONFIG } from '../../../config/app-config.js';
+import { showAlert, showConfirm, showPrompt } from '../../../utils/utility-functions.js';
 
-
-import { showAlert } from '../../../utils/utility-functions.js';
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
-
-import { showAlert } from '../../../utils/utility-functions.js';
-import { showConfirm } from '../../../utils/utility-functions.js';
-import { showPrompt } from '../../../utils/utility-functions.js';
 class SecuritySettings {
     constructor() {
         this.securityData = {

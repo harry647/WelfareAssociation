@@ -298,3 +298,6 @@ input:focus, textarea:focus, select:focus {
         flex-direction: column !important;
     }
 }
+
+/* Enhanced Header Styles */
+@import url('./components/enhanced-header.css');
