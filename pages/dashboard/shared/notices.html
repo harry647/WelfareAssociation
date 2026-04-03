@@ -210,6 +210,52 @@
 
   </div>
 
+  <!-- Notice View Modal -->
+  <div class="modal-overlay" id="noticeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalNoticeTitle">Notice Details</h3>
+        <span class="modal-close" onclick="closeNoticeModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="notice-details">
+          <div class="detail-row">
+            <label>Category:</label>
+            <span id="modalNoticeCategory"></span>
+          </div>
+          <div class="detail-row">
+            <label>Priority:</label>
+            <span id="modalNoticePriority"></span>
+          </div>
+          <div class="detail-row">
+            <label>Audience:</label>
+            <span id="modalNoticeAudience"></span>
+          </div>
+          <div class="detail-row">
+            <label>Published Date:</label>
+            <span id="modalNoticeDate"></span>
+          </div>
+          <div class="detail-row">
+            <label>Expiry Date:</label>
+            <span id="modalNoticeExpiry"></span>
+          </div>
+          <div class="detail-row">
+            <label>Views:</label>
+            <span id="modalNoticeViews"></span>
+          </div>
+          <div class="detail-content">
+            <label>Content:</label>
+            <div id="modalNoticeContent"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNoticeModal()">Close</button>
+        <button class="btn btn-primary" id="editNoticeBtn">Edit Notice</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer Component -->
   <div w3-include-html="../components/footer-shared.html"></div>
 

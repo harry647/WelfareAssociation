@@ -572,7 +572,7 @@ async function loadContributions() {
                 caseData.contributions.forEach(contribution => {
                     contributionsData.push({
                         ...contribution,
-                        beneficiary: caseData.member?.firstName + ' ' + caseData.member?.lastName || caseData.deceased,
+                        beneficiary: caseData.name || caseData.memberName || 'Unknown',
                         date: contribution.createdAt || contribution.date
                     });
                 });
@@ -613,7 +613,7 @@ async function loadMessages() {
                 caseData.messages.forEach(message => {
                     messagesData.push({
                         ...message,
-                        beneficiary: caseData.member?.firstName + ' ' + caseData.member?.lastName || caseData.deceased,
+                        beneficiary: caseData.name || caseData.memberName || 'Unknown',
                         date: message.createdAt || message.date
                     });
                 });
@@ -766,7 +766,7 @@ function renderContributions() {
             <td>${formatDate(contribution.date || contribution.createdAt)}</td>
             <td>${contribution.contributor || contribution.contributorName || 'Anonymous'}</td>
             <td>${contribution.beneficiary || contribution.memberName || 'Unknown'}</td>
-            <td>${getContributionTypeLabel(contribution.type)}</td>
+            <td>${getContributionTypeLabel(contribution.paymentMethod || contribution.type)}</td>
             <td>Ksh ${(contribution.amount || 0).toLocaleString()}</td>
             <td><span class="status ${contribution.status || 'pending'}">${capitalizeFirst(contribution.status || 'pending')}</span></td>
         `;
@@ -878,6 +878,9 @@ function getBereavementTypeLabel(type) {
 function getContributionTypeLabel(type) {
     const types = {
         'cash': 'Cash Support',
+        'mpesa': 'M-Pesa',
+        'bank': 'Bank Transfer',
+        'card': 'Card Payment',
         'food': 'Food Hamper',
         'other': 'Other'
     };

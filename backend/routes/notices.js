@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
-const Notice = require('../models/Notice');
+const Notice = require('../models/notice');
 const { auth, authorize, optionalAuth } = require('../middleware/auth');
 
 const validate = (req, res, next) => {
@@ -103,7 +103,7 @@ router.post('/', auth, authorize('admin', 'secretary'), [
             isPublished: isPublished || false,
             publishDate,
             expiryDate,
-            author: req.user.id
+            author: req.user && req.user.id && req.user.id.includes('-') ? req.user.id : null
         });
 
         res.status(201).json({ success: true, message: 'Notice created', data: notice });

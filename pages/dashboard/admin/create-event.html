@@ -11,6 +11,10 @@
   <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
   <link rel="stylesheet" href="../../../src/styles/pages/dashboard/create-event.css">
   
+  <script type="module">
+    import { showAlert } from '../../../src/utils/utility-functions.js';
+    window.showAlert = showAlert;
+  </script>
   <script>
     (function() {
       document.documentElement.style.visibility = 'hidden';
@@ -244,11 +248,11 @@
           body: JSON.stringify(formData)
         });
         
-        alert('Event created successfully!');
+        showAlert('Event created successfully!', 'Success', 'success');
         window.location.href = 'admin-dashboard.html';
       } catch (error) {
         console.error('Error creating event:', error);
-        alert('Failed to create event: ' + error.message);
+        showAlert('Failed to create event: ' + error.message, 'Error', 'error');
       }
     });
 
@@ -259,7 +263,7 @@
       const eventDate = document.getElementById('eventDate').value || '';
       const location = document.getElementById('location').value || 'TBA';
       
-      alert(`Event Preview:\n\nTitle: ${title}\nDescription: ${description}\nDate: ${eventDate ? new Date(eventDate).toLocaleString() : 'TBA'}\nLocation: ${location}`);
+      showAlert(`Event Preview:\n\nTitle: ${title}\nDescription: ${description}\nDate: ${eventDate ? new Date(eventDate).toLocaleString() : 'TBA'}\nLocation: ${location}`, 'Event Preview', 'info');
     });
   </script>
 </body>

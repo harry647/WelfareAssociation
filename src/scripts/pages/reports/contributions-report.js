@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadContributionsData() {
     try {
         // Get token from localStorage
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem('swa_auth_token') || localStorage.getItem('accessToken');
         if (!token) {
             console.warn('No authentication token found');
             displayEmptyState();

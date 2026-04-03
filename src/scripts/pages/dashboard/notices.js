@@ -7,8 +7,17 @@
 
 import { noticeService } from '../../../services/notice-service.js';
 
-
 import { showAlert, showConfirm, showPrompt } from '../../../utils/utility-functions.js';
+
+// Global variable to store notices data for access by global functions
+let noticesData = [];
+
+// Global utility functions for access by global functions
+function formatDate(date) {
+    if (!date) return 'N/A';
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
 class Notices {
     constructor() {
         this.notices = [];
@@ -83,6 +92,7 @@ class Notices {
             
             if (response.success && response.data) {
                 this.notices = response.data;
+                noticesData = response.data; // Also update global variable
                 this.processNotices();
                 this.renderStats();
                 this.renderPublishedNotices();
@@ -454,13 +464,46 @@ class Notices {
 // Global functions for button actions
 function viewNotice(id) {
     console.log('View notice:', id);
-    // Implement view notice functionality
-    showAlert(`View notice: ` + id);
+    
+    // Find the notice from the loaded data
+    const notice = noticesData.find(n => n.id === id);
+    if (!notice) {
+        showAlert('Notice not found', 'error');
+        return;
+    }
+    
+    // Populate modal with notice details
+    document.getElementById('modalNoticeTitle').textContent = notice.title;
+    document.getElementById('modalNoticeCategory').textContent = notice.type || 'general';
+    document.getElementById('modalNoticePriority').textContent = notice.priority || 'normal';
+    document.getElementById('modalNoticeAudience').textContent = notice.audience || 'all';
+    document.getElementById('modalNoticeDate').textContent = formatDate(notice.createdAt);
+    document.getElementById('modalNoticeExpiry').textContent = formatDate(notice.expiryDate);
+    document.getElementById('modalNoticeViews').textContent = notice.views || 0;
+    document.getElementById('modalNoticeContent').innerHTML = notice.content || '';
+    
+    // Set edit button to link to edit page
+    const editBtn = document.getElementById('editNoticeBtn');
+    editBtn.onclick = () => {
+        closeNoticeModal();
+        editNotice(id);
+    };
+    
+    // Show modal
+    const modal = document.getElementById('noticeModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+}
+
+function closeNoticeModal() {
+    const modal = document.getElementById('noticeModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
 }
 
 function editNotice(id) {
     console.log('Edit notice:', id);
-    window.location.href = `create-notice.html?id=${id}`;
+    window.location.href = `../admin/create-notice.html?id=${id}`;
 }
 
 async function cancelNotice(id) {
@@ -476,6 +519,13 @@ async function publishNotice(id) {
         // Implement publish notice functionality
     }
 }
+
+// Make global functions available to window for inline onclick handlers
+window.viewNotice = viewNotice;
+window.closeNoticeModal = closeNoticeModal;
+window.editNotice = editNotice;
+window.cancelNotice = cancelNotice;
+window.publishNotice = publishNotice;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {

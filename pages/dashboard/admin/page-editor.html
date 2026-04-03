@@ -536,6 +536,10 @@
     </div>
   </div>
 
+  <script type="module">
+    import { showAlert } from '../../../src/utils/utility-functions.js';
+    window.showAlert = showAlert;
+  </script>
   <script>
     const pagePath = '<%= pagePath %>';
     let hasUnsavedChanges = false;
@@ -711,12 +715,12 @@
           updateStatus('Image uploaded!', 'saved');
         } else {
           updateStatus('Upload failed: ' + data.message, 'modified');
-          alert('Failed to upload image: ' + data.message);
+          showAlert('Failed to upload image: ' + data.message, 'Error', 'error');
         }
       } catch (error) {
         console.error('Upload error:', error);
         updateStatus('Upload error', 'modified');
-        alert('Error uploading image: ' + error.message);
+        showAlert('Error uploading image: ' + error.message, 'Error', 'error');
       }
     }
     
@@ -759,12 +763,12 @@
       const url = document.getElementById('imageUrlInput').value.trim();
       
       if (!url) {
-        alert('Please enter an image URL');
+        showAlert('Please enter an image URL', 'Information', 'info');
         return;
       }
       
       if (!isValidUrl(url)) {
-        alert('Please enter a valid URL');
+        showAlert('Please enter a valid URL', 'Error', 'error');
         return;
       }
       

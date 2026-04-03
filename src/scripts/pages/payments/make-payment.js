@@ -446,7 +446,10 @@ class PaymentManager {
         try {
             console.log('Loading events from database...');
             
-            const response = await fetch(`${this.config.apiBaseUrl}/events`);
+            const token = localStorage.getItem('swa_auth_token');
+            const response = await fetch(`${this.config.apiBaseUrl}/events`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             if (!response.ok) {
                 throw new Error('Failed to load events');
             }
@@ -543,7 +546,10 @@ class PaymentManager {
         try {
             console.log('Loading bereavement cases from database...');
             
-            const response = await fetch(`${this.config.apiBaseUrl}/bereavement`);
+            const token = localStorage.getItem('swa_auth_token');
+            const response = await fetch(`${this.config.apiBaseUrl}/bereavement`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             if (!response.ok) {
                 throw new Error('Failed to load bereavement cases');
             }
@@ -612,7 +618,10 @@ class PaymentManager {
         try {
             console.log('Loading fines from database...');
             
-            const response = await fetch(`${this.config.apiBaseUrl}/fines`);
+            const token = localStorage.getItem('swa_auth_token');
+            const response = await fetch(`${this.config.apiBaseUrl}/fines`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             if (!response.ok) {
                 throw new Error('Failed to load fines');
             }

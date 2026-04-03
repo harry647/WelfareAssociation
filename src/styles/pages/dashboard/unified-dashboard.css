@@ -1885,3 +1885,42 @@ td:first-child {
   font-size: 11px;
   color: var(--text-muted);
 }
+
+/* Notice Details Modal Styles */
+.notice-details .detail-row {
+  display: flex;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.notice-details .detail-row label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 120px;
+  margin-right: 12px;
+}
+
+.notice-details .detail-row span {
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.notice-details .detail-content {
+  margin-top: 16px;
+}
+
+.notice-details .detail-content label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.notice-details #modalNoticeContent {
+  background: var(--bg-tertiary);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--accent-color);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

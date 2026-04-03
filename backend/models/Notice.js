@@ -56,7 +56,7 @@ const Notice = sequelize.define('Notice', {
     // Author
     author: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'users',
             key: 'id'

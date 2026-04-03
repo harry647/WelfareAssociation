@@ -404,7 +404,9 @@
 
   <script type="module">
     import { fineService } from '/src/services/fine-service.js';
+    import { showConfirm } from '../../../src/utils/utility-functions.js';
     window.fineService = fineService;
+    window.showConfirm = showConfirm;
 
     const profileKey = 'swa_member_profile';
     const registrationKey = 'swa_registration';
@@ -508,7 +510,8 @@
     // Global logout function as backup
     function handleLogoutDirect() {
       console.log('handleLogoutDirect called');
-      if (confirm('Are you sure you want to logout?')) {
+      const confirmed = await showConfirm('Are you sure you want to logout?', 'Confirm Logout');
+      if (confirmed) {
         console.log('User confirmed logout, clearing storage and redirecting...');
         // Clear all auth data
         localStorage.removeItem('swa_auth_token');

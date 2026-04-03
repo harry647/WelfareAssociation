@@ -461,6 +461,30 @@
   font-weight: 500;
 }
 
+.trend-bar .amount {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+.trend-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: -16px;
+  margin-bottom: 20px;
+}
+
+.chart-loading,
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
 .trend-legend {
   display: flex;
   justify-content: space-between;
@@ -520,6 +544,12 @@
   background: var(--accent-dark);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+button.action-btn {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 /* ── ANIMATIONS ── */

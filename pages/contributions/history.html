@@ -208,50 +208,16 @@
         <!-- Monthly Trend -->
         <section class="trend-section">
             <h2><i class="fas fa-chart-line"></i> Monthly Trend</h2>
+            <p class="trend-subtitle">Contribution trends over time (Ksh)</p>
             
             <div class="trend-chart" id="trendChart">
-                <div class="trend-bar" data-month="Jul" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Jul</span>
-                </div>
-                <div class="trend-bar" data-month="Aug" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Aug</span>
-                </div>
-                <div class="trend-bar" data-month="Sep" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Sep</span>
-                </div>
-                <div class="trend-bar" data-month="Oct" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Oct</span>
-                </div>
-                <div class="trend-bar" data-month="Nov" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Nov</span>
-                </div>
-                <div class="trend-bar" data-month="Dec" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Dec</span>
-                </div>
-                <div class="trend-bar" data-month="Jan" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Jan</span>
-                </div>
-                <div class="trend-bar" data-month="Feb" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Feb</span>
-                </div>
-                <div class="trend-bar" data-month="Mar" data-amount="0">
-                    <div class="bar" style="height: 5%"></div>
-                    <span class="month">Mar</span>
-                </div>
+                <!-- Bars will be generated dynamically -->
+                <div class="chart-loading">Loading trend data...</div>
             </div>
             <div class="trend-legend">
                 <span>Ksh 0</span>
-                <span>Ksh 1,000</span>
-                <span>Ksh 2,000</span>
-                <span>Ksh 3,000+</span>
+                <span id="legend-mid">Ksh 2,500</span>
+                <span>Ksh 5,000+</span>
             </div>
         </section>
 
@@ -261,7 +227,7 @@
           <div class="action-buttons">
             <a href="../payments/make-payment.html" class="action-btn"><i class="fas fa-plus"></i> New Contribution</a>
             <a href="../reports/contributions-report.html" class="action-btn"><i class="fas fa-file-export"></i> Export Report</a>
-            <a href="../public/contact-information.html" class="action-btn"><i class="fas fa-envelope"></i> Send Reminders</a>
+            <button class="action-btn" id="sendReminderBtn"><i class="fas fa-envelope"></i> Send Reminders</button>
           </div>
         </section>
 
@@ -281,9 +247,14 @@
   <script src="../../src/scripts/pages/dashboard/header-admin.js"></script>
 
   <!-- Contribution History Script -->
-  <script>
+  <script type="module">
+    import { showAlert, showPrompt } from '../../src/utils/utility-functions.js';
+    window.showAlert = showAlert;
+    window.showPrompt = showPrompt;
+
     document.addEventListener('DOMContentLoaded', async function() {
       await loadContributions();
+      await loadMonthlyTrend();
     });
     
     async function loadContributions() {
@@ -383,6 +354,122 @@
       document.getElementById('totalAmount').textContent = 'Ksh 0';
       document.getElementById('thisMonthAmount').textContent = 'Ksh 0';
     }
+
+    async function loadMonthlyTrend() {
+      const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+      if (!token) return;
+
+      try {
+        const response = await fetch('/api/contributions/summary', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        if (result.success && result.data && result.data.monthlyContributions) {
+          renderMonthlyTrend(result.data.monthlyContributions);
+        }
+      } catch (error) {
+        console.error('Error loading monthly trend:', error);
+        renderEmptyTrend();
+      }
+    }
+
+    function renderMonthlyTrend(monthlyData) {
+      const chartContainer = document.getElementById('trendChart');
+      if (!chartContainer) return;
+
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const currentMonth = new Date().getMonth();
+      
+      // Get last 9 months (going back from current month)
+      const months = [];
+      for (let i = 8; i >= 0; i--) {
+        const monthIndex = (currentMonth - i + 12) % 12;
+        months.push({ index: monthIndex + 1, name: monthNames[monthIndex] });
+      }
+
+      // Find max for scaling
+      const maxAmount = Math.max(...monthlyData.map(m => m.total), 1000);
+      const scale = maxAmount / 100;
+
+      // Build chart HTML
+      let html = '';
+      months.forEach(m => {
+        const data = monthlyData.find(d => d.month === m.index);
+        const amount = data ? data.total : 0;
+        const height = Math.max(5, (amount / maxAmount) * 100);
+        
+        html += `<div class="trend-bar" data-month="${m.name}" data-amount="${amount}">
+          <div class="bar" style="height: ${height}%"></div>
+          <span class="amount">Ksh ${amount.toLocaleString()}</span>
+          <span class="month">${m.name}</span>
+        </div>`;
+      });
+
+      chartContainer.innerHTML = html;
+      
+      // Update legend
+      const legendMid = document.getElementById('legend-mid');
+      if (legendMid) {
+        legendMid.textContent = 'Ksh ' + (maxAmount / 2).toLocaleString();
+      }
+    }
+
+    function renderEmptyTrend() {
+      const chartContainer = document.getElementById('trendChart');
+      if (chartContainer) {
+        chartContainer.innerHTML = '<div class="chart-empty">No trend data available</div>';
+      }
+    }
+
+    // Send Reminder Functionality
+    document.addEventListener('click', async function(e) {
+      if (e.target.closest('#sendReminderBtn')) {
+        const token = localStorage.getItem('swa_auth_token') || sessionStorage.getItem('swa_auth_token');
+        if (!token) {
+          await showAlert('Please login first', 'Information', 'info');
+          return;
+        }
+
+        const reminderType = await showPrompt('Reminder type:\n1 - Payment Due Reminder\n2 - General Notice\n\nEnter 1 or 2:', '1', 'Select Reminder Type');
+        if (!reminderType || !['1', '2'].includes(reminderType)) {
+          return;
+        }
+
+        const title = reminderType === '1' ? 'Monthly Contribution Reminder' : 'SWA Notice';
+        const content = reminderType === '1' 
+          ? 'Dear Member, this is a friendly reminder to make your monthly contribution. Thank you for your continued support.'
+          : 'Dear Members, please check your dashboard for important updates.';
+
+        try {
+          const response = await fetch('/api/notices', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              title,
+              content,
+              type: reminderType === '1' ? 'reminder' : 'general',
+              priority: 'normal',
+              audience: 'all',
+              isPublished: true
+            })
+          });
+          
+          const result = await response.json();
+          if (result.success) {
+            await showAlert('Reminder sent successfully to all members!', 'Success', 'success');
+          } else {
+            await showAlert('Failed to send reminder: ' + result.message, 'Error', 'error');
+          }
+        } catch (error) {
+          console.error('Error sending reminder:', error);
+          await showAlert('Error sending reminder. Please try again.', 'Error', 'error');
+        }
+      }
+    });
   </script>
 
   <script>

@@ -450,7 +450,7 @@ router.post('/', auth, [
             status: 'completed',
             paymentDate: new Date(),
             processedDate: new Date(),
-            processedBy: req.user.id
+            processedBy: req.user && req.user.id && req.user.id.includes('-') ? req.user.id : null
         });
 
         res.status(201).json({
@@ -786,7 +786,7 @@ router.post('/submit', auth, [
                 status: 'completed', // Manual payments marked as completed
                 paymentDate: new Date(),
                 processedDate: new Date(),
-                processedBy: req.user.id
+                processedBy: req.user && req.user.id && req.user.id.includes('-') ? req.user.id : null
             });
             
             return res.json({
@@ -827,7 +827,7 @@ router.post('/submit', auth, [
             status: 'completed', // Manual payments marked as completed
             paymentDate: new Date(),
             processedDate: new Date(),
-            processedBy: req.user.id
+            processedBy: req.user && req.user.id && req.user.id.includes('-') ? req.user.id : null
         });
         
         // Update related entity based on payment type
