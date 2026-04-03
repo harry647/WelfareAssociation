@@ -355,9 +355,9 @@ app.get('/pages/dashboard/admin/page-editor.html', (req, res) => {
     res.send(template);
 });
 
-// Serve index.html for root route
+// Serve welcome-page.html for root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'welcome-page.html'));
 });
 
 // 404 handler

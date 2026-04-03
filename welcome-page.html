@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- W3 Schools HTML Includes -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Welcome to Student Welfare Association - Join us today">
+    <title>Welcome - Student Welfare Association | JOOUST</title>
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/original/header.css">
+    <link rel="stylesheet" href="src/styles/pages/shared/navigation.css">
+    <link rel="stylesheet" href="src/styles/original/footer.css">
+    <!-- Welcome Page Styles -->
+    <link rel="stylesheet" href="src/styles/pages/public/welcome-page.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+    <!-- Enhanced Header - Hardcoded for Welcome Page -->
+    <header class="header-section">
+        <img src="images/Welfarelogo.webp" alt="SWA Logo - Student Welfare Association" class="img-logo">
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" placeholder="Search SWA..." class="search-input">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div id="hamburger-icon" class="hamburger-icon" onclick="toggleMenu()"></div>
+        
+        
+        <!-- Header Actions -->
+        <div class="header-actions">
+            <!-- Emergency Contacts -->
+            <div class="emergency-contacts">
+                <button class="emergency-btn" onclick="toggleEmergencyInfo()">
+                    <i class="fas fa-phone-alt"></i> Emergency
+                </button>
+                <div class="emergency-dropdown" id="emergency-info" style="display: none;">
+                    <h4>Emergency Contacts</h4>
+                    <p><i class="fas fa-phone"></i> Campus Security: +254-700-000-000</p>
+                    <p><i class="fas fa-phone"></i> Medical Emergency: +254-711-000-000</p>
+                    <p><i class="fas fa-phone"></i> SWA Hotline: +254-722-000-000</p>
+                </div>
+            </div>
+            
+            <!-- Social Media Links -->
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank" class="social-link"><i class="fab fa-facebook"></i></a>
+                <a href="https://twitter.com" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="https://instagram.com" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="https://linkedin.com" target="_blank" class="social-link"><i class="fab fa-linkedin"></i></a>
+            </div>
+            
+            <!-- Quick Access Buttons -->
+            <div class="quick-access">
+                <button class="need-help-btn" onclick="window.location.href='/contact-information.html'">
+                    <i class="fas fa-question-circle"></i> Need Help?
+                </button>
+                <button class="sign-in"><a href="/pages/dashboard/student-portal.html"><i class="fas fa-sign-in-alt"></i> Sign In</a></button>
+                <button class="register-btn"><a href="/pages/auth/registration-form.html"><i class="fas fa-user-plus"></i> Register</a></button>
+            </div>
+        </div>
+    </header>
+
+    <script>
+        // Mobile menu toggle
+        function toggleMenu() {
+            var menu = document.getElementById('nav-menu');
+            var hamburger = document.querySelector('.hamburger-icon');
+            if (menu) menu.classList.toggle('active');
+            if (hamburger) hamburger.classList.toggle('active');
+        }
+
+        // Emergency info toggle
+        function toggleEmergencyInfo() {
+            var emergencyInfo = document.getElementById('emergency-info');
+            if (emergencyInfo) {
+                emergencyInfo.style.display = emergencyInfo.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        // Close emergency info when clicking outside
+        document.addEventListener('click', function(e) {
+            var emergencyInfo = document.getElementById('emergency-info');
+            var emergencyBtn = e.target.closest('.emergency-btn');
+            if (emergencyInfo && !emergencyBtn && emergencyInfo.style.display === 'block') {
+                emergencyInfo.style.display = 'none';
+            }
+        });
+    </script>
+
+    <div class="container">
+        <!-- LEFT SIDE - EVENTS GRID -->
+        <div class="side-grid left-events">
+            <h2><i class="fas fa-calendar-alt"></i> Recent Events</h2>
+            <div class="events-grid">
+                <div class="event-item">
+                    <img src="images/teams.jpg" alt="SWA Team Building" class="event-image">
+                    <div class="event-overlay">
+                        <h3>Team Building</h3>
+                        <p>Annual team building activities</p>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <img src="images/team1.jpg" alt="SWA Meeting" class="event-image">
+                    <div class="event-overlay">
+                        <h3>SWA Meeting</h3>
+                        <p>Monthly general assembly</p>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <img src="images/staff.PNG" alt="Staff Workshop" class="event-image">
+                    <div class="event-overlay">
+                        <h3>Staff Workshop</h3>
+                        <p>Professional development</p>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <img src="images/SwaTeam.jpg" alt="SWA Team" class="event-image">
+                    <div class="event-overlay">
+                        <h3>SWA Team</h3>
+                        <p>Executive committee meeting</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER CONTENT -->
+        <div class="center-content">
+            <div class="hd-sec">
+                <img src="images/Welfarelogo.webp" alt="SWA Logo" class="welcome-logo">
+                <h1 class="hero-header"><i class="fas fa-hand-holding-heart"></i> Welcome to Student Welfare Association</h1>
+                <p>Join our community of supportive students and transform your university experience</p>
+            </div>
+
+            <!-- INTRODUCTION SECTION -->
+            <div class="intro-section">
+                <div class="intro-content">
+                    <h2><i class="fas fa-graduation-cap"></i> Discover SWA at JOOUST</h2>
+                    <p>The Student Welfare Association is dedicated to empowering students through comprehensive support programs, financial assistance, academic excellence initiatives, and vibrant community engagement.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <span class="stat-number">500+</span>
+                            <span class="stat-label">Active Members</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Annual Events</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-award"></i>
+                            <span class="stat-number">100+</span>
+                            <span class="stat-label">Scholarships</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLUE PANEL -->
+            <div class="blue-panel">
+
+                <div class="welcome welcome-left">
+
+                    <h2>New Member? </h2>
+                    <p>Create your account and join SWA today</p>
+
+                    <a href="pages/auth/registration-form.html" class="btn-primary">Register</a>
+
+                </div>
+
+                <div class="welcome welcome-right">
+
+                    <h1><i class="fas fa-sign-in-alt"></i> Welcome Back!</h1>
+                    <p>Login to continue to your account</p>
+
+                    <a href="pages/auth/login-page.html" class="btn-primary">Login</a>
+
+                </div>
+
+            </div>
+
+            <!-- QUICK ACCESS SECTION -->
+            <div class="quick-access-section">
+                <h2><i class="fas fa-compass"></i> Quick Access</h2>
+                <div class="quick-access-grid">
+                    <a href="index.html" class="access-card">
+                        <i class="fas fa-home"></i>
+                        <h3>Browse as Guest</h3>
+                        <p>Explore our website without registration</p>
+                    </a>
+                    
+                    <a href="pages/public/about-us.html" class="access-card">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>About SWA</h3>
+                        <p>Learn more about our mission and vision</p>
+                    </a>
+                    
+                    <a href="index.html#services" class="access-card">
+                        <i class="fas fa-hands-helping"></i>
+                        <h3>Our Services</h3>
+                        <p>Discover the support we offer</p>
+                    </a>
+                    
+                    <a href="pages/public/contact-information.html" class="access-card">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Contact Us</h3>
+                        <p>Get in touch with our team</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- BENEFITS SECTION -->
+            <div class="benefits-section">
+                <h2><i class="fas fa-star"></i> Why Join SWA?</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <i class="fas fa-dollar-sign"></i>
+                        <h3>Financial Support</h3>
+                        <p>Access scholarships and emergency financial assistance</p>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-book"></i>
+                        <h3>Academic Excellence</h3>
+                        <p>Tutoring, study groups, and academic resources</p>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-users"></i>
+                        <h3>Community</h3>
+                        <p>Connect with fellow students and build lasting friendships</p>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-briefcase"></i>
+                        <h3>Career Development</h3>
+                        <p>Workshops, internships, and career guidance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE - TESTIMONIALS GRID -->
+        <div class="side-grid right-testimonials">
+            <h2><i class="fas fa-comments"></i> Student Testimonials</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-item">
+                    <img src="images/secretary.png" alt="Student Testimonial" class="testimonial-image">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">"SWA helped me through my toughest times with financial assistance and emotional support."</p>
+                        <h4 class="testimonial-name">Sarah Johnson</h4>
+                        <span class="testimonial-role">Computer Science</span>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <img src="images/consaltant.jpg" alt="Student Testimonial" class="testimonial-image">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">"The academic support programs helped me improve my grades significantly."</p>
+                        <h4 class="testimonial-name">Michael Chen</h4>
+                        <span class="testimonial-role">Business Admin</span>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <img src="images/teasurer.jpg" alt="Student Testimonial" class="testimonial-image">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">"I found lifelong friends and mentors through SWA community events."</p>
+                        <h4 class="testimonial-name">Emily Davis</h4>
+                        <span class="testimonial-role">Nursing</span>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <img src="images/sec-gen.jpg" alt="Student Testimonial" class="testimonial-image">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">"The career development workshops prepared me for my dream job."</p>
+                        <h4 class="testimonial-name">James Wilson</h4>
+                        <span class="testimonial-role">Engineering</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+    <!-- Enhanced Footer - Hardcoded for Welcome Page -->
+    <footer>
+    
+        <!-- Welcome-Specific Section -->
+        <div class="welcome-specific-section">
+            <h3><i class="fas fa-hand-holding-heart"></i> New to SWA?</h3>
+            <p>Welcome to the Student Welfare Association! We're here to support your journey at JOOUST.</p>
+            <div class="getting-started">
+                <div class="getting-started-item">
+                    <i class="fas fa-user-plus"></i>
+                    <h4>Register</h4>
+                    <p>Create your account to access all SWA services</p>
+                    <a href="pages/auth/registration-form.html" class="cta-btn">Get Started</a>
+                </div>
+                <div class="getting-started-item">
+                    <i class="fas fa-map"></i>
+                    <h4>Explore Campus</h4>
+                    <p>Find your way around JOOUST campus</p>
+                    <a href="pages/public/campus-map.html" class="cta-btn">View Map</a>
+                </div>
+                <div class="getting-started-item">
+                    <i class="fas fa-book"></i>
+                    <h4>Learn More</h4>
+                    <p>Discover our programs and services</p>
+                    <a href="pages/public/about-us.html" class="cta-btn">About SWA</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="rules-set">
+            <a href="pages/public/policies.html">Privacy Policy</a>
+            <a href="pages/public/terms&conditions.html">Terms & Conditions</a>
+            <a href="pages/public/faqs.html">FAQs</a>
+        </div>
+        
+        <div class="copy-right">
+            &copy; 2025 Student Welfare Association (SWA). All rights reserved.
+            <p>Designed with <i class="fas fa-heart" style="color: #f77b7b;"></i> by Francis Opiyo. <strong>Development Team</strong></p>
+            <p><strong>Mission:</strong> Empowering students through comprehensive welfare support and community engagement.</p>
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'});" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+        </div>
+    </footer>
+    
+    <!-- Public Pages Shared Script -->
+    <script type="module" src="../../src/scripts/pages/public/public.js"></script>
+    
+    <!-- W3 Schools HTML Includes Script -->
+    <script>
+        w3.includeHTML();
+    </script>
+
+</body>
+
+</html>

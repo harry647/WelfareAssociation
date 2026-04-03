@@ -1480,3 +1480,8 @@ curl -X POST http://localhost:3000/api/auth/login \
 ---
 
 This completes the full backend implementation for the SWA Website with MongoDB.
+
+
+!j2u!U3yauUM
+l6rI#&6ZdsoP  samuel
+!E$ttOl3fmD&  mary
