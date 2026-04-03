@@ -89,6 +89,9 @@ export const API_CONFIG = {
         // Withdrawals
         withdrawals: '/withdrawals',
         
+        // Settings
+        settings: '/settings',
+        
         // Public Pages
         publicPages: '/public',
         organization: '/organization',

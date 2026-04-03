@@ -30,6 +30,7 @@ import { documentService } from './document-service.js';
 import { withdrawalService } from './withdrawal-service.js';
 import { pageContentService } from './page-content-service.js';
 import { userService } from './user-service.js';
+import settingsService from './settings-service.js';
 
 // Import configuration
 import { API_CONFIG, APP_CONFIG } from '../config/app-config.js';
@@ -61,6 +62,7 @@ export {
     withdrawalService,
     pageContentService,
     userService,
+    settingsService,
     API_CONFIG,
     APP_CONFIG
 };
@@ -102,4 +104,5 @@ export default {
     reportService,
     documentService,
     withdrawalService,
+    settingsService,
 };

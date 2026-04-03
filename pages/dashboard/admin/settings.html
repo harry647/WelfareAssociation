@@ -36,19 +36,21 @@
         <section class="data-section">
           <h2><i class="fas fa-sliders-h"></i> General Settings</h2>
           <div style="max-width: 600px;">
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Organization Name</label>
-              <input type="text" value="Student Welfare Association" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Institution</label>
-              <input type="text" value="Jaramogi Oginga Odinga University of Science and Technology" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Academic Year</label>
-              <input type="text" value="2024/2025" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
-            </div>
-            <button class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            <form id="generalSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="organizationName" style="display: block; margin-bottom: 8px; font-weight: 500;">Organization Name</label>
+                <input type="text" id="organizationName" name="organizationName" value="Student Welfare Association" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="institution" style="display: block; margin-bottom: 8px; font-weight: 500;">Institution</label>
+                <input type="text" id="institution" name="institution" value="Jaramogi Oginga Odinga University of Science and Technology" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="academicYear" style="display: block; margin-bottom: 8px; font-weight: 500;">Academic Year</label>
+                <input type="text" id="academicYear" name="academicYear" value="2024/2025" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
           </div>
         </section>
 
@@ -56,21 +58,23 @@
         <section class="data-section">
           <h2><i class="fas fa-money-bill-wave"></i> Contribution Settings</h2>
           <div style="max-width: 600px;">
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Monthly Contribution Amount (Ksh)</label>
-              <input type="number" value="500" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Payment Deadline (Day of Month)</label>
-              <input type="number" value="25" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 20px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Allow Late Payments</span>
-              </label>
-            </div>
-            <button class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            <form id="contributionSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="monthlyContribution" style="display: block; margin-bottom: 8px; font-weight: 500;">Monthly Contribution Amount (Ksh)</label>
+                <input type="number" id="monthlyContribution" name="monthlyContribution" value="500" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="paymentDeadline" style="display: block; margin-bottom: 8px; font-weight: 500;">Payment Deadline (Day of Month)</label>
+                <input type="number" id="paymentDeadline" name="paymentDeadline" value="25" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="allowLatePayments" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="allowLatePayments" name="allowLatePayments" checked style="width: 18px; height: 18px;">
+                  <span>Allow Late Payments</span>
+                </label>
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
           </div>
         </section>
 
@@ -81,51 +85,56 @@
             <i class="fas fa-info-circle"></i> Configure how fines are applied and collected. Fine types can be managed in the <a href="fines-collection.html">Fines Collection</a> page.
           </p>
           <div style="max-width: 600px;">
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Default Fine Due Period</label>
-              <select style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
-                <option value="7">7 Days</option>
-                <option value="14" selected>14 Days</option>
-                <option value="21">21 Days</option>
-                <option value="30">30 Days</option>
-              </select>
-              <small style="color: var(--text-light);">Number of days after which a fine is due</small>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-              <label style="display: block; margin-bottom: 8px; font-weight: 500;">Fine Collection Method</label>
-              <select style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
-                <option value="automatic" selected>Automatic - Added to member account</option>
-                <option value="manual">Manual - Requires manual payment</option>
-              </select>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Enable Fine Reminders</span>
-              </label>
-              <small style="color: var(--text-light); margin-left: 28px;">Send automatic reminders for unpaid fines</small>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Allow Members to View Fine History</span>
-              </label>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" style="width: 18px; height: 18px;">
-                <span>Block Loans for Members with Unpaid Fines</span>
-              </label>
-              <small style="color: var(--text-light); margin-left: 28px;">Prevent members with outstanding fines from applying for loans</small>
-            </div>
-            
-            <a href="fines-collection.html" class="btn" style="background: var(--accent); color: white; display: inline-block;">
-              <i class="fas fa-cog"></i> Manage Fine Types
-            </a>
+            <form id="fineSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="fineDuePeriod" style="display: block; margin-bottom: 8px; font-weight: 500;">Default Fine Due Period</label>
+                <select id="fineDuePeriod" name="fineDuePeriod" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                  <option value="7">7 Days</option>
+                  <option value="14" selected>14 Days</option>
+                  <option value="21">21 Days</option>
+                  <option value="30">30 Days</option>
+                </select>
+                <small style="color: var(--text-light);">Number of days after which a fine is due</small>
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label for="fineCollectionMethod" style="display: block; margin-bottom: 8px; font-weight: 500;">Fine Collection Method</label>
+                <select id="fineCollectionMethod" name="fineCollectionMethod" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                  <option value="automatic" selected>Automatic - Added to member account</option>
+                  <option value="manual">Manual - Requires manual payment</option>
+                </select>
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label for="enableFineReminders" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="enableFineReminders" name="enableFineReminders" checked style="width: 18px; height: 18px;">
+                  <span>Enable Fine Reminders</span>
+                </label>
+                <small style="color: var(--text-light); margin-left: 28px;">Send automatic reminders for unpaid fines</small>
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label for="allowFineHistoryView" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="allowFineHistoryView" name="allowFineHistoryView" checked style="width: 18px; height: 18px;">
+                  <span>Allow Members to View Fine History</span>
+                </label>
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <label for="blockLoansForUnpaidFines" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="blockLoansForUnpaidFines" name="blockLoansForUnpaidFines" style="width: 18px; height: 18px;">
+                  <span>Block Loans for Members with Unpaid Fines</span>
+                </label>
+                <small style="color: var(--text-light); margin-left: 28px;">Prevent members with outstanding fines from applying for loans</small>
+              </div>
+              
+              <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+                <a href="fines-collection.html" class="btn" style="background: var(--accent); color: white; display: inline-block;">
+                  <i class="fas fa-cog"></i> Manage Fine Types
+                </a>
+              </div>
+            </form>
           </div>
         </section>
 
@@ -133,37 +142,225 @@
         <section class="data-section">
           <h2><i class="fas fa-bell"></i> Notification Settings</h2>
           <div style="max-width: 600px;">
-            <div style="margin-bottom: 15px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Email notifications for new registrations</span>
-              </label>
-            </div>
-            <div style="margin-bottom: 15px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Email notifications for payment reminders</span>
-              </label>
-            </div>
-            <div style="margin-bottom: 15px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Email notifications for loan requests</span>
-              </label>
-            </div>
-            <div style="margin-bottom: 15px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Email notifications for new fines</span>
-              </label>
-            </div>
-            <div style="margin-bottom: 15px;">
-              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" checked style="width: 18px; height: 18px;">
-                <span>Email notifications for fine due date reminders</span>
-              </label>
-            </div>
-            <button class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            <form id="notificationSettingsForm">
+              <div style="margin-bottom: 15px;">
+                <label for="emailNewRegistrations" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="emailNewRegistrations" name="emailNewRegistrations" checked style="width: 18px; height: 18px;">
+                  <span>Email notifications for new registrations</span>
+                </label>
+              </div>
+              <div style="margin-bottom: 15px;">
+                <label for="emailPaymentReminders" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="emailPaymentReminders" name="emailPaymentReminders" checked style="width: 18px; height: 18px;">
+                  <span>Email notifications for payment reminders</span>
+                </label>
+              </div>
+              <div style="margin-bottom: 15px;">
+                <label for="emailLoanRequests" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="emailLoanRequests" name="emailLoanRequests" checked style="width: 18px; height: 18px;">
+                  <span>Email notifications for loan requests</span>
+                </label>
+              </div>
+              <div style="margin-bottom: 15px;">
+                <label for="emailNewFines" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="emailNewFines" name="emailNewFines" checked style="width: 18px; height: 18px;">
+                  <span>Email notifications for new fines</span>
+                </label>
+              </div>
+              <div style="margin-bottom: 15px;">
+                <label for="emailFineDueReminders" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="emailFineDueReminders" name="emailFineDueReminders" checked style="width: 18px; height: 18px;">
+                  <span>Email notifications for fine due date reminders</span>
+                </label>
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Academic Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-graduation-cap"></i> Academic Settings</h2>
+          <div style="max-width: 600px;">
+            <form id="academicSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="semesterStart" style="display: block; margin-bottom: 8px; font-weight: 500;">Semester Start Date</label>
+                <input type="date" id="semesterStart" name="semesterStart" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="semesterEnd" style="display: block; margin-bottom: 8px; font-weight: 500;">Semester End Date</label>
+                <input type="date" id="semesterEnd" name="semesterEnd" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="examPeriod" style="display: block; margin-bottom: 8px; font-weight: 500;">Exam Period (Weeks)</label>
+                <input type="number" id="examPeriod" name="examPeriod" value="2" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="minAttendance" style="display: block; margin-bottom: 8px; font-weight: 500;">Minimum Attendance Requirement (%)</label>
+                <input type="number" id="minAttendance" name="minAttendance" value="75" min="0" max="100" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Financial Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-coins"></i> Financial Settings</h2>
+          <div style="max-width: 600px;">
+            <form id="financialSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="loanInterestRate" style="display: block; margin-bottom: 8px; font-weight: 500;">Loan Interest Rate (%)</label>
+                <input type="number" id="loanInterestRate" name="loanInterestRate" value="5" step="0.1" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="maxLoanAmount" style="display: block; margin-bottom: 8px; font-weight: 500;">Maximum Loan Amount (Ksh)</label>
+                <input type="number" id="maxLoanAmount" name="maxLoanAmount" value="50000" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="loanProcessingFee" style="display: block; margin-bottom: 8px; font-weight: 500;">Loan Processing Fee (%)</label>
+                <input type="number" id="loanProcessingFee" name="loanProcessingFee" value="2" step="0.1" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="gracePeriod" style="display: block; margin-bottom: 8px; font-weight: 500;">Loan Grace Period (Days)</label>
+                <input type="number" id="gracePeriod" name="gracePeriod" value="30" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Membership Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-users"></i> Membership Settings</h2>
+          <div style="max-width: 600px;">
+            <form id="membershipSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="membershipExpiry" style="display: block; margin-bottom: 8px; font-weight: 500;">Membership Expiry (Months)</label>
+                <input type="number" id="membershipExpiry" name="membershipExpiry" value="12" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="registrationFee" style="display: block; margin-bottom: 8px; font-weight: 500;">Registration Fee (Ksh)</label>
+                <input type="number" id="registrationFee" name="registrationFee" value="1000" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="autoRenewMembership" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="autoRenewMembership" name="autoRenewMembership" checked style="width: 18px; height: 18px;">
+                  <span>Enable Auto-Renewal</span>
+                </label>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="requireApproval" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="requireApproval" name="requireApproval" checked style="width: 18px; height: 18px;">
+                  <span>Require Admin Approval for New Members</span>
+                </label>
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Reporting Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-chart-bar"></i> Reporting Settings</h2>
+          <div style="max-width: 600px;">
+            <form id="reportingSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="reportFrequency" style="display: block; margin-bottom: 8px; font-weight: 500;">Automated Report Frequency</label>
+                <select id="reportFrequency" name="reportFrequency" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                  <option value="daily">Daily</option>
+                  <option value="weekly" selected>Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                </select>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="reportRecipients" style="display: block; margin-bottom: 8px; font-weight: 500;">Report Recipients (Emails, comma-separated)</label>
+                <input type="text" id="reportRecipients" name="reportRecipients" placeholder="admin@swa.org, treasurer@swa.org" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="includeCharts" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="includeCharts" name="includeCharts" checked style="width: 18px; height: 18px;">
+                  <span>Include Charts in Reports</span>
+                </label>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="archiveReports" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="archiveReports" name="archiveReports" checked style="width: 18px; height: 18px;">
+                  <span>Archive Old Reports (after 6 months)</span>
+                </label>
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Security Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-shield-alt"></i> Security Settings</h2>
+          <div style="max-width: 600px;">
+            <form id="securitySettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="sessionTimeout" style="display: block; margin-bottom: 8px; font-weight: 500;">Session Timeout (Minutes)</label>
+                <input type="number" id="sessionTimeout" name="sessionTimeout" value="30" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="maxLoginAttempts" style="display: block; margin-bottom: 8px; font-weight: 500;">Max Login Attempts</label>
+                <input type="number" id="maxLoginAttempts" name="maxLoginAttempts" value="5" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="lockoutDuration" style="display: block; margin-bottom: 8px; font-weight: 500;">Account Lockout Duration (Minutes)</label>
+                <input type="number" id="lockoutDuration" name="lockoutDuration" value="15" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="requireTwoFactor" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="requireTwoFactor" name="requireTwoFactor" style="width: 18px; height: 18px;">
+                  <span>Require Two-Factor Authentication for Admins</span>
+                </label>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="logFailedAttempts" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="logFailedAttempts" name="logFailedAttempts" checked style="width: 18px; height: 18px;">
+                  <span>Log Failed Login Attempts</span>
+                </label>
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- System Settings -->
+        <section class="data-section">
+          <h2><i class="fas fa-cogs"></i> System Settings</h2>
+          <div style="max-width: 600px;">
+            <form id="systemSettingsForm">
+              <div style="margin-bottom: 20px;">
+                <label for="maintenanceMode" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="maintenanceMode" name="maintenanceMode" style="width: 18px; height: 18px;">
+                  <span>Enable Maintenance Mode</span>
+                </label>
+                <small style="color: var(--text-light); margin-left: 28px;">Temporarily disable user access to the system</small>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="maintenanceMessage" style="display: block; margin-bottom: 8px; font-weight: 500;">Maintenance Message</label>
+                <textarea id="maintenanceMessage" name="maintenanceMessage" rows="3" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; resize: vertical;">System is currently under maintenance. Please check back later.</textarea>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="backupFrequency" style="display: block; margin-bottom: 8px; font-weight: 500;">Automatic Backup Frequency</label>
+                <select id="backupFrequency" name="backupFrequency" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                  <option value="disabled">Disabled</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly" selected>Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label for="dataRetention" style="display: block; margin-bottom: 8px; font-weight: 500;">Data Retention Period (Months)</label>
+                <input type="number" id="dataRetention" name="dataRetention" value="24" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                <small style="color: var(--text-light);">How long to keep user activity logs and other temporary data</small>
+              </div>
+              <button type="submit" class="btn" style="background: var(--accent); color: white;">Save Changes</button>
+            </form>
           </div>
         </section>
 
@@ -178,46 +375,6 @@
 
   <script>w3.includeHTML();</script>
   <script src="../../../src/scripts/pages/dashboard/header-admin.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        initializeSidebar();
-        initializeHeader();
-      }, 100);
-    });
-
-    function initializeSidebar() {
-      // Sidebar toggle
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      
-      if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.toggle('active');
-          if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-          if (sidebar) sidebar.classList.remove('active');
-          this.classList.remove('active');
-        });
-      }
-    }
-
-    function initializeHeader() {
-      // Set page title dynamically
-      const pageTitle = document.getElementById('pageTitle');
-      const pageSubtitle = document.getElementById('pageSubtitle');
-      
-      if (pageTitle) pageTitle.textContent = 'Settings';
-      if (pageSubtitle) pageSubtitle.textContent = 'Configure system preferences';
-
-      }
-  </script>
   
   <script type="module" src="../../../src/scripts/pages/dashboard/settings.js"></script>
 </body>
