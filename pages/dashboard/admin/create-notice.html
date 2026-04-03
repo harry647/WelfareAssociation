@@ -41,14 +41,27 @@
                     <label for="title">Notice Title *</label>
                     <input type="text" id="title" name="title" required placeholder="Enter notice title...">
                   </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="type">Notice Type *</label>
+                    <select id="type" name="type" required>
+                      <option value="">Select type...</option>
+                      <option value="general">General</option>
+                      <option value="important">Important</option>
+                      <option value="urgent">Urgent</option>
+                      <option value="event">Event</option>
+                      <option value="meeting">Meeting</option>
+                      <option value="reminder">Reminder</option>
+                    </select>
+                  </div>
                   <div class="form-group">
                     <label for="priority">Priority Level *</label>
                     <select id="priority" name="priority" required>
                       <option value="">Select priority...</option>
                       <option value="low">Low</option>
-                      <option value="medium">Medium</option>
+                      <option value="normal">Normal</option>
                       <option value="high">High</option>
-                      <option value="urgent">Urgent</option>
                     </select>
                   </div>
                 </div>
@@ -74,9 +87,10 @@
                     <label for="targetAudience">Target Audience</label>
                     <select id="targetAudience" name="targetAudience">
                       <option value="all">All Members</option>
-                      <option value="active">Active Members Only</option>
-                      <option value="executive">Executive Team Only</option>
-                      <option value="admin">Admin Only</option>
+                      <option value="members">Members Only</option>
+                      <option value="executives">Executives Only</option>
+                      <option value="students">Students Only</option>
+                      <option value="staff">Staff Only</option>
                     </select>
                   </div>
                 </div>
@@ -137,7 +151,7 @@
                 <button type="button" class="btn btn-outline cancel-btn">
                   <i class="fas fa-times"></i> Cancel
                 </button>
-                <button type="button" class="btn btn-outline" onclick="window.location.href='notices.html'">
+                <button type="button" class="btn btn-outline" onclick="window.location.href='../shared/notices.html'">
                   <i class="fas fa-list"></i> View Notices
                 </button>
               </div>
@@ -152,9 +166,7 @@
   <div w3-include-html="../components/footer-dashboard.html"></div>
 
   <script>w3.includeHTML();</script>
-
-  <script src="../../../src/scripts/pages/dashboard/header-admin.js"></script>
-
+  <script type="module" src="../../../src/scripts/components/header-admin.js"></script>
   <script type="module" src="../../../src/scripts/pages/dashboard/create-notice.js"></script>
 </body>
 </html>

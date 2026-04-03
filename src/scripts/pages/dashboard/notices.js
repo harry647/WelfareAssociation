@@ -250,12 +250,36 @@ class Notices {
             return;
         }
 
-        tbody.innerHTML = this.drafts.map(notice => `
+        tbody.innerHTML = this.drafts.map(notice => {
+            // Try to get author information
+            let authorName = 'Unknown';
+            
+            // If there's author data in the notice object
+            if (notice.authorUser) {
+                authorName = `${notice.authorUser.firstName || ''} ${notice.authorUser.lastName || ''}`.trim() || 'Unknown';
+            }
+            // If there's authorName field (populated by backend)
+            else if (notice.authorName) {
+                authorName = notice.authorName;
+            }
+            // If the current user created this notice
+            else if (notice.author === this.getCurrentUserId()) {
+                authorName = this.getCurrentUserName() || 'You';
+            }
+            // Check if we have user info in localStorage
+            else {
+                const currentUser = this.getCurrentUserFromStorage();
+                if (currentUser && notice.author === currentUser.id) {
+                    authorName = `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim() || 'You';
+                }
+            }
+
+            return `
             <tr>
                 <td>${this.escapeHtml(notice.title)}</td>
                 <td>${this.formatCategory(notice.type)}</td>
                 <td>${this.formatDate(notice.updatedAt)}</td>
-                <td>${notice.authorName || 'Unknown'}</td>
+                <td>${authorName}</td>
                 <td><span style="color: ${this.getPriorityColor(notice.priority)};">${this.formatPriority(notice.priority)}</span></td>
                 <td><span class="status pending">Draft</span></td>
                 <td>
@@ -263,7 +287,8 @@ class Notices {
                     <button class="btn approve" onclick="publishNotice('${notice.id}')" title="Publish">Publish</button>
                 </td>
             </tr>
-        `).join('');
+        `;
+        }).join('');
     }
 
     renderDeliveryStats() {
@@ -458,6 +483,45 @@ class Notices {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // Helper methods for user information
+    getCurrentUserId() {
+        try {
+            const userStr = localStorage.getItem('swa_user') || sessionStorage.getItem('swa_user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                return user.id || user.memberId;
+            }
+        } catch (error) {
+            console.error('Error getting current user ID:', error);
+        }
+        return null;
+    }
+
+    getCurrentUserName() {
+        try {
+            const userStr = localStorage.getItem('swa_user') || sessionStorage.getItem('swa_user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                return `${user.firstName || ''} ${user.lastName || ''}`.trim() || null;
+            }
+        } catch (error) {
+            console.error('Error getting current user name:', error);
+        }
+        return null;
+    }
+
+    getCurrentUserFromStorage() {
+        try {
+            const userStr = localStorage.getItem('swa_user') || sessionStorage.getItem('swa_user');
+            if (userStr) {
+                return JSON.parse(userStr);
+            }
+        } catch (error) {
+            console.error('Error getting current user from storage:', error);
+        }
+        return null;
     }
 }
 

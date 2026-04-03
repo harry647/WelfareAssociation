@@ -10,8 +10,6 @@ import { contributionService } from '../../../services/contribution-service.js';
 import { loanService } from '../../../services/loan-service.js';
 import { eventService } from '../../../services/event-service.js';
 import { savingsService } from '../../../services/savings-service.js';
-import { reportService } from '../../../services/report-service.js';
-
 
 import { showAlert } from '../../../utils/utility-functions.js';
 import { showConfirm } from '../../../utils/utility-functions.js';
@@ -26,6 +24,8 @@ class Analytics {
             events: [],
             reports: []
         };
+        this.dateRange = '30'; // days
+        this.currentYear = new Date().getFullYear();
         this.init();
     }
 
@@ -63,6 +63,15 @@ class Analytics {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
+                
+                // Get days from button text
+                const btnText = e.target.textContent.trim();
+                if (btnText.includes('30')) this.dateRange = '30';
+                else if (btnText.includes('3')) this.dateRange = '90';
+                else if (btnText.includes('6')) this.dateRange = '180';
+                else if (btnText.includes('Year')) this.dateRange = '365';
+                else this.dateRange = '30';
+                
                 this.loadAnalytics();
             });
         });
@@ -82,25 +91,31 @@ class Analytics {
         }
     }
 
+    getDateFilter() {
+        const now = new Date();
+        const startDate = new Date(now.getTime() - (parseInt(this.dateRange) * 24 * 60 * 60 * 1000));
+        return { startDate, endDate: now };
+    }
+
     async loadAnalytics() {
         try {
+            const { startDate, endDate } = this.getDateFilter();
+            
             // Fetch data from multiple services in parallel
-            const [membersData, contributionsData, loansData, eventsData, savingsData, reportsData] = await Promise.allSettled([
+            const [membersData, contributionsData, loansData, eventsData, savingsData] = await Promise.allSettled([
                 this.fetchMembersData(),
                 this.fetchContributionsData(),
                 this.fetchLoansData(),
                 this.fetchEventsData(),
-                this.fetchSavingsData(),
-                this.fetchReportData()
+                this.fetchSavingsData()
             ]);
 
             // Process and render all data
-            this.processMembersData(membersData);
-            this.processContributionsData(contributionsData);
-            this.processLoansData(loansData);
-            this.processEventsData(eventsData);
+            this.processMembersData(membersData, startDate, endDate);
+            this.processContributionsData(contributionsData, startDate, endDate);
+            this.processLoansData(loansData, startDate, endDate);
+            this.processEventsData(eventsData, startDate, endDate);
             this.processSavingsData(savingsData);
-            this.processReportData(reportsData);
 
             // Render all tables
             this.renderQuickStats();
@@ -109,7 +124,7 @@ class Analytics {
             this.renderMemberAnalytics();
             this.renderLoanAnalytics();
             this.renderEventAnalytics();
-            this.renderTopContributors(contributionsData, savingsData);
+            this.renderTopContributors(contributionsData, savingsData, membersData);
 
         } catch (error) {
             console.error('Error loading analytics:', error);
@@ -120,7 +135,10 @@ class Analytics {
     async fetchMembersData() {
         try {
             const response = await memberService.getAllMembers({ limit: 1000 });
-            return response.success ? response.data || [] : [];
+            if (response.success) {
+                return response.data || response.pagination?.total > 0 ? (response.data || []) : [];
+            }
+            return [];
         } catch (error) {
             console.error('Error fetching members:', error);
             return [];
@@ -130,7 +148,10 @@ class Analytics {
     async fetchContributionsData() {
         try {
             const response = await contributionService.getAll({ limit: 1000 });
-            return response.success ? response.data || [] : [];
+            if (response.success) {
+                return response.data || [];
+            }
+            return [];
         } catch (error) {
             console.error('Error fetching contributions:', error);
             return [];
@@ -140,7 +161,10 @@ class Analytics {
     async fetchLoansData() {
         try {
             const response = await loanService.getAll({ limit: 1000 });
-            return response.success ? response.data || [] : [];
+            if (response.success) {
+                return response.data || [];
+            }
+            return [];
         } catch (error) {
             console.error('Error fetching loans:', error);
             return [];
@@ -150,7 +174,10 @@ class Analytics {
     async fetchEventsData() {
         try {
             const response = await eventService.getAll({ limit: 100 });
-            return response.success ? response.data || [] : [];
+            if (response.success) {
+                return response.data || [];
+            }
+            return [];
         } catch (error) {
             console.error('Error fetching events:', error);
             return [];
@@ -160,80 +187,78 @@ class Analytics {
     async fetchSavingsData() {
         try {
             const response = await savingsService.getAll({ limit: 1000 });
-            return response.success ? response.data || [] : [];
+            if (response.success) {
+                return response.data || [];
+            }
+            return [];
         } catch (error) {
             console.error('Error fetching savings:', error);
             return [];
         }
     }
 
-    async fetchReportData() {
-        try {
-            // Fetch contribution report which has monthly breakdown
-            const response = await reportService.getContributionReport({ limit: 100 });
-            return response.success ? response.data || [] : [];
-        } catch (error) {
-            console.error('Error fetching report data:', error);
-            return [];
-        }
-    }
-
-    processMembersData(result) {
+    processMembersData(result, startDate, endDate) {
         if (result.status === 'fulfilled' && Array.isArray(result.value)) {
             const members = result.value;
             const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-
+            
             this.analyticsData.members.total = members.length;
-            this.analyticsData.members.active = members.filter(m => m.status === 'active').length;
+            this.analyticsData.members.active = members.filter(m => 
+                m.membershipStatus === 'active' || m.status === 'active'
+            ).length;
+            
+            // New this month (within date range)
             this.analyticsData.members.newThisMonth = members.filter(m => {
                 const createdAt = new Date(m.createdAt);
-                return createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear;
+                return createdAt >= startDate && createdAt <= endDate;
             }).length;
         }
     }
 
-    processContributionsData(result) {
+    processContributionsData(result, startDate, endDate) {
         if (result.status === 'fulfilled' && Array.isArray(result.value)) {
             const contributions = result.value;
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-
-            this.analyticsData.contributions.total = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
+            
+            // Total contributions (all time)
+            this.analyticsData.contributions.total = contributions.reduce((sum, c) => 
+                sum + (parseFloat(c.amount) || 0), 0);
+            
+            // This period contributions
             this.analyticsData.contributions.thisMonth = contributions.filter(c => {
-                const date = new Date(c.createdAt || c.date);
-                return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-            }).reduce((sum, c) => sum + (c.amount || 0), 0);
+                const date = new Date(c.createdAt || c.paymentDate);
+                return date >= startDate && date <= endDate;
+            }).reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
+            
             this.analyticsData.contributions.list = contributions;
         }
     }
 
-    processLoansData(result) {
+    processLoansData(result, startDate, endDate) {
         if (result.status === 'fulfilled' && Array.isArray(result.value)) {
             const loans = result.value;
-            this.analyticsData.loans.total = loans.reduce((sum, l) => sum + (l.amount || 0), 0);
-            this.analyticsData.loans.active = loans.filter(l => l.status === 'active' || l.status === 'approved').length;
+            
+            this.analyticsData.loans.total = loans.reduce((sum, l) => 
+                sum + (parseFloat(l.principalAmount || l.amount) || 0), 0);
+            this.analyticsData.loans.active = loans.filter(l => 
+                l.status === 'active' || l.status === 'approved'
+            ).length;
             this.analyticsData.loans.list = loans;
         }
     }
 
-    processEventsData(result) {
+    processEventsData(result, startDate, endDate) {
         if (result.status === 'fulfilled' && Array.isArray(result.value)) {
-            this.analyticsData.events = result.value;
+            this.analyticsData.events = result.value.filter(e => {
+                const eventDate = new Date(e.eventDate || e.date);
+                return eventDate >= startDate && eventDate <= endDate;
+            });
         }
     }
 
     processSavingsData(result) {
         if (result.status === 'fulfilled' && Array.isArray(result.value)) {
-            this.analyticsData.savings.total = result.value.reduce((sum, s) => sum + (s.amount || 0), 0);
-        }
-    }
-
-    processReportData(result) {
-        if (result.status === 'fulfilled' && Array.isArray(result.value)) {
-            this.analyticsData.reports = result.value;
+            this.analyticsData.savings.total = result.value.reduce((sum, s) => 
+                sum + (parseFloat(s.currentAmount || s.amount || 0)), 0);
         }
     }
 
@@ -290,78 +315,72 @@ class Analytics {
         const tbody = document.getElementById('monthlyTrendsTable');
         if (!tbody) return;
 
-        // Use real report data if available, otherwise generate from actual data
-        let trends = [];
+        // Generate from actual contribution/loan data grouped by month
+        const contributions = this.analyticsData.contributions.list || [];
+        const monthlyData = this.groupByMonth(contributions);
         
-        if (this.analyticsData.reports && this.analyticsData.reports.length > 0) {
-            // Use data from reports API
-            trends = this.analyticsData.reports.slice(0, 5).map(report => ({
-                month: report.month || report.period || 'N/A',
-                contributions: report.totalContributions || report.contributions || 0,
-                loans: report.totalLoans || report.loans || 0,
-                savings: report.totalSavings || report.savings || 0,
-                expenses: report.totalExpenses || report.expenses || 0,
-                netChange: report.netChange || (report.totalContributions - report.totalLoans - (report.totalExpenses || 0)),
-                growth: report.growth || 0
-            }));
-        } else {
-            // Generate from actual contribution/loan data
-            const monthlyData = this.groupByMonth(this.analyticsData.contributions.list || []);
+        if (Object.keys(monthlyData).length > 0) {
+            const trends = Object.entries(monthlyData)
+                .sort((a, b) => b[0].localeCompare(a[0]))
+                .slice(0, 6)
+                .map(([monthKey, data]) => {
+                    const contributions = data.contrib || 0;
+                    const expenses = contributions * 0.3; // Estimated expenses
+                    const loans = data.loans || 0;
+                    const savings = data.savings || 0;
+                    const netChange = contributions - loans - expenses;
+                    const growth = contributions > 0 ? Math.round(((contributions - expenses) / contributions) * 100) : 0;
+                    
+                    return { 
+                        month: data.month, 
+                        contributions, 
+                        loans, 
+                        savings, 
+                        expenses, 
+                        netChange, 
+                        growth 
+                    };
+                });
             
-            if (Object.keys(monthlyData).length > 0) {
-                trends = Object.entries(monthlyData)
-                    .sort((a, b) => b[0].localeCompare(a[0]))
-                    .slice(0, 5)
-                    .map(([month, data]) => {
-                        const contributions = data.contrib || 0;
-                        const loans = data.loans || 0;
-                        const savings = data.savings || 0;
-                        const expenses = contributions * 0.3;
-                        const netChange = contributions - loans - expenses;
-                        const growth = contributions > 0 ? Math.round(((contributions - expenses) / contributions) * 100) : 0;
-                        
-                        return { month, contributions, loans, savings, expenses, netChange, growth };
-                    });
-            } else {
-                // Fallback - show empty state message
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px;">
-                            <i class="fas fa-chart-line" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i><br>
-                            <p style="color: #666; font-size: 16px;">No monthly trend data available</p>
-                            <p style="color: #999; font-size: 14px;">Add contributions to see monthly trends</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+            tbody.innerHTML = trends.map(t => `
+                <tr>
+                    <td>${this.escapeHtml(t.month)}</td>
+                    <td>Ksh ${this.formatNumber(t.contributions)}</td>
+                    <td>Ksh ${this.formatNumber(t.loans)}</td>
+                    <td>Ksh ${this.formatNumber(t.savings)}</td>
+                    <td>Ksh ${this.formatNumber(t.expenses)}</td>
+                    <td style="color: ${t.netChange >= 0 ? 'green' : 'red'};">${t.netChange >= 0 ? '+' : ''}Ksh ${this.formatNumber(t.netChange)}</td>
+                    <td style="color: ${t.growth >= 0 ? 'green' : 'red'};">${t.growth >= 0 ? '+' : ''}${t.growth}%</td>
+                </tr>
+            `).join('');
+        } else {
+            // Fallback - show empty state message
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-chart-line" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i><br>
+                        <p style="color: #666; font-size: 16px;">No monthly trend data available</p>
+                        <p style="color: #999; font-size: 14px;">Add contributions to see monthly trends</p>
+                    </td>
+                </tr>
+            `;
         }
-
-        tbody.innerHTML = trends.map(t => `
-            <tr>
-                <td>${this.escapeHtml(t.month)}</td>
-                <td>Ksh ${this.formatNumber(t.contributions)}</td>
-                <td>Ksh ${this.formatNumber(t.loans)}</td>
-                <td>Ksh ${this.formatNumber(t.savings)}</td>
-                <td>Ksh ${this.formatNumber(t.expenses)}</td>
-                <td style="color: ${t.netChange >= 0 ? 'green' : 'red'};">${t.netChange >= 0 ? '+' : ''}Ksh ${this.formatNumber(t.netChange)}</td>
-                <td style="color: ${t.growth >= 0 ? 'green' : 'red'};">${t.growth >= 0 ? '+' : ''}${t.growth}%</td>
-            </tr>
-        `).join('');
     }
 
     // Helper to group data by month
     groupByMonth(data) {
         const grouped = {};
         data.forEach(item => {
-            const date = new Date(item.date || item.createdAt);
+            const date = new Date(item.createdAt || item.paymentDate || item.date);
+            if (isNaN(date.getTime())) return;
+            
             const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
             const monthName = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
             
             if (!grouped[monthKey]) {
                 grouped[monthKey] = { month: monthName, contrib: 0, loans: 0, savings: 0 };
             }
-            grouped[monthKey].contrib += item.amount || 0;
+            grouped[monthKey].contrib += parseFloat(item.amount) || 0;
         });
         return grouped;
     }
@@ -523,9 +542,17 @@ class Analytics {
         }).join('');
     }
 
-    renderTopContributors(contributionsResult, savingsResult) {
+    renderTopContributors(contributionsResult, savingsResult, membersResult) {
         const tbody = document.getElementById('topContributorsTable');
         if (!tbody) return;
+
+        // Get members map for name lookup
+        let membersMap = {};
+        if (membersResult && membersResult.status === 'fulfilled' && Array.isArray(membersResult.value)) {
+            membersResult.value.forEach(m => {
+                membersMap[m.id] = m;
+            });
+        }
 
         // Combine contributions and savings data to get top contributors
         let membersContrib = [];
@@ -536,7 +563,7 @@ class Analytics {
             contributionsResult.value.forEach(c => {
                 const memberId = c.memberId || c.userId;
                 if (!contribByMember[memberId]) contribByMember[memberId] = 0;
-                contribByMember[memberId] += c.amount || 0;
+                contribByMember[memberId] += parseFloat(c.amount) || 0;
             });
             membersContrib = Object.entries(contribByMember).map(([id, amount]) => ({ id, amount }));
         }
@@ -547,7 +574,7 @@ class Analytics {
             savingsResult.value.forEach(s => {
                 const memberId = s.memberId || s.userId;
                 if (!savingsByMember[memberId]) savingsByMember[memberId] = 0;
-                savingsByMember[memberId] += s.amount || 0;
+                savingsByMember[memberId] += parseFloat(s.currentAmount || s.amount) || 0;
             });
             membersSavings = Object.entries(savingsByMember).map(([id, amount]) => ({ id, amount }));
         }
@@ -564,7 +591,12 @@ class Analytics {
         });
 
         const topMembers = Object.entries(memberTotals)
-            .map(([id, data]) => ({ id, ...data, total: data.contrib + data.savings }))
+            .map(([id, data]) => ({ 
+                id, 
+                ...data, 
+                total: data.contrib + data.savings,
+                member: membersMap[id]
+            }))
             .sort((a, b) => b.total - a.total)
             .slice(0, 5);
 
@@ -581,21 +613,28 @@ class Analytics {
             return;
         }
 
-        const medals = ['gold', 'silver', '#cd7f32', '', ''];
+        const medals = ['#FFD700', '#C0C0C0', '#CD7F32', '', ''];
         const ranks = ['1st', '2nd', '3rd', '4th', '5th'];
 
-        tbody.innerHTML = topMembers.map((member, index) => `
-            <tr>
-                <td>
-                    ${index < 3 ? `<i class="fas fa-medal" style="color: ${medals[index]};"></i> ` : ''}${ranks[index]}
-                </td>
-                <td>Member ${member.id.substring(0, 8)}</td>
-                <td>${member.id.substring(0, 12)}</td>
-                <td>Ksh ${this.formatNumber(member.contrib)}</td>
-                <td>Ksh ${this.formatNumber(member.savings)}</td>
-                <td>${85 + (index * 2)}%</td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = topMembers.map((member, index) => {
+            const memberName = member.member 
+                ? `${member.member.firstName || ''} ${member.member.lastName || ''}`.trim() 
+                : `Member ${(member.id || '').substring(0, 8)}`;
+            const memberNumber = member.member?.memberNumber || (member.id || '').substring(0, 12);
+            
+            return `
+                <tr>
+                    <td>
+                        ${index < 3 ? `<i class="fas fa-medal" style="color: ${medals[index]};"></i> ` : ''}${ranks[index]}
+                    </td>
+                    <td>${this.escapeHtml(memberName)}</td>
+                    <td>${this.escapeHtml(memberNumber)}</td>
+                    <td>Ksh ${this.formatNumber(member.contrib)}</td>
+                    <td>Ksh ${this.formatNumber(member.savings)}</td>
+                    <td>${85 + (index * 2)}%</td>
+                </tr>
+            `;
+        }).join('');
     }
 
     handleError() {

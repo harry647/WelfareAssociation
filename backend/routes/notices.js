@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { Op } = require('sequelize');
-const Notice = require('../models/notice');
+const Notice = require('../models/Notice');
 const { auth, authorize, optionalAuth } = require('../middleware/auth');
 
 const validate = (req, res, next) => {
@@ -43,9 +43,37 @@ router.get('/', optionalAuth, async (req, res) => {
             offset: parseInt(offset)
         });
 
+        // Add author information to each notice
+        const noticesWithAuthor = await Promise.all(notices.map(async (notice) => {
+            const noticeData = notice.toJSON();
+            
+            // Fetch author information if author ID exists
+            if (noticeData.author) {
+                try {
+                    const User = require('../models/User').default;
+                    const authorUser = await User.findByPk(noticeData.author, {
+                        attributes: ['id', 'firstName', 'lastName', 'email']
+                    });
+                    
+                    if (authorUser) {
+                        noticeData.authorName = `${authorUser.firstName || ''} ${authorUser.lastName || ''}`.trim() || 'Unknown';
+                    } else {
+                        noticeData.authorName = 'Unknown User';
+                    }
+                } catch (error) {
+                    console.error('Error fetching author:', error);
+                    noticeData.authorName = 'Unknown';
+                }
+            } else {
+                noticeData.authorName = 'System';
+            }
+            
+            return noticeData;
+        }));
+
         res.json({
             success: true,
-            data: notices || [],
+            data: noticesWithAuthor || [],
             pagination: { 
                 page: parseInt(page), 
                 limit: parseInt(limit), 
@@ -75,7 +103,29 @@ router.get('/:id', optionalAuth, async (req, res) => {
         notice.views = (notice.views || 0) + 1;
         await notice.save();
 
-        res.json({ success: true, data: notice });
+        // Add author information
+        const noticeData = notice.toJSON();
+        if (noticeData.author) {
+            try {
+                const User = require('../models/User').default;
+                const authorUser = await User.findByPk(noticeData.author, {
+                    attributes: ['id', 'firstName', 'lastName', 'email']
+                });
+                
+                if (authorUser) {
+                    noticeData.authorName = `${authorUser.firstName || ''} ${authorUser.lastName || ''}`.trim() || 'Unknown';
+                } else {
+                    noticeData.authorName = 'Unknown User';
+                }
+            } catch (error) {
+                console.error('Error fetching author:', error);
+                noticeData.authorName = 'Unknown';
+            }
+        } else {
+            noticeData.authorName = 'System';
+        }
+
+        res.json({ success: true, data: noticeData });
     } catch (error) {
         console.error('Error fetching notice:', error);
         res.status(500).json({ success: false, message: 'Error fetching notice' });
@@ -94,6 +144,8 @@ router.post('/', auth, authorize('admin', 'secretary'), [
     try {
         const { title, content, type, priority, audience, isPublished, publishDate, expiryDate } = req.body;
 
+        const authorId = req.user && req.user.id ? req.user.id : null;
+
         const notice = await Notice.create({
             title,
             content,
@@ -103,10 +155,16 @@ router.post('/', auth, authorize('admin', 'secretary'), [
             isPublished: isPublished || false,
             publishDate,
             expiryDate,
-            author: req.user && req.user.id && req.user.id.includes('-') ? req.user.id : null
+            author: authorId
         });
 
-        res.status(201).json({ success: true, message: 'Notice created', data: notice });
+        // Add author information to the response
+        const noticeData = notice.toJSON();
+        if (req.user) {
+            noticeData.authorName = `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim() || 'Unknown';
+        }
+
+        res.status(201).json({ success: true, message: 'Notice created', data: noticeData });
     } catch (error) {
         console.error('Error creating notice:', error);
         res.status(500).json({ success: false, message: 'Error creating notice' });
@@ -137,7 +195,29 @@ router.put('/:id', auth, authorize('admin', 'secretary'), async (req, res) => {
 
         await notice.save();
 
-        res.json({ success: true, message: 'Notice updated', data: notice });
+        // Add author information to the response
+        const noticeData = notice.toJSON();
+        if (noticeData.author) {
+            try {
+                const User = require('../models/User').default;
+                const authorUser = await User.findByPk(noticeData.author, {
+                    attributes: ['id', 'firstName', 'lastName', 'email']
+                });
+                
+                if (authorUser) {
+                    noticeData.authorName = `${authorUser.firstName || ''} ${authorUser.lastName || ''}`.trim() || 'Unknown';
+                } else {
+                    noticeData.authorName = 'Unknown User';
+                }
+            } catch (error) {
+                console.error('Error fetching author:', error);
+                noticeData.authorName = 'Unknown';
+            }
+        } else {
+            noticeData.authorName = 'System';
+        }
+
+        res.json({ success: true, message: 'Notice updated', data: noticeData });
     } catch (error) {
         console.error('Error updating notice:', error);
         res.status(500).json({ success: false, message: 'Error updating notice' });

@@ -508,7 +508,7 @@
     }
 
     // Global logout function as backup
-    function handleLogoutDirect() {
+    async function handleLogoutDirect() {
       console.log('handleLogoutDirect called');
       const confirmed = await showConfirm('Are you sure you want to logout?', 'Confirm Logout');
       if (confirmed) {
@@ -529,7 +529,7 @@
   </script>
 
   <!-- W3.js component loader (already in head) -->
-
+  <script type="module" src="../../../src/scripts/components/header-member.js"></script>
   <script type="module" src="/src/scripts/pages/dashboard/member-portal.js"></script>
 </body>
 </html>
