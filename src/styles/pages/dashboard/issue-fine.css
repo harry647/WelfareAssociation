@@ -89,6 +89,17 @@
 }
 
 /* ── FORM GROUPS ── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.form-row:last-of-type {
+  margin-bottom: 0;
+}
+
 .form-group {
   margin-bottom: 24px;
 }

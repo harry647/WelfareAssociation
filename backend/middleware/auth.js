@@ -61,18 +61,19 @@ const auth = async (req, res, next) => {
         
         // Get user from database using Sequelize (handle both UUID and string IDs)
         let user = null;
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@swa.org';
         try {
-            // Try finding by UUID first
-            user = await User.findByPk(decoded.userId);
-        } catch (e) {
-            // If userId is not a valid UUID (e.g., 'admin'), create a mock user
+            // Check if userId is 'admin' - look up by email instead
             if (decoded.userId === 'admin') {
-                user = {
-                    id: 'admin',
-                    email: process.env.ADMIN_EMAIL || 'admin@swa.org',
-                    role: 'admin',
-                    isActive: true
-                };
+                user = await User.findOne({ where: { email: adminEmail } });
+            } else {
+                // Try finding by UUID first
+                user = await User.findByPk(decoded.userId);
+            }
+        } catch (e) {
+            // If userId is not a valid UUID (e.g., 'admin'), try to find by email
+            if (decoded.userId === 'admin') {
+                user = await User.findOne({ where: { email: adminEmail } });
             }
         }
         

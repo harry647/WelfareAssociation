@@ -21,6 +21,13 @@ class MemberService {
     }
 
     /**
+     * Get member list for selection (active members only)
+     */
+    async getMemberList() {
+        return apiService.get(`${API_CONFIG.endpoints.members}/list`, {}, true);
+    }
+
+    /**
      * Get member by ID
      * @param {string|number} id - Member ID
      */

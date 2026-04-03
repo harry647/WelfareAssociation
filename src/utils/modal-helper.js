@@ -194,7 +194,7 @@ export class ModalHelper {
                             <i class="fas ${icons[type]} modal-helper-icon"></i>
                             ${title}
                         </h3>
-                        <button class="modal-helper-close" onclick="modalHelper.closeModal('${modalId}')">
+                        <button class="modal-helper-close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -202,7 +202,7 @@ export class ModalHelper {
                         <div class="modal-helper-content">${message}</div>
                     </div>
                     <div class="modal-helper-footer">
-                        <button class="modal-helper-btn modal-helper-btn-primary" onclick="modalHelper.closeModal('${modalId}')">
+                        <button class="modal-helper-btn modal-helper-btn-primary">
                             OK
                         </button>
                     </div>
@@ -230,7 +230,7 @@ export class ModalHelper {
                             <i class="fas fa-question-circle modal-helper-icon"></i>
                             ${title}
                         </h3>
-                        <button class="modal-helper-close" onclick="modalHelper.closeModal('${modalId}', false)">
+                        <button class="modal-helper-close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -238,10 +238,10 @@ export class ModalHelper {
                         <div class="modal-helper-content">${message}</div>
                     </div>
                     <div class="modal-helper-footer">
-                        <button class="modal-helper-btn modal-helper-btn-secondary" onclick="modalHelper.closeModal('${modalId}', false)">
+                        <button class="modal-helper-btn modal-helper-btn-secondary">
                             Cancel
                         </button>
-                        <button class="modal-helper-btn modal-helper-btn-primary" onclick="modalHelper.closeModal('${modalId}', true)">
+                        <button class="modal-helper-btn modal-helper-btn-primary">
                             Confirm
                         </button>
                     </div>
@@ -270,7 +270,7 @@ export class ModalHelper {
                             <i class="fas fa-edit modal-helper-icon"></i>
                             ${title}
                         </h3>
-                        <button class="modal-helper-close" onclick="modalHelper.closeModal('${modalId}', null)">
+                        <button class="modal-helper-close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -280,10 +280,10 @@ export class ModalHelper {
                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-top: 16px; font-size: 14px;">
                     </div>
                     <div class="modal-helper-footer">
-                        <button class="modal-helper-btn modal-helper-btn-secondary" onclick="modalHelper.closeModal('${modalId}', null)">
+                        <button class="modal-helper-btn modal-helper-btn-secondary">
                             Cancel
                         </button>
-                        <button class="modal-helper-btn modal-helper-btn-primary" onclick="modalHelper.handlePrompt('${modalId}')">
+                        <button class="modal-helper-btn modal-helper-btn-primary" data-action="prompt">
                             OK
                         </button>
                     </div>
@@ -321,52 +321,125 @@ export class ModalHelper {
     }
 
     showModal(content, callback) {
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-helper-overlay';
-        overlay.innerHTML = content;
-        document.body.appendChild(overlay);
+        try {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-helper-overlay';
+            overlay.innerHTML = content;
+            document.body.appendChild(overlay);
 
-        // Close modal when clicking overlay
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                this.closeModal(overlay.querySelector('.modal-helper-modal').id, null);
+            // Generate unique ID for this callback
+            const callbackId = `callback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            this.callbacks[callbackId] = callback;
+            
+            // Store just the callback ID in dataset
+            overlay.dataset.callbackId = callbackId;
+            
+            // Find the modal and add event listeners programmatically
+            const modal = overlay.querySelector('.modal-helper-modal');
+            if (modal) {
+                const modalId = modal.id;
+                
+                // Add close button listener
+                const closeBtn = modal.querySelector('.modal-helper-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.closeModal(modalId, false);
+                    });
+                }
+                
+                // Add button listeners for confirm dialogs
+                const primaryBtn = modal.querySelector('.modal-helper-btn-primary');
+                if (primaryBtn) {
+                    primaryBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        // Check if this is a prompt dialog
+                        if (primaryBtn.dataset.action === 'prompt') {
+                            this.handlePrompt(modalId);
+                        } else {
+                            // For confirm dialogs, return true; for alerts, return null
+                            const isConfirm = modal.querySelector('.modal-helper-btn-secondary') !== null;
+                            this.closeModal(modalId, isConfirm ? true : null);
+                        }
+                    });
+                }
+                
+                // Add secondary button listener for confirm dialogs
+                const secondaryBtn = modal.querySelector('.modal-helper-btn-secondary');
+                if (secondaryBtn) {
+                    secondaryBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.closeModal(modalId, false);
+                    });
+                }
+                
+                // Add overlay click listener
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        this.closeModal(modalId, null);
+                    }
+                });
             }
-        });
-
-        // Generate unique ID for this callback
-        const callbackId = `callback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        this.callbacks[callbackId] = callback;
-        
-        // Store just the callback ID in dataset
-        overlay.dataset.callbackId = callbackId;
+            
+            // Ensure modalHelper is globally available for any remaining inline handlers
+            if (!window.modalHelper) {
+                window.modalHelper = this;
+            }
+        } catch (error) {
+            console.error('Error showing modal:', error);
+            // Fallback: execute callback with null to prevent hanging
+            if (callback) {
+                callback(null);
+            }
+        }
     }
 
     closeModal(modalId, result = null) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            const overlay = modal.closest('.modal-helper-overlay');
-            
-            // Add fade out animation
-            overlay.style.animation = 'modalFadeIn 0.3s ease reverse';
-            
-            setTimeout(() => {
-                // Get callback ID and execute callback from memory
-                const callbackId = overlay.dataset.callbackId;
-                const callback = this.callbacks[callbackId];
+        try {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                const overlay = modal.closest('.modal-helper-overlay');
                 
-                if (callback) {
-                    try {
-                        callback(result);
-                    } catch (error) {
-                        console.error('Modal callback error:', error);
+                // Add fade out animation
+                overlay.style.animation = 'modalFadeIn 0.3s ease reverse';
+                
+                setTimeout(() => {
+                    // Get callback ID and execute callback from memory
+                    const callbackId = overlay.dataset.callbackId;
+                    const callback = this.callbacks[callbackId];
+                    
+                    if (callback) {
+                        try {
+                            callback(result);
+                        } catch (error) {
+                            console.error('Modal callback error:', error);
+                        }
+                        // Clean up callback
+                        delete this.callbacks[callbackId];
                     }
-                    // Clean up callback
-                    delete this.callbacks[callbackId];
-                }
-                
-                overlay.remove();
-            }, 300);
+                    
+                    overlay.remove();
+                }, 300);
+            } else {
+                console.warn('Modal not found:', modalId);
+                // Try to find and clean up any hanging callbacks
+                this.cleanupOldCallbacks();
+            }
+        } catch (error) {
+            console.error('Error closing modal:', error);
+            // Try to clean up anyway
+            this.cleanupOldCallbacks();
         }
+    }
+    
+    cleanupOldCallbacks() {
+        // Clean up callbacks for modals that no longer exist
+        Object.keys(this.callbacks).forEach(callbackId => {
+            const modalId = callbackId.replace(/^callback_.*?_(.+)$/, '$1');
+            if (!document.getElementById(modalId)) {
+                delete this.callbacks[callbackId];
+            }
+        });
     }
 
     handlePrompt(modalId) {
@@ -376,11 +449,13 @@ export class ModalHelper {
     }
 }
 
-// Create singleton instance
+// Create singleton instance and make it globally available immediately
 const modalHelper = new ModalHelper();
 
-// Make globally available for onclick handlers
-window.modalHelper = modalHelper;
+// Ensure global availability immediately (before any DOM operations)
+if (typeof window !== 'undefined') {
+    window.modalHelper = modalHelper;
+}
 
 // Export for module usage
 export default modalHelper;

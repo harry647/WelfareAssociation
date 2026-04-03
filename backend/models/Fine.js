@@ -75,7 +75,7 @@ const Fine = sequelize.define('Fine', {
     // Issued by
     issuedBy: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'users',
             key: 'id'

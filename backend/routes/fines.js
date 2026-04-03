@@ -238,6 +238,9 @@ router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
         const fineCount = await Fine.count() + 1;
         const fineNumber = `FINE${String(fineCount).padStart(6, '0')}`;
 
+        // Get the user who issued the fine
+        const issuedBy = req.user.id;
+
         const fine = await Fine.create({
             memberId,
             fineNumber,
@@ -245,7 +248,7 @@ router.post('/', auth, authorize('admin', 'secretary', 'treasurer'), [
             amount,
             dueDate,
             description,
-            issuedBy: req.user.id
+            issuedBy
         });
 
         res.status(201).json({ success: true, message: 'Fine issued', data: fine });

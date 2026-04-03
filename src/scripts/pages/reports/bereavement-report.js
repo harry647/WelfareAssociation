@@ -6,7 +6,7 @@
 import { reportService } from '../../../services/report-service.js';
 import { bereavementService } from '../../../services/bereavement-service.js';
 import { formatCurrency, formatDate } from '../../../utils/utility-functions.js';
-
+import { APP_CONFIG } from '../../../config/app-config.js';
 
 import { showAlert } from '../../../utils/utility-functions.js';
 import { showConfirm } from '../../../utils/utility-functions.js';
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadBereavementData() {
     try {
         // Get token from localStorage
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem(APP_CONFIG.storageKeys.authToken);
         if (!token) {
             console.warn('No authentication token found');
             displayEmptyState();

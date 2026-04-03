@@ -10,10 +10,8 @@
 import { authService, fineService } from '../../../services/index.js';
 
 // Import utility functions
-import { showNotification, formatDate, formatCurrency } from '../../../utils/utility-functions.js';
+import { showNotification, formatDate, formatCurrency, showConfirm } from '../../../utils/utility-functions.js';
 
-
-import { showConfirm } from '../../../utils/utility-functions.js';
 class FinesCollection {
     constructor() {
         this.fines = [];
@@ -323,14 +321,78 @@ document.addEventListener('DOMContentLoaded', () => {
     window.finesCollection = new FinesCollection();
 });
 
-// Global function to send reminder
-async function sendFineReminder(fineId) {
+// Global function to send reminder - make it available for onclick handlers
+window.sendFineReminder = async function(fineId) {
+    // Find the button that was clicked
+    const button = event.target;
+    const originalText = button.innerHTML;
+    
+    console.log('sendFineReminder called with fineId:', fineId);
+    
     try {
+        // Show confirmation dialog using utility function with better error handling
+        let confirmed = false;
+        try {
+            confirmed = await showConfirm('Are you sure you want to send a reminder for this fine?', 'Send Reminder');
+            console.log('Confirmation result:', confirmed);
+        } catch (confirmError) {
+            console.error('Confirm dialog error:', confirmError);
+            // Fallback to native confirm if modal fails
+            confirmed = confirm('Are you sure you want to send a reminder for this fine?');
+        }
+        
+        if (!confirmed) {
+            console.log('User cancelled the reminder');
+            return; // User cancelled
+        }
+        
+        console.log('User confirmed, proceeding to send reminder...');
+        
+        // Show loading state
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        console.log('Importing fineService...');
         const { fineService } = await import('../../../services/index.js');
-        await fineService.sendReminder(fineId);
-        showNotification('Reminder sent successfully!', 'success');
+        console.log('fineService imported:', fineService);
+        
+        console.log('Calling fineService.sendReminder...');
+        const response = await fineService.sendReminder(fineId);
+        console.log('Response from sendReminder:', response);
+        
+        if (response && response.success) {
+            // Success feedback
+            console.log('Reminder sent successfully');
+            showNotification('Reminder sent successfully!', 'success');
+            
+            // Update button to show success
+            button.innerHTML = '<i class="fas fa-check"></i> Sent!';
+            button.classList.add('btn-success');
+            
+            // Optionally disable the button for a few seconds to prevent spam
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('btn-success');
+                button.disabled = false;
+            }, 3000);
+        } else {
+            console.log('Reminder failed, response:', response);
+            throw new Error(response?.message || 'Failed to send reminder');
+        }
     } catch (error) {
         console.error('Error sending reminder:', error);
-        showNotification('Failed to send reminder. Please try again.', 'error');
+        
+        // Error feedback
+        showNotification(`Failed to send reminder: ${error.message}`, 'error');
+        
+        // Reset button
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        // Add error styling temporarily
+        button.classList.add('btn-error');
+        setTimeout(() => {
+            button.classList.remove('btn-error');
+        }, 2000);
     }
-}
+};

@@ -330,6 +330,29 @@
   border-color: #dc3545;
 }
 
+/* ── BUTTON STATE STYLES ── */
+.btn-success {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.btn-success:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+.btn-error {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.btn-error:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
 /* ── PAGINATION ── */
 .pagination {
   display: flex;

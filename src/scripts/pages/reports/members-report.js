@@ -5,6 +5,7 @@
 
 import { reportService } from '../../../services/report-service.js';
 import { formatCurrency, formatDate } from '../../../utils/utility-functions.js';
+import { APP_CONFIG } from '../../../config/app-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Members report loaded');
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadMembersData() {
     try {
         // Get token from localStorage
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem(APP_CONFIG.storageKeys.authToken);
         if (!token) {
             console.warn('No authentication token found');
             displayEmptyState();
