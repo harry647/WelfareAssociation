@@ -33,61 +33,56 @@
           <!-- Add Officer Form -->
           <div class="form-container">
             <form id="addOfficerForm" class="form-grid">
-              <!-- Personal Information -->
+              <!-- Member Selection & Details -->
               <div class="form-section">
-                <h3><i class="fas fa-user"></i> Personal Information</h3>
+                <h3><i class="fas fa-users"></i> Select Member</h3>
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="firstName">First Name *</label>
-                    <input type="text" id="firstName" name="firstName" required placeholder="Enter first name...">
-                  </div>
-                  <div class="form-group">
-                    <label for="lastName">Last Name *</label>
-                    <input type="text" id="lastName" name="lastName" required placeholder="Enter last name...">
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required placeholder="Enter email address...">
-                  </div>
-                  <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" name="phone" required placeholder="Enter phone number...">
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="studentId">Student ID *</label>
-                    <input type="text" id="studentId" name="studentId" required placeholder="Enter student ID...">
-                  </div>
-                  <div class="form-group">
-                    <label for="gender">Gender</label>
-                    <select id="gender" name="gender">
-                      <option value="">Select gender...</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
+                    <label for="memberSelect">Search and Select Member *</label>
+                    <select id="memberSelect" name="memberId" required>
+                      <option value="">Loading members...</option>
                     </select>
+                    <small>Start typing to search for a member</small>
+                  </div>
+                </div>
+                
+                <!-- Selected Member Summary (Compact) -->
+                <div id="memberSummary" class="member-summary" style="display: none;">
+                  <div class="summary-header">
+                    <i class="fas fa-user-check"></i>
+                    <span>Selected Member:</span>
+                  </div>
+                  <div class="summary-content">
+                    <div class="member-basic-info">
+                      <span class="member-name" id="summaryMemberName">-</span>
+                      <span class="member-email" id="summaryMemberEmail">-</span>
+                      <span class="member-id" id="summaryMemberId">-</span>
+                    </div>
+                    <div class="member-status">
+                      <span class="status-badge" id="memberDataStatus">
+                        <i class="fas fa-info-circle"></i>
+                        Basic member info available
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!-- Position Information -->
               <div class="form-section">
-                <h3><i class="fas fa-user-tie"></i> Position Information</h3>
+                <h3><i class="fas fa-user-tie"></i> Position & Role Assignment</h3>
                 <div class="form-row">
                   <div class="form-group">
                     <label for="position">Position *</label>
                     <select id="position" name="position" required>
                       <option value="">Select position...</option>
-                      <option value="chairman">Chairman</option>
-                      <option value="vice-chairman">Vice Chairman</option>
-                      <option value="secretary">Secretary</option>
-                      <option value="treasurer">Treasurer</option>
-                      <option value="pro">Public Relations Officer</option>
-                      <option value="committee-head">Committee Head</option>
-                      <option value="member">Executive Member</option>
+                      <option value="chairman" data-role="admin">Chairman</option>
+                      <option value="vice-chairman" data-role="admin">Vice Chairman</option>
+                      <option value="secretary" data-role="executive">Secretary</option>
+                      <option value="treasurer" data-role="executive">Treasurer</option>
+                      <option value="pro" data-role="executive">Public Relations Officer</option>
+                      <option value="committee-head" data-role="executive">Committee Head</option>
+                      <option value="member" data-role="executive">Executive Member</option>
                     </select>
                   </div>
                   <div class="form-group">
@@ -114,79 +109,91 @@
                     <small>Leave empty for ongoing position</small>
                   </div>
                 </div>
-              </div>
-
-              <!-- Academic Information -->
-              <div class="form-section">
-                <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="course">Course of Study</label>
-                    <input type="text" id="course" name="course" placeholder="Enter course of study...">
+                
+                <!-- Role Access Information -->
+                <div id="roleAccessInfo" class="role-access-info" style="display: none;">
+                  <h4><i class="fas fa-shield-alt"></i> Role Access Level</h4>
+                  <div class="role-details">
+                    <div class="role-badge" id="roleBadge">
+                      <span class="role-label">Role:</span>
+                      <span class="role-name" id="roleName">-</span>
+                    </div>
+                    <div class="access-permissions" id="accessPermissions">
+                      <h5>Access Permissions:</h5>
+                      <ul id="permissionsList">
+                        <!-- Permissions will be populated by JavaScript -->
+                      </ul>
+                    </div>
                   </div>
-                  <div class="form-group">
-                    <label for="yearOfStudy">Year of Study</label>
-                    <select id="yearOfStudy" name="yearOfStudy">
-                      <option value="">Select year...</option>
-                      <option value="1">1st Year</option>
-                      <option value="2">2nd Year</option>
-                      <option value="3">3rd Year</option>
-                      <option value="4">4th Year</option>
-                      <option value="5">5th Year</option>
-                      <option value="6">6th Year</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="institution">Institution</label>
-                  <input type="text" id="institution" name="institution" placeholder="Jaramogi Oginga Odinga University of Science and Technology">
                 </div>
               </div>
 
-              <!-- Emergency Contact -->
-              <div class="form-section">
-                <h3><i class="fas fa-phone-alt"></i> Emergency Contact</h3>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="emergencyName">Emergency Contact Name</label>
-                    <input type="text" id="emergencyName" name="emergencyName" placeholder="Enter emergency contact name...">
-                  </div>
-                  <div class="form-group">
-                    <label for="emergencyPhone">Emergency Contact Phone</label>
-                    <input type="tel" id="emergencyPhone" name="emergencyPhone" placeholder="Enter emergency contact phone...">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="emergencyRelationship">Relationship</label>
-                  <input type="text" id="emergencyRelationship" name="emergencyRelationship" placeholder="Parent, Guardian, Sibling, etc.">
-                </div>
-              </div>
 
               <!-- Account Settings -->
               <div class="form-section">
-                <h3><i class="fas fa-cog"></i> Account Settings</h3>
-                <div class="form-group">
-                  <div class="checkbox-group">
-                    <label class="checkbox-label">
-                      <input type="checkbox" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>
-                      <span class="checkmark"></span>
-                      Send welcome email with login credentials
-                    </label>
-                    <label class="checkbox-label">
-                      <input type="checkbox" id="sendSMSNotification" name="sendSMSNotification">
-                      <span class="checkmark"></span>
-                      Send SMS notification about appointment
-                    </label>
-                    <label class="checkbox-label">
-                      <input type="checkbox" id="addToDirectory" name="addToDirectory" checked>
-                      <span class="checkmark"></span>
-                      Add to executive team directory
-                    </label>
-                    <label class="checkbox-label">
-                      <input type="checkbox" id="requireTraining" name="requireTraining">
-                      <span class="checkmark"></span>
-                      Require orientation training
-                    </label>
+                <h3><i class="fas fa-cog"></i> Executive Account Creation</h3>
+                
+                <!-- Password Generation -->
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="passwordGeneration">Password Generation</label>
+                    <div class="password-generation-group">
+                      <button type="button" class="btn btn-secondary" id="generatePasswordBtn">
+                        <i class="fas fa-key"></i> Generate Password
+                      </button>
+                      <div class="password-display" id="passwordDisplay" style="display: none;">
+                        <div class="password-field">
+                          <input type="text" id="generatedPassword" readonly>
+                          <button type="button" class="btn btn-outline" id="copyPasswordBtn">
+                            <i class="fas fa-copy"></i>
+                          </button>
+                          <button type="button" class="btn btn-outline" id="togglePasswordBtn">
+                            <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                          </button>
+                        </div>
+                        <small class="password-hint">Save this password securely. It will be shown only once.</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="accountStatus">Account Status</label>
+                    <select id="accountStatus" name="accountStatus">
+                      <option value="active">Active - Can login immediately</option>
+                      <option value="pending">Pending - Requires activation</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <!-- Account Permissions -->
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="checkbox-group">
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="sendWelcomeEmail" name="sendWelcomeEmail" checked>
+                        <span class="checkmark"></span>
+                        Send welcome email with login credentials
+                      </label>
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="sendSMSNotification" name="sendSMSNotification">
+                        <span class="checkmark"></span>
+                        Send SMS notification with credentials
+                      </label>
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="addToDirectory" name="addToDirectory" checked>
+                        <span class="checkmark"></span>
+                        Add to executive team directory
+                      </label>
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="requireTraining" name="requireTraining">
+                        <span class="checkmark"></span>
+                        Require orientation training
+                      </label>
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="forcePasswordChange" name="forcePasswordChange" checked>
+                        <span class="checkmark"></span>
+                        Require password change on first login
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -200,7 +207,7 @@
                   <i class="fas fa-redo"></i> Reset Form
                 </button>
                 <button type="button" class="btn btn-outline" onclick="window.location.href='executive-team.html'">
-                  <i class="fas fa-users"></i> View Team
+                  <i class="fas fa-users"></i> View Executive Team
                 </button>
               </div>
             </form>

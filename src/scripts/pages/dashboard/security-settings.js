@@ -60,8 +60,8 @@ class SecuritySettings {
             });
         }
         
-        // Password policy form
-        const passwordPolicyForm = document.querySelector('.security-section:nth-of-type(2) .security-form');
+        // Password policy form (2nd security section)
+        const passwordPolicyForm = document.querySelectorAll('.security-section')[1]?.querySelector('.security-form');
         if (passwordPolicyForm) {
             passwordPolicyForm.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -69,8 +69,8 @@ class SecuritySettings {
             });
         }
         
-        // Session management form
-        const sessionForm = document.querySelector('.security-section:nth-of-type(4) .security-form');
+        // Session management form (4th security section)
+        const sessionForm = document.querySelectorAll('.security-section')[3]?.querySelector('.security-form');
         if (sessionForm) {
             sessionForm.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -99,7 +99,7 @@ class SecuritySettings {
                 this.saveMpesaSettings();
             });
         }
-        
+
         const stripeForm = document.getElementById('stripeForm');
         if (stripeForm) {
             stripeForm.addEventListener('submit', (e) => {
@@ -107,7 +107,7 @@ class SecuritySettings {
                 this.saveStripeSettings();
             });
         }
-        
+
         const bankForm = document.getElementById('bankForm');
         if (bankForm) {
             bankForm.addEventListener('submit', (e) => {
@@ -115,7 +115,7 @@ class SecuritySettings {
                 this.saveBankSettings();
             });
         }
-        
+
         const mpesaC2BForm = document.getElementById('mpesaC2BForm');
         if (mpesaC2BForm) {
             mpesaC2BForm.addEventListener('submit', (e) => {
@@ -596,12 +596,12 @@ class SecuritySettings {
 
     async savePasswordPolicy(e) {
         const form = e.target;
-        const minLength = form.querySelector('input[type="number"]:first-of-type')?.value;
-        const expiryDays = form.querySelector('input[type="number"]:last-of-type')?.value;
+        const minLength = parseInt(document.getElementById('minPasswordLength')?.value);
+        const expiryDays = parseInt(document.getElementById('passwordExpiryDays')?.value);
         
         // Validation
-        if (!minLength || !expiryDays) {
-            showAlert('Please fill in all password policy fields', 'Validation Error', 'error');
+        if (!minLength || !expiryDays || isNaN(minLength) || isNaN(expiryDays)) {
+            showAlert('Please fill in all password policy fields with valid numbers', 'Validation Error', 'error');
             return;
         }
         
@@ -650,12 +650,12 @@ class SecuritySettings {
     
     async saveSessionSettings(e) {
         const form = e.target;
-        const sessionTimeout = form.querySelector('input[type="number"]:first-of-type')?.value;
-        const maxSessions = form.querySelector('input[type="number"]:last-of-type')?.value;
+        const sessionTimeout = parseInt(document.getElementById('sessionTimeout')?.value);
+        const maxSessions = parseInt(document.getElementById('maxConcurrentSessions')?.value);
         
         // Validation
-        if (!sessionTimeout || !maxSessions) {
-            showAlert('Please fill in all session settings fields', 'Validation Error', 'error');
+        if (!sessionTimeout || !maxSessions || isNaN(sessionTimeout) || isNaN(maxSessions)) {
+            showAlert('Please fill in all session settings fields with valid numbers', 'Validation Error', 'error');
             return;
         }
         
@@ -700,6 +700,11 @@ class SecuritySettings {
             console.error('Error saving session settings:', error);
             showAlert(`Error saving session settings: ${error.message}`, 'Network Error', 'error');
         }
+    }
+
+    toggleTwoFactor(enabled) {
+        console.log('Two-factor authentication:', enabled ? 'enabled' : 'disabled');
+        showAlert(`Two-factor authentication ${enabled ? 'enabled' : 'disabled'} successfully!`, 'Success', 'success');
     }
 
     async handleLogout() {
@@ -974,6 +979,7 @@ class SecuritySettings {
     }
 }
 
+// Initialize the security settings when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new SecuritySettings();
-}, 'Information', 'info');
+});

@@ -6,6 +6,7 @@
 const { sequelize } = require('../config/database');
 const User = require('./User');
 const Member = require('./Member');
+const Officer = require('./Officer');
 const Loan = require('./Loan');
 const Contribution = require('./Contribution');
 const Payment = require('./Payment');
@@ -37,6 +38,16 @@ const Settings = require('./Settings');
 // User - Member association (User has memberId pointing to Member)
 User.hasOne(Member, { foreignKey: 'userId', as: 'member' });
 Member.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// Officer associations
+Officer.belongsTo(Member, { foreignKey: 'memberId', as: 'member' });
+Member.hasMany(Officer, { foreignKey: 'memberId', as: 'officers' });
+
+Officer.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Officer, { foreignKey: 'userId', as: 'officers' });
+
+Officer.belongsTo(User, { foreignKey: 'appointedBy', as: 'appointer' });
+User.hasMany(Officer, { foreignKey: 'appointedBy', as: 'appointments' });
 
 // Member - Loan associations
 Member.hasMany(Loan, { foreignKey: 'memberId', as: 'loans' });
@@ -152,6 +163,7 @@ async function initModels(sequelizeInstance) {
         sequelize,
         User,
         Member,
+        Officer,
         Loan,
         Contribution,
         Payment,
@@ -183,6 +195,7 @@ module.exports = {
     initModels,
     User,
     Member,
+    Officer,
     Loan,
     Contribution,
     Payment,

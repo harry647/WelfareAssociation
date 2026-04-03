@@ -10,13 +10,13 @@ import { API_CONFIG } from '../config/app-config.js';
 
 class UserService {
     /**
-     * Get all executive team members
+     * Get all executive team members (officers)
      * @returns {Promise<Array>} Executive team members
      */
     async getExecutiveTeam() {
         try {
-            const response = await apiService.get(`${API_CONFIG.endpoints.users}/executive-team`);
-            return response.data || response || [];
+            const response = await apiService.get('/officers', {}, true);
+            return response.data || [];
         } catch (error) {
             console.error('Error fetching executive team:', error);
             throw error;

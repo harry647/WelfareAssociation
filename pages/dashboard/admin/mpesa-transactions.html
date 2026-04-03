@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="M-Pesa Transactions - Admin Panel">
+  <title>M-Pesa Transactions - Student Welfare Association | JOOUST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- W3.js for component includes -->
+  <script src="https://www.w3schools.com/lib/w3.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/unified-dashboard.css">
+  <link rel="stylesheet" href="../../../src/styles/pages/dashboard/security-settings.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div w3-include-html="../components/sidebar-admin.html"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header Component -->
+      <div w3-include-html="../components/header-admin.html"></div>
+
+      <!-- Page Content -->
+      <div class="content-section active">
+        <div class="page-body">
+          <div class="page-header">
+            <h1><i class="fab fa-mobile-alt"></i> M-Pesa Transactions</h1>
+            <p>View and manage M-Pesa payment transactions</p>
+          </div>
+          
+          <!-- Transactions Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2><i class="fas fa-list"></i> Recent Transactions</h2>
+              <div class="table-actions">
+                <div class="btn-group">
+                  <button class="btn btn-secondary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                  <button class="btn btn-secondary" onclick="window.location.reload()">
+                    <i class="fas fa-sync"></i> Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table id="transactionsTable">
+                <thead>
+                  <tr>
+                    <th>Payment Number</th>
+                    <th>Phone Number</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Payment Date</th>
+                    <th>M-Pesa Reference</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionsTableBody">
+                  <tr>
+                    <td colspan="7" class="text-center">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      <p>Loading transactions...</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-container -->
+
+  <!-- Footer Component -->
+  <div w3-include-html="../components/footer-dashboard.html"></div>
+
+  <script>w3.includeHTML();</script>
+  <script src="../../../src/scripts/pages/dashboard/header-admin.js"></script>
+  <script type="module" src="../../../src/scripts/pages/dashboard/mpesa-transactions.js"></script>
+</body>
+</html>

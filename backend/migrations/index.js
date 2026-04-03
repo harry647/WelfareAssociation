@@ -14,6 +14,8 @@ const { runWithdrawalMigration } = require('./withdrawal-fields-migration');
 const createShares = require('./20260402-create-shares');
 const createRegistrations = require('./20260402-create-registrations');
 const createSubscriptions = require('./20260402-create-subscriptions');
+const createOfficers = require('./20260403-create-officers');
+const addExecutiveRole = require('./20260403-add-executive-role');
 
 async function runAllMigrations() {
     console.log('\n🔄 Running database migrations...');
@@ -46,7 +48,7 @@ async function runAllMigrations() {
         // Run new payment model migrations
         console.log('\n📋 Running new payment model migrations...');
         const { sequelize } = require('../config/database');
-        let sharesSuccess = true, registrationsSuccess = true, subscriptionsSuccess = true;
+        let sharesSuccess = true, registrationsSuccess = true, subscriptionsSuccess = true, officersSuccess = true, executiveRoleSuccess = true;
         
         try {
             // Create shares table
@@ -146,6 +148,28 @@ async function runAllMigrations() {
         }
         
         try {
+            // Create officers table
+            console.log('\n👔 Creating officers table...');
+            const queryInterface = sequelize.getQueryInterface();
+            await createOfficers.up(queryInterface, sequelize.Sequelize);
+            console.log('✅ Officers table created successfully');
+        } catch (error) {
+            console.error('❌ Officers migration failed:', error.message);
+            officersSuccess = false;
+        }
+        
+        try {
+            // Add executive role to users enum
+            console.log('\n👤 Adding executive role to users enum...');
+            const queryInterface = sequelize.getQueryInterface();
+            await addExecutiveRole.up(queryInterface, sequelize.Sequelize);
+            console.log('✅ Executive role added successfully');
+        } catch (error) {
+            console.error('❌ Executive role migration failed:', error.message);
+            executiveRoleSuccess = false;
+        }
+        
+        try {
             // Create settings table
             console.log('\n📊 Creating settings table...');
             await sequelize.query(`
@@ -184,13 +208,13 @@ async function runAllMigrations() {
         // This is handled in donation-migration.js now
         console.log('✓ Donation columns migration completed');
         
-        if (loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && withdrawalSuccess && sharesSuccess && registrationsSuccess && subscriptionsSuccess) {
+        if (loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && withdrawalSuccess && sharesSuccess && registrationsSuccess && subscriptionsSuccess && officersSuccess && executiveRoleSuccess) {
             console.log('\n✅ All migrations completed successfully');
         } else {
             console.log('\n⚠️ Some migrations failed');
         }
         
-        return loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && withdrawalSuccess && sharesSuccess && registrationsSuccess && subscriptionsSuccess;
+        return loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && withdrawalSuccess && sharesSuccess && registrationsSuccess && subscriptionsSuccess && officersSuccess && executiveRoleSuccess;
         
     } catch (error) {
         console.error('\n❌ Migration runner error:', error);

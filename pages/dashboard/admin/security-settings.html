@@ -166,7 +166,7 @@
                 </div>
                 <div class="btn-group">
                   <button type="submit" class="btn btn-primary">Register C2B Callback</button>
-                  <a href="/api/mpesa/transactions" target="_blank" class="btn btn-secondary">
+                  <a href="mpesa-transactions.html" class="btn btn-secondary">
                     <i class="fas fa-list"></i> View Transactions
                   </a>
                 </div>
@@ -215,11 +215,11 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label>Minimum Password Length</label>
-                    <input type="number" value="8" min="6" max="20">
+                    <input type="number" id="minPasswordLength" value="8" min="6" max="20">
                   </div>
                   <div class="form-group">
                     <label>Password Expiry (days)</label>
-                    <input type="number" value="90" min="30" max="365">
+                    <input type="number" id="passwordExpiryDays" value="90" min="30" max="365">
                   </div>
                 </div>
                 <div class="form-group">
@@ -289,11 +289,11 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label>Session Timeout (minutes)</label>
-                    <input type="number" value="30" min="15" max="480">
+                    <input type="number" id="sessionTimeout" value="30" min="15" max="480">
                   </div>
                   <div class="form-group">
                     <label>Maximum Concurrent Sessions</label>
-                    <input type="number" value="3" min="1" max="10">
+                    <input type="number" id="maxConcurrentSessions" value="3" min="1" max="10">
                   </div>
                 </div>
                 <div class="form-group">

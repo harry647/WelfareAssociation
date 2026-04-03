@@ -5,6 +5,7 @@
 
 const authRoutes = require('./auth');
 const memberRoutes = require('./members');
+const officerRoutes = require('./officers');
 const loanRoutes = require('./loans');
 const contributionRoutes = require('./contributions');
 const donationRoutes = require('./donations');
@@ -41,6 +42,7 @@ module.exports = (app) => {
     app.use('/api/auth', authRoutes);
     app.use('/api/users', userRoutes);
     app.use('/api/members', memberRoutes);
+    app.use('/api/officers', officerRoutes);
     app.use('/api/loans', loanRoutes);
     app.use('/api/contributions', contributionRoutes);
     app.use('/api/donations', donationRoutes);

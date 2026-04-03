@@ -30,21 +30,58 @@ const validate = (req, res, next) => {
 router.get('/list', auth, async (req, res) => {
     try {
         const members = await Member.findAll({
-            attributes: ['id', 'firstName', 'lastName', 'memberNumber', 'phone', 'membershipStatus', 'joinDate'],
+            attributes: [
+                'id', 'firstName', 'lastName', 'memberNumber', 'phone', 'email', 
+                'gender', 'membershipStatus', 'joinDate', 'dateOfBirth',
+                'institution', 'emergencyContact'
+            ],
             where: { membershipStatus: 'active' },
             order: [['firstName', 'ASC']]
         });
         
         res.json({
             success: true,
-            data: members.map(m => ({
-                id: m.id,
-                firstName: m.firstName,
-                lastName: m.lastName,
-                memberNumber: m.memberNumber,
-                phone: m.phone,
-                name: `${m.firstName} ${m.lastName}`
-            }))
+            data: members.map(m => {
+                // Parse JSON fields safely
+                let institution = {};
+                let emergencyContact = {};
+                
+                try {
+                    institution = typeof m.institution === 'string' ? 
+                        JSON.parse(m.institution) : (m.institution || {});
+                } catch (e) {
+                    institution = {};
+                }
+                
+                try {
+                    emergencyContact = typeof m.emergencyContact === 'string' ? 
+                        JSON.parse(m.emergencyContact) : (m.emergencyContact || {});
+                } catch (e) {
+                    emergencyContact = {};
+                }
+                
+                return {
+                    id: m.id,
+                    firstName: m.firstName,
+                    lastName: m.lastName,
+                    memberNumber: m.memberNumber,
+                    phone: m.phone,
+                    email: m.email,
+                    gender: m.gender,
+                    membershipStatus: m.membershipStatus,
+                    joinDate: m.joinDate,
+                    dateOfBirth: m.dateOfBirth,
+                    // Handle JSON fields - get from institution JSON or direct
+                    course: institution.course || null,
+                    yearOfStudy: institution.yearOfStudy || null,
+                    institution: institution,
+                    emergencyContact: emergencyContact,
+                    emergencyName: emergencyContact.name || null,
+                    emergencyPhone: emergencyContact.phone || null,
+                    emergencyRelationship: emergencyContact.relationship || null,
+                    name: `${m.firstName} ${m.lastName}`
+                };
+            })
         });
     } catch (error) {
         console.error('Error fetching member list:', error);
@@ -289,7 +326,8 @@ router.put('/:id', auth, [
             membershipType,
             membershipStatus,
             emergencyContact, 
-            nextOfKin 
+            nextOfKin,
+            institution
         } = req.body;
 
         const member = await Member.findByPk(req.params.id);
@@ -329,6 +367,15 @@ router.put('/:id', auth, [
         
         if (emergencyContact) member.emergencyContact = emergencyContact;
         if (nextOfKin) member.nextOfKin = nextOfKin;
+        
+        // Handle institution field (for course and year of study)
+        if (institution) {
+            if (typeof institution === 'string') {
+                member.institution = { course: institution };
+            } else {
+                member.institution = institution;
+            }
+        }
 
         await member.save();
 

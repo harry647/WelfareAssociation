@@ -479,3 +479,607 @@
     height: 14px;
   }
 }
+
+/* ── MEMBER DETAILS SECTION ── */
+.member-details {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  border-left: 4px solid #22c55e;
+}
+
+.member-details h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #bbf7d0;
+}
+
+.member-details h4 i {
+  color: #22c55e;
+  font-size: 16px;
+}
+
+.member-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.info-item strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.info-item span {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* Responsive adjustments for member details */
+@media (max-width: 768px) {
+  .member-info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .member-details {
+    padding: 16px;
+    margin-top: 20px;
+  }
+  
+  .info-item {
+    padding: 10px;
+  }
+  
+  .info-item strong {
+    font-size: 11px;
+  }
+  
+  .info-item span {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .member-details {
+    padding: 12px;
+    margin-top: 16px;
+  }
+  
+  .member-details h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .info-item {
+    padding: 8px;
+  }
+}
+
+/* ── MEMBER SUMMARY (COMPACT) ── */
+.member-summary {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  border-left: 4px solid #22c55e;
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #166534;
+}
+
+.summary-header i {
+  color: #22c55e;
+  font-size: 16px;
+}
+
+.summary-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.member-basic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.member-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f766e;
+  text-transform: capitalize;
+}
+
+.member-email {
+  font-size: 13px;
+  color: #059669;
+  font-weight: 500;
+}
+
+.member-id {
+  font-size: 12px;
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.member-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid #22c55e;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #166534;
+}
+
+.status-badge i {
+  font-size: 11px;
+  color: #22c55e;
+}
+
+/* Responsive adjustments for member summary */
+@media (max-width: 768px) {
+  .summary-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .member-summary {
+    padding: 12px 16px;
+  }
+  
+  .member-name {
+    font-size: 15px;
+  }
+  
+  .member-email {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .member-summary {
+    padding: 10px 12px;
+  }
+  
+  .summary-header {
+    font-size: 13px;
+  }
+  
+  .member-name {
+    font-size: 14px;
+  }
+  
+  .status-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* ── FORM SECTION SUBTITLES ── */
+.form-section-subtitle {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 16px 0;
+  padding: 8px 12px;
+  background: rgba(107, 114, 128, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #6b7280;
+}
+
+.form-section-subtitle i {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ── FIELD IMPORTANCE INDICATORS ── */
+.required-field {
+  border-left: 3px solid #dc2626 !important;
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.02), transparent) !important;
+}
+
+.optional-field {
+  border-left: 3px solid #6b7280 !important;
+  background: linear-gradient(90deg, rgba(107, 114, 128, 0.02), transparent) !important;
+}
+
+.optional-field.data-complete {
+  border-left-color: #10b981 !important;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.02), transparent) !important;
+}
+
+.optional-field.data-missing {
+  border-left-color: #f59e0b !important;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.02), transparent) !important;
+}
+
+.field-hint {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* ── DATA STATUS BADGES ── */
+.data-status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.data-status-badge.complete {
+  background: #10b981;
+  color: white;
+}
+
+.data-status-badge.missing {
+  background: #f59e0b;
+  color: white;
+}
+
+.form-group {
+  position: relative;
+}
+
+/* ── MEMBER INFO SECTION ── */
+.member-info-section {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  border-left: 4px solid #64748b;
+}
+
+.member-info-section h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.member-info-section h4 i {
+  color: #64748b;
+  font-size: 16px;
+}
+
+.readonly-field {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+  opacity: 0.8 !important;
+  font-weight: 500 !important;
+}
+
+.readonly-field:focus {
+  outline: none !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.readonly-field:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.readonly-field::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Responsive adjustments for member info section */
+@media (max-width: 768px) {
+  .member-info-section {
+    padding: 16px;
+    margin-top: 20px;
+  }
+  
+  .member-info-section h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .readonly-field {
+    font-size: 13px !important;
+    padding: 12px 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .member-info-section {
+    padding: 12px;
+    margin-top: 16px;
+  }
+  
+  .member-info-section h4 {
+    font-size: 13px;
+  }
+  
+  .readonly-field {
+    font-size: 12px !important;
+    padding: 10px 12px !important;
+  }
+}
+
+/* ── ROLE ACCESS SECTION ── */
+.role-access-info {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  border-left: 4px solid #3b82f6;
+}
+
+.role-access-info h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e40af;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #bfdbfe;
+}
+
+.role-access-info h4 i {
+  color: #3b82f6;
+  font-size: 16px;
+}
+
+.role-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: white;
+  border: 1px solid #b91c1c;
+}
+
+.role-badge.executive {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+  border: 1px solid #047857;
+}
+
+.role-label {
+  opacity: 0.9;
+  font-size: 12px;
+}
+
+.access-permissions h5 {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.access-permissions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.access-permissions li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.access-permissions li:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(4px);
+}
+
+.access-permissions li i {
+  color: #10b981;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ── PASSWORD GENERATION SECTION ── */
+.password-generation-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.password-display {
+  margin-top: 12px;
+}
+
+.password-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-field input {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  padding: 12px 16px;
+}
+
+.password-field input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.password-field .btn {
+  padding: 12px;
+  min-width: auto;
+  flex-shrink: 0;
+}
+
+.password-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* ── ACCOUNT STATUS STYLING ── */
+.form-group select#accountStatus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z'%3E%3C/path%3E%3C/svg%3E");
+}
+
+/* Responsive adjustments for role access and password sections */
+@media (max-width: 768px) {
+  .role-access-info {
+    padding: 16px;
+    margin-top: 20px;
+  }
+  
+  .role-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .password-field {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .password-field .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .access-permissions li {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .role-access-info {
+    padding: 12px;
+    margin-top: 16px;
+  }
+  
+  .role-access-info h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .role-details {
+    gap: 12px;
+  }
+  
+  .access-permissions h5 {
+    font-size: 12px;
+  }
+  
+  .password-field input {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+  
+  .password-hint {
+    font-size: 11px;
+  }
+}

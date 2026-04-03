@@ -83,15 +83,15 @@
 
           <!-- Quick Actions -->
           <div class="quick-actions">
-            <button class="action-btn" href="add-officer.html">
+            <button class="action-btn" onclick="window.location.href='add-officer.html'">
               <i class="fas fa-user-plus"></i>
               <span>Add Officer</span>
             </button>
-            <button class="action-btn" href="security-settings.html">
-              <i class="fas fa-cog"></i>
+            <button class="action-btn" onclick="window.location.href='add-officer.html'">
+              <i class="fas fa-user-plus"></i>
               <span>Manage Roles</span>
             </button>
-            <button class="action-btn" href="../public/events.html">
+            <button class="action-btn" onclick="window.location.href='create-event.html'">
               <i class="fas fa-calendar"></i>
               <span>Schedule Meeting</span>
             </button>
@@ -180,8 +180,8 @@
             <div class="table-header">
               <h2><i class="fas fa-shield-alt"></i> Roles & Permissions</h2>
               <div class="table-actions">
-                <button class="btn btn-primary" onclick="window.location.href='security-settings.html'">
-                  <i class="fas fa-cog"></i> Manage Roles
+                <button class="btn btn-primary" onclick="window.location.href='add-officer.html'">
+                  <i class="fas fa-user-plus"></i> Manage Roles
                 </button>
                 <button class="btn btn-secondary" onclick="window.print()">
                   <i class="fas fa-print"></i> Print
@@ -219,7 +219,7 @@
             <div class="table-header">
               <h2><i class="fas fa-calendar-alt"></i> Meetings Schedule</h2>
               <div class="table-actions">
-                <button class="btn btn-primary" onclick="window.location.href='../public/events.html?create=meeting'">
+                <button class="btn btn-primary" onclick="window.location.href='create-event.html?create=meeting'">
                   <i class="fas fa-calendar-plus"></i> Schedule Meeting
                 </button>
                 <button class="btn btn-secondary" onclick="window.print()">

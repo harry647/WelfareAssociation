@@ -10,10 +10,7 @@
 import { authService, userService } from '../../../services/index.js';
 
 // Import utility functions
-import { showNotification, formatDate } from '../../../utils/utility-functions.js';
-
-
-import { showConfirm } from '../../../utils/utility-functions.js';
+import { showNotification, formatDate, showConfirm, showPrompt } from '../../../utils/utility-functions.js';
 class ExecutiveTeam {
     constructor() {
         this.executives = [];
@@ -27,6 +24,40 @@ class ExecutiveTeam {
     }
 
     async init() {
+        // Test if modal container exists
+        const modalContainer = document.getElementById('modal-container');
+        if (!modalContainer) {
+            // Create modal container if it doesn't exist
+            const container = document.createElement('div');
+            container.id = 'modal-container';
+            container.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 10000;
+                pointer-events: none;
+            `;
+            document.body.appendChild(container);
+        }
+        
+        // Test if notification container exists
+        const notificationContainer = document.querySelector('.notification-container');
+        if (!notificationContainer) {
+            // Create notification container if it doesn't exist
+            const container = document.createElement('div');
+            container.className = 'notification-container';
+            container.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                pointer-events: none;
+            `;
+            document.body.appendChild(container);
+        }
+        
         await this.checkAuth();
         this.initSidebar();
         this.initEventListeners();
@@ -101,13 +132,23 @@ class ExecutiveTeam {
             const row = btn.closest('tr');
 
             // Executive table actions
-            if (row?.dataset?.userId) {
+            if (row?.dataset?.officerId || row?.dataset?.userId) {
+                const officerId = row?.dataset?.officerId;
+                const userId = row?.dataset?.userId;
+                
                 if (action === 'edit' || btn.innerHTML.includes('fa-edit')) {
-                    this.editExecutive(row.dataset.userId);
+                    if (officerId) {
+                        this.editOfficer(officerId);
+                    } else if (userId) {
+                        this.editExecutive(userId);
+                    }
                     return;
                 }
                 if (action === 'message' || btn.innerHTML.includes('fa-envelope')) {
-                    this.sendMessage(row.dataset.userId);
+                    const targetUserId = officerId ? this.executives.find(o => o.id === officerId)?.userId : userId;
+                    if (targetUserId) {
+                        this.sendMessage(targetUserId);
+                    }
                     return;
                 }
             }
@@ -176,44 +217,151 @@ class ExecutiveTeam {
      * View committee details
      */
     viewCommittee(committeeId) {
-        const committees = [
-            { name: 'Finance Committee', day: 'Monday', time: '4:00 PM', location: 'Finance Office', description: 'Oversees all financial matters, budgets, and accounts' },
-            { name: 'Events Committee', day: 'Wednesday', time: '3:00 PM', location: 'Student Center', description: 'Organizes events and social activities for members' },
-            { name: 'Welfare Committee', day: 'Friday', time: '2:00 PM', location: 'Welfare Office', description: 'Handles member welfare and support services' }
-        ];
-        const committee = committees[committeeId];
-        if (committee) {
-            showNotification(`Viewing ${committee.name} - ${committee.description}`, 'info');
-            // Could also navigate to a dedicated page:
-            // window.location.href = `committee-details.html?committee=${committee.name.toLowerCase().replace(' ', '-')}`;
+        try {
+            const committees = [
+                { 
+                    name: 'Finance Committee', 
+                    day: 'Monday', 
+                    time: '4:00 PM', 
+                    location: 'Finance Office', 
+                    description: 'Oversees all financial matters, budgets, and accounts',
+                    responsibilities: ['Budget planning', 'Financial reporting', 'Expense approval', 'Account management']
+                },
+                { 
+                    name: 'Events Committee', 
+                    day: 'Wednesday', 
+                    time: '3:00 PM', 
+                    location: 'Student Center', 
+                    description: 'Organizes events and social activities for members',
+                    responsibilities: ['Event planning', 'Logistics coordination', 'Promotion', 'Venue management']
+                },
+                { 
+                    name: 'Welfare Committee', 
+                    day: 'Friday', 
+                    time: '2:00 PM', 
+                    location: 'Welfare Office', 
+                    description: 'Handles member welfare and support services',
+                    responsibilities: ['Member support', 'Welfare programs', 'Counseling services', 'Emergency assistance']
+                }
+            ];
+            const committee = committees[committeeId];
+            if (!committee) {
+                showNotification('Committee not found', 'error');
+                return;
+            }
+            
+            // Create detailed committee information
+            const responsibilitiesList = committee.responsibilities.map(resp => `• ${resp}`).join('\n');
+            
+            const committeeInfo = `📋 ${committee.name.toUpperCase()}
+
+📝 Description:
+${committee.description}
+
+📅 Meeting Schedule:
+• Day: ${committee.day}
+• Time: ${committee.time}
+• Location: ${committee.location}
+
+🎯 Key Responsibilities:
+${responsibilitiesList}`;
+            
+            // Use manual notification
+            const manualNotification = document.createElement('div');
+            manualNotification.className = 'notification notification-info';
+            manualNotification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #17a2b8;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                z-index: 9999;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                max-width: 400px;
+                white-space: pre-wrap;
+                font-family: monospace;
+                font-size: 12px;
+                line-height: 1.4;
+            `;
+            manualNotification.textContent = committeeInfo;
+            document.body.appendChild(manualNotification);
+            
+            // Remove after 8 seconds
+            setTimeout(() => {
+                if (manualNotification.parentNode) {
+                    manualNotification.parentNode.removeChild(manualNotification);
+                }
+            }, 8000);
+            
+        } catch (error) {
+            showNotification('Error loading committee details. Please try again.', 'error');
         }
     }
 
     /**
-     * Send message to executive
+     * Edit officer - navigate to edit page or show edit modal
+     */
+    editOfficer(officerId) {
+        // For now, navigate to add-officer page with edit parameter
+        // In the future, this could open an edit modal or dedicated edit page
+        window.location.href = `add-officer.html?edit=${officerId}`;
+    }
+
+    /**
+     * Send message to executive member
      */
     sendMessage(userId) {
-        const exec = this.executives.find(e => e.userId === userId);
-        if (!exec) {
-            showNotification('Executive member not found', 'error');
-            return;
-        }
-        
-        // Open email client or navigate to message page
-        const email = exec.email;
-        if (email) {
-            window.location.href = `../public/contact-information.html?recipient=${encodeURIComponent(email)}&recipientName=${encodeURIComponent(exec.firstName + ' ' + exec.lastName)}`;
-        } else {
-            showNotification('Email address not available', 'error');
+        try {
+            const exec = this.executives.find(e => e.userId === userId || e.user?.id === userId);
+            if (!exec) {
+                showNotification('Executive member not found', 'error');
+                return;
+            }
+            
+            // Extract member data
+            const member = exec.member || exec.memberDataSnapshot || {};
+            const user = exec.user || {};
+            const fullName = member.getFullName ? member.getFullName() : 
+                           `${member.firstName || ''} ${member.lastName || ''}`.trim();
+            const email = member.email || user.email;
+            
+            if (!email) {
+                showNotification('Email address not available for this executive member', 'error');
+                return;
+            }
+            
+            // Use native confirm directly
+            const confirmMessage = `Send message to ${fullName} (${exec.position})?\n\nEmail: ${email}\n\nClick OK to open email client, Cancel to copy email to clipboard.`;
+            
+            const confirmed = confirm(confirmMessage);
+            
+            if (confirmed) {
+                // Open email client
+                const subject = encodeURIComponent(`Message from SWA Administration`);
+                const body = encodeURIComponent(`Dear ${fullName},\n\nI hope this message finds you well.\n\nBest regards,\nSWA Administration`);
+                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                showNotification(`Email client opened for ${fullName}`, 'success');
+            } else {
+                // Copy email to clipboard
+                navigator.clipboard.writeText(email).then(() => {
+                    showNotification(`Email address copied to clipboard: ${email}`, 'info');
+                }).catch(() => {
+                    showNotification(`Email address: ${email}`, 'info');
+                });
+            }
+        } catch (error) {
+            showNotification('Error sending message. Please try again.', 'error');
         }
     }
 
     /**
-     * Manage role permissions - navigate to security settings
+     * Manage role permissions - navigate to add officer page
      */
     manageRolePermissions(role) {
-        // Navigate to security settings page with role parameter
-        window.location.href = `security-settings.html?role=${encodeURIComponent(role)}`;
+        // Navigate to add officer page with role parameter
+        window.location.href = `add-officer.html?role=${encodeURIComponent(role)}`;
     }
 
     /**
@@ -224,7 +372,7 @@ class ExecutiveTeam {
         const meetingType = meetingTypes[meetingIndex] || 'Meeting';
         
         // Navigate to events page to create new meeting/event
-        window.location.href = `../public/events.html?create=${encodeURIComponent(meetingType)}`;
+        window.location.href = `create-event.html?create=${encodeURIComponent(meetingType)}`;
     }
 
     /**
@@ -279,27 +427,32 @@ class ExecutiveTeam {
     }
 
     /**
-     * Calculate statistics from executive data
+     * Calculate statistics from officer data
      */
     calculateStats() {
         const currentYear = new Date().getFullYear();
         
-        // Total officers (all users with executive roles)
-        this.stats.totalOfficers = this.executives.length;
+        // Total officers (all active officers)
+        this.stats.totalOfficers = this.executives.filter(o => o.status === 'active').length;
         
         // Core executives (chairman, treasurer, secretary)
-        const executiveRoles = ['chairman', 'treasurer', 'secretary'];
-        this.stats.totalExecutives = this.executives.filter(e => 
-            executiveRoles.includes(e.role?.toLowerCase())
+        const executivePositions = ['chairman', 'treasurer', 'secretary'];
+        this.stats.totalExecutives = this.executives.filter(o => 
+            o.status === 'active' && executivePositions.includes(o.position?.toLowerCase())
         ).length;
         
-        // Committee heads (other admin roles)
-        this.stats.committeeHeads = this.executives.filter(e => 
-            !executiveRoles.includes(e.role?.toLowerCase()) && e.role !== 'admin'
+        // Committee heads (other positions like pro, committee-head)
+        const committeePositions = ['pro', 'committee-head'];
+        this.stats.committeeHeads = this.executives.filter(o => 
+            o.status === 'active' && committeePositions.includes(o.position?.toLowerCase())
         ).length;
         
-        // Term end (current year + 1)
-        this.stats.termEnd = currentYear + 1;
+        // Term end (find the latest end date or default to current year + 1)
+        const endDates = this.executives
+            .filter(o => o.endDate)
+            .map(o => new Date(o.endDate).getFullYear());
+        
+        this.stats.termEnd = endDates.length > 0 ? Math.max(...endDates) : currentYear + 1;
     }
 
     /**
@@ -350,30 +503,44 @@ class ExecutiveTeam {
             return;
         }
 
-        tableBody.innerHTML = this.executives.map(exec => {
-            const fullName = `${exec.firstName || ''} ${exec.lastName || ''}`.trim();
-            const role = exec.role || 'N/A';
-            const studentId = exec.studentId || exec.memberNumber || 'N/A';
-            const phone = exec.phone || 'N/A';
-            const email = exec.email || 'N/A';
+        tableBody.innerHTML = this.executives.map(officer => {
+            // Extract member data from nested structure
+            const member = officer.member || officer.memberDataSnapshot || {};
+            const user = officer.user || {};
+            
+            const fullName = member.getFullName ? member.getFullName() : 
+                           `${member.firstName || ''} ${member.lastName || ''}`.trim();
+            const role = officer.role || 'N/A';
+            const position = officer.position || 'N/A';
+            const studentId = member.memberNumber || member.studentId || 'N/A';
+            const phone = member.phone || user.phone || 'N/A';
+            const email = member.email || user.email || 'N/A';
             
             // Format dates
-            const createdAt = exec.createdAt || new Date();
-            const termStart = formatDate(createdAt);
-            const termEnd = this.stats.termEnd ? `${this.stats.termEnd}-12-31` : 'N/A';
+            const termStart = officer.startDate ? formatDate(new Date(officer.startDate)) : 'N/A';
+            const termEnd = officer.endDate ? formatDate(new Date(officer.endDate)) : 'N/A';
             
             // Status
-            const isActive = exec.isActive !== false;
+            const isActive = officer.status === 'active' && (!user || user.isActive !== false);
             const statusHtml = isActive 
                 ? '<span class="status active">Active</span>' 
                 : '<span class="status inactive">Inactive</span>';
 
             // Position display
-            let positionDisplay = role.charAt(0).toUpperCase() + role.slice(1);
-            if (role.toLowerCase() === 'admin') positionDisplay = 'Administrator';
+            let positionDisplay = position.charAt(0).toUpperCase() + position.slice(1);
+            const positionMap = {
+                'chairman': 'Chairman',
+                'vice-chairman': 'Vice Chairman',
+                'secretary': 'Secretary',
+                'treasurer': 'Treasurer',
+                'pro': 'PRO',
+                'committee-head': 'Committee Head',
+                'member': 'Executive Member'
+            };
+            positionDisplay = positionMap[position.toLowerCase()] || positionDisplay;
 
             return `
-                <tr data-user-id="${exec.userId}">
+                <tr data-officer-id="${officer.id}">
                     <td><strong>${positionDisplay}</strong></td>
                     <td>${fullName || 'N/A'}</td>
                     <td>${studentId}</td>
@@ -383,8 +550,12 @@ class ExecutiveTeam {
                     <td>${termEnd}</td>
                     <td>${statusHtml}</td>
                     <td>
-                        <button class="btn"><i class="fas fa-edit"></i></button>
-                        <button class="btn"><i class="fas fa-envelope"></i></button>
+                        <button class="btn" onclick="executiveTeam.editOfficer('${officer.id}')" title="Edit Officer">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn" onclick="executiveTeam.sendMessage('${officer.userId || officer.user?.id}')" title="Send Message">
+                            <i class="fas fa-envelope"></i>
+                        </button>
                     </td>
                 </tr>
             `;
@@ -438,8 +609,12 @@ class ExecutiveTeam {
                     <td>${committee.day}</td>
                     <td>${statusHtml}</td>
                     <td>
-                        <button class="btn" data-action="view-committee"><i class="fas fa-eye"></i></button>
-                        <button class="btn" data-action="edit-committee"><i class="fas fa-edit"></i></button>
+                        <button class="btn" onclick="executiveTeam.viewCommittee(${index})" title="View Committee Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn" onclick="executiveTeam.editCommittee(${index})" title="Edit Committee">
+                            <i class="fas fa-edit"></i>
+                        </button>
                     </td>
                 </tr>
             `;
@@ -512,7 +687,9 @@ class ExecutiveTeam {
                     <td>${getIcon(r.reports)} ${r.reports}</td>
                     <td>${getIcon(r.settings)} ${r.settings}</td>
                     <td>
-                        ${r.canEdit ? '<button class="btn" data-action="edit-role"><i class="fas fa-cog"></i></button>' : '-'}
+                        ${r.canEdit ? `<button class="btn" onclick="executiveTeam.manageRolePermissions('${r.role}')" title="Manage Role Permissions">
+                            <i class="fas fa-cog"></i>
+                        </button>` : '-'}
                     </td>
                 </tr>
             `;
@@ -563,7 +740,9 @@ class ExecutiveTeam {
                 <td>${meeting.location}</td>
                 <td>${meeting.nextMeeting}</td>
                 <td>
-                    <button class="btn" data-action="schedule-meeting"><i class="fas fa-calendar-plus"></i></button>
+                    <button class="btn" onclick="executiveTeam.scheduleMeeting(${index})" title="Schedule Meeting">
+                        <i class="fas fa-calendar-plus"></i>
+                    </button>
                 </td>
             </tr>
         `).join('');

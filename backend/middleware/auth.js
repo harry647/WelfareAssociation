@@ -47,7 +47,10 @@ const auth = async (req, res, next) => {
         // Get token from header
         const authHeader = req.headers.authorization;
         
+        console.log('🔍 AUTH DEBUG: Auth header:', authHeader ? 'Present' : 'Missing');
+        
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            console.log('❌ AUTH DEBUG: No valid Bearer token found');
             return res.status(401).json({
                 success: false,
                 message: 'No token provided. Please log in.'
@@ -55,9 +58,11 @@ const auth = async (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1];
+        console.log('🔍 AUTH DEBUG: Token extracted:', token.substring(0, 20) + '...');
 
         // Verify token
         const decoded = verifyToken(token);
+        console.log('🔍 AUTH DEBUG: Token decoded:', decoded);
         
         // Get user from database using Sequelize (handle both UUID and string IDs)
         let user = null;
@@ -65,19 +70,30 @@ const auth = async (req, res, next) => {
         try {
             // Check if userId is 'admin' - look up by email instead
             if (decoded.userId === 'admin') {
+                console.log('🔍 AUTH DEBUG: Looking up admin user by email:', adminEmail);
                 user = await User.findOne({ where: { email: adminEmail } });
             } else {
+                console.log('🔍 AUTH DEBUG: Looking up user by ID:', decoded.userId);
                 // Try finding by UUID first
                 user = await User.findByPk(decoded.userId);
             }
         } catch (e) {
+            console.log('🔍 AUTH DEBUG: Error looking up user:', e.message);
             // If userId is not a valid UUID (e.g., 'admin'), try to find by email
             if (decoded.userId === 'admin') {
                 user = await User.findOne({ where: { email: adminEmail } });
             }
         }
         
+        console.log('🔍 AUTH DEBUG: User found:', user ? {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            isActive: user.isActive
+        } : 'Not found');
+        
         if (!user) {
+            console.log('❌ AUTH DEBUG: User not found');
             return res.status(401).json({
                 success: false,
                 message: 'User not found. Please log in again.'
@@ -85,6 +101,7 @@ const auth = async (req, res, next) => {
         }
 
         if (!user.isActive) {
+            console.log('❌ AUTH DEBUG: User is not active');
             return res.status(401).json({
                 success: false,
                 message: 'Your account has been deactivated.'
