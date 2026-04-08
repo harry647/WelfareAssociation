@@ -6,9 +6,14 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+const connectionString = isProduction
+    ? process.env.POSTGRES_URI_PROD
+    : process.env.POSTGRES_URI_DEV || process.env.POSTGRES_URI;
+
 const pool = new Pool({
-    connectionString: process.env.POSTGRES_URI || process.env.POSTGRES_URI_DEV,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    connectionString: connectionString,
+    ssl: isProduction ? { rejectUnauthorized: false } : false
 });
 
 async function runPaymentMigration() {
