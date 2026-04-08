@@ -216,6 +216,22 @@ async function runAllMigrations() {
                     "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
                 );
             `);
+            
+            // Add enum type for settings_category if it doesn't exist
+            await sequelize.query(`
+                DO $$ BEGIN
+                    CREATE TYPE "enum_settings_category" AS ENUM('general', 'payment', 'security', 'api', 'email', 'sms', 'financial');
+                EXCEPTION
+                    WHEN duplicate_object THEN null;
+                END $$;
+            `);
+            
+            // Alter column to use enum type
+            await sequelize.query(`
+                ALTER TABLE "settings" 
+                ALTER COLUMN "category" TYPE "enum_settings_category" 
+                USING "category"::"enum_settings_category";
+            `);
             await sequelize.query('CREATE INDEX IF NOT EXISTS "settings_key" ON "settings" ("key");');
             await sequelize.query('CREATE INDEX IF NOT EXISTS "settings_category" ON "settings" ("category");');
             console.log('✅ Settings table created successfully');
