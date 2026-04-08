@@ -1,240 +1,241 @@
 # Student Welfare Association (SWA) Website
 
-A modern, scalable web application for the Student Welfare Association at JOOUST (Jaramogi Oginga Odinga University of Science and Technology) built with modern architecture patterns and ready for backend integration.
+A full-stack web application for the Student Welfare Association at JOOUST (Jaramogi Oginga Odinga University of Science and Technology).
 
 ## Project Overview
 
-The SWA Website provides a comprehensive platform for:
-- Student welfare programs and services
-- Member portals (Student, Member, Admin)
-- Contribution and loan management
-- Event management and news
-- Contact and donation systems
+The SWA Website provides a comprehensive platform for managing student welfare programs with the following capabilities:
+
+- **Multi-portal Access**: Student, Member, and Admin dashboards
+- **Financial Management**: Contributions, loans, payments, savings, withdrawals
+- **Communication**: SMS, WhatsApp, Email notifications and announcements
+- **M-Pesa Integration**: Mobile money payment processing
+- **Reports & Analytics**: Financial summaries, contributions, loans, members, events, bereavement
+- **Document Management**: Upload, archive, and manage documents
+
+## Tech Stack
+
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+), ES6 Modules
+- **Backend**: Node.js, Express.js
+- **Database**: PostgreSQL with Sequelize ORM
+- **Security**: JWT authentication, bcryptjs, Helmet, CORS
+- **Payments**: M-Pesa integration
+- **Notifications**: SMS, WhatsApp, Email (Nodemailer)
 
 ## Project Structure
 
 ```
 SWAwebsite/
-├── index.html                      # Main homepage/welcome page
-├── README.md                       # Project documentation
-├── server.js                       # Node.js Express server
+├── index.html                      # Root redirect
+├── welcome-page.html               # Welcome/Landing page
+├── server.js                       # Express server entry point
+├── package.json                    # Dependencies
+├── render.yaml                     # Render.com deployment config
 │
-├── images/                         # Image assets
-│   ├── logo.png
-│   ├── Welfarelogo.webp
-│   ├── team.jpg, team1.jpg, teams.jpg
-│   ├── staff.PNG
-│   ├── secretary.png
-│   └── ... (various project images)
+├── backend/                        # Server-side code
+│   ├── config/
+│   │   └── database.js             # PostgreSQL connection
+│   ├── models/                     # Sequelize models
+│   │   ├── User.js, Member.js, Officer.js
+│   │   ├── Loan.js, Payment.js, Contribution.js
+│   │   ├── Savings.js, Withdrawal.js
+│   │   ├── Bereavement.js, Donation.js
+│   │   └── ... (20+ models)
+│   ├── routes/                     # API endpoints
+│   │   ├── auth.js, members.js, loans.js
+│   │   ├── payments.js, contributions.js
+│   │   ├── mpesa.js, sms.js, whatsapp.js
+│   │   └── ... (30+ route files)
+│   ├── middleware/
+│   │   └── auth.js                 # JWT authentication
+│   ├── migrations/                 # Database migrations
+│   ├── scripts/                    # Initialization scripts
+│   └── utils/                      # Utilities (PDF receipts, etc.)
 │
-├── pages/                          # HTML page files
-│   ├── auth/
-│   │   ├── login-page.html         # User login
-│   │   ├── forgot-password.html    # Password reset
-│   │   └── registration-form.html  # New member registration
+├── pages/                          # HTML pages
+│   ├── auth/                       # Authentication pages
+│   │   ├── login-page.html
+│   │   ├── registration-form.html
+│   │   ├── forgot-password.html
+│   │   └── profile.html
 │   │
-│   ├── dashboard/
-│   │   ├── admin-dashboard.html    # Admin/Executive dashboard
-│   │   ├── dashboard-layout.html   # Dashboard layout template
-│   │   ├── member-portal.html      # Member portal
-│   │   └── student-portal.html     # Student portal
+│   ├── dashboard/                  # Dashboard portals
+│   │   ├── admin/                  # Admin dashboard
+│   │   │   ├── admin-dashboard.html
+│   │   │   ├── members-savings.html
+│   │   │   ├── active-members.html
+│   │   │   ├── fines-collection.html
+│   │   │   ├── bereavement-management.html
+│   │   │   ├── analytics.html
+│   │   │   ├── documentation.html
+│   │   │   └── ... (20+ admin pages)
+│   │   │
+│   │   ├── member/                # Member dashboard
+│   │   │   ├── member-portal.html
+│   │   │   ├── member-contribution-history.html
+│   │   │   ├── member-loans-history.html
+│   │   │   └── member-payments-history.html
+│   │   │
+│   │   ├── shared/                # Shared dashboard components
+│   │   └── components/            # Sidebar, header, footer
 │   │
 │   ├── public/                     # Public pages
-│   │   ├── about-us.html
-│   │   ├── contact-information.html
-│   │   ├── donations.html
-│   │   ├── events.html
-│   │   ├── faqs.html
-│   │   ├── gallery.html
-│   │   ├── news.html
-│   │   ├── our-team.html
-│   │   ├── policies.html
-│   │   ├── portals.html
-│   │   ├── resources.html
-│   │   ├── terms&conditions.html
-│   │   ├── volunteer.html
-│   │   └── welcome-page.html
+│   │   ├── about-us.html, contact-information.html
+│   │   ├── events.html, news.html, gallery.html
+│   │   ├── donations.html, volunteer.html
+│   │   └── faqs.html, policies.html, resources.html
 │   │
-│   ├── contributions/
-│   │   ├── history.html            # Contribution history
-│   │   └── pay.html                # Make contribution
-│   │
-│   ├── loans/
-│   │   ├── apply.html              # Apply for loan
-│   │   ├── history.html            # Loan history
-│   │   └── repay.html              # Repay loan
-│   │
-│   ├── payments/
-│   │   ├── history.html            # Payment history
-│   │   └── make-payment.html       # Make payment
-│   │
-│   ├── breavement/
-│   │   ├── contribute.html         # Bereavement contribution
-│   │   └── index.html              # Bereavement info
-│   │
-│   ├── reports/
-│   │   ├── bereavement-report.html
-│   │   ├── contributions-report.html
-│   │   ├── index.html
-│   │   ├── loans-report.html
-│   │   └── index.html
-│   │
+│   ├── contributions/             # Contribution pages
+│   ├── loans/                      # Loan management
+│   ├── payments/                  # Payment processing
+│   ├── breavement/                # Bereavement support
+│   ├── reports/                    # Reports & analytics
 │   └── shared/                     # Shared components
-│       ├── header.html
-│       └── footer.html
 │
-├── src/                            # Source code
+├── src/                            # Frontend source code
 │   ├── config/
-│   │   └── app-config.js           # App configuration & API settings
+│   │   └── app-config.js          # API configuration
 │   │
 │   ├── services/                   # API service layer
-│   │   ├── index.js                # Service exports
-│   │   ├── api-service.js          # Base HTTP client
+│   │   ├── api-service.js         # HTTP client
 │   │   ├── auth-service.js         # Authentication
-│   │   ├── member-service.js       # Member management
-│   │   ├── contribution-service.js # Contributions
-│   │   ├── loan-service.js         # Loans
-│   │   └── contact-service.js      # Contact forms
+│   │   ├── member-service.js      # Member management
+│   │   ├── contribution-service.js
+│   │   ├── loan-service.js
+│   │   ├── payment-service.js
+│   │   ├── announcement-service.js
+│   │   └── ... (25+ services)
 │   │
 │   ├── scripts/                    # JavaScript modules
-│   │   ├── application.js          # Main application logic
-│   │   ├── index.js                # Homepage script
-│   │   │
+│   │   ├── application.js         # Main app logic
 │   │   └── pages/                  # Page-specific scripts
-│   │       ├── auth/
-│   │       │   ├── login-page.js
-│   │       │   ├── forgot-password.js
-│   │       │   └── registration-form.js
-│   │       ├── dashboard/
-│   │       ├── public/
-│   │       ├── contributions/
-│   │       ├── loans/
-│   │       ├── payments/
-│   │       ├── breavement/
-│   │       └── reports/
 │   │
 │   ├── styles/                     # CSS stylesheets
-│   │   ├── main.css                # Main global styles
-│   │   │
-│   │   ├── original/               # Original preserved styles
-│   │   │   ├── styles.css
-│   │   │   ├── footer.css
-│   │   │   ├── login.css
-│   │   │   └── welcome.css
-│   │   │
+│   │   ├── main.css
 │   │   └── pages/                  # Page-specific styles
-│   │       ├── auth/
-│   │       │   ├── login-page.css
-│   │       │   ├── forgot-password.css
-│   │       │   └── registration-form.css
-│   │       ├── dashboard/
-│   │       ├── public/
-│   │       └── ...
 │   │
 │   └── utils/                      # Utility functions
-│       └── utility-functions.js    # Common helper functions
+│
+├── images/                         # Image assets
+├── uploads/                        # User uploads
+├── docs/                           # Documentation
+├── receipts/                       # Payment receipts
+├── tests/                          # Test files
+│
+├── .env                            # Environment variables
+├── .env.example                    # Example environment config
+└── .initialized                   # First-run flag
 ```
 
 ## Features
 
-### User Portals
-- **Student Portal**: For current students to access welfare services
-- **Member Portal**: For registered members to manage contributions and loans
-- **Admin Dashboard**: For administrators to manage the platform
+### Authentication & Authorization
+- JWT-based authentication with refresh tokens
+- Role-based access control (Admin, Officer, Member, Student)
+- Secure password hashing with bcryptjs
 
-### Core Services
-- **Contributions**: Track and manage member contributions
-- **Loans**: Apply for and repay welfare loans
-- **Payments**: Make and track various payments
-- **Bereavement Support**: Contribute to bereavement fund
+### Financial Management
+- **Contributions**: Track member contributions with history
+- **Loans**: Apply, approve, repay loans with guarantor system
+- **Payments**: Process various payment types
+- **Savings**: Member savings accounts and goals
+- **Withdrawals**: Withdrawal requests and approvals
+- **Fines**: Fine collection and management
 
-### Backend-Ready Architecture
-- **API Service Layer**: Full HTTP client with authentication, error handling, and interceptors
-- **Service Modules**: Separate services for Auth, Members, Contributions, Loans, and Contact
-- **Configuration**: Centralized configuration for API endpoints and app settings
+### Communication
+- SMS notifications
+- WhatsApp messaging
+- Email newsletters and announcements
+- In-app notices
 
-### Modern JavaScript Patterns
-- **ES6 Modules**: Proper import/export throughout the codebase
-- **Classes**: Object-oriented structure with Services, Page handlers, etc.
-- **Async/Await**: Modern async patterns for API calls
-- **Error Handling**: Comprehensive error handling
+### Reports & Analytics
+- Financial summaries
+- Contribution reports
+- Loan reports
+- Member reports
+- Event reports
+- Bereavement reports
+- Export to PDF/CSV
 
-## How to Run
+### Admin Dashboard
+- Member management (CRUD)
+- Officer management
+- Document management
+- Page content management
+- Event management
+- Settings configuration
+
+## Getting Started
 
 ### Prerequisites
-- Node.js (recommended v14 or higher)
-- npm or yarn
+- Node.js (v14+)
+- PostgreSQL database
 
-### Method 1: Using Node.js Server (Recommended)
+### Installation
 
-1. Navigate to the project directory:
-   ```bash
-   cd SWAwebsite
-   ```
-
-2. Install dependencies (if needed):
-   ```bash
-   npm install express
-   ```
-
-3. Start the server:
-   ```bash
-   node server.js
-   ```
-
-4. Open your browser and visit:
-   ```
-   http://localhost:3000
-   ```
-
-### Method 2: Direct File Access
-
-Simply open `index.html` directly in a modern web browser. Note that some features (like ES6 modules) may require a local server for optimal functionality.
-
-## Development
-
-### API Configuration
-
-The API endpoint is configured in `src/config/app-config.js`:
-
-```javascript
-export const API_CONFIG = {
-    baseURL: 'http://localhost:3000/api', // Update for production
-    endpoints: {
-        login: '/auth/login',
-        members: '/members',
-        contributions: '/contributions',
-        loans: '/loans',
-        // ...
-    },
-};
+1. Clone the repository and install dependencies:
+```bash
+npm install
 ```
 
-### Adding New Pages
+2. Configure environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your database and API credentials
+```
 
-1. Create the HTML file in `pages/` (or appropriate subdirectory)
-2. Add corresponding CSS in `src/styles/pages/`
-3. Add corresponding JavaScript in `src/scripts/pages/`
-4. Link the CSS and JS in the HTML file
+3. Start the development server:
+```bash
+npm run dev
+```
 
-### Backend Integration
+4. Open your browser:
+```
+http://localhost:3000
+```
 
-1. Update `API_CONFIG.baseURL` in `src/config/app-config.js` to point to your backend
-2. Implement the backend API endpoints as specified in the service modules
-3. The frontend will automatically use the real API when available
+### Default Admin Login
+- Email: `admin@swa.org`
+- Password: `SWAAdmin2024!`
 
-## Browser Support
+## Available Scripts
 
-- Modern browsers with ES6 module support (Chrome, Firefox, Edge, Safari)
-- For older browsers, consider adding a bundler like Vite or Webpack
+| Command | Description |
+|---------|-------------|
+| `npm start` | Start production server |
+| `npm run dev` | Start development server |
+| `npm run init` | Initialize application |
+| `npm run init:db` | Initialize database |
+| `npm run migrate` | Run database migrations |
+| `npm run reset` | Reset and reinitialize |
 
-## Project Technologies
+## API Endpoints
 
-- **HTML5** - Semantic markup
-- **CSS3** - Styling with CSS variables and Flexbox/Grid
-- **JavaScript (ES6+)** - Modern JavaScript with modules
-- **Node.js/Express** - Simple development server
-- **Font Awesome** - Icon library
+The API is available at `http://localhost:3000/api`. Key endpoints:
+
+- `POST /api/auth/login` - User authentication
+- `GET /api/members` - List members
+- `POST /api/contributions` - Create contribution
+- `POST /api/loans` - Apply for loan
+- `GET /api/reports/financial-summary` - Financial report
+
+## Database Models
+
+- **User** - System users
+- **Member** - Association members
+- **Officer** - Association officers
+- **Loan** - Loan applications
+- **Payment** - Payment records
+- **Contribution** - Member contributions
+- **Savings** - Savings accounts
+- **Withdrawal** - Withdrawal requests
+- **Bereavement** - Bereavement support
+- **Donation** - Donations
+- **Document** - Uploaded documents
+- **Event** - Events
+- **News** - News articles
+- **Announcement** - Announcements
+- **Notice** - Notices
 
 ## License
 
