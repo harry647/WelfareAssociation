@@ -10,6 +10,18 @@ async function runWithdrawalMigration() {
     try {
         console.log('🔄 Checking withdrawal fields...');
         
+        const queryInterface = sequelize.getQueryInterface();
+        
+        // Check if withdrawals table exists
+        let tableExists = false;
+        try {
+            await queryInterface.describeTable('withdrawals');
+            tableExists = true;
+        } catch (error) {
+            console.log('  → Withdrawals table does not exist, skipping migration');
+            return true;
+        }
+        
         const dialect = sequelize.getDialect();
         console.log(`📦 Database dialect: ${dialect}`);
         

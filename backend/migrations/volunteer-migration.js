@@ -12,7 +12,13 @@ async function runVolunteerMigration() {
         console.log('✓ Checking volunteers table schema...');
         
         // Check if volunteers table exists
-        const volunteersTable = await queryInterface.describeTable('volunteers');
+        let volunteersTable;
+        try {
+            volunteersTable = await queryInterface.describeTable('volunteers');
+        } catch (error) {
+            console.log('  → Volunteers table does not exist, skipping migration');
+            return true;
+        }
         
         // Define required columns based on Volunteer model
         const volunteerMigrations = [

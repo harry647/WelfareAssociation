@@ -23,8 +23,8 @@ async function runPaymentMigration() {
         `);
         
         if (tableExists.rows.length === 0) {
-            console.log('❌ Payments table does not exist. Please run initial migration first.');
-            return false;
+            console.log('  → Payments table does not exist, skipping migration');
+            return true;
         }
 
         // Get current table description

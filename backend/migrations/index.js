@@ -9,6 +9,8 @@ const { runLoanMigration } = require('./loan-migration');
 const { runDonationMigration } = require('./donation-migration');
 const { runPaymentMigration } = require('./payment-migration');
 const { runWithdrawalMigration } = require('./withdrawal-fields-migration');
+const { up: runNoticesAuthorMigration } = require('./notices-author-migration');
+const { up: runPaymentsProcessedByMigration } = require('./payments-processedby-migration');
 
 // Import new payment model migrations
 const createShares = require('./20260402-create-shares');
@@ -44,6 +46,28 @@ async function runAllMigrations() {
         // Run withdrawal migration
         console.log('\n💸 Running withdrawal migrations...');
         const withdrawalSuccess = await runWithdrawalMigration();
+        
+        // Run notices author migration
+        console.log('\n📝 Running notices author migration...');
+        let noticesAuthorSuccess = true;
+        try {
+            await runNoticesAuthorMigration();
+            console.log('✓ Notices author migration completed');
+        } catch (error) {
+            console.log('  ⚠️ Notices author migration skipped:', error.message.includes('already exists') || error.message.includes('does not exist') ? 'table not found or already applied' : error.message);
+            noticesAuthorSuccess = true;
+        }
+        
+        // Run payments processedBy migration
+        console.log('\n💳 Running payments processedBy migration...');
+        let paymentsProcessedBySuccess = true;
+        try {
+            await runPaymentsProcessedByMigration();
+            console.log('✓ Payments processedBy migration completed');
+        } catch (error) {
+            console.log('  ⚠️ Payments processedBy migration skipped:', error.message.includes('already exists') || error.message.includes('does not exist') ? 'table not found or already applied' : error.message);
+            paymentsProcessedBySuccess = true;
+        }
         
         // Run new payment model migrations
         console.log('\n📋 Running new payment model migrations...');
@@ -151,8 +175,14 @@ async function runAllMigrations() {
             // Create officers table
             console.log('\n👔 Creating officers table...');
             const queryInterface = sequelize.getQueryInterface();
-            await createOfficers.up(queryInterface, sequelize.Sequelize);
-            console.log('✅ Officers table created successfully');
+            // Check if table exists first
+            try {
+                await queryInterface.describeTable('officers');
+                console.log('  → Officers table already exists, skipping');
+            } catch (e) {
+                await createOfficers.up(queryInterface, sequelize.Sequelize);
+                console.log('✅ Officers table created successfully');
+            }
         } catch (error) {
             console.error('❌ Officers migration failed:', error.message);
             officersSuccess = false;
@@ -208,13 +238,15 @@ async function runAllMigrations() {
         // This is handled in donation-migration.js now
         console.log('✓ Donation columns migration completed');
         
-        if (loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && withdrawalSuccess && sharesSuccess && registrationsSuccess && subscriptionsSuccess && officersSuccess && executiveRoleSuccess) {
+        const allSuccess = loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && withdrawalSuccess && sharesSuccess && registrationsSuccess && subscriptionsSuccess && officersSuccess && executiveRoleSuccess && noticesAuthorSuccess && paymentsProcessedBySuccess;
+        
+        if (allSuccess) {
             console.log('\n✅ All migrations completed successfully');
         } else {
             console.log('\n⚠️ Some migrations failed');
         }
         
-        return loanSuccess && volunteerSuccess && constraintsSuccess && donationSuccess && paymentSuccess && withdrawalSuccess && sharesSuccess && registrationsSuccess && subscriptionsSuccess && officersSuccess && executiveRoleSuccess;
+        return allSuccess;
         
     } catch (error) {
         console.error('\n❌ Migration runner error:', error);

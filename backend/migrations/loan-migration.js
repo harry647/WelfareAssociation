@@ -12,7 +12,13 @@ async function runLoanMigration() {
         console.log('✓ Checking loans table schema...');
         
         // Check if loans table exists
-        const loansTable = await queryInterface.describeTable('loans');
+        let loansTable;
+        try {
+            loansTable = await queryInterface.describeTable('loans');
+        } catch (error) {
+            console.log('  → Loans table does not exist, skipping migration');
+            return true;
+        }
         
         // Define required columns for loans
         const loanMigrations = [

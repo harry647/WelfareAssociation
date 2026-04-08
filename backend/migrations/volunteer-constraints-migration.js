@@ -12,7 +12,13 @@ async function runVolunteerConstraintsMigration() {
         console.log('✓ Checking volunteer table constraints...');
         
         // Check if volunteers table exists
-        const volunteersTable = await queryInterface.describeTable('volunteers');
+        let volunteersTable;
+        try {
+            volunteersTable = await queryInterface.describeTable('volunteers');
+        } catch (error) {
+            console.log('  → Volunteers table does not exist, skipping migration');
+            return true;
+        }
         
         // Update member_id and user_id to allow NULL values for public applications
         const constraintUpdates = [
