@@ -26,7 +26,7 @@ const Settings = sequelize.define('Settings', {
         defaultValue: 'string'
     },
     category: {
-        type: DataTypes.ENUM('general', 'payment', 'security', 'api', 'email', 'sms', 'financial'),
+        type: DataTypes.ENUM('general', 'payment', 'security', 'api', 'email', 'sms', 'financial', 'academic'),
         defaultValue: 'general'
     },
     description: {

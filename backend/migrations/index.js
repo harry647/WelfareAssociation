@@ -259,8 +259,8 @@ async function runAllMigrations() {
             // Insert default settings
             console.log('\n📝 Inserting default settings...');
             await sequelize.query(`
-                INSERT INTO "settings" ("key", "value", "type", "category", "description") 
-                VALUES ('welfare_balance', '0', 'string', 'financial', 'Current welfare fund balance')
+                INSERT INTO "settings" ("id", "key", "value", "type", "category", "description") 
+                VALUES (gen_random_uuid(), 'welfare_balance', '0', 'string', 'financial', 'Current welfare fund balance')
                 ON CONFLICT ("key") DO NOTHING;
             `);
             console.log('✅ Default settings inserted');

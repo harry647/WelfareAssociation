@@ -13,8 +13,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3000
       # Replace with your actual Render PostgreSQL connection string
       - key: POSTGRES_URI_PROD
         value: "postgresql://swa_db_user:acDp5mP8sXQhbJfauRnX5GNuXDew3rxd@dpg-d74ik3qdbo4c738tlk1g-a/swa_db"
