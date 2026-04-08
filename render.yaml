@@ -20,6 +20,8 @@ services:
         value: "postgresql://swa_db_user:acDp5mP8sXQhbJfauRnX5GNuXDew3rxd@dpg-d74ik3qdbo4c738tlk1g-a/swa_db"
       - key: POSTGRES_URI_DEV
         value: "postgresql://postgres:HarryPostgres4656!!@127.0.0.1:5432/swa_db"
+      - key: POSTGRES_URI
+        value: "postgresql://swa_db_user:acDp5mP8sXQhbJfauRnX5GNuXDew3rxd@dpg-d74ik3qdbo4c738tlk1g-a/swa_db"
       - key: JWT_SECRET
         value: "SWA-6eb93c105ed76407272a77da4ad5a2bf9670eaa3bef66b117a4027eec0937776"
       - key: JWT_EXPIRES_IN

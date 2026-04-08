@@ -6,13 +6,13 @@
 require('dotenv').config();
 
 // Quiet mode - reduce console logging (keep errors/warnings, silence log/info)
-const QUIET_MODE = process.env.QUIET_MODE !== 'false';
-if (QUIET_MODE) {
-    const noop = () => {};
-    console.log = noop;
-    console.info = noop;
-    console.debug = noop;
-}
+// const QUIET_MODE = process.env.QUIET_MODE !== 'false';
+// if (QUIET_MODE) {
+//     const noop = () => {};
+//     console.log = noop;
+//     console.info = noop;
+//     console.debug = noop;
+// }
 
 const express = require('express');
 const path = require('path');
@@ -302,9 +302,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Logging
 if (process.env.NODE_ENV !== 'production') {
-    if (process.env.NODE_ENV !== 'production' && !QUIET_MODE) {
+    // if (process.env.NODE_ENV !== 'production' && !QUIET_MODE) {
         app.use(morgan('dev'));
-    }
+    // }
 }
 
 // Prevent caching for protected pages

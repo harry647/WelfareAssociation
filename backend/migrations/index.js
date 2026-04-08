@@ -217,13 +217,32 @@ async function runAllMigrations() {
                 );
             `);
             
-            // Add enum type for settings_category if it doesn't exist
+            // Drop and recreate enum type to ensure it has all values
+            try {
+                await sequelize.query(`DROP TYPE IF EXISTS "enum_settings_category" CASCADE;`);
+            } catch (error) {
+                // Ignore if type doesn't exist
+            }
+            
             await sequelize.query(`
-                DO $$ BEGIN
-                    CREATE TYPE "enum_settings_category" AS ENUM('general', 'payment', 'security', 'api', 'email', 'sms', 'financial');
-                EXCEPTION
-                    WHEN duplicate_object THEN null;
-                END $$;
+                CREATE TYPE "enum_settings_category" AS ENUM('general', 'payment', 'security', 'api', 'email', 'sms', 'financial', 'academic');
+            `);
+            
+            // First update any existing data that doesn't match the enum (only if table has data)
+            try {
+                await sequelize.query(`
+                    UPDATE "settings" 
+                    SET "category" = 'general' 
+                    WHERE "category" NOT IN ('general', 'payment', 'security', 'api', 'email', 'sms', 'financial', 'academic');
+                `);
+            } catch (error) {
+                // Ignore if table is empty or doesn't exist yet
+                console.log('  -> Skipping data update (table may be empty)');
+            }
+            
+            // First drop the default, then alter column, then add back the default
+            await sequelize.query(`
+                ALTER TABLE "settings" ALTER COLUMN "category" DROP DEFAULT;
             `);
             
             // Alter column to use enum type
@@ -231,6 +250,11 @@ async function runAllMigrations() {
                 ALTER TABLE "settings" 
                 ALTER COLUMN "category" TYPE "enum_settings_category" 
                 USING "category"::"enum_settings_category";
+            `);
+            
+            // Add back the default
+            await sequelize.query(`
+                ALTER TABLE "settings" ALTER COLUMN "category" SET DEFAULT 'general';
             `);
             await sequelize.query('CREATE INDEX IF NOT EXISTS "settings_key" ON "settings" ("key");');
             await sequelize.query('CREATE INDEX IF NOT EXISTS "settings_category" ON "settings" ("category");');
